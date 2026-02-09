@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v6-cube-anchor';
+const CACHE_NAME = 'vtoolz-v7-deployment-dbg';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
