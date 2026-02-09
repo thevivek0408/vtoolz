@@ -1,0 +1,127 @@
+importScripts('../../js/vendor/pdf-lib.min.js');
+
+// Helper to handle messages
+self.onmessage = async function (e) {
+    const { type, payload, id } = e.data;
+    try {
+        let result;
+        switch (type) {
+            case 'MERGE_PDFS':
+                result = await mergePdfs(payload.files);
+                break;
+            case 'SPLIT_PDF':
+                result = await splitPdf(payload.file, payload.ranges);
+                break;
+            case 'ROTATE_PDF':
+                result = await rotatePdf(payload.file, payload.degrees, payload.pages);
+                break;
+            case 'REVERSE_PDF':
+                result = await reversePdf(payload.file);
+                break;
+            case 'DELETE_PAGES':
+                result = await deletePages(payload.file, payload.pages);
+                break;
+            case 'EXTRACT_PAGES':
+                result = await extractPages(payload.file, payload.pages);
+                break;
+            default:
+                throw new Error(`Unknown operation: ${type}`);
+        }
+        self.postMessage({ type: 'SUCCESS', id, result });
+    } catch (error) {
+        self.postMessage({ type: 'ERROR', id, error: error.message });
+    }
+};
+
+async function mergePdfs(fileBuffers) {
+    const { PDFDocument } = PDFLib;
+    const mergedPdf = await PDFDocument.create();
+
+    for (const buffer of fileBuffers) {
+        const pdf = await PDFDocument.load(buffer);
+        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+    }
+    const pdfBytes = await mergedPdf.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+}
+
+async function splitPdf(fileBuffer, ranges) {
+    // ranges: "1-5, 8, 11-13" string or array of arrays? 
+    // Implementing "Split by ranges" where each range becomes a separate PDF? 
+    // Or just extracting specific pages to a NEW PDF (which is Extract).
+    // The requirement says "Split PDF (range + single)". Usually means "Extract these pages to a new PDF".
+    // If it means "Explode into single pages", that's different.
+    // Let's assume input is "pages to keep for the new PDF".
+    // Reusing extractPages for this context.
+    return extractPages(fileBuffer, ranges);
+}
+
+async function extractPages(fileBuffer, pageIndices) {
+    const { PDFDocument } = PDFLib;
+    const srcPdf = await PDFDocument.load(fileBuffer);
+    const newPdf = await PDFDocument.create();
+
+    // pageIndices should be 0-based array of integers
+    const copiedPages = await newPdf.copyPages(srcPdf, pageIndices);
+    copiedPages.forEach((page) => newPdf.addPage(page));
+
+    const pdfBytes = await newPdf.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+}
+
+async function rotatePdf(fileBuffer, degrees, pageIndices) {
+    const { PDFDocument, degrees: deg } = PDFLib;
+    const pdfDoc = await PDFDocument.load(fileBuffer);
+    const pages = pdfDoc.getPages();
+
+    // If pageIndices is empty/null, rotate all
+    const indicesToRotate = pageIndices || pages.map((_, i) => i);
+
+    indicesToRotate.forEach(idx => {
+        if (pages[idx]) {
+            const currentRotation = pages[idx].getRotation().angle;
+            pages[idx].setRotation(deg(currentRotation + degrees));
+        }
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+}
+
+async function reversePdf(fileBuffer) {
+    const { PDFDocument } = PDFLib;
+    const srcPdf = await PDFDocument.load(fileBuffer);
+    const newPdf = await PDFDocument.create();
+
+    const count = srcPdf.getPageCount();
+    const indices = Array.from({ length: count }, (_, i) => count - 1 - i);
+
+    const copiedPages = await newPdf.copyPages(srcPdf, indices);
+    copiedPages.forEach((page) => newPdf.addPage(page));
+
+    const pdfBytes = await newPdf.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+}
+
+async function deletePages(fileBuffer, pagesToDelete) {
+    const { PDFDocument } = PDFLib;
+    const pdfDoc = await PDFDocument.load(fileBuffer);
+    const count = pdfDoc.getPageCount();
+
+    // Create new PDF and copy only pages NOT in pagesToDelete
+    const newPdf = await PDFDocument.create();
+    const pagesToKeep = [];
+
+    for (let i = 0; i < count; i++) {
+        if (!pagesToDelete.includes(i)) {
+            pagesToKeep.push(i);
+        }
+    }
+
+    const copiedPages = await newPdf.copyPages(pdfDoc, pagesToKeep);
+    copiedPages.forEach((page) => newPdf.addPage(page));
+
+    const pdfBytes = await newPdf.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Cropper - Privacy-First Tools</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <!-- Using local Cropper.js for offline privacy -->
+    <link rel="stylesheet" href="../../js/vendor/cropper.min.css" />
+    <style>
+        .cropper-container {
+            max-width: 100%;
+            height: 500px;
+            /* Constrain height */
+            background: #333;
+            margin-top: 20px;
+        }
+
+        #image-to-crop {
+            max-width: 100%;
+            display: block;
+        }
+
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../image/index.html">Image Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container">
+            <h1>Image Cropper</h1>
+            <p>Crop, rotate, and flip your images.</p>
+
+            <div class="drop-zone" id="drop-zone">
+                <span class="drop-zone-icon">✂️</span>
+                <p class="drop-zone-text">Drag & Drop image here</p>
+                <input type="file" id="file-input" accept="image/*" hidden>
+            </div>
+
+            <div id="editor-area" style="display:none;">
+                <div class="cropper-container">
+                    <img id="image-to-crop" src="">
+                </div>
+
+                <div class="controls">
+                    <button id="crop-btn" class="btn btn-primary">Crop & Download</button>
+                    <button class="btn btn-secondary" onclick="cropper.rotate(90)">Rotate ↻</button>
+                    <button class="btn btn-secondary" onclick="cropper.scaleX(-1)">Flip H</button>
+                    <button class="btn btn-secondary" onclick="cropper.reset()">Reset</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/vendor/cropper.min.js"></script>
+    <script type="module">
+        import '../../js/image/image-main.js';
+
+        const dropZone = document.getElementById('drop-zone');
+        const editorArea = document.getElementById('editor-area');
+        const img = document.getElementById('image-to-crop');
+        let cropper;
+        let fileName = 'cropped.png';
+
+        window.Utils.initDragAndDrop('#drop-zone', (files) => {
+            if (files.length > 0) loadImage(files[0]);
+        });
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) loadImage(e.target.files[0]);
+        });
+
+        function loadImage(file) {
+            fileName = file.name;
+            const url = URL.createObjectURL(file);
+            img.src = url;
+            dropZone.style.display = 'none';
+            editorArea.style.display = 'block';
+
+            // Initialize Cropper
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(img, {
+                viewMode: 2,
+                autoCropArea: 0.8,
+            });
+        }
+
+        // Expose to window for inline onclick handlers
+        window.cropper = null;
+        // Sync the variable
+        const checkCropper = setInterval(() => {
+            if (cropper) window.cropper = cropper;
+        }, 100);
+
+
+        document.getElementById('crop-btn').addEventListener('click', () => {
+            if (!cropper) return;
+
+            cropper.getCroppedCanvas().toBlob((blob) => {
+                window.Utils.downloadBlob(blob, `cropped-${fileName}`);
+            });
+        });
+    </script>
+</body>
+
+</html>

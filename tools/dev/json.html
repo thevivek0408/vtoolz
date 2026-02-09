@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Tools - Privacy-First Tools</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .split-view {
+            display: flex;
+            gap: 20px;
+            height: 500px;
+            margin-top: 20px;
+        }
+
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: monospace;
+            resize: none;
+        }
+
+        .actions {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../dev/index.html">Dev Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container">
+            <h1>JSON Formatter & Validator</h1>
+            <p>Format, validate, minifty, or convert JSON to CSV.</p>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="format()">Format / Validate</button>
+                <button class="btn btn-secondary" onclick="minify()">Minify</button>
+                <button class="btn btn-secondary" onclick="toCsv()">Convert to CSV</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+
+            <div class="split-view">
+                <div class="pane">
+                    <label>Input JSON</label>
+                    <textarea id="input" placeholder="Paste JSON here..."></textarea>
+                </div>
+                <div class="pane">
+                    <label>Output</label>
+                    <textarea id="output" readonly style="background:#f9f9f9;"></textarea>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { DevUtils } from '../../js/dev/dev-utils.js';
+
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+
+        window.format = () => {
+            try {
+                output.value = DevUtils.formatJson(input.value);
+                window.Utils.showToast('JSON is valid and formatted', 'success');
+            } catch (e) {
+                output.value = e.message;
+                window.Utils.showToast('Invalid JSON', 'error');
+            }
+        };
+
+        window.minify = () => {
+            try {
+                output.value = DevUtils.minifyJson(input.value);
+                window.Utils.showToast('JSON Minified', 'success');
+            } catch (e) {
+                window.Utils.showToast('Invalid JSON', 'error');
+            }
+        };
+
+        window.toCsv = () => {
+            try {
+                output.value = DevUtils.jsonToCsv(input.value);
+                window.Utils.showToast('Converted to CSV', 'success');
+            } catch (e) {
+                window.Utils.showToast('Error converting to CSV: ' + e.message, 'error');
+            }
+        };
+
+        window.clearAll = () => {
+            input.value = '';
+            output.value = '';
+        };
+    </script>
+</body>
+
+</html>

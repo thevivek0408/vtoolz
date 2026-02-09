@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Converter - Privacy-First Tools</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .converter-grid {
+            margin-top: 20px;
+        }
+
+        .convert-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface-color);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../image/index.html">Image Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container">
+            <h1>Image Format Converter</h1>
+            <p>Convert images between JPG, PNG, and WEBP formats.</p>
+
+            <div class="drop-zone" id="drop-zone">
+                <span class="drop-zone-icon">🔄</span>
+                <p class="drop-zone-text">Drag & Drop images here</p>
+                <input type="file" id="file-input" multiple accept="image/*" hidden>
+            </div>
+
+            <div id="controls" style="display:none; max-width: 600px; margin: 20px auto;">
+                <label for="format-select">Convert all to:</label>
+                <select id="format-select" class="form-control" style="width: auto; display: inline-block;">
+                    <option value="image/webp">WEBP (Best)</option>
+                    <option value="image/jpeg">JPG</option>
+                    <option value="image/png">PNG</option>
+                </select>
+                <button id="convert-btn" class="btn btn-primary" style="margin-left:10px;">Convert All</button>
+            </div>
+
+            <div id="results" class="converter-grid"></div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/image/image-main.js';
+
+        const fileInput = document.getElementById('file-input');
+        const results = document.getElementById('results');
+        const controls = document.getElementById('controls');
+        const dropZone = document.getElementById('drop-zone');
+        let selectedFiles = [];
+
+        window.Utils.initDragAndDrop('#drop-zone', (files) => handleFiles(files));
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleFiles(files) {
+            selectedFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+            if (selectedFiles.length === 0) return;
+
+            dropZone.style.display = 'none';
+            controls.style.display = 'block';
+            results.innerHTML = '';
+
+            selectedFiles.forEach(file => {
+                const div = document.createElement('div');
+                div.className = 'convert-row';
+                div.innerHTML = `
+                    <div style="flex:1">
+                        <strong>${file.name}</strong><br>
+                        <span style="font-size:0.8rem; color:var(--text-muted)">${file.type}</span>
+                    </div>
+                    <div class="status" style="font-weight:500; min-width:80px; text-align:right;">Pending</div>
+                    <div class="action-area" style="min-width:100px; text-align:right;"></div>
+                `;
+                results.appendChild(div);
+                file.uiElement = div;
+            });
+        }
+
+        document.getElementById('convert-btn').addEventListener('click', async () => {
+            const format = document.getElementById('format-select').value;
+
+            for (const file of selectedFiles) {
+                const status = file.uiElement.querySelector('.status');
+                const actionArea = file.uiElement.querySelector('.action-area');
+
+                status.textContent = 'Converting...';
+
+                try {
+                    const blob = await window.ImageTools.runImageTask('CONVERT', {
+                        file, format
+                    });
+
+                    status.textContent = 'Done!';
+                    status.style.color = 'var(--accent-color)';
+
+                    const ext = format.split('/')[1];
+                    const newName = file.name.split('.')[0] + '.' + (ext === 'jpeg' ? 'jpg' : ext);
+
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-primary';
+                    btn.style.padding = '5px 10px';
+                    btn.style.fontSize = '0.8rem';
+                    btn.textContent = 'Download';
+                    btn.onclick = () => window.Utils.downloadBlob(blob, newName);
+
+                    actionArea.innerHTML = '';
+                    actionArea.appendChild(btn);
+
+                } catch (err) {
+                    console.error(err);
+                    status.textContent = 'Error';
+                    status.style.color = 'var(--danger-color)';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

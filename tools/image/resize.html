@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer - Privacy-First Tools</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../image/index.html">Image Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container">
+            <h1>Image Resizer</h1>
+            <p>Resize images to specific specific dimensions (pixels).</p>
+
+            <div class="drop-zone" id="drop-zone">
+                <span class="drop-zone-icon">📏</span>
+                <p class="drop-zone-text">Drag & Drop images here</p>
+                <input type="file" id="file-input" multiple accept="image/*" hidden>
+            </div>
+
+            <div id="controls" style="display:none; max-width: 600px; margin: 20px auto;">
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label>Width (px)</label>
+                        <input type="number" id="width-input" class="form-control" placeholder="Width">
+                    </div>
+                    <div style="flex:1">
+                        <label>Height (px)</label>
+                        <input type="number" id="height-input" class="form-control" placeholder="Height">
+                    </div>
+                </div>
+                <p style="font-size:0.8rem; color:var(--text-muted);">Leave one empty to maintain aspect ratio.</p>
+
+                <button id="resize-btn" class="btn btn-primary btn-block" style="margin-top:10px">Resize All</button>
+            </div>
+
+            <div id="results" class="preview-grid"
+                style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px; margin-top:20px;">
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+    </style>
+
+    <script type="module">
+        import '../../js/image/image-main.js';
+
+        const fileInput = document.getElementById('file-input');
+        const results = document.getElementById('results');
+        const controls = document.getElementById('controls');
+        const dropZone = document.getElementById('drop-zone');
+        let selectedFiles = [];
+
+        window.Utils.initDragAndDrop('#drop-zone', (files) => handleFiles(files));
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleFiles(files) {
+            selectedFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+            if (selectedFiles.length === 0) return;
+
+            dropZone.style.display = 'none';
+            controls.style.display = 'block';
+            results.innerHTML = '';
+
+            selectedFiles.forEach(file => {
+                const div = document.createElement('div');
+                div.className = 'tool-card';
+                div.innerHTML = `
+                    <p><strong>${file.name}</strong></p>
+                    <p class="stats">${window.Utils.formatBytes(file.size)}</p>
+                    <div class="status">Waiting...</div>
+                `;
+                results.appendChild(div);
+                file.uiElement = div;
+            });
+        }
+
+        document.getElementById('resize-btn').addEventListener('click', async () => {
+            const w = parseInt(document.getElementById('width-input').value) || 0;
+            const h = parseInt(document.getElementById('height-input').value) || 0;
+
+            if (!w && !h) {
+                window.Utils.showToast('Enter at least one dimension', 'error');
+                return;
+            }
+
+            for (const file of selectedFiles) {
+                const status = file.uiElement.querySelector('.status');
+                status.textContent = 'Resizing...';
+
+                try {
+                    const blob = await window.ImageTools.runImageTask('RESIZE', {
+                        file, width: w, height: h
+                    });
+
+                    status.textContent = 'Done!';
+                    status.style.color = 'var(--accent-color)';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-primary btn-block';
+                    btn.style.marginTop = '10px';
+                    btn.textContent = 'Download';
+                    btn.onclick = () => window.Utils.downloadBlob(blob, `resized-${file.name}`);
+                    file.uiElement.appendChild(btn);
+
+                } catch (err) {
+                    console.error(err);
+                    status.textContent = 'Error';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

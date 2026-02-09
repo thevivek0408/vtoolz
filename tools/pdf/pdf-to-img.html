@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Image - Privacy-First Tools</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../pdf/index.html">PDF Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container">
+            <h1>PDF to Image</h1>
+            <p>Convert PDF pages to high-quality images (JPG/PNG).</p>
+
+            <div class="drop-zone" id="drop-zone">
+                <span class="drop-zone-icon">🖼️</span>
+                <p class="drop-zone-text">Drag & Drop PDF file here</p>
+                <input type="file" id="file-input" accept="application/pdf" hidden>
+            </div>
+
+            <div id="output-area" style="display:none; margin-top:20px;">
+                <p id="status-text">Processing...</p>
+                <div id="image-list" style="display: grid; gap: 20px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/vendor/pdf.min.js"></script>
+    <script type="module">
+        import '../../js/pdf/pdf-main.js';
+
+        // Use main thread PDF.js for rendering to canvas
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';
+
+        window.Utils.initDragAndDrop('#drop-zone', (files) => {
+            if (files.length > 0) processPdf(files[0]);
+        });
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) processPdf(e.target.files[0]);
+        });
+
+        async function processPdf(file) {
+            if (file.type !== 'application/pdf') {
+                window.Utils.showToast('Please upload a PDF file.', 'error');
+                return;
+            }
+
+            document.getElementById('drop-zone').style.display = 'none';
+            const output = document.getElementById('output-area');
+            output.style.display = 'block';
+            const list = document.getElementById('image-list');
+            list.innerHTML = '';
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                const total = pdf.numPages;
+
+                for (let i = 1; i <= total; i++) {
+                    const statusVal = document.getElementById('status-text');
+                    statusVal.textContent = `Rendering page ${i} of ${total}...`;
+
+                    const page = await pdf.getPage(i);
+                    const scale = 2.0; // High quality
+                    const viewport = page.getViewport({ scale });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    const ctx = canvas.getContext('2d');
+
+                    await page.render({ canvasContext: ctx, viewport }).promise;
+
+                    // Create Download Link
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'tool-card';
+                    wrapper.style.alignItems = 'center';
+
+                    const img = document.createElement('img');
+                    img.src = canvas.toDataURL('image/jpeg', 0.8);
+                    img.style.maxWidth = '100%';
+                    img.style.border = '1px solid #ddd';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-primary';
+                    btn.textContent = `Download Page ${i} (JPG)`;
+                    btn.style.marginTop = '10px';
+                    btn.onclick = () => {
+                        const a = document.createElement('a');
+                        a.href = img.src;
+                        a.download = `page-${i}.jpg`;
+                        a.click();
+                    };
+
+                    wrapper.appendChild(img);
+                    wrapper.appendChild(btn);
+                    list.appendChild(wrapper);
+                }
+
+                document.getElementById('status-text').textContent = "Conversion Complete!";
+                window.Utils.showToast('All pages rendered.', 'success');
+
+            } catch (err) {
+                console.error(err);
+                window.Utils.showToast('Error: ' + err.message, 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

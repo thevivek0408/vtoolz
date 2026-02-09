@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encoders - Privacy-First Tools</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .split-view {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pane {
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+        }
+
+        .switches {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../dev/index.html">Dev Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container">
+            <h1>Encoders / Decoders</h1>
+
+            <div class="switches">
+                <select id="mode" class="form-control" style="width: auto; padding: 10px;">
+                    <option value="base64">Base64</option>
+                    <option value="url">URL Encode</option>
+                </select>
+            </div>
+
+            <div class="split-view">
+                <div class="pane">
+                    <label>Decoded Text</label>
+                    <textarea id="decoded" placeholder="Text to encode..."></textarea>
+                </div>
+
+                <div style="display:flex; flex-direction:column; justify-content:center; gap:10px;">
+                    <button class="btn btn-primary" id="btn-encode"> → Encode </button>
+                    <button class="btn btn-secondary" id="btn-decode"> ← Decode </button>
+                </div>
+
+                <div class="pane">
+                    <label>Encoded Text</label>
+                    <textarea id="encoded" placeholder="Encoded result..."></textarea>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { DevUtils } from '../../js/dev/dev-utils.js';
+
+        const decoded = document.getElementById('decoded');
+        const encoded = document.getElementById('encoded');
+        const mode = document.getElementById('mode');
+
+        document.getElementById('btn-encode').addEventListener('click', () => {
+            try {
+                if (mode.value === 'base64') encoded.value = DevUtils.base64Encode(decoded.value);
+                else encoded.value = DevUtils.urlEncode(decoded.value);
+            } catch (e) {
+                window.Utils.showToast('Encoding Error', 'error');
+            }
+        });
+
+        document.getElementById('btn-decode').addEventListener('click', () => {
+            try {
+                if (mode.value === 'base64') decoded.value = DevUtils.base64Decode(encoded.value);
+                else decoded.value = DevUtils.urlDecode(encoded.value);
+            } catch (e) {
+                window.Utils.showToast('Decoding Error', 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>

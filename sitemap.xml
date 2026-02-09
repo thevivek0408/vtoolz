@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://vtoolz.pages.dev/</loc>
+        <lastmod>2026-02-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <!-- PDF Tools -->
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/pdf/index.html</loc>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/pdf/merge.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/pdf/split.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/pdf/pdf-to-img.html</loc>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Image Tools -->
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/image/index.html</loc>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/image/compress.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/image/resize.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/image/crop.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/image/convert.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/image/filters.html</loc>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Text Tools -->
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/text/index.html</loc>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/text/counter.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/text/modifier.html</loc>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Dev Tools -->
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/dev/index.html</loc>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/dev/json.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/dev/base64.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vtoolz.pages.dev/tools/dev/security.html</loc>
+        <priority>0.7</priority>
+    </url>
+</urlset>

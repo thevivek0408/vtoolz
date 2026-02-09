@@ -1,0 +1,17 @@
+{
+    "name": "VtoolZ",
+    "short_name": "VtoolZ",
+    "description": "Free, private, offline-capable web utilities.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#3498db",
+    "icons": [
+        {
+            "src": "./assets/icon.svg",
+            "type": "image/svg+xml",
+            "sizes": "192x192 512x512",
+            "purpose": "any maskable"
+        }
+    ]
+}

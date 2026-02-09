@@ -1,0 +1,150 @@
+/**
+ * Common Utilities & Globals
+ * Included in every page.
+ */
+
+// Import SEO script automatically
+import './seo.js';
+
+// ... existing code ...
+export const Utils = {
+    // ... existing utils ...
+    formatBytes: (bytes, decimals = 2) => {
+        if (!+bytes) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    },
+
+    // File validation
+    validateFile: (file, allowedTypes, maxSizeMB = 50) => {
+        if (allowedTypes && !allowedTypes.includes(file.type) && !allowedTypes.some(t => t.endsWith('/*') && file.type.startsWith(t.slice(0, -1)))) {
+            throw new Error(`Invalid file type: ${file.type}`);
+        }
+        if (file.size > maxSizeMB * 1024 * 1024) {
+            throw new Error(`File too large (Max ${maxSizeMB}MB)`);
+        }
+        return true;
+    },
+
+    // Toast Notification
+    showToast: (message, type = 'info', duration = 3000) => {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        // Trigger reflow
+        toast.offsetHeight;
+        toast.classList.add('show');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    },
+
+    // Download Helper
+    downloadBlob: (blob, filename) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    },
+
+    // Drag & Drop Init
+    initDragAndDrop: (dropZoneSelector, onFiles) => {
+        const dropZone = document.querySelector(dropZoneSelector);
+        if (!dropZone) return;
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('highlight'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('highlight'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            onFiles(files);
+        }, false);
+
+        // Make draggable clickable too
+        dropZone.addEventListener('click', () => {
+            const input = dropZone.querySelector('input[type="file"]');
+            if (input) input.click();
+        });
+    },
+
+    // Theme Management
+    initTheme: () => {
+        const toggle = document.createElement('button');
+        toggle.className = 'theme-toggle';
+        toggle.innerHTML = '🌓';
+        toggle.title = "Toggle Dark Mode";
+        toggle.ariaLabel = "Toggle Dark Mode";
+
+        // Find header nav to insert
+        const nav = document.querySelector('nav ul');
+        if (nav) {
+            const li = document.createElement('li');
+            li.appendChild(toggle);
+            nav.appendChild(li);
+        }
+
+        const applyTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        };
+
+        const saved = localStorage.getItem('theme');
+        if (saved) {
+            applyTheme(saved);
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            applyTheme('dark');
+        }
+
+        toggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    }
+};
+
+// Initialize Theme & SW immediately
+window.addEventListener('DOMContentLoaded', () => {
+    window.Utils.initTheme();
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/vtoolz/sw.js', { scope: '/vtoolz/' }) // Adjust scope for GitHub Pages if needed, or use relative './sw.js'
+            .then(reg => console.log('SW Registered', reg))
+            .catch(err => console.log('SW Failed', err));
+
+        // Note: For root domain deployment, use: navigator.serviceWorker.register('/sw.js');
+        // Since we don't know the exact deployment path, we'll try relative registration for maximum compatibility
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('SW Registered (Relative)'))
+            .catch(e => console.log('SW Relative Failed', e));
+    }
+});
+
+// Expose to window for inline scripts
+window.Utils = Utils;

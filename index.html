@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free, private, client-side tools for PDF, Images, Text, and Developers. No file uploads, no tracking. Merge PDF, Compress Images, Format JSON, and more.">
+    <title>VtoolZ - Free & Secure Online Utilities</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Using system fonts for Privacy & Offline support -->
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="tools/pdf/index.html">PDF</a></li>
+                    <li><a href="tools/image/index.html">Image</a></li>
+                    <li><a href="tools/text/index.html">Text</a></li>
+                    <li><a href="tools/dev/index.html">Dev</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Your Data, Your Tools.</h1>
+                <p>Powerful utilities that run entirely in your browser. <br>No uploads. No servers. 100% Private.</p>
+                <div style="display:flex; justify-content:center; gap:15px;">
+                    <a href="#tools" class="btn btn-primary">Explore Tools</a>
+                    <a href="https://github.com/yourusername/vtoolz" class="btn btn-secondary">View on GitHub</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="tools" class="container">
+            <div class="tool-grid">
+                <!-- PDF -->
+                <article class="tool-card">
+                    <h3>📄 PDF Tools</h3>
+                    <p>Merge, Split, Convert, and secure your documents.</p>
+                    <a href="tools/pdf/index.html" class="btn btn-primary btn-block">Go to PDF Tools</a>
+                </article>
+
+                <!-- Image -->
+                <article class="tool-card">
+                    <h3>🖼️ Image Tools</h3>
+                    <p>Compress, Resize, Crop & Filter locally.</p>
+                    <a href="tools/image/index.html" class="btn btn-primary btn-block">Go to Image Tools</a>
+                </article>
+
+                <!-- Text -->
+                <article class="tool-card">
+                    <h3>📝 Text Tools</h3>
+                    <p>Analyze word counts, format text, and clean data.</p>
+                    <a href="tools/text/index.html" class="btn btn-primary btn-block">Go to Text Tools</a>
+                </article>
+
+                <!-- Dev -->
+                <article class="tool-card">
+                    <h3>💻 Developer Tools</h3>
+                    <p>JSON, Base64, Hashing, and Converters.</p>
+                    <a href="tools/dev/index.html" class="btn btn-primary btn-block">Go to Dev Tools</a>
+                </article>
+            </div>
+        </section>
+
+        <section class="container" style="text-align: center; margin: 60px auto;">
+            <div
+                style="background: var(--surface-color); padding: 40px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                <h2>Why Use VtoolZ?</h2>
+                <div class="tool-grid"
+                    style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-top:30px;">
+                    <div>
+                        <div style="font-size:2rem;">🔒</div>
+                        <h3>Private</h3>
+                        <p>Client-side only execution.</p>
+                    </div>
+                    <div>
+                        <div style="font-size:2rem;">⚡</div>
+                        <h3>Fast</h3>
+                        <p>No network latency.</p>
+                    </div>
+                    <div>
+                        <div style="font-size:2rem;">📶</div>
+                        <h3>Offline</h3>
+                        <p>Works without internet.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top:50px;">
+        <p>&copy; 2026 VtoolZ. Open Source & Client-Side.</p>
+    </footer>
+
+    <script src="js/utils/common.js" type="module"></script>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+<!-- Reusable Tool Template Component -->
+<template id="tool-layout-template">
+    <div class="tool-container">
+        <header class="tool-header">
+            <a href="../../index.html" class="back-link">← Back to Home</a>
+            <h1 class="tool-title"></h1>
+            <p class="tool-description"></p>
+        </header>
+
+        <main class="tool-workspace">
+            <div class="drop-zone" id="drop-zone">
+                <span class="drop-zone-icon">📂</span>
+                <p class="drop-zone-text">Drag & Drop files here</p>
+                <p class="drop-zone-subtext">or click to upload</p>
+                <input type="file" hidden>
+            </div>
+
+            <div class="tool-controls" hidden>
+                <!-- Tool specific controls will be injected here -->
+            </div>
+
+            <div class="tool-output" hidden>
+                <!-- Result/Output will be shown here -->
+            </div>
+        </main>
+    </div>
+</template>
