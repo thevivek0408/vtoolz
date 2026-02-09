@@ -1,10 +1,11 @@
-const CACHE_NAME = 'vtoolz-v1';
+const CACHE_NAME = 'vtoolz-v3-cube-labels';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './css/style.css',
     './js/utils/common.js',
     './js/utils/seo.js',
+    './js/utils/tilt.js',
     // Dependencies need full paths relative to SW location (root)
     './js/pdf/pdf-main.js',
     './js/pdf/pdf-worker.js',

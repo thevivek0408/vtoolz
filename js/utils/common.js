@@ -5,6 +5,7 @@
 
 // Import SEO script automatically
 import './seo.js';
+import { Tilt } from './tilt.js';
 
 // ... existing code ...
 export const Utils = {
@@ -95,13 +96,13 @@ export const Utils = {
 
     // Theme Management
     initTheme: () => {
+        // Toggle Button
         const toggle = document.createElement('button');
         toggle.className = 'theme-toggle';
         toggle.innerHTML = '🌓';
         toggle.title = "Toggle Dark Mode";
         toggle.ariaLabel = "Toggle Dark Mode";
 
-        // Find header nav to insert
         const nav = document.querySelector('nav ul');
         if (nav) {
             const li = document.createElement('li');
@@ -114,16 +115,25 @@ export const Utils = {
             localStorage.setItem('theme', theme);
         };
 
+        // Default to Dark for 3D feel, or load saved
         const saved = localStorage.getItem('theme');
         if (saved) {
             applyTheme(saved);
-        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        } else {
             applyTheme('dark');
         }
 
         toggle.addEventListener('click', () => {
             const current = document.documentElement.getAttribute('data-theme');
             applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        // Initialize 3D Tilt
+        const cards = document.querySelectorAll('.tool-card');
+        cards.forEach(card => {
+            try {
+                new Tilt(card, { max: 10, speed: 400, glare: true });
+            } catch (e) { console.warn('Tilt init failed', e); }
         });
     }
 };
