@@ -78,18 +78,16 @@ body {
     position: relative;
     transform-style: preserve-3d;
     transform: translateZ(-50px);
-    animation: rotateCube 14s infinite linear;
-    /* Slowed down slightly */
-    cursor: pointer;
+    cursor: grab;
+    touch-action: none;
 }
 
-cursor: pointer;
-}
-
+/* 
 .cube:hover,
 .cube.is-paused {
     animation-play-state: paused !important;
-}
+} 
+*/
 
 .cube-face {
     position: absolute;

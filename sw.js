@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v8-mobile-fix';
+const CACHE_NAME = 'vtoolz-v14-inertia';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -6,6 +6,7 @@ const ASSETS_TO_CACHE = [
     './js/utils/common.js',
     './js/utils/seo.js',
     './js/utils/tilt.js',
+    './js/utils/cube.js',
     // Dependencies need full paths relative to SW location (root)
     './js/pdf/pdf-main.js',
     './js/pdf/pdf-worker.js',

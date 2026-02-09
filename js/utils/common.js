@@ -6,6 +6,7 @@
 // Import SEO script automatically
 import './seo.js';
 import { Tilt } from './tilt.js';
+import { CubeRotator } from './cube.js';
 
 // ... existing code ...
 export const Utils = {
@@ -135,6 +136,14 @@ export const Utils = {
                 new Tilt(card, { max: 10, speed: 400, glare: true });
             } catch (e) { console.warn('Tilt init failed', e); }
         });
+
+        // Initialize 3D Cube Rotation
+        const cube = document.querySelector('.cube');
+        if (cube) {
+            try {
+                new CubeRotator(cube);
+            } catch (e) { console.warn('Cube init failed', e); }
+        }
     }
 };
 
