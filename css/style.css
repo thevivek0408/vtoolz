@@ -78,7 +78,13 @@ body {
     position: relative;
     transform-style: preserve-3d;
     transform: translateZ(-50px);
-    animation: rotateCube 10s infinite linear;
+    animation: rotateCube 14s infinite linear;
+    /* Slowed down slightly */
+    cursor: pointer;
+}
+
+.cube:hover {
+    animation-play-state: paused;
 }
 
 .cube-face {

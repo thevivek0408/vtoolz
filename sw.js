@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v4-cube-links';
+const CACHE_NAME = 'vtoolz-v5-cube-interaction';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
