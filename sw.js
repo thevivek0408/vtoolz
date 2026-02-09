@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v7-deployment-dbg';
+const CACHE_NAME = 'vtoolz-v8-mobile-fix';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

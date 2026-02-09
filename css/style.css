@@ -83,8 +83,12 @@ body {
     cursor: pointer;
 }
 
-.cube:hover {
-    animation-play-state: paused;
+cursor: pointer;
+}
+
+.cube:hover,
+.cube.is-paused {
+    animation-play-state: paused !important;
 }
 
 .cube-face {
