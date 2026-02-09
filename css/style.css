@@ -98,6 +98,16 @@ body {
     /* Show inside */
 }
 
+.cube-face a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    /* Keep branding colors */
+}
+
 /* Face transforms & Colors */
 .cube-face.front {
     transform: rotateY(0deg) translateZ(50px);
