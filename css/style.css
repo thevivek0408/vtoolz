@@ -59,9 +59,16 @@ body {
     color: var(--text-color);
     line-height: 1.6;
     overflow-x: hidden;
+    width: 100%;
+    position: relative;
     perspective: 1000px;
     /* Global perspective */
     transition: background-color 0.3s, color 0.3s;
+}
+
+html {
+    overflow-x: hidden;
+    width: 100%;
 }
 
 /* Real 3D Cube Animation */
@@ -116,8 +123,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
     font-size: 30px;
     font-weight: 800;
     /* Color set by specific face */
