@@ -618,126 +618,161 @@ textarea {
     border-color: var(--danger-color);
 }
 
-/* Responsive & Mobile Menu */
-@media (max-width: 850px) {
-    :root {
-        --header-height: 60px;
-        --container-width: 100%;
-    }
+/* Scroll Animation Classes */
+.fade-in-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    will-change: opacity, transform;
+}
 
-    .container {
-        padding: 0 15px;
-    }
+.fade-in-section.is-visible {
+    opacity: 1;
+    transform: none;
+}
 
-    /* Fixed Header Stacking Context */
-    header {
-        z-index: 1001;
-        /* Above overlay */
-        position: sticky;
-        top: 0;
-    }
+/* Neon / Cyberpunk Mode (Optional Toggle) */
+body.neon-mode {
+    --primary-color: #00ffea;
+    --primary-dark: #00ccbb;
+    --accent-color: #ff00ff;
+    --text-color: #e0fbfc;
+    --bg-color: #050505;
+    --surface-color: #0a0a0a;
+    --border-color: #00ffea;
+}
 
-    /* Typography */
-    .hero h1 {
-        font-size: 2rem;
-        line-height: 1.2;
-    }
+body.neon-mode .tool-card {
+    box-shadow: 0 0 10px var(--primary-color), inset 0 0 20px rgba(0, 255, 234, 0.1);
+    border: 1px solid var(--primary-color);
+}
 
-    .hero p {
-        font-size: 1rem;
-    }
+body.neon-mode .btn-primary {
+    box-shadow: 0 0 15px var(--primary-color);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    font-weight: 800;
+    letter-spacing: 1px;
+}
 
-    /* Layout Spacing */
-    .tool-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
+body.neon-mode h1,
+body.neon-mode h2,
+body.neon-mode h3 {
+    text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--accent-color);
+}
 
-    .tool-container {
-        padding: 1.5rem;
-        width: 100%;
-        margin: 1rem 0;
-    }
+.container {
+    padding: 0 15px;
+}
 
-    .drop-zone {
-        padding: 2rem 1rem;
-    }
+/* Fixed Header Stacking Context */
+header {
+    z-index: 1001;
+    /* Above overlay */
+    position: sticky;
+    top: 0;
+}
 
-    /* Mobile Navigation */
-    .mobile-menu-btn {
-        display: block !important;
-        background: none;
-        border: none;
-        color: var(--text-color);
-        font-size: 1.8rem;
-        cursor: pointer;
-        z-index: 1002;
-        padding: 10px;
-        margin-right: 10px;
-        min-width: 44px;
-        min-height: 44px;
-    }
+/* Typography */
+.hero h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+}
 
-    nav {
-        display: block;
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        height: 100vh;
-        height: 100dvh;
-        /* Dynamic Viewport Height for Mobile */
-        background: var(--surface-color);
-        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
-        padding: 80px 20px;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 1002;
-        /* Top level */
-        will-change: transform;
-        overflow-y: auto;
-        /* Allow menu internal scroll */
-    }
+.hero p {
+    font-size: 1rem;
+}
 
-    nav.nav-active {
-        right: 0;
-    }
+/* Layout Spacing */
+.tool-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
 
-    nav ul {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 25px;
-        width: 100%;
-    }
+.tool-container {
+    padding: 1.5rem;
+    width: 100%;
+    margin: 1rem 0;
+}
 
-    nav a {
-        font-size: 1.2rem;
-        display: block;
-        width: 100%;
-        padding: 15px 0;
-        border-bottom: 1px solid var(--border-color);
-    }
+.drop-zone {
+    padding: 2rem 1rem;
+}
 
-    /* Overlay */
-    .nav-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        height: 100dvh;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 1000;
-        /* Below Header */
-        opacity: 0;
-        visibility: hidden;
-        transition: 0.3s;
-        backdrop-filter: blur(4px);
-    }
+/* Mobile Navigation */
+.mobile-menu-btn {
+    display: block !important;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.8rem;
+    cursor: pointer;
+    z-index: 1002;
+    padding: 10px;
+    margin-right: 10px;
+    min-width: 44px;
+    min-height: 44px;
+}
 
-    .nav-overlay.active {
-        opacity: 1;
-        visibility: visible;
-    }
+nav {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    height: 100vh;
+    height: 100dvh;
+    /* Dynamic Viewport Height for Mobile */
+    background: var(--surface-color);
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+    padding: 80px 20px;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1002;
+    /* Top level */
+    will-change: transform;
+    overflow-y: auto;
+    /* Allow menu internal scroll */
+}
+
+nav.nav-active {
+    right: 0;
+}
+
+nav ul {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 25px;
+    width: 100%;
+}
+
+nav a {
+    font-size: 1.2rem;
+    display: block;
+    width: 100%;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Overlay */
+.nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    /* Below Header */
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    backdrop-filter: blur(4px);
+}
+
+.nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
 }
 
 /* Hide hamburger on larger screens */

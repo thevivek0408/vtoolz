@@ -288,6 +288,30 @@ export const Utils = {
             observer.observe(el);
         });
 
+        // 4. Neon Mode Secret (Triple Click Theme Toggle or dedicated button)
+        // For now, let's auto-enable it if 'neon' is in localStorage, or add a secret trigger.
+        // Let's add a "Cyber" button to the footer for fun.
+        const footer = document.querySelector('footer');
+        if (footer) {
+            const cyberBtn = document.createElement('button');
+            cyberBtn.textContent = '🔮';
+            cyberBtn.title = 'Cyberpunk Mode';
+            cyberBtn.style.cssText = 'background:none; border:none; font-size:1.5rem; cursor:pointer; opacity:0.5; margin-left: 10px;';
+            cyberBtn.addEventListener('click', () => {
+                document.body.classList.toggle('neon-mode');
+                const isNeon = document.body.classList.contains('neon-mode');
+                localStorage.setItem('neon-mode', isNeon);
+                if (isNeon) Utils.showToast('Cyberpunk Mode Activated! 🦾', 'success');
+            });
+            // Restore state
+            if (localStorage.getItem('neon-mode') === 'true') {
+                document.body.classList.add('neon-mode');
+            }
+
+            const p = footer.querySelector('p:last-child');
+            if (p) p.appendChild(cyberBtn);
+        }
+
     }
 };
 
