@@ -284,26 +284,39 @@ export const Utils = {
 
         // 4. Neon Mode Secret (Triple Click Theme Toggle or dedicated button)
         // For now, let's auto-enable it if 'neon' is in localStorage, or add a secret trigger.
-        // Let's add a "Cyber" button to the footer for fun.
-        const footer = document.querySelector('footer');
-        if (footer) {
-            const cyberBtn = document.createElement('button');
-            cyberBtn.textContent = '🔮';
-            cyberBtn.title = 'Cyberpunk Mode';
-            cyberBtn.style.cssText = 'background:none; border:none; font-size:1.5rem; cursor:pointer; opacity:0.5; margin-left: 10px;';
-            cyberBtn.addEventListener('click', () => {
-                document.body.classList.toggle('neon-mode');
-                const isNeon = document.body.classList.contains('neon-mode');
-                localStorage.setItem('neon-mode', isNeon);
-                if (isNeon) Utils.showToast('Cyberpunk Mode Activated! 🦾', 'success');
-            });
+        // 4. Neon Mode Secret (Restored to Nav for visibility)
+        const navUl = document.querySelector('nav ul');
+        if (navUl) {
+            // Check if button already exists to prevent duplicates
+            let cyberBtn = document.getElementById('neon-toggle-btn');
+            if (!cyberBtn) {
+                const cyberLi = document.createElement('li');
+                cyberBtn = document.createElement('button');
+                cyberBtn.id = 'neon-toggle-btn';
+                cyberBtn.textContent = '🔮';
+                cyberBtn.title = 'Cyberpunk Mode';
+                cyberBtn.ariaLabel = 'Toggle Cyberpunk Mode';
+                // Minimal styling to fit nav
+                cyberBtn.style.cssText = 'background:none; border:none; font-size:1.2rem; cursor:pointer; opacity:0.8; transition:transform 0.2s; padding: 5px; margin-left: 10px;';
+
+                cyberBtn.addEventListener('mouseenter', () => cyberBtn.style.transform = 'scale(1.2)');
+                cyberBtn.addEventListener('mouseleave', () => cyberBtn.style.transform = 'scale(1)');
+
+                cyberBtn.addEventListener('click', () => {
+                    document.body.classList.toggle('neon-mode');
+                    const isNeon = document.body.classList.contains('neon-mode');
+                    localStorage.setItem('neon-mode', isNeon);
+                    if (isNeon) Utils.showToast('Cyberpunk Mode Activated! 🦾', 'success');
+                });
+
+                cyberLi.appendChild(cyberBtn);
+                navUl.appendChild(cyberLi);
+            }
+
             // Restore state
             if (localStorage.getItem('neon-mode') === 'true') {
                 document.body.classList.add('neon-mode');
             }
-
-            const p = footer.querySelector('p:last-child');
-            if (p) p.appendChild(cyberBtn);
         }
 
     }
