@@ -116,6 +116,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     font-size: 30px;
     font-weight: 800;
     /* Color set by specific face */
