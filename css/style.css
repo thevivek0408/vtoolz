@@ -469,186 +469,261 @@ nav a.active {
 
 .drop-zone-icon {
     font-size: 3rem;
-    display: block;
-    margin-bottom: 10px;
-    opacity: 0.8;
-}
+    /* Ambient Visual Effects (Phase 10) */
 
-/* Inputs */
-input,
-select,
-textarea {
-    background: var(--surface-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-}
-
-/* Dark Mode Toggle */
-.theme-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    color: var(--text-color);
-    padding: 5px;
-}
-
-/* Toast */
-.toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: var(--surface-color);
-    color: var(--text-color);
-    padding: 15px 25px;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    border-left: 5px solid var(--primary-color);
-    opacity: 0;
-    transform: translateY(20px);
-    transition: var(--transition);
-    z-index: 1000;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.toast-success {
-    border-color: var(--accent-color);
-}
-
-.toast-error {
-    border-color: var(--danger-color);
-}
-
-/* Responsive & Mobile Menu */
-@media (max-width: 850px) {
-    :root {
-        --header-height: 60px;
-        --container-width: 100%;
-    }
-
-    .container {
-        padding: 0 15px;
-    }
-
-    /* Fixed Header Stacking Context */
-    header {
-        z-index: 1001;
-        /* Above overlay */
-        position: sticky;
-        top: 0;
-    }
-
-    /* Typography */
-    .hero h1 {
-        font-size: 2rem;
-        line-height: 1.2;
-    }
-
-    .hero p {
-        font-size: 1rem;
-    }
-
-    /* Layout Spacing */
-    .tool-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .tool-container {
-        padding: 1.5rem;
-        width: 100%;
-        margin: 1rem 0;
-    }
-
-    .drop-zone {
-        padding: 2rem 1rem;
-    }
-
-    /* Mobile Navigation */
-    .mobile-menu-btn {
-        display: block !important;
-        background: none;
-        border: none;
-        color: var(--text-color);
-        font-size: 1.8rem;
-        cursor: pointer;
-        z-index: 1002;
-        padding: 10px;
-        margin-right: 10px;
-        min-width: 44px;
-        min-height: 44px;
-    }
-
-    nav {
-        display: block;
+    /* Ambient Light Blobs */
+    .ambient-light {
         position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        height: 100vh;
-        height: 100dvh;
-        /* Dynamic Viewport Height for Mobile */
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.2;
+        /* Good visibility without being overwhelming */
+        z-index: 0;
+        pointer-events: none;
+        animation: floatLight 20s infinite alternate ease-in-out;
+        mix-blend-mode: screen;
+        /* Blend nicely with dark/light themes */
+    }
+
+    /* Ensure body doesn't trap fixed elements */
+    body {
+        position: relative;
+    }
+
+    /* Light Positioning */
+    .ambient-light.one {
+        top: -20%;
+        left: -10%;
+        background: radial-gradient(circle, var(--primary-color), transparent 70%);
+    }
+
+    .ambient-light.two {
+        bottom: -20%;
+        right: -10%;
+        background: radial-gradient(circle, var(--accent-color), transparent 70%);
+        animation-delay: -5s;
+    }
+
+    @keyframes floatLight {
+        0% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        50% {
+            transform: translate(50px, 50px) scale(1.1);
+        }
+
+        100% {
+            transform: translate(-30px, 20px) scale(0.9);
+        }
+    }
+
+    /* Card Spotlight Effect */
+    .spotlight-card {
+        position: relative;
+        overflow: hidden;
         background: var(--surface-color);
-        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
-        padding: 80px 20px;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 1002;
-        /* Top level */
-        will-change: transform;
-        overflow-y: auto;
-        /* Allow menu internal scroll */
     }
 
-    nav.nav-active {
-        right: 0;
-    }
-
-    nav ul {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 25px;
-        width: 100%;
-    }
-
-    nav a {
-        font-size: 1.2rem;
-        display: block;
-        width: 100%;
-        padding: 15px 0;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    /* Overlay */
-    .nav-overlay {
-        position: fixed;
+    .spotlight-card::after {
+        content: '';
+        position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100vh;
-        height: 100dvh;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 1000;
-        /* Below Header */
+        right: 0;
+        bottom: 0;
+
+        background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(255, 255, 255, 0.1),
+                /* Subtle but visible glow */
+                transparent 40%);
         opacity: 0;
-        visibility: hidden;
-        transition: 0.3s;
-        backdrop-filter: blur(4px);
+        transition: opacity 0.3s;
+        pointer-events: none;
+        z-index: 2;
     }
 
-    .nav-overlay.active {
+    .spotlight-card:hover::after {
         opacity: 1;
-        visibility: visible;
     }
-}
 
-/* Hide hamburger on larger screens */
-@media (min-width: 851px) {
-    .mobile-menu-btn {
-        display: none !important;
+    /* Inputs */
+    input,
+    select,
+    textarea {
+        background: var(--surface-color);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
     }
-}
+
+    /* Dark Mode Toggle */
+    .theme-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: var(--text-color);
+        padding: 5px;
+    }
+
+    /* Toast */
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--surface-color);
+        color: var(--text-color);
+        padding: 15px 25px;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+        border-left: 5px solid var(--primary-color);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: var(--transition);
+        z-index: 1000;
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .toast-success {
+        border-color: var(--accent-color);
+    }
+
+    .toast-error {
+        border-color: var(--danger-color);
+    }
+
+    /* Responsive & Mobile Menu */
+    @media (max-width: 850px) {
+        :root {
+            --header-height: 60px;
+            --container-width: 100%;
+        }
+
+        .container {
+            padding: 0 15px;
+        }
+
+        /* Fixed Header Stacking Context */
+        header {
+            z-index: 1001;
+            /* Above overlay */
+            position: sticky;
+            top: 0;
+        }
+
+        /* Typography */
+        .hero h1 {
+            font-size: 2rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1rem;
+        }
+
+        /* Layout Spacing */
+        .tool-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .tool-container {
+            padding: 1.5rem;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .drop-zone {
+            padding: 2rem 1rem;
+        }
+
+        /* Mobile Navigation */
+        .mobile-menu-btn {
+            display: block !important;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 1002;
+            padding: 10px;
+            margin-right: 10px;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        nav {
+            display: block;
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            height: 100vh;
+            height: 100dvh;
+            /* Dynamic Viewport Height for Mobile */
+            background: var(--surface-color);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            padding: 80px 20px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1002;
+            /* Top level */
+            will-change: transform;
+            overflow-y: auto;
+            /* Allow menu internal scroll */
+        }
+
+        nav.nav-active {
+            right: 0;
+        }
+
+        nav ul {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 25px;
+            width: 100%;
+        }
+
+        nav a {
+            font-size: 1.2rem;
+            display: block;
+            width: 100%;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Overlay */
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            /* Below Header */
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    /* Hide hamburger on larger screens */
+    @media (min-width: 851px) {
+        .mobile-menu-btn {
+            display: none !important;
+        }
+    }
