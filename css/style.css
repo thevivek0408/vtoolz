@@ -173,15 +173,16 @@ body {
     color: #9b59b6;
     background: rgba(155, 89, 182, 0.1);
     box-shadow: 0 0 20px rgba(155, 89, 182, 0.6), 0 0 40px rgba(155, 89, 182, 0.3) inset;
+    /* Font size handled inline or here */
 }
 
 .cube-face.bottom {
     transform: rotateX(-90deg) translateZ(50px);
-    border-color: #34495e;
-    color: #34495e;
-    background: rgba(52, 73, 94, 0.1);
-    box-shadow: 0 0 20px rgba(52, 73, 94, 0.6), 0 0 40px rgba(52, 73, 94, 0.3) inset;
-    font-size: 20px;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: rgba(52, 152, 219, 0.1);
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.6), 0 0 40px rgba(52, 152, 219, 0.3) inset;
+    font-size: 24px;
 }
 
 @keyframes rotateCube {
