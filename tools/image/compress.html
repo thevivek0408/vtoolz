@@ -55,21 +55,43 @@
     </header>
 
     <main>
-        <div class="tool-container">
-            <h1>Bulk Image Compressor</h1>
-            <p>Compress WEBP, JPEG, and PNG images client-side.</p>
+        <div class="tool-container" id="tool-container">
+            <div class="step-indicator">
+                <span class="step active">1. Upload</span>
+                <span class="step">2. Compress</span>
+                <span class="step">3. Download</span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Image Compressor</h1>
+                <p class="text-muted">Reduce file size of JPG, PNG, and WEBP images without losing quality.</p>
+            </div>
 
             <div class="drop-zone" id="drop-zone">
                 <span class="drop-zone-icon">🖼️</span>
-                <p class="drop-zone-text">Drag & Drop images here</p>
+                <h3>Drop Images Here</h3>
+                <p class="text-muted">or click to browse</p>
                 <input type="file" id="file-input" multiple accept="image/*" hidden>
             </div>
 
-            <div id="controls" style="display:none; max-width: 600px; margin: 20px auto;">
-                <label for="quality">Compression Quality: <span id="quality-val">80%</span></label>
-                <input type="range" id="quality" class="quality-slider" min="0.1" max="1.0" step="0.1" value="0.8">
+            <div id="controls" style="display:none; max-width: 600px; margin: 0 auto;">
+                <div class="tool-card" style="text-align:center;">
+                    <label for="quality" style="display:block; margin-bottom:10px;">Compression Level: <strong
+                            id="quality-val" style="color:var(--primary-color);">80%</strong></label>
+                    <input type="range" id="quality" class="quality-slider" min="0.1" max="1.0" step="0.1" value="0.8"
+                        style="width:100%;">
+                    <div
+                        style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-top:5px;">
+                        <span>Max Compression</span>
+                        <span>Best Quality</span>
+                    </div>
+                </div>
 
-                <button id="compress-btn" class="btn btn-primary btn-block">Compress All</button>
+                <div class="action-bar" style="text-align: center; margin-top: 2rem;">
+                    <button id="compress-btn" class="btn btn-primary" style="min-width: 200px;">
+                        Compress All Images
+                    </button>
+                </div>
             </div>
 
             <div id="results" class="preview-grid"></div>
