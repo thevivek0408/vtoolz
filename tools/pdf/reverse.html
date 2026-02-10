@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverse PDF - Privacy-First Tools</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../pdf/index.html">PDF Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container" id="tool-container">
+            <div class="step-indicator">
+                <span class="step active">1. Upload</span>
+                <span class="step">2. Process</span>
+                <span class="step">3. Download</span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Reverse PDF</h1>
+                <p class="text-muted">Reverse the order of pages in your PDF document.</p>
+            </div>
+
+            <div class="drop-zone" id="drop-zone">
+                <span class="drop-zone-icon">🔙</span>
+                <h3>Drop PDF Here</h3>
+                <p class="text-muted">or click to browse</p>
+                <input type="file" id="file-input" accept="application/pdf" hidden>
+            </div>
+
+            <div id="file-info" style="display:none; text-align: center; margin-bottom: 2rem;">
+                <p id="file-name" class="alert alert-info" style="display:inline-block;"></p>
+            </div>
+
+            <div class="action-bar" style="text-align: center;">
+                <button id="reverse-btn" class="btn btn-primary" style="display:none; min-width: 200px;">
+                    Reverse Pages
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/pdf/pdf-main.js';
+
+        let currentFile = null;
+
+        window.Utils.initDragAndDrop('#drop-zone', (files) => {
+            if (files.length > 0) loadFile(files[0]);
+        });
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) loadFile(e.target.files[0]);
+        });
+
+        function loadFile(file) {
+            if (file.type !== 'application/pdf') {
+                window.Utils.showToast('Please upload a PDF file.', 'error');
+                return;
+            }
+            currentFile = file;
+
+            document.getElementById('drop-zone').style.display = 'none';
+            document.getElementById('file-info').style.display = 'block';
+            document.getElementById('file-name').textContent = `${file.name} (${window.Utils.formatBytes(file.size)})`;
+            document.getElementById('reverse-btn').style.display = 'inline-block';
+        }
+
+        document.getElementById('reverse-btn').addEventListener('click', async () => {
+            try {
+                window.Utils.showToast('Reversing pages...', 'info');
+
+                const buffer = await window.PdfTools.readFileAsBuffer(currentFile);
+
+                const blob = await window.PdfTools.runPdfTask('REVERSE_PDF', {
+                    file: buffer
+                });
+
+                window.Utils.downloadBlob(blob, 'reversed-document.pdf');
+                window.Utils.showToast('Download started!', 'success');
+            } catch (err) {
+                console.error(err);
+                window.Utils.showToast('Error: ' + err.message, 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -22,19 +22,31 @@
 
     <main>
         <div class="tool-container" id="tool-container">
-            <h1>Merge PDF</h1>
-            <p>Combine multiple PDF files into one.</p>
+            <div class="step-indicator">
+                <span class="step active">1. Upload</span>
+                <span class="step">2. Merge</span>
+                <span class="step">3. Download</span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Merge PDF</h1>
+                <p class="text-muted">Combine multiple PDF files into one seamless document.</p>
+            </div>
 
             <div class="drop-zone" id="drop-zone">
                 <span class="drop-zone-icon">📂</span>
-                <p class="drop-zone-text">Drag & Drop PDF files here</p>
-                <p class="drop-zone-subtext">or click to upload</p>
+                <h3>Drop PDFs Here</h3>
+                <p class="text-muted">or click to browse</p>
                 <input type="file" id="file-input" multiple accept="application/pdf" hidden>
             </div>
 
-            <div id="file-list" class="file-list" style="margin-bottom: 20px;"></div>
+            <div id="file-list" class="file-list"></div>
 
-            <button id="merge-btn" class="btn btn-primary" style="display:none;">Merge PDFs</button>
+            <div class="action-bar" style="text-align: center;">
+                <button id="merge-btn" class="btn btn-primary" style="display:none; min-width: 200px;">
+                    Merge PDFs
+                </button>
+            </div>
         </div>
     </main>
 
@@ -67,8 +79,24 @@
 
         function addFileToList(file) {
             const item = document.createElement('div');
-            item.className = 'file-item alert alert-info';
-            item.textContent = `${file.name} (${window.Utils.formatBytes(file.size)})`;
+            item.className = 'file-item';
+
+            const info = document.createElement('div');
+            info.className = 'file-info';
+            info.innerHTML = `<span class="file-icon">📄</span> <span>${file.name} <small class="text-muted">(${window.Utils.formatBytes(file.size)})</small></span>`;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerHTML = '✖';
+            removeBtn.title = 'Remove file';
+            removeBtn.onclick = () => {
+                filesToMerge = filesToMerge.filter(f => f !== file);
+                item.remove();
+                updateUI();
+            };
+
+            item.appendChild(info);
+            item.appendChild(removeBtn);
             fileList.appendChild(item);
         }
 

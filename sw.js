@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v14-inertia';
+const CACHE_NAME = 'vtoolz-v19-complete-pdf-suite';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

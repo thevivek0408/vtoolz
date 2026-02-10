@@ -21,19 +21,32 @@
     </header>
 
     <main>
-        <div class="tool-container">
-            <h1>PDF to Image</h1>
-            <p>Convert PDF pages to high-quality images (JPG/PNG).</p>
+        <div class="tool-container" id="tool-container">
+            <div class="step-indicator">
+                <span class="step active">1. Upload</span>
+                <span class="step">2. Convert</span>
+                <span class="step">3. Download</span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>PDF to Image</h1>
+                <p class="text-muted">Convert PDF pages into high-quality images (JPG) instantly.</p>
+            </div>
 
             <div class="drop-zone" id="drop-zone">
                 <span class="drop-zone-icon">🖼️</span>
-                <p class="drop-zone-text">Drag & Drop PDF file here</p>
+                <h3>Drop PDF Here</h3>
+                <p class="text-muted">or click to browse</p>
                 <input type="file" id="file-input" accept="application/pdf" hidden>
             </div>
 
-            <div id="output-area" style="display:none; margin-top:20px;">
-                <p id="status-text">Processing...</p>
-                <div id="image-list" style="display: grid; gap: 20px;"></div>
+            <div id="output-area" style="display:none; margin-top:20px; text-align: center;">
+                <div class="alert alert-info" id="status-text" style="display: inline-block; margin-bottom: 20px;">
+                    Processing...
+                </div>
+                <div id="image-list"
+                    style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+                </div>
             </div>
         </div>
     </main>

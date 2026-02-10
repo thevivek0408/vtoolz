@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reorder PDF Pages - Privacy-First Tools</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .page-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .page-item {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: grab;
+            position: relative;
+            background: var(--bg-secondary);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .page-item:active {
+            cursor: grabbing;
+        }
+
+        .page-item.dragging {
+            opacity: 0.5;
+            border-color: var(--primary-color);
+        }
+
+        .page-item canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            pointer-events: none;
+            /* Let drag pass through */
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../pdf/index.html">PDF Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container" id="tool-container">
+            <div class="step-indicator">
+                <span class="step active">1. Upload</span>
+                <span class="step">2. Reorder</span>
+                <span class="step">3. Save</span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Reorder Pages</h1>
+                <p class="text-muted">Drag and drop pages to rearrange them.</p>
+            </div>
+
+            <div class="drop-zone" id="drop-zone">
+                <span class="drop-zone-icon">🔃</span>
+                <h3>Drop PDF Here</h3>
+                <p class="text-muted">or click to browse</p>
+                <input type="file" id="file-input" accept="application/pdf" hidden>
+            </div>
+
+            <div id="controls" style="display:none; margin-top: 20px;">
+                <p class="text-center text-muted"><small>Drag pages to reorder</small></p>
+
+                <div id="page-grid" class="page-grid"></div>
+
+                <div class="action-bar" style="text-align: center; margin-top: 2rem;">
+                    <button id="save-btn" class="btn btn-primary" style="min-width: 200px;">
+                        Save Reordered PDF
+                    </button>
+                    <button id="reset-btn" class="btn btn-secondary" style="margin-left: 10px;">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/vendor/pdf.min.js"></script>
+    <script type="module">
+        import '../../js/pdf/pdf-main.js';
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';
+
+        let currentFile = null;
+        let pdfDoc = null;
+        let totalPages = 0;
+        let pageOrder = []; // Array of original page indices (0-based)
+
+        window.Utils.initDragAndDrop('#drop-zone', (files) => {
+            if (files.length > 0) loadFile(files[0]);
+        });
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) loadFile(e.target.files[0]);
+        });
+
+        async function loadFile(file) {
+            if (file.type !== 'application/pdf') {
+                window.Utils.showToast('Please upload a PDF file.', 'error');
+                return;
+            }
+
+            window.Utils.showToast('Loading PDF...', 'info');
+            currentFile = file;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                pdfDoc = await pdfjsLib.getDocument(arrayBuffer).promise;
+                totalPages = pdfDoc.numPages;
+
+                // Init original order
+                pageOrder = Array.from({ length: totalPages }, (_, i) => i);
+
+                renderPageGrid();
+                document.getElementById('drop-zone').style.display = 'none';
+                document.getElementById('controls').style.display = 'block';
+                window.Utils.showToast(`Loaded ${totalPages} pages.`, 'success');
+            } catch (err) {
+                console.error(err);
+                window.Utils.showToast('Error loading PDF: ' + err.message, 'error');
+            }
+        }
+
+        async function renderPageGrid() {
+            const grid = document.getElementById('page-grid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < pageOrder.length; i++) {
+                const originalIndex = pageOrder[i];
+                const pageNum = originalIndex + 1; // 1-based for display
+
+                const pageItem = document.createElement('div');
+                pageItem.className = 'page-item';
+                pageItem.dataset.originalIndex = originalIndex;
+                pageItem.draggable = true;
+
+                const canvas = document.createElement('canvas'); // Placeholder
+                pageItem.appendChild(canvas);
+
+                const num = document.createElement('span');
+                num.className = 'page-number';
+                num.textContent = pageNum;
+                pageItem.appendChild(num);
+
+                // Drag Events
+                pageItem.addEventListener('dragstart', handleDragStart);
+                pageItem.addEventListener('dragover', handleDragOver);
+                pageItem.addEventListener('drop', handleDrop);
+                pageItem.addEventListener('dragend', handleDragEnd);
+
+                grid.appendChild(pageItem);
+
+                // Render content
+                renderThumbnail(pageNum, canvas);
+            }
+        }
+
+        async function renderThumbnail(pageNumber, canvas) {
+            const page = await pdfDoc.getPage(pageNumber);
+            const viewport = page.getViewport({ scale: 0.3 });
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+        }
+
+        // Drag & Drop Logic
+        let dragSrcEl = null;
+
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+            this.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) e.stopPropagation();
+
+            if (dragSrcEl !== this) {
+                // Swap DOM
+                // Simple swap logic for grid? 
+                // Or insert before/after?
+                // Let's swap the array indices and re-render or just swap DOM?
+                // Swapping DOM is faster but need to update data model carefully.
+                // Let's use INSERT logic for better UX (reorder).
+
+                // Get all items
+                const grid = document.getElementById('page-grid');
+                const items = [...grid.children];
+                const srcIndex = items.indexOf(dragSrcEl);
+                const targetIndex = items.indexOf(this);
+
+                if (srcIndex < targetIndex) {
+                    this.parentNode.insertBefore(dragSrcEl, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(dragSrcEl, this);
+                }
+
+                // Update data model
+                const movedItem = pageOrder.splice(srcIndex, 1)[0];
+                pageOrder.splice(targetIndex, 0, movedItem);
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+        }
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            pageOrder = Array.from({ length: totalPages }, (_, i) => i);
+            const grid = document.getElementById('page-grid');
+            // Re-sort DOM to match original
+            grid.innerHTML = '';
+            renderPageGrid(); // Re-render everything
+        });
+
+        document.getElementById('save-btn').addEventListener('click', async () => {
+            try {
+                window.Utils.showToast('Saving reordered PDF...', 'info');
+
+                const buffer = await window.PdfTools.readFileAsBuffer(currentFile);
+
+                // Use EXTRACT_PAGES with the new order
+                const blob = await window.PdfTools.runPdfTask('EXTRACT_PAGES', {
+                    file: buffer,
+                    pages: pageOrder
+                });
+
+                window.Utils.downloadBlob(blob, 'reordered-document.pdf');
+                window.Utils.showToast('Download started!', 'success');
+            } catch (err) {
+                console.error(err);
+                window.Utils.showToast('Error: ' + err.message, 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>

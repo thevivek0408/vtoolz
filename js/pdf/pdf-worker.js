@@ -24,6 +24,12 @@ self.onmessage = async function (e) {
             case 'EXTRACT_PAGES':
                 result = await extractPages(payload.file, payload.pages);
                 break;
+            case 'FLATTEN_PDF':
+                result = await flattenPdf(payload.file);
+                break;
+            case 'WATERMARK_PDF':
+                result = await watermarkPdf(payload.file, payload.text, payload.options);
+                break;
             default:
                 throw new Error(`Unknown operation: ${type}`);
         }
@@ -83,6 +89,33 @@ async function rotatePdf(fileBuffer, degrees, pageIndices) {
             const currentRotation = pages[idx].getRotation().angle;
             pages[idx].setRotation(deg(currentRotation + degrees));
         }
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+}
+
+async function watermarkPdf(fileBuffer, text, options = {}) {
+    const { PDFDocument, rgb, degrees } = PDFLib;
+    const pdfDoc = await PDFDocument.load(fileBuffer);
+    const pages = pdfDoc.getPages();
+
+    // Options: opacity (0-1), size, rotation, color?
+    // Simplified for now: Center, 45 deg, Red/Grey?
+
+    const fontSize = 50;
+    const opacity = options.opacity || 0.5;
+
+    pages.forEach(page => {
+        const { width, height } = page.getSize();
+        page.drawText(text, {
+            x: width / 2 - (text.length * fontSize / 4), // Rough center
+            y: height / 2,
+            size: fontSize,
+            color: rgb(0.8, 0.2, 0.2), // Reddish
+            opacity: opacity,
+            rotate: degrees(45),
+        });
     });
 
     const pdfBytes = await pdfDoc.save();
