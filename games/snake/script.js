@@ -114,34 +114,55 @@ class SnakeGame {
     }
 
     draw() {
-        // BG
-        this.ctx.fillStyle = 'black';
+        // Dark grid background
+        this.ctx.fillStyle = '#0a0a0a';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Food
+        // Grid lines
+        this.ctx.strokeStyle = '#1a1a1a';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        for (let x = 0; x <= this.canvas.width; x += this.scale) { this.ctx.moveTo(x, 0); this.ctx.lineTo(x, this.canvas.height); }
+        for (let y = 0; y <= this.canvas.height; y += this.scale) { this.ctx.moveTo(0, y); this.ctx.lineTo(this.canvas.width, y); }
+        this.ctx.stroke();
+
+        // Food (Glowing)
+        this.ctx.shadowBlur = 15;
+        this.ctx.shadowColor = '#e74c3c';
         this.ctx.fillStyle = '#e74c3c';
         this.ctx.beginPath();
-        const cx = this.food.x * this.scale + this.scale / 2;
-        const cy = this.food.y * this.scale + this.scale / 2;
-        this.ctx.arc(cx, cy, this.scale / 2 - 2, 0, Math.PI * 2);
+        this.ctx.arc(this.food.x * this.scale + this.scale / 2, this.food.y * this.scale + this.scale / 2, this.scale / 2 - 2, 0, Math.PI * 2);
         this.ctx.fill();
+        this.ctx.shadowBlur = 0;
 
-        // Snake
+        // Snake (Neon Green)
         this.snake.forEach((segment, index) => {
+            const x = segment.x * this.scale;
+            const y = segment.y * this.scale;
+
+            this.ctx.shadowBlur = 10;
+            this.ctx.shadowColor = '#2ecc71';
+
             if (index === 0) {
                 // Head
-                this.ctx.fillStyle = '#2ecc71'; // Lighter green
+                this.ctx.fillStyle = '#2eff71'; // Brighter head
             } else {
-                this.ctx.fillStyle = '#27ae60'; // Darker green
+                // Body
+                this.ctx.fillStyle = '#27ae60';
             }
 
-            // Add slight gap for grid effect
-            this.ctx.fillRect(
-                segment.x * this.scale + 1,
-                segment.y * this.scale + 1,
-                this.scale - 2,
-                this.scale - 2
-            );
+            this.ctx.fillRect(x + 1, y + 1, this.scale - 2, this.scale - 2);
+            this.ctx.shadowBlur = 0;
+
+            // Eyes on head
+            if (index === 0) {
+                this.ctx.fillStyle = 'black';
+                // Simple eyes logic
+                const eyeSize = 3;
+                // Determine eye pos based on direction? Keeping it simple defaults
+                this.ctx.fillRect(x + 5, y + 5, eyeSize, eyeSize);
+                this.ctx.fillRect(x + 12, y + 5, eyeSize, eyeSize);
+            }
         });
     }
 

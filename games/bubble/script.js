@@ -143,27 +143,49 @@ class BubbleGame {
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // Gradient Background
+        const grad = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        grad.addColorStop(0, '#a1c4fd');
+        grad.addColorStop(1, '#c2e9fb');
+        this.ctx.fillStyle = grad;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Bubbles
         this.bubbles.forEach(b => {
+            // Shadow for depth
+            this.ctx.shadowBlur = 5;
+            this.ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            this.ctx.shadowOffsetY = 5;
+
+            // Main Bubble Body
             this.ctx.beginPath();
             this.ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-            this.ctx.fillStyle = b.color;
-            this.ctx.globalAlpha = 0.6; // Transparent bubbles
-            this.ctx.fill();
+            // Radial Gradient for 3D look
+            const bGrad = this.ctx.createRadialGradient(b.x - b.radius * 0.3, b.y - b.radius * 0.3, b.radius * 0.1, b.x, b.y, b.radius);
+            bGrad.addColorStop(0, 'rgba(255,255,255,0.9)');
+            bGrad.addColorStop(0.5, b.color);
+            bGrad.addColorStop(1, b.color); // Darker edge if needed
 
-            // Shine
+            this.ctx.fillStyle = bGrad;
+            this.ctx.globalAlpha = 0.8;
+            this.ctx.fill();
+            this.ctx.shadowBlur = 0; // Reset
+            this.ctx.shadowOffsetY = 0;
+
+            // Highlight (Gloss)
             this.ctx.beginPath();
-            this.ctx.arc(b.x - b.radius * 0.3, b.y - b.radius * 0.3, b.radius * 0.2, 0, Math.PI * 2);
-            this.ctx.fillStyle = 'white';
-            this.ctx.globalAlpha = 0.4;
+            this.ctx.ellipse(b.x - b.radius * 0.3, b.y - b.radius * 0.3, b.radius * 0.25, b.radius * 0.15, Math.PI / 4, 0, Math.PI * 2);
+            this.ctx.fillStyle = 'rgba(255,255,255,0.8)';
             this.ctx.fill();
-            this.ctx.globalAlpha = 1.0;
 
-            this.ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+            // Rim Light (Bottom)
+            this.ctx.beginPath();
+            this.ctx.arc(b.x, b.y, b.radius * 0.9, 0.1 * Math.PI, 0.9 * Math.PI);
+            this.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
             this.ctx.lineWidth = 2;
             this.ctx.stroke();
+
+            this.ctx.globalAlpha = 1.0;
         });
 
         // Particles
@@ -171,17 +193,17 @@ class BubbleGame {
             this.ctx.fillStyle = p.color;
             this.ctx.globalAlpha = p.life;
             this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+            this.ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
             this.ctx.fill();
             this.ctx.globalAlpha = 1.0;
         });
 
-        // Missed Counter (Red bar at top?)
+        // Missed Counter (Modern)
         if (this.missed > 0) {
-            this.ctx.fillStyle = '#e74c3c';
+            this.ctx.fillStyle = '#ff6b6b';
             const barW = this.canvas.width / this.maxMissed;
             for (let i = 0; i < this.missed; i++) {
-                this.ctx.fillRect(i * barW, 0, barW - 2, 5);
+                this.ctx.fillRect(i * barW, 0, barW - 4, 6);
             }
         }
     }

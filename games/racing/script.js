@@ -147,58 +147,135 @@ class RacingGame {
     }
 
     draw() {
-        this.ctx.fillStyle = '#27ae60'; // Grass
+        // Neon Night Sky Background
+        const grad = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        grad.addColorStop(0, '#0f0c29');
+        grad.addColorStop(1, '#302b63');
+        this.ctx.fillStyle = grad;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Grid / Horizon sun effect
+        this.ctx.strokeStyle = 'rgba(255, 0, 255, 0.2)';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        for (let i = 0; i < this.canvas.height; i += 40) {
+            this.ctx.moveTo(0, i);
+            this.ctx.lineTo(this.canvas.width, i);
+        }
+        this.ctx.stroke();
 
         const roadLeft = (this.canvas.width - this.roadWidth) / 2;
 
-        // Road
-        this.ctx.fillStyle = '#34495e';
+        // Road with glow
+        this.ctx.shadowBlur = 20;
+        this.ctx.shadowColor = '#000';
+        this.ctx.fillStyle = '#2c3e50';
         this.ctx.fillRect(roadLeft, 0, this.roadWidth, this.canvas.height);
+        this.ctx.shadowBlur = 0;
 
-        // Lane markers
-        this.ctx.fillStyle = '#ecf0f1';
-        this.ctx.globalAlpha = 0.5;
-        const markerH = 50;
-        const gap = 50;
-        const offset = this.roadY; // move logic handled in update, but actually easier here to just offset visuals?
-        // No, roadY accumulates. 
+        // Road borders (Neon)
+        this.ctx.fillStyle = '#ff00de'; // Neon Pink border
+        this.ctx.fillRect(roadLeft - 5, 0, 5, this.canvas.height);
+        this.ctx.fillRect(roadLeft + this.roadWidth, 0, 5, this.canvas.height);
+
+        // Rolling Lane Markers
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        const markerH = 60;
+        const gap = 60;
         const effectiveOffset = this.roadY % (markerH + gap);
 
         for (let y = -100; y < this.canvas.height; y += markerH + gap) {
-            // Lane 1 divider
-            this.ctx.fillRect(roadLeft + 100 - 5, y + effectiveOffset, 10, markerH);
-            // Lane 2 divider
-            this.ctx.fillRect(roadLeft + 200 - 5, y + effectiveOffset, 10, markerH);
+            this.ctx.fillRect(roadLeft + 100 - 3, y + effectiveOffset, 6, markerH);
+            this.ctx.fillRect(roadLeft + 200 - 3, y + effectiveOffset, 6, markerH);
         }
-        this.ctx.globalAlpha = 1.0;
 
-        // Player Car
-        this.drawCar(this.player.x, this.player.y, '#e74c3c');
+        // Player Car (Retro Supercar)
+        this.drawCar(this.player.x, this.player.y, '#00f2ff', true); // Cyan Hero Car
 
         // Traffic
         this.traffic.forEach(car => {
-            this.drawCar(car.x, car.y, car.color);
+            this.drawCar(car.x, car.y, car.color, false);
         });
+
+        // Speed lines effect
+        if (this.speed > 500) {
+            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const x = Math.random() * this.canvas.width;
+                const len = Math.random() * 50 + 20;
+                const y = Math.random() * this.canvas.height;
+                this.ctx.moveTo(x, y);
+                this.ctx.lineTo(x, y + len);
+            }
+            this.ctx.stroke();
+        }
     }
 
-    drawCar(x, y, color) {
+    drawCar(x, y, color, isPlayer) {
+        this.ctx.save();
+
+        // Glow if player
+        if (isPlayer) {
+            this.ctx.shadowBlur = 15;
+            this.ctx.shadowColor = color;
+        }
+
+        // Chassis
         this.ctx.fillStyle = color;
-        // Main body
-        this.ctx.fillRect(x, y, this.carWidth, this.carHeight);
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 5, y);
+        this.ctx.lineTo(x + this.carWidth - 5, y);
+        this.ctx.lineTo(x + this.carWidth, y + 20);
+        this.ctx.lineTo(x + this.carWidth, y + this.carHeight - 5);
+        this.ctx.quadraticCurveTo(x + this.carWidth, y + this.carHeight, x + this.carWidth - 5, y + this.carHeight);
+        this.ctx.lineTo(x + 5, y + this.carHeight);
+        this.ctx.quadraticCurveTo(x, y + this.carHeight, x, y + this.carHeight - 5);
+        this.ctx.lineTo(x, y + 20);
+        this.ctx.closePath();
+        this.ctx.fill();
 
-        // Roof/Windshield
-        this.ctx.fillStyle = 'rgba(0,0,0,0.3)';
-        this.ctx.fillRect(x + 5, y + 20, this.carWidth - 10, 20); // windshield
+        // Racing Stripes
         this.ctx.fillStyle = 'rgba(0,0,0,0.2)';
-        this.ctx.fillRect(x + 5, y + 40, this.carWidth - 10, 30); // roof
+        this.ctx.fillRect(x + this.carWidth / 2 - 5, y, 10, this.carHeight);
 
-        // Headlights / Taillights depending on pos? 
-        // We see rear of player, front of traffic?
-        // Simple generic lights
-        this.ctx.fillStyle = '#f1c40f'; // headlights
-        this.ctx.fillRect(x + 3, y, 10, 5);
-        this.ctx.fillRect(x + this.carWidth - 13, y, 10, 5);
+        // Windshield (Blacked out)
+        this.ctx.fillStyle = '#111';
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 5, y + 20);
+        this.ctx.lineTo(x + this.carWidth - 5, y + 20);
+        this.ctx.lineTo(x + this.carWidth - 8, y + 35);
+        this.ctx.lineTo(x + 8, y + 35);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        // Rear window
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 8, y + 55);
+        this.ctx.lineTo(x + this.carWidth - 8, y + 55);
+        this.ctx.lineTo(x + this.carWidth - 5, y + 70);
+        this.ctx.lineTo(x + 5, y + 70);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        // Lights
+        if (isPlayer) {
+            // Tail lights (Red)
+            this.ctx.fillStyle = '#ff0000';
+            this.ctx.shadowBlur = 10;
+            this.ctx.shadowColor = '#ff0000';
+            this.ctx.fillRect(x + 5, y + this.carHeight - 5, 10, 3);
+            this.ctx.fillRect(x + this.carWidth - 15, y + this.carHeight - 5, 10, 3);
+        } else {
+            // Headlights (Yellow/White) - facing us? Traffic moves same way? 
+            // Usually in these games we see rear of traffic too.
+            this.ctx.fillStyle = '#ff0000';
+            this.ctx.fillRect(x + 5, y + this.carHeight - 5, 10, 3);
+            this.ctx.fillRect(x + this.carWidth - 15, y + this.carHeight - 5, 10, 3);
+        }
+
+        this.ctx.restore();
     }
 
     gameOver() {
