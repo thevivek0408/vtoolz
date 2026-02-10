@@ -231,6 +231,52 @@ export const Utils = {
                 });
             });
         }
+
+        // --- Phase 10: Visual Effects ---
+
+        // 1. Ambient Lights Injection
+        if (!document.querySelector('.ambient-light')) {
+            const light1 = document.createElement('div');
+            light1.className = 'ambient-light one';
+            const light2 = document.createElement('div');
+            light2.className = 'ambient-light two';
+            document.body.appendChild(light1);
+            document.body.appendChild(light2);
+        }
+
+        // 2. Card Spotlight Effect
+        const cards = document.querySelectorAll('.tool-card');
+        cards.forEach(card => {
+            card.classList.add('spotlight-card'); // Enable CSS effect
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // 3. Scroll Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.tool-card, .hero, h2, canvas').forEach(el => {
+            el.classList.add('fade-in-section');
+            observer.observe(el);
+        });
+
     }
 };
 
