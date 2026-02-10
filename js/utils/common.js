@@ -237,10 +237,10 @@ export const Utils = {
             if (!document.querySelector('.ambient-light')) {
                 const light1 = document.createElement('div');
                 light1.className = 'ambient-light one';
-                const light2 = document.createElement('div');
-                light2.className = 'ambient-light two';
+                // const light2 = document.createElement('div');
+                // light2.className = 'ambient-light two';
                 document.body.appendChild(light1);
-                document.body.appendChild(light2);
+                // document.body.appendChild(light2); // Removed bottom green light per user request
             }
         };
         injectLights();
