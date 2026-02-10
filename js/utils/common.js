@@ -247,11 +247,11 @@ export const Utils = {
         // 2. Card Spotlight Effect
         const toolsCards = document.querySelectorAll('.tool-card');
         toolsCards.forEach(card => {
-            card.classList.add('spotlight-card'); // Enable CSS effect
+            card.classList.add('spotlight-card');
             card.addEventListener('mousemove', e => {
                 const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+                const x = e.clientX - rect.left; // x position within the element.
+                const y = e.clientY - rect.top;  // y position within the element.
                 card.style.setProperty('--mouse-x', `${x}px`);
                 card.style.setProperty('--mouse-y', `${y}px`);
             });

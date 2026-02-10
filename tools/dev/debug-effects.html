@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Effects Debug</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        /* Force override for debugging if needed */
+        body {
+            /* background: #333; */
+            min-height: 100vh;
+        }
+
+        .tool-card {
+            margin: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+    <h1>Visual Effects Debug</h1>
+
+    <div class="tool-card">
+        <h3>Spotlight Test Card</h3>
+        <p>Hover me to see the effect.</p>
+    </div>
+
+    <script type="module">
+        import { Utils } from '../../js/utils/common.js';
+
+        // Manually trigger common.js logic if needed, but it should auto-run on DOMContentLoaded
+        console.log('Debug Page Loaded');
+    </script>
+</body>
+
+</html>
