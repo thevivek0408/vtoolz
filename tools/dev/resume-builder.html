@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder - Markdown to PDF</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <!-- Load Marked for Markdown Parsing -->
+    <script src="../../js/vendor/marked.min.js"></script>
+    <style>
+        /* Tool Specific Layout */
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .builder-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .editor-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            min-width: 300px;
+        }
+
+        .preview-pane {
+            flex: 1;
+            background: #525659;
+            /* PDF Viewer Background Color */
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* The Paper */
+        .resume-page {
+            background: white;
+            color: black;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Resume Content Styling (Markdown Output) */
+        .resume-page h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .resume-page h2 {
+            font-size: 1.4em;
+            color: #2c3e50;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .resume-page h3 {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .resume-page p {
+            margin-bottom: 10px;
+        }
+
+        .resume-page ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .resume-page li {
+            margin-bottom: 5px;
+        }
+
+        .resume-page a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        .resume-page hr {
+            border: 0;
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 20px;
+            border: none;
+            resize: none;
+            font-family: monospace;
+            font-size: 14px;
+            background: var(--surface-color);
+            color: var(--text-color);
+            outline: none;
+        }
+
+        .toolbar {
+            padding: 10px 20px;
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                height: auto;
+                display: block;
+                background: white;
+            }
+
+            header,
+            .editor-pane,
+            .toolbar {
+                display: none !important;
+            }
+
+            .builder-container {
+                display: block;
+                height: auto;
+            }
+
+            .preview-pane {
+                display: block;
+                padding: 0;
+                overflow: visible;
+                background: white;
+            }
+
+            .resume-page {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                padding: 0;
+            }
+
+            @page {
+                margin: 20mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="max-width: none; padding: 0 20px;">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../dev/index.html">Dev Tools</a></li>
+                    <li><a href="#" class="active">Resume Builder</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="toolbar">
+        <div>
+            <strong>Markdown Editor</strong>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button id="btn-template-simple" class="btn btn-secondary btn-sm">Simple</button>
+            <button id="btn-template-modern" class="btn btn-secondary btn-sm">Modern</button>
+            <button id="btn-print" class="btn btn-primary btn-sm">Save as PDF (Print)</button>
+        </div>
+    </div>
+
+    <div class="builder-container">
+        <div class="editor-pane">
+            <textarea id="markdown-input" placeholder="# Your Name\n\n## Experience\n\n- Job 1..."></textarea>
+        </div>
+        <div class="preview-pane">
+            <div id="resume-preview" class="resume-page">
+                <!-- Rendered Markdown goes here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../../js/dev/resume-builder.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPG to PDF (Document Compiler) - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .file-list-area {
+            min-height: 200px;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            background: var(--bg-secondary);
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            background: var(--surface-color);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: grab;
+        }
+
+        .file-item:active {
+            cursor: grabbing;
+        }
+
+        .file-item img {
+            width: 40px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Gov Tools</a></li>
+                    <li><a href="#" class="active">JPG to PDF</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Document Compiler (JPG to PDF)</h1>
+                <p class="text-muted">Combine photos of documents into a single PDF for application uploads.</p>
+            </div>
+
+            <div class="tool-card">
+                <div class="action-bar" style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                        <span style="font-size:1.2rem;">+</span> Add Photos
+                    </button>
+                    <button id="btn-create-pdf" class="btn btn-success" disabled>
+                        Create PDF
+                    </button>
+                </div>
+                <input type="file" id="file-input" multiple accept="image/jpeg, image/png, image/jpg" hidden>
+
+                <p class="text-center text-muted">A4 Paper Size • Standard Margins • Optimized for Uploads</p>
+
+                <div id="file-list" class="file-list-area">
+                    <p class="text-center text-muted" style="margin-top: 70px;">
+                        No pages yet. Click 'Add Photos' to start.<br>
+                        Drag items to reorder pages.
+                    </p>
+                </div>
+            </div>
+
+            <div class="alert alert-info" style="margin-top: 20px;">
+                <strong>Tip:</strong> Ensure your photos are clear and legible. This tool automatically centers them on
+                A4
+                pages.
+            </div>
+        </div>
+    </main>
+
+    <!-- Reuse PDF Worker Logic via Facade if possible, or simple jspdf if lightweight. 
+         We already have pdf-lib in pdf-worker.js. Let's reuse pdf-worker logic imagesToPdf 
+    -->
+    <script type="module" src="../../js/government/jpg-to-pdf.js"></script>
+</body>
+
+</html>

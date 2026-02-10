@@ -30,6 +30,9 @@ self.onmessage = async function (e) {
             case 'WATERMARK_PDF':
                 result = await watermarkPdf(payload.file, payload.text, payload.options);
                 break;
+            case 'IMAGES_TO_PDF':
+                result = await imagesToPdf(payload.images, payload.options);
+                break;
             default:
                 throw new Error(`Unknown operation: ${type}`);
         }
@@ -156,5 +159,57 @@ async function deletePages(fileBuffer, pagesToDelete) {
     copiedPages.forEach((page) => newPdf.addPage(page));
 
     const pdfBytes = await newPdf.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+}
+
+async function imagesToPdf(imageBuffers, options = {}) {
+    const { PDFDocument, PageSizes } = PDFLib;
+    const pdfDoc = await PDFDocument.create();
+
+    for (const buffer of imageBuffers) {
+        let image;
+        try {
+            const u8 = new Uint8Array(buffer);
+            if (u8[0] === 0x89 && u8[1] === 0x50 && u8[2] === 0x4E && u8[3] === 0x47) {
+                image = await pdfDoc.embedPng(buffer);
+            } else {
+                image = await pdfDoc.embedJpg(buffer);
+            }
+        } catch (e) {
+            console.warn("Skipping invalid image", e);
+            continue;
+        }
+
+        let page;
+        if (options.pageSize === 'A4') {
+            page = pdfDoc.addPage(PageSizes.A4);
+            const { width, height } = page.getSize();
+            const margin = options.margin || 20;
+            const maxWidth = width - (margin * 2);
+            const maxHeight = height - (margin * 2);
+
+            // Scale image to fit
+            const imgDims = image.scaleToFit(maxWidth, maxHeight);
+
+            page.drawImage(image, {
+                x: (width - imgDims.width) / 2, // Center X
+                y: (height - imgDims.height) / 2, // Center Y
+                width: imgDims.width,
+                height: imgDims.height,
+            });
+
+        } else {
+            // Use image size
+            page = pdfDoc.addPage([image.width, image.height]);
+            page.drawImage(image, {
+                x: 0,
+                y: 0,
+                width: image.width,
+                height: image.height,
+            });
+        }
+    }
+
+    const pdfBytes = await pdfDoc.save();
     return new Blob([pdfBytes], { type: 'application/pdf' });
 }
