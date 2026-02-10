@@ -192,21 +192,22 @@ export const Utils = {
     }
 };
 
-// Initialize Theme & SW immediately
+// Initialize Theme & SW
 window.addEventListener('DOMContentLoaded', () => {
     window.Utils.initTheme();
 
-    // Register Service Worker for PWA
+    // Responsive PWA Registration
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/vtoolz/sw.js', { scope: '/vtoolz/' }) // Adjust scope for GitHub Pages if needed, or use relative './sw.js'
-            .then(reg => console.log('SW Registered', reg))
-            .catch(err => console.log('SW Failed', err));
+        // Determine base path based on location
+        // If hosted at /vtoolz/, use /vtoolz/sw.js
+        // If hosted at root, use /sw.js
+        const isGitHubPages = window.location.pathname.startsWith('/vtoolz/');
+        const swPath = isGitHubPages ? '/vtoolz/sw.js' : './sw.js';
+        const swScope = isGitHubPages ? '/vtoolz/' : './';
 
-        // Note: For root domain deployment, use: navigator.serviceWorker.register('/sw.js');
-        // Since we don't know the exact deployment path, we'll try relative registration for maximum compatibility
-        navigator.serviceWorker.register('./sw.js')
-            .then(() => console.log('SW Registered (Relative)'))
-            .catch(e => console.log('SW Relative Failed', e));
+        navigator.serviceWorker.register(swPath, { scope: swScope })
+            .then(reg => console.log('✅ SW Registered:', reg.scope))
+            .catch(err => console.log('❌ SW Registration Failure:', err));
     }
 });
 
