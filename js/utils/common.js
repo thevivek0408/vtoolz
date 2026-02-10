@@ -213,9 +213,12 @@ export const Utils = {
 
             // Toggle Logic
             const toggleMenu = () => {
-                navContainer.classList.toggle('nav-active');
+                const isActive = navContainer.classList.toggle('nav-active');
                 overlay.classList.toggle('active');
-                btn.innerHTML = navContainer.classList.contains('nav-active') ? '✕' : '☰';
+                btn.innerHTML = isActive ? '✕' : '☰';
+
+                // Lock Body Scroll
+                document.body.style.overflow = isActive ? 'hidden' : '';
             };
 
             btn.addEventListener('click', toggleMenu);
