@@ -169,4 +169,31 @@
         <loc>https://thevivek0408.github.io/vtoolz/tools/archive/unzip.html</loc>
         <priority>0.6</priority>
     </url>
+    <!-- Productivity & Innovative Tools -->
+    <url>
+        <loc>https://thevivek0408.github.io/vtoolz/tools/productivity/kanban.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://thevivek0408.github.io/vtoolz/tools/image/meme-generator.html</loc>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://thevivek0408.github.io/vtoolz/tools/text/tts.html</loc>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Phase 5 Additions -->
+    <url>
+        <loc>https://thevivek0408.github.io/vtoolz/tools/dev/diff-checker.html</loc>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://thevivek0408.github.io/vtoolz/tools/media/voice-recorder.html</loc>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://thevivek0408.github.io/vtoolz/tools/media/audio-trimmer.html</loc>
+        <priority>0.6</priority>
+    </url>
 </urlset>

@@ -41,6 +41,14 @@ const ASSETS_TO_CACHE = [
     './js/government/exam.js',
     './js/government/kyc.js',
 
+    // New Innovative Tools
+    './js/productivity/kanban.js',
+    './js/image/meme-generator.js',
+    './js/text/tts.js',
+    './js/dev/diff-checker.js',
+    './js/media/voice-recorder.js',
+    './js/media/audio-trimmer.js',
+
     './manifest.json',
     './assets/icon.svg'
 ];

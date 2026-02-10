@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .tts-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--surface-color);
+            color: var(--text-color);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        select,
+        input[type="range"] {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .action-bar {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .speaking {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="#" class="active">Text to Speech</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Text to Speech (Reader)</h1>
+                <p class="text-muted">High-quality AI voices powered by your browser.</p>
+            </div>
+
+            <div class="tts-container">
+                <textarea id="text-input" placeholder="Paste your text or article here..."></textarea>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Voice</label>
+                        <select id="voice-select"></select>
+                    </div>
+                    <div class="control-group">
+                        <label>Speed: <span id="rate-val">1</span>x</label>
+                        <input type="range" id="rate" min="0.5" max="2" value="1" step="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label>Pitch: <span id="pitch-val">1</span></label>
+                        <input type="range" id="pitch" min="0" max="2" value="1" step="0.1">
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button id="btn-speak" class="btn btn-primary btn-lg">▶ Speak</button>
+                    <button id="btn-pause" class="btn btn-secondary btn-lg">⏸ Pause</button>
+                    <button id="btn-stop" class="btn btn-danger btn-lg">⏹ Stop</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/text/tts.js"></script>
+</body>
+
+</html>
