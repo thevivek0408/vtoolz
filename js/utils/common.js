@@ -245,8 +245,8 @@ export const Utils = {
         }
 
         // 2. Card Spotlight Effect
-        const cards = document.querySelectorAll('.tool-card');
-        cards.forEach(card => {
+        const toolsCards = document.querySelectorAll('.tool-card');
+        toolsCards.forEach(card => {
             card.classList.add('spotlight-card'); // Enable CSS effect
             card.addEventListener('mousemove', e => {
                 const rect = card.getBoundingClientRect();
