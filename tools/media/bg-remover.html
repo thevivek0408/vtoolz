@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Background Remover - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .comparison-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-view {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .img-box {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .img-box img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+        }
+
+        /* Checkerboard pattern for transparent bg */
+        .transparent-bg {
+            background-image:
+                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Media Tools</a></li>
+                    <li><a href="#" class="active">BG Remover</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1><i class="fas fa-magic"></i> AI Background Remover</h1>
+                <p class="text-muted">Remove image backgrounds automatically in your browser. Powered by AI.</p>
+                <div class="privacy-badge" style="margin-top: 10px;">
+                    <i class="fas fa-shield-alt"></i> 100% Client-Side. No uploads.
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div id="drop-area"
+                    style="border: 3px dashed var(--primary-color); padding: 50px; text-align: center; border-radius: 16px; cursor: pointer; transition: 0.3s;">
+                    <i class="fas fa-cloud-upload-alt"
+                        style="font-size: 4rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                    <h3>Drop Image Here</h3>
+                    <p class="text-muted">or click to browse (JPG, PNG, WebP)</p>
+                </div>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+                <div id="result-area" style="display: none;">
+                    <div class="comparison-view">
+                        <div>
+                            <h4>Original</h4>
+                            <div class="img-box">
+                                <img id="img-original">
+                            </div>
+                        </div>
+                        <div>
+                            <h4>Background Removed</h4>
+                            <div class="img-box transparent-bg" id="result-box">
+                                <img id="img-result">
+                                <div id="loader" class="loading-overlay" style="display: none;">
+                                    <div class="spinner"></div>
+                                    <p>Processing AI Model...<br><span style="font-size:0.8em; opacity:0.8;">(First run
+                                            may take a moment)</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button id="btn-download" class="btn btn-primary btn-lg" disabled>
+                            <i class="fas fa-download"></i> Download PNG
+                        </button>
+                        <button id="btn-new" class="btn btn-secondary btn-lg" style="margin-left: 10px;">
+                            New Image
+                        </button>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" style="margin-top: 30px; font-size: 0.9em;">
+                    <i class="fas fa-info-circle"></i> <strong>Note:</strong> This tool downloads a ~50MB AI model on
+                    the first run. It is cached for subsequent uses.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/media/bg-remover.js"></script>
+</body>
+
+</html>

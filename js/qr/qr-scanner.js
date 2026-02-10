@@ -76,7 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // File Logic
-    fileInputArea.addEventListener('click', () => qrInputFile.click());
+    fileInputArea.addEventListener('click', (e) => {
+        if (e.target === qrInputFile) return;
+        qrInputFile.click();
+    });
 
     fileInputArea.addEventListener('dragover', (e) => {
         e.preventDefault();

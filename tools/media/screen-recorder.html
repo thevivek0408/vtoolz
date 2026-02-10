@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Recorder - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .recorder-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .video-preview {
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .recording-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+            display: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .option-group {
+            background: var(--surface-color);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Media Tools</a></li>
+                    <li><a href="#" class="active">Recorder</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1><i class="fas fa-video"></i> Screen Recorder</h1>
+                <p class="text-muted">Record screen, window, or tab. No watermarks. 100% Client-Side.</p>
+            </div>
+
+            <div class="recorder-container">
+                <div class="option-group">
+                    <label>
+                        <input type="checkbox" id="chk-audio"> Record Microphone Audio
+                    </label>
+                    <label>
+                        <input type="checkbox" id="chk-sys-audio" checked> Record System Audio (if supported)
+                    </label>
+                </div>
+
+                <div class="video-preview" id="video-container">
+                    <div class="recording-indicator" id="rec-indicator">
+                        <i class="fas fa-circle"></i> REC <span id="timer">00:00</span>
+                    </div>
+                    <video id="preview-video" autoplay muted playsinline></video>
+                    <div id="placeholder" style="color: #666; text-align: center;">
+                        <i class="fas fa-desktop" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                        <p>Preview will appear here</p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="btn-start" class="btn btn-primary btn-lg">
+                        <i class="fas fa-circle"></i> Start Recording
+                    </button>
+                    <button id="btn-stop" class="btn btn-secondary btn-lg" disabled>
+                        <i class="fas fa-stop"></i> Stop
+                    </button>
+                    <button id="btn-download" class="btn btn-success btn-lg" disabled>
+                        <i class="fas fa-download"></i> Download WebM
+                    </button>
+                </div>
+
+                <p class="text-center text-muted text-small">
+                    Note: To record "System Audio", please select "Share Audio" in the browser popup when choosing a tab
+                    or screen.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/media/screen-recorder.js"></script>
+</body>
+
+</html>

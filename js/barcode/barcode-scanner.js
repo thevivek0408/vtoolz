@@ -77,7 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // File Logic
-    fileInputArea.addEventListener('click', () => barcodeInputFile.click());
+    fileInputArea.addEventListener('click', (e) => {
+        if (e.target === barcodeInputFile) return;
+        barcodeInputFile.click();
+    });
 
     fileInputArea.addEventListener('dragover', (e) => {
         e.preventDefault();

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v22-phase3';
+const CACHE_NAME = 'vtoolz-v23-fix-gov';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

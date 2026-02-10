@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Vault - File Encryption - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .vault-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .vault-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mode-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .mode-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Utilities</a></li>
+                    <li><a href="#" class="active">The Vault</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1><i class="fas fa-user-secret"></i> The Vault</h1>
+                <p class="text-muted">Encrypt files with AES-256. Only the password can open them.</p>
+                <div class="privacy-badge" style="margin-top: 10px;">
+                    <i class="fas fa-shield-alt"></i> ZERO Knowledge. We never see your password.
+                </div>
+            </div>
+
+            <div class="vault-split">
+                <!-- Encrypt Mode -->
+                <div class="mode-card">
+                    <i class="fas fa-lock" style="font-size: 3rem; color: #ef5350; margin-bottom: 15px;"></i>
+                    <h2>Encrypt File</h2>
+                    <p class="text-small text-muted">Protect a file with a password.</p>
+
+                    <div id="drop-enc"
+                        style="border: 2px dashed var(--border-color); padding: 20px; margin: 15px 0; cursor: pointer;">
+                        Click or Drop File
+                        <input type="file" id="input-enc" style="display: none;">
+                    </div>
+
+                    <p id="file-enc-name" class="text-bold"></p>
+
+                    <input type="password" id="pass-enc" class="form-control" placeholder="Set Password"
+                        style="margin-bottom: 10px;">
+                    <button id="btn-encrypt" class="btn btn-primary btn-block">Encrypt & Download</button>
+
+                    <div id="status-enc" style="margin-top: 10px;"></div>
+                </div>
+
+                <!-- Decrypt Mode -->
+                <div class="mode-card">
+                    <i class="fas fa-unlock" style="font-size: 3rem; color: #66bb6a; margin-bottom: 15px;"></i>
+                    <h2>Decrypt File</h2>
+                    <p class="text-small text-muted">Unlock a <code>.vtoolz</code> file.</p>
+
+                    <div id="drop-dec"
+                        style="border: 2px dashed var(--border-color); padding: 20px; margin: 15px 0; cursor: pointer;">
+                        Click or Drop .vtoolz File
+                        <input type="file" id="input-dec" accept=".vtoolz" style="display: none;">
+                    </div>
+
+                    <p id="file-dec-name" class="text-bold"></p>
+
+                    <input type="password" id="pass-dec" class="form-control" placeholder="Enter Password"
+                        style="margin-bottom: 10px;">
+                    <button id="btn-decrypt" class="btn btn-success btn-block">Decrypt & Restore</button>
+
+                    <div id="status-dec" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning" style="margin-top: 40px; text-align: center;">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Important:</strong> If you lose the password, the
+                file is lost forever. We cannot recover it.
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/utility/encrypt.js"></script>
+</body>
+
+</html>

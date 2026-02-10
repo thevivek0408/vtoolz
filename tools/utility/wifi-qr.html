@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wi-Fi QR Generator - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Reusing the QR library from existing tools -->
+    <script src="../../js/vendor/qrcode.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Utilities</a></li>
+                    <li><a href="#" class="active">Wi-Fi QR</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1><i class="fas fa-wifi"></i> Wi-Fi QR Generator</h1>
+                <p class="text-muted">Generate a QR code to let guests connect to your Wi-Fi instantly.</p>
+            </div>
+
+            <div class="tool-card" style="max-width: 600px; margin: 0 auto;">
+                <div class="form-group">
+                    <label>Network Name (SSID)</label>
+                    <input type="text" id="ssid" class="form-control" placeholder="MyWiFi">
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" class="form-control" placeholder="Password">
+                        <i class="fas fa-eye" id="toggle-pw"
+                            style="position: absolute; right: 10px; top: 10px; cursor: pointer; color: #666;"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Encryption</label>
+                    <select id="encryption" class="form-control">
+                        <option value="WPA">WPA/WPA2/WPA3 (Most Common)</option>
+                        <option value="WEP">WEP (Legacy)</option>
+                        <option value="nopass">None (Open)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><input type="checkbox" id="hidden"> Hidden Network</label>
+                </div>
+
+                <button id="btn-generate" class="btn btn-primary btn-block">Generate QR Code</button>
+
+                <div id="result"
+                    style="display: none; margin-top: 30px; text-align: center; background: white; padding: 20px; border-radius: 8px;">
+                    <div id="qrcode" style="display: inline-block;"></div>
+                    <p style="margin-top: 15px; color: #333; font-weight: bold;">Scan to Connect</p>
+                    <button id="btn-print" class="btn btn-secondary btn-sm"><i class="fas fa-print"></i> Print</button>
+                    <button id="btn-download" class="btn btn-secondary btn-sm"><i class="fas fa-download"></i>
+                        Download</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/utility/wifi-qr.js"></script>
+</body>
+
+</html>

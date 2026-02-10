@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to KB Converter - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .kb-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .preset-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .preset-chip:hover,
+        .preset-chip.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .comparison-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison-view {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Gov Tools</a></li>
+                    <li><a href="#" class="active">KB Resizer</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1><i class="fas fa-compress-arrows-alt"></i> Image Size Reducer (KB)</h1>
+                <p class="text-muted">Reduce image size to exactly under 50KB, 20KB, etc. for Exam Uploads.</p>
+                <div class="privacy-badge" style="margin-top: 10px;">
+                    <i class="fas fa-shield-alt"></i> 100% Client-Side. No uploads.
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div id="drop-area"
+                    style="border: 3px dashed var(--primary-color); padding: 50px; text-align: center; border-radius: 16px; cursor: pointer; transition: 0.3s;">
+                    <i class="fas fa-file-image"
+                        style="font-size: 4rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                    <h3>Drop Photo/Sign Here</h3>
+                    <p class="text-muted">or click to browse</p>
+                </div>
+                <!-- Input outside dropzone for safety -->
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+                <div id="workspace" style="display: none;">
+                    <div class="kb-controls">
+                        <div style="flex: 1; min-width: 250px;">
+                            <label>Target File Size (Max KB)</label>
+                            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                <input type="number" id="target-kb" class="form-control" value="50" min="10" max="5000">
+                                <button id="btn-process" class="btn btn-primary">Compress</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <span class="text-muted">Common Presets:</span>
+                        <div
+                            style="display: flex; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                            <div class="preset-chip active" data-kb="50">50 KB (Photo)</div>
+                            <div class="preset-chip" data-kb="20">20 KB (Sign)</div>
+                            <div class="preset-chip" data-kb="100">100 KB (Doc)</div>
+                            <div class="preset-chip" data-kb="200">200 KB (UPSC)</div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-view">
+                        <div style="text-align: center;">
+                            <h4>Original</h4>
+                            <p id="org-size" class="text-muted">-</p>
+                            <img id="img-original" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
+                        </div>
+                        <div style="text-align: center;">
+                            <h4>Result</h4>
+                            <p id="new-size" style="color: var(--accent-color); font-weight: bold;">-</p>
+                            <img id="img-result"
+                                style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 2px solid var(--accent-color);">
+                            <div id="loader" style="display: none; margin-top: 10px; color: var(--text-muted);">
+                                <i class="fas fa-spinner fa-spin"></i> Compressing...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button id="btn-download" class="btn btn-primary btn-lg" disabled>
+                            <i class="fas fa-download"></i> Download Image
+                        </button>
+                        <button id="btn-new" class="btn btn-secondary btn-lg" style="margin-left: 10px;">
+                            New Image
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/government/kb-resizer.js"></script>
+</body>
+
+</html>

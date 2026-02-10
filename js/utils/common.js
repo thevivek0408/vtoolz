@@ -52,10 +52,17 @@ export const Utils = {
     setupDragAndDrop: (dropZone, input, callback) => {
         if (!dropZone || !input) return;
 
-        dropZone.addEventListener('click', () => input.click());
+        // Smart click handler - works whether Input is INSIDE or OUTSIDE
+        dropZone.addEventListener('click', (e) => {
+            // Stop if we clicked the input itself (bubbling)
+            if (e.target === input) return;
+
+            input.click();
+        });
 
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             dropZone.classList.add('dragover');
         });
 
@@ -121,10 +128,15 @@ export const Utils = {
             onFiles(files);
         }, false);
 
-        // Make draggable clickable too
-        dropZone.addEventListener('click', () => {
+        // Make draggable clickable too (with loop protection)
+        dropZone.addEventListener('click', (e) => {
             const input = dropZone.querySelector('input[type="file"]');
-            if (input) input.click();
+
+            // 1. If no input found, do nothing
+            // 2. If the click CAME from the input (bubbling), stop to prevent loop
+            if (!input || e.target === input) return;
+
+            input.click();
         });
     },
 

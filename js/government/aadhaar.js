@@ -19,7 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let originalImage = null;
 
-    cleanerUpload.addEventListener('click', () => inputScan.click());
+    cleanerUpload.addEventListener('click', (e) => {
+        if (e.target === inputScan) return; // Prevent loop
+        inputScan.click();
+    });
 
     inputScan.addEventListener('change', (e) => {
         if (e.target.files && e.target.files[0]) {
