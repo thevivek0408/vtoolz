@@ -198,16 +198,49 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Responsive PWA Registration
     if ('serviceWorker' in navigator) {
-        // Determine base path based on location
-        // If hosted at /vtoolz/, use /vtoolz/sw.js
-        // If hosted at root, use /sw.js
-        const isGitHubPages = window.location.pathname.startsWith('/vtoolz/');
-        const swPath = isGitHubPages ? '/vtoolz/sw.js' : './sw.js';
-        const swScope = isGitHubPages ? '/vtoolz/' : './';
+        // dynamic SW path strategy:
+        // 1. Try to find the manifest link tag
+        // 2. Resolve 'sw.js' relative to the manifest location
+        // 3. Fallback to host root or current path checks
+
+        let swPath = '/sw.js'; // Default for custom domains at root
+        let swScope = '/';
+
+        const manifestLink = document.querySelector('link[rel="manifest"]');
+        if (manifestLink) {
+            try {
+                const manifestUrl = new URL(manifestLink.href);
+                // sw.js should be in the same folder as manifest.json
+                const swUrl = new URL('sw.js', manifestUrl);
+                swPath = swUrl.pathname;
+                swScope = new URL('./', manifestUrl).pathname;
+            } catch (e) {
+                console.warn('Manifest URL parse failed', e);
+            }
+        } else {
+            // Fallback if no manifest link (e.g. sub-pages missing tag)
+            // If we are at /vtoolz/tools/pdf/index.html, we want /vtoolz/sw.js
+            // We can guess based on script location? 
+            // Better: just check consistent locations.
+            if (window.location.pathname.includes('/vtoolz/')) {
+                swPath = '/vtoolz/sw.js';
+                swScope = '/vtoolz/';
+            }
+        }
+
+        // Log for debugging
+        console.log('Attempting SW Register:', swPath, 'Scope:', swScope);
 
         navigator.serviceWorker.register(swPath, { scope: swScope })
             .then(reg => console.log('✅ SW Registered:', reg.scope))
-            .catch(err => console.log('❌ SW Registration Failure:', err));
+            .catch(err => {
+                console.log('❌ SW Registration Failed:', err);
+                // Last ditch effort for GitHub Pages if the above failed
+                if (swPath === '/sw.js' && window.location.hostname.includes('github.io')) {
+                    const repo = window.location.pathname.split('/')[1]; // likely 'vtoolz'
+                    if (repo) navigator.serviceWorker.register(`/${repo}/sw.js`, { scope: `/${repo}/` });
+                }
+            });
     }
 });
 
