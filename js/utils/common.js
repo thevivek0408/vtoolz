@@ -233,29 +233,40 @@ export const Utils = {
         }
 
         // --- Phase 10: Visual Effects ---
+        console.log('✨ VtoolZ Visual Effects Initializing...');
 
         // 1. Ambient Lights Injection
-        if (!document.querySelector('.ambient-light')) {
-            const light1 = document.createElement('div');
-            light1.className = 'ambient-light one';
-            const light2 = document.createElement('div');
-            light2.className = 'ambient-light two';
-            document.body.appendChild(light1);
-            document.body.appendChild(light2);
-        }
+        const injectLights = () => {
+            if (!document.querySelector('.ambient-light')) {
+                console.log('💡 Injecting Ambient Lights');
+                const light1 = document.createElement('div');
+                light1.className = 'ambient-light one';
+                const light2 = document.createElement('div');
+                light2.className = 'ambient-light two';
+                document.body.appendChild(light1);
+                document.body.appendChild(light2);
+            }
+        };
+        injectLights();
 
         // 2. Card Spotlight Effect
-        const toolsCards = document.querySelectorAll('.tool-card');
-        toolsCards.forEach(card => {
-            card.classList.add('spotlight-card');
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left; // x position within the element.
-                const y = e.clientY - rect.top;  // y position within the element.
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
+        const initSpotlight = () => {
+            const toolsCards = document.querySelectorAll('.tool-card');
+            console.log(`🔦 Initializing Spotlight for ${toolsCards.length} cards`);
+
+            toolsCards.forEach(card => {
+                card.classList.add('spotlight-card');
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                    // console.log('Mouse move:', x, y); // Uncomment for extreme debug
+                });
             });
-        });
+        };
+        initSpotlight();
 
         // 3. Scroll Animations
         const observerOptions = {
