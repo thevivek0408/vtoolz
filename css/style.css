@@ -82,6 +82,23 @@ body {
     touch-action: none;
 }
 
+/* Step 2: Internal Core Glow */
+.cube::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(52, 152, 219, 0.5) 40%, transparent 80%);
+    box-shadow: 0 0 30px 10px rgba(52, 152, 219, 0.4);
+    border-radius: 50%;
+    transform: translateZ(0) translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    filter: blur(5px);
+    pointer-events: none;
+    /* Let clicks pass through */
+}
+
 /* 
 .cube:hover,
 .cube.is-paused {
@@ -102,8 +119,9 @@ body {
     font-size: 30px;
     font-weight: 800;
     /* Color set by specific face */
-    backface-visibility: visible;
     /* Show inside */
+    /* Step 1: External Ambient Glow */
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.4), 0 0 30px rgba(52, 152, 219, 0.2) inset;
 }
 
 .cube-face a {
@@ -122,7 +140,7 @@ body {
     border-color: #e74c3c;
     color: #e74c3c;
     background: rgba(231, 76, 60, 0.1);
-    box-shadow: 0 0 20px rgba(231, 76, 60, 0.2) inset;
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.6), 0 0 40px rgba(231, 76, 60, 0.3) inset;
 }
 
 .cube-face.right {
@@ -130,7 +148,7 @@ body {
     border-color: #3498db;
     color: #3498db;
     background: rgba(52, 152, 219, 0.1);
-    box-shadow: 0 0 20px rgba(52, 152, 219, 0.2) inset;
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.6), 0 0 40px rgba(52, 152, 219, 0.3) inset;
 }
 
 .cube-face.back {
@@ -138,7 +156,7 @@ body {
     border-color: #2ecc71;
     color: #2ecc71;
     background: rgba(46, 204, 113, 0.1);
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.2) inset;
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.6), 0 0 40px rgba(46, 204, 113, 0.3) inset;
 }
 
 .cube-face.left {
@@ -146,7 +164,7 @@ body {
     border-color: #f39c12;
     color: #f39c12;
     background: rgba(243, 156, 18, 0.1);
-    box-shadow: 0 0 20px rgba(243, 156, 18, 0.2) inset;
+    box-shadow: 0 0 20px rgba(243, 156, 18, 0.6), 0 0 40px rgba(243, 156, 18, 0.3) inset;
 }
 
 .cube-face.top {
@@ -154,7 +172,7 @@ body {
     border-color: #9b59b6;
     color: #9b59b6;
     background: rgba(155, 89, 182, 0.1);
-    box-shadow: 0 0 20px rgba(155, 89, 182, 0.2) inset;
+    box-shadow: 0 0 20px rgba(155, 89, 182, 0.6), 0 0 40px rgba(155, 89, 182, 0.3) inset;
 }
 
 .cube-face.bottom {
@@ -162,9 +180,8 @@ body {
     border-color: #34495e;
     color: #34495e;
     background: rgba(52, 73, 94, 0.1);
-    box-shadow: 0 0 20px rgba(52, 73, 94, 0.2) inset;
+    box-shadow: 0 0 20px rgba(52, 73, 94, 0.6), 0 0 40px rgba(52, 73, 94, 0.3) inset;
     font-size: 20px;
-    /* Smaller text for 'Tools' */
 }
 
 @keyframes rotateCube {
