@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAN Card Tools - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .drop-area {
+            border: 2px dashed var(--border-color);
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--surface-color);
+        }
+
+        .drop-area:hover,
+        .drop-area.dragover {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+
+        .preview-box {
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            background: var(--surface-color);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .status-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-warning {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-fail {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .panic-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Gov Tools</a></li>
+                    <li><a href="#" class="active">PAN Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>PAN Card Tools</h1>
+                <p class="text-muted">Prepare files for NSDL & UTIITSL Applications.</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="photo">PAN Photo (50KB)</button>
+                <button class="tab-btn" data-tab="signature">PAN Signature (20KB)</button>
+                <button class="tab-btn" data-tab="document">PAN Documents (1MB)</button>
+            </div>
+
+            <!-- Photo Tool -->
+            <div id="photo" class="tab-content active">
+                <div class="tool-card">
+                    <h3><i class="fas fa-camera"></i> PAN Photo Compressor</h3>
+                    <p class="text-small text-muted">Auto-resize to 213x213px (approx) & Compress to under 50KB.</p>
+
+                    <div class="drop-area" id="drop-photo">
+                        <i class="fas fa-image"
+                            style="font-size: 2rem; margin-bottom: 10px; color: var(--text-color);"></i>
+                        <p>Drop Photo Here</p>
+                        <input type="file" id="input-photo" accept="image/jpeg, image/jpg" style="display: none;">
+                    </div>
+
+                    <div id="result-photo" style="display: none;" class="preview-box">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4>Original</h4>
+                                <img id="img-photo-orig" style="max-width: 100%; max-height: 200px;">
+                                <p id="info-photo-orig"></p>
+                            </div>
+                            <div>
+                                <h4>PAN Ready</h4>
+                                <img id="img-photo-new" style="max-width: 100%; max-height: 200px;">
+                                <p id="info-photo-new"></p>
+                                <div id="badge-photo" class="status-badge"></div>
+                                <br>
+                                <a id="dl-photo" class="btn btn-primary btn-sm" style="margin-top: 10px;">Download</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signature Tool -->
+            <div id="signature" class="tab-content">
+                <div class="tool-card">
+                    <h3><i class="fas fa-pen-nib"></i> PAN Signature Compressor</h3>
+                    <p class="text-small text-muted">Compress to under 20KB (JPG).</p>
+
+                    <div class="drop-area" id="drop-sig">
+                        <i class="fas fa-file-signature"
+                            style="font-size: 2rem; margin-bottom: 10px; color: var(--text-color);"></i>
+                        <p>Drop Signature Scan Here</p>
+                        <input type="file" id="input-sig" accept="image/jpeg, image/jpg" style="display: none;">
+                    </div>
+
+                    <div id="result-sig" style="display: none;" class="preview-box">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4>Original</h4>
+                                <img id="img-sig-orig" style="max-width: 100%; max-height: 150px;">
+                                <p id="info-sig-orig"></p>
+                            </div>
+                            <div>
+                                <h4>PAN Ready</h4>
+                                <img id="img-sig-new" style="max-width: 100%; max-height: 150px;">
+                                <p id="info-sig-new"></p>
+                                <div id="badge-sig" class="status-badge"></div>
+                                <br>
+                                <a id="dl-sig" class="btn btn-primary btn-sm" style="margin-top: 10px;">Download</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Document Tool -->
+            <div id="document" class="tab-content">
+                <div class="tool-card">
+                    <h3><i class="fas fa-file-pdf"></i> PAN Document Optimizer</h3>
+                    <p class="text-small text-muted">Ensure PDF is under 1MB.</p>
+
+                    <div class="drop-area" id="drop-doc">
+                        <i class="fas fa-file-alt"
+                            style="font-size: 2rem; margin-bottom: 10px; color: var(--text-color);"></i>
+                        <p>Drop PDF Document Here</p>
+                        <input type="file" id="input-doc" accept="application/pdf" style="display: none;">
+                    </div>
+
+                    <div id="result-doc" style="display: none;" class="preview-box">
+                        <h4>File Analysis</h4>
+                        <p id="info-doc"></p>
+                        <div id="badge-doc" class="status-badge"></div>
+                        <p class="text-muted text-small" style="margin-top: 10px;">
+                            Note: If your PDF is mainly images and still too large, try converting pages to images,
+                            compressing them, and re-making the PDF using our
+                            <a href="../pdf/pdf-to-img.html">PDF Tools</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="panic-btn" id="panic-btn">
+                <i class="fas fa-eraser"></i> Clear All Data
+            </button>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/government/pan.js"></script>
+</body>
+
+</html>

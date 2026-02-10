@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aadhaar Tools - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .tool-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .tool-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 300px;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .slider-group {
+            margin-bottom: 15px;
+        }
+
+        .slider-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+        }
+
+        input[type=range] {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Gov Tools</a></li>
+                    <li><a href="#" class="active">Aadhaar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Aadhaar Tools</h1>
+                <p class="text-muted">Prepare documents for Aadhaar Update (2MB Limit) or Clean Scans.</p>
+            </div>
+
+            <div class="tool-split">
+                <!-- Cleaner/Enhancer -->
+                <div class="tool-card">
+                    <h3><i class="fas fa-magic"></i> Scan Cleaner</h3>
+                    <p class="text-small text-muted">Enhance scanned documents (Brightness/Contrast).</p>
+
+                    <div id="cleaner-upload"
+                        style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; cursor: pointer;">
+                        <i class="fas fa-image"></i> Click to Upload Scan
+                        <input type="file" id="input-scan" accept="image/*" style="display: none;">
+                    </div>
+
+                    <div id="cleaner-editor" style="display: none; margin-top: 20px;">
+                        <div class="canvas-container">
+                            <canvas id="scan-canvas"></canvas>
+                        </div>
+
+                        <div class="slider-group">
+                            <label>Brightness: <span id="val-bright">0</span></label>
+                            <input type="range" id="range-bright" min="-100" max="100" value="0">
+                        </div>
+
+                        <div class="slider-group">
+                            <label>Contrast: <span id="val-contrast">0</span></label>
+                            <input type="range" id="range-contrast" min="-100" max="100" value="0">
+                        </div>
+
+                        <!-- Add Sharpen/Grayscale later if needed -->
+                        <button id="btn-reset" class="btn btn-secondary btn-sm">Reset</button>
+                        <button id="btn-save-clean" class="btn btn-primary btn-sm">Download Cleaned</button>
+                    </div>
+                </div>
+
+                <!-- Compressor -->
+                <div class="tool-card">
+                    <h3><i class="fas fa-compress-arrows-alt"></i> Document Compressor</h3>
+                    <p class="text-small text-muted">Ensure your Proof of Identity/Address is &lt; 2MB.</p>
+
+                    <div id="drop-doc"
+                        style="border: 2px dashed var(--border-color); padding: 40px; text-align: center; border-radius: 12px; cursor: pointer;">
+                        <i class="fas fa-file-pdf" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>Drop Document Here</p>
+                        <input type="file" id="input-doc" accept="application/pdf, image/jpeg, image/png"
+                            style="display: none;">
+                    </div>
+
+                    <div id="result-doc" style="display: none; margin-top: 20px; text-align: center;">
+                        <h4 id="doc-name"></h4>
+                        <p id="doc-size" class="text-muted"></p>
+
+                        <div id="status-container" style="margin: 15px 0;"></div>
+
+                        <!-- Simple visual logic for now, PDF compression is complex -->
+                        <p class="text-small text-muted">
+                            If > 2MB and it's a PDF, try our <a href="../pdf/pdf-to-img.html">PDF Tools</a> to convert
+                            to images, Resize, then Img to PDF.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module" src="../../js/government/aadhaar.js"></script>
+</body>
+
+</html>

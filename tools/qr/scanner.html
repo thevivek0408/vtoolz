@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script src="../../js/vendor/html5-qrcode.min.js"></script>
+    <style>
+        #reader {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .scan-result-area {
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .scan-result-area.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--surface-color);
+            color: var(--text-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        #file-input-area {
+            display: none;
+            padding: 40px;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        #file-input-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">QR Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>QR Code Scanner</h1>
+                <p class="text-muted">Scan QR codes from your camera or upload an image. Secure & Client-Side.</p>
+            </div>
+
+            <div class="layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <!-- Scanner Section -->
+                <div class="controls-area">
+                    <div class="tab-group">
+                        <button class="tab-btn active" id="tab-camera">Use Camera</button>
+                        <button class="tab-btn" id="tab-file">Upload Image</button>
+                    </div>
+
+                    <div id="camera-area">
+                        <div id="reader"></div>
+                        <p class="text-muted" style="margin-top: 10px; font-size: 0.9em; text-align: center;">Permission
+                            will be requested to access your camera.</p>
+                    </div>
+
+                    <div id="file-input-area">
+                        <input type="file" id="qr-input-file" accept="image/*" style="display: none;">
+                        <i class="fas fa-cloud-upload-alt"
+                            style="font-size: 2rem; margin-bottom: 10px; color: var(--primary-color);"></i>
+                        <p>Click or Drag image here to scan</p>
+                    </div>
+                </div>
+
+                <!-- Result Section -->
+                <div class="preview-area">
+                    <div class="tool-card">
+                        <h3>Scan Result</h3>
+                        <div id="result-container" class="scan-result-area">
+                            <p style="margin-bottom: 10px; font-weight: bold; color: var(--success-color);">Match Found!
+                            </p>
+                            <textarea id="result-text" class="form-control" rows="6" readonly></textarea>
+
+                            <div class="actions" style="margin-top: 15px; display: flex; gap: 10px;">
+                                <button class="btn btn-secondary" id="copy-btn">Copy Text</button>
+                                <a href="#" target="_blank" class="btn btn-primary" id="open-link-btn"
+                                    style="display: none;">Open Link</a>
+                            </div>
+                        </div>
+                        <div id="no-result" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            <p>Waiting for scan...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top:50px;">
+        <p>&copy; 2026 VtoolZ. Open Source & Client-Side.</p>
+        <p style="font-size: 0.8rem; opacity: 0.5;">v22.0 (QR Tools)</p>
+    </footer>
+
+    <script type="module" src="../../js/qr/qr-scanner.js"></script>
+    <script type="module" src="../../js/utils/common.js"></script>
+</body>
+
+</html>

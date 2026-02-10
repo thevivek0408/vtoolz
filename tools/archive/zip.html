@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zip Creator - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script src="../../js/vendor/jszip.min.js"></script>
+    <style>
+        .file-list-area {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-item:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .remove-btn {
+            color: var(--error-color);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        #drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        #drop-zone:hover,
+        #drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Archive Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Zip Creator</h1>
+                <p class="text-muted">Compress files securely in your browser.</p>
+            </div>
+
+            <div class="layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <!-- Input Area -->
+                <div class="controls-area">
+                    <div id="drop-zone">
+                        <i class="fas fa-cloud-upload-alt"
+                            style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h3>Drag & Drop Files Here</h3>
+                        <p class="text-muted">or click to browse</p>
+                        <input type="file" id="file-input" multiple style="display: none;">
+                    </div>
+
+                    <div class="tool-card">
+                        <h3>Configuration</h3>
+                        <div class="form-group">
+                            <label>Archive Name</label>
+                            <input type="text" id="zip-filename" class="form-control" value="archive"
+                                placeholder="archive">
+                        </div>
+                        <div class="form-group">
+                            <label>Compression Level</label>
+                            <select id="compression-level" class="form-control">
+                                <option value="STORE">Store (No Compression)</option>
+                                <option value="DEFLATE" selected>Deflate (Standard)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List Area -->
+                <div class="preview-area">
+                    <div class="tool-card">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3>Files to Zip (<span id="file-count">0</span>)</h3>
+                            <button class="btn btn-sm btn-secondary" id="clear-all-btn">Clear All</button>
+                        </div>
+
+                        <div id="file-list" class="file-list-area">
+                            <p class="text-muted" style="text-align: center; margin-top: 80px;">No files added yet.</p>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <button class="btn btn-primary btn-block" id="create-zip-btn" disabled>Create & Download
+                                Zip</button>
+                        </div>
+
+                        <div id="progress-container" style="display: none; margin-top: 15px;">
+                            <progress id="progress-bar" value="0" max="100" style="width: 100%;"></progress>
+                            <p class="text-muted" style="text-align: center; font-size: 0.8rem;" id="status-text">
+                                Compressing...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/archive/zip-creator.js"></script>
+    <script type="module" src="../../js/utils/common.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Tools - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Gov Tools</a></li>
+                    <li><a href="#" class="active">Exam Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Exam & Education Tools</h1>
+                <p class="text-muted">Prepare files for SSC, UPSC, NEET, JEE, and other entrance exams.</p>
+            </div>
+
+            <div class="tool-card" style="max-width: 600px; margin: 0 auto;">
+                <div class="form-group">
+                    <label>Select Exam / Board</label>
+                    <select id="exam-select" class="form-control">
+                        <option value="SSC">SSC (Staff Selection Commission)</option>
+                        <option value="UPSC">UPSC (Union Public Service Commission)</option>
+                        <option value="JEE">JEE (Joint Entrance Examination)</option>
+                        <option value="NEET">NEET (National Eligibility Test)</option>
+                        <option value="GENERIC">Generic (Custom Size)</option>
+                    </select>
+                </div>
+
+                <div id="requirements-box"
+                    style="background: var(--surface-color); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color);">
+                    <h4 style="margin-top:0;">Requirements for <span id="req-title">SSC</span></h4>
+                    <ul style="padding-left: 20px; font-size: 0.9rem;" id="req-list">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="photo-section">Photo</button>
+                    <button class="tab-btn" data-target="sig-section">Signature</button>
+                </div>
+
+                <!-- Photo Section -->
+                <div id="photo-section" class="tab-content active" style="margin-top: 20px;">
+                    <div id="drop-photo"
+                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
+                        <i class="fas fa-camera"></i> Upload Photo
+                        <input type="file" id="input-photo" accept="image/jpeg" style="display: none;">
+                    </div>
+                    <div id="result-photo" style="display: none; margin-top: 15px; text-align: center;">
+                        <img id="img-photo" style="max-height: 200px; max-width: 100%;">
+                        <p id="info-photo"></p>
+                        <button id="btn-dl-photo" class="btn btn-primary btn-sm">Download Ready Photo</button>
+                    </div>
+                </div>
+
+                <!-- Signature Section -->
+                <div id="sig-section" class="tab-content" style="margin-top: 20px; display: none;">
+                    <div id="drop-sig"
+                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
+                        <i class="fas fa-pen"></i> Upload Signature
+                        <input type="file" id="input-sig" accept="image/jpeg" style="display: none;">
+                    </div>
+                    <div id="result-sig" style="display: none; margin-top: 15px; text-align: center;">
+                        <img id="img-sig" style="max-height: 100px; max-width: 100%;">
+                        <p id="info-sig"></p>
+                        <button id="btn-dl-sig" class="btn btn-primary btn-sm">Download Ready Signature</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/government/exam.js"></script>
+</body>
+
+</html>

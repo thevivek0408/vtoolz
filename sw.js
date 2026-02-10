@@ -1,19 +1,46 @@
-const CACHE_NAME = 'vtoolz-v21-all-tools-premium';
+const CACHE_NAME = 'vtoolz-v22-phase3';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './css/style.css',
+    './css/highlight.min.css', // Phase 2
     './js/utils/common.js',
     './js/utils/seo.js',
     './js/utils/tilt.js',
     './js/utils/cube.js',
-    // Dependencies need full paths relative to SW location (root)
+
+    // Core Vendors
+    './js/vendor/pdf-lib.min.js',
+    './js/vendor/pdf.min.js',
+    './js/vendor/pdf.worker.min.js',
+    './js/vendor/cropper.min.js', // Ensure this was downloaded
+
+    // Phase 2 Vendors
+    './js/vendor/qrcode.min.js',
+    './js/vendor/html5-qrcode.min.js',
+    './js/vendor/JsBarcode.all.min.js',
+    './js/vendor/marked.min.js',
+    './js/vendor/purify.min.js',
+    './js/vendor/highlight.min.js',
+    './js/vendor/jszip.min.js',
+
+    // Tool Scripts (Just main ones, others cached at runtime)
     './js/pdf/pdf-main.js',
-    './js/pdf/pdf-worker.js',
     './js/image/image-main.js',
-    './js/image/image-worker.js',
-    './js/text/text-utils.js',
-    './js/dev/dev-utils.js',
+    './js/qr/qr-generator.js',
+    './js/barcode/barcode-generator.js',
+    './js/markdown/editor.js',
+    './js/archive/zip-creator.js',
+
+    // Government Tools
+    './js/government/presets.js',
+    './js/government/gov-utils.js',
+    './js/government/pan.js',
+    './js/government/aadhaar.js',
+    './js/government/passport.js',
+    './js/government/exam.js',
+    './js/government/kyc.js',
+
     './manifest.json',
     './assets/icon.svg'
 ];

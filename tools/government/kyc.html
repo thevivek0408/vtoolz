@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job & KYC Tools - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Gov Tools</a></li>
+                    <li><a href="#" class="active">Job & KYC</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Job Application & KYC Tools</h1>
+                <p class="text-muted">Optimize Resume PDFs and prepare KYC documents.</p>
+            </div>
+
+            <div class="tool-grid">
+                <!-- Resume Optimizer -->
+                <div class="tool-card">
+                    <h3><i class="fas fa-file-contract"></i> Resume Optimizer</h3>
+                    <p class="text-small text-muted">Ensure Resume PDF is &lt; 1MB or 2MB.</p>
+
+                    <div id="drop-resume"
+                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
+                        <i class="fas fa-upload"></i> Upload Resume
+                        <input type="file" id="input-resume" accept="application/pdf" style="display: none;">
+                    </div>
+
+                    <div id="result-resume" style="display: none; margin-top: 15px;">
+                        <p id="resume-info"></p>
+                        <div id="resume-status" class="status-badge" style="display:inline-block; margin-bottom: 10px;">
+                        </div>
+                        <p class="text-small text-muted">
+                            For PDF compression, we check size. If too large, use our <a
+                                href="../pdf/index.html">Advanced PDF Tools</a>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Generic Photo -->
+                <div class="tool-card">
+                    <h3><i class="fas fa-user-tie"></i> Job Photo</h3>
+                    <p class="text-small text-muted">Standard 100KB Formal Photo.</p>
+
+                    <div id="drop-job-photo"
+                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
+                        <i class="fas fa-camera"></i> Upload Photo
+                        <input type="file" id="input-job-photo" accept="image/jpeg" style="display: none;">
+                    </div>
+
+                    <div id="result-job-photo" style="display: none; margin-top: 15px;">
+                        <img id="img-job-photo" style="max-height: 150px;">
+                        <p id="info-job-photo"></p>
+                        <button id="btn-dl-job-photo" class="btn btn-primary btn-sm">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/government/kyc.js"></script>
+</body>
+
+</html>

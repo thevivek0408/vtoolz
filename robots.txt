@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vtoolz.pages.dev/sitemap.xml
+Sitemap: https://thevivek0408.github.io/vtoolz/sitemap.xml

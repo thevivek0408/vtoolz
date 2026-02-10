@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Editor - VtoolZ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <!-- Highlight.js Theme -->
+    <link rel="stylesheet" href="../../css/highlight.min.css">
+
+    <!-- Libraries -->
+    <script src="../../js/vendor/marked.min.js"></script>
+    <script src="../../js/vendor/purify.min.js"></script>
+    <script src="../../js/vendor/highlight.min.js"></script>
+
+    <style>
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: calc(100vh - 200px);
+            /* Adjust based on header/footer */
+            min-height: 500px;
+        }
+
+        .editor-panel,
+        .preview-panel {
+            background: var(--surface-color);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        #markdown-input {
+            flex: 1;
+            width: 100%;
+            border: none;
+            padding: 20px;
+            resize: none;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            background: transparent;
+            color: var(--text-color);
+            outline: none;
+        }
+
+        #markdown-preview {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+
+        /* Markdown Styles for Preview */
+        #markdown-preview h1,
+        #markdown-preview h2,
+        #markdown-preview h3 {
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3em;
+        }
+
+        #markdown-preview p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+
+        #markdown-preview code {
+            font-family: monospace;
+            background: rgba(127, 127, 127, 0.1);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        #markdown-preview pre {
+            background: #0d1117;
+            /* GitHub Dark bg for code blocks */
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        #markdown-preview pre code {
+            background: transparent;
+            padding: 0;
+            color: #c9d1d9;
+        }
+
+        #markdown-preview blockquote {
+            border-left: 4px solid var(--primary-color);
+            margin: 0;
+            padding-left: 15px;
+            color: var(--text-muted);
+        }
+
+        #markdown-preview img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        #markdown-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1em;
+        }
+
+        #markdown-preview th,
+        #markdown-preview td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: left;
+        }
+
+        #markdown-preview th {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            #markdown-input,
+            #markdown-preview {
+                min-height: 400px;
+            }
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 5px;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            color: var(--text-color);
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Markdown Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container" style="max-width: 95%;"> <!-- Wider container for editor -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div>
+                    <h1>Markdown Editor</h1>
+                    <p class="text-muted">Write Markdown with real-time preview.</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-secondary" id="copy-html-btn">Copy HTML</button>
+                    <button class="btn btn-primary" id="download-md-btn">Download .md</button>
+                    <button class="btn btn-secondary" id="download-html-btn">Download .html</button>
+                    <label for="import-file" class="btn btn-secondary" style="cursor: pointer;">Import</label>
+                    <input type="file" id="import-file" accept=".md,.txt" style="display: none;">
+                </div>
+            </div>
+
+            <div class="editor-container">
+                <!-- Editor -->
+                <div class="editor-panel">
+                    <div class="panel-header">
+                        <span class="panel-title">Markdown</span>
+                        <div class="toolbar">
+                            <button class="toolbar-btn" title="Bold" onclick="insertMarkdown('**', '**')"><i
+                                    class="fas fa-bold"></i></button>
+                            <button class="toolbar-btn" title="Italic" onclick="insertMarkdown('*', '*')"><i
+                                    class="fas fa-italic"></i></button>
+                            <button class="toolbar-btn" title="Heading" onclick="insertMarkdown('### ', '')"><i
+                                    class="fas fa-heading"></i></button>
+                            <button class="toolbar-btn" title="Link" onclick="insertMarkdown('[', '](url)')"><i
+                                    class="fas fa-link"></i></button>
+                            <button class="toolbar-btn" title="Code Block" onclick="insertMarkdown('```\n', '\n```')"><i
+                                    class="fas fa-code"></i></button>
+                            <button class="toolbar-btn" title="Clear" id="clear-btn"><i
+                                    class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <textarea id="markdown-input" spellcheck="false" placeholder="# Start typing..."></textarea>
+                </div>
+
+                <!-- Preview -->
+                <div class="preview-panel">
+                    <div class="panel-header">
+                        <span class="panel-title">Preview</span>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">
+                            Words: <span id="word-count">0</span>
+                        </div>
+                    </div>
+                    <div id="markdown-preview"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../../js/markdown/editor.js"></script>
+    <script type="module" src="../../js/utils/common.js"></script>
+</body>
+
+</html>
