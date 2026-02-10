@@ -232,13 +232,9 @@ export const Utils = {
             });
         }
 
-        // --- Phase 10: Visual Effects ---
-        console.log('✨ VtoolZ Visual Effects Initializing...');
-
         // 1. Ambient Lights Injection
         const injectLights = () => {
             if (!document.querySelector('.ambient-light')) {
-                console.log('💡 Injecting Ambient Lights');
                 const light1 = document.createElement('div');
                 light1.className = 'ambient-light one';
                 const light2 = document.createElement('div');
@@ -252,7 +248,6 @@ export const Utils = {
         // 2. Card Spotlight Effect
         const initSpotlight = () => {
             const toolsCards = document.querySelectorAll('.tool-card');
-            console.log(`🔦 Initializing Spotlight for ${toolsCards.length} cards`);
 
             toolsCards.forEach(card => {
                 card.classList.add('spotlight-card');
@@ -262,7 +257,6 @@ export const Utils = {
                     const y = e.clientY - rect.top;
                     card.style.setProperty('--mouse-x', `${x}px`);
                     card.style.setProperty('--mouse-y', `${y}px`);
-                    // console.log('Mouse move:', x, y); // Uncomment for extreme debug
                 });
             });
         };

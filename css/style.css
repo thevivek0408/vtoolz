@@ -660,119 +660,126 @@ body.neon-mode h3 {
     text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--accent-color);
 }
 
-.container {
-    padding: 0 15px;
-}
+/* Responsive & Mobile Menu */
+@media (max-width: 850px) {
+    :root {
+        --header-height: 60px;
+        --container-width: 100%;
+    }
 
-/* Fixed Header Stacking Context */
-header {
-    z-index: 1001;
-    /* Above overlay */
-    position: sticky;
-    top: 0;
-}
+    .container {
+        padding: 0 15px;
+    }
 
-/* Typography */
-.hero h1 {
-    font-size: 2rem;
-    line-height: 1.2;
-}
+    /* Fixed Header Stacking Context */
+    header {
+        z-index: 1001;
+        /* Above overlay */
+        position: sticky;
+        top: 0;
+    }
 
-.hero p {
-    font-size: 1rem;
-}
+    /* Typography */
+    .hero h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
 
-/* Layout Spacing */
-.tool-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-}
+    .hero p {
+        font-size: 1rem;
+    }
 
-.tool-container {
-    padding: 1.5rem;
-    width: 100%;
-    margin: 1rem 0;
-}
+    /* Layout Spacing */
+    .tool-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 
-.drop-zone {
-    padding: 2rem 1rem;
-}
+    .tool-container {
+        padding: 1.5rem;
+        width: 100%;
+        margin: 1rem 0;
+    }
 
-/* Mobile Navigation */
-.mobile-menu-btn {
-    display: block !important;
-    background: none;
-    border: none;
-    color: var(--text-color);
-    font-size: 1.8rem;
-    cursor: pointer;
-    z-index: 1002;
-    padding: 10px;
-    margin-right: 10px;
-    min-width: 44px;
-    min-height: 44px;
-}
+    .drop-zone {
+        padding: 2rem 1rem;
+    }
 
-nav {
-    display: block;
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 80%;
-    height: 100vh;
-    height: 100dvh;
-    /* Dynamic Viewport Height for Mobile */
-    background: var(--surface-color);
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
-    padding: 80px 20px;
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1002;
-    /* Top level */
-    will-change: transform;
-    overflow-y: auto;
-    /* Allow menu internal scroll */
-}
+    /* Mobile Navigation */
+    .mobile-menu-btn {
+        display: block !important;
+        background: none;
+        border: none;
+        color: var(--text-color);
+        font-size: 1.8rem;
+        cursor: pointer;
+        z-index: 1002;
+        padding: 10px;
+        margin-right: 10px;
+        min-width: 44px;
+        min-height: 44px;
+    }
 
-nav.nav-active {
-    right: 0;
-}
+    nav {
+        display: block;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        height: 100vh;
+        height: 100dvh;
+        /* Dynamic Viewport Height for Mobile */
+        background: var(--surface-color);
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+        padding: 80px 20px;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1002;
+        /* Top level */
+        will-change: transform;
+        overflow-y: auto;
+        /* Allow menu internal scroll */
+    }
 
-nav ul {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 25px;
-    width: 100%;
-}
+    nav.nav-active {
+        right: 0;
+    }
 
-nav a {
-    font-size: 1.2rem;
-    display: block;
-    width: 100%;
-    padding: 15px 0;
-    border-bottom: 1px solid var(--border-color);
-}
+    nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
+        width: 100%;
+    }
 
-/* Overlay */
-.nav-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    height: 100dvh;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    /* Below Header */
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.3s;
-    backdrop-filter: blur(4px);
-}
+    nav a {
+        font-size: 1.2rem;
+        display: block;
+        width: 100%;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
 
-.nav-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
+    /* Overlay */
+    .nav-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        /* Below Header */
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
+        backdrop-filter: blur(4px);
+    }
+
+    .nav-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
 }
 
 /* Hide hamburger on larger screens */
