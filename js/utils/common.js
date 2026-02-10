@@ -189,6 +189,45 @@ export const Utils = {
                 new CubeRotator(cube);
             } catch (e) { console.warn('Cube init failed', e); }
         }
+
+        // Mobile Menu Injection
+        const headerContainer = document.querySelector('header .container');
+        const navContainer = document.querySelector('nav');
+        if (headerContainer && navContainer) {
+            // Create Hamburger Button
+            const btn = document.createElement('button');
+            btn.className = 'mobile-menu-btn';
+            btn.innerHTML = '<i class="fas fa-bars"></i>'; // FontAwesome fallback
+            if (!document.querySelector('link[href*="font-awesome"]')) {
+                btn.innerHTML = '☰'; // Unicode fallback
+            }
+            btn.ariaLabel = "Menu";
+
+            // Insert before nav
+            headerContainer.insertBefore(btn, navContainer);
+
+            // Create Overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'nav-overlay';
+            document.body.appendChild(overlay);
+
+            // Toggle Logic
+            const toggleMenu = () => {
+                navContainer.classList.toggle('nav-active');
+                overlay.classList.toggle('active');
+                btn.innerHTML = navContainer.classList.contains('nav-active') ? '✕' : '☰';
+            };
+
+            btn.addEventListener('click', toggleMenu);
+            overlay.addEventListener('click', toggleMenu);
+
+            // Close on link click
+            navContainer.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (navContainer.classList.contains('nav-active')) toggleMenu();
+                });
+            });
+        }
     }
 };
 

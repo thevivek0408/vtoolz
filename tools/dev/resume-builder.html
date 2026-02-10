@@ -164,6 +164,42 @@
                 margin: 20mm;
             }
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .builder-container {
+                flex-direction: column;
+            }
+
+            .editor-pane {
+                height: 40vh;
+                border-bottom: 1px solid var(--border-color);
+                border-right: none;
+            }
+
+            .preview-pane {
+                height: 60vh;
+                padding: 10px;
+            }
+
+            .resume-page {
+                width: 100%;
+                min-height: auto;
+                padding: 10mm;
+                transform: scale(0.6);
+                /* Scale down preview */
+                transform-origin: top left;
+                width: 166%;
+                /* Compensate for scale (100/0.6) */
+                margin-bottom: 20px;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
     </style>
 </head>
 
