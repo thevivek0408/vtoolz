@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v20-image-suite-ui';
+const CACHE_NAME = 'vtoolz-v21-all-tools-premium';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

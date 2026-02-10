@@ -63,17 +63,20 @@
     </header>
 
     <main>
-        <div class="tool-container">
-            <h1>Text Modifier & Converter</h1>
-            <p>Modify case, sort lines, clean up text, and more.</p>
+        <div class="tool-container" id="tool-container" style="max-width: 1200px;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Text Modifier & Converter</h1>
+                <p class="text-muted">Modify case, sort lines, clean up text, and more.</p>
+            </div>
 
-            <div class="layout">
+            <div class="layout" style="display: grid; grid-template-columns: 1fr 250px 1fr; gap: 20px;">
                 <div class="input-area">
-                    <label>Input Text</label>
-                    <textarea id="input" placeholder="Enter text here..."></textarea>
+                    <label style="display:block; margin-bottom:0.5rem;">Input Text</label>
+                    <textarea id="input" placeholder="Enter text here..."
+                        style="background: var(--bg-secondary); color: var(--text-color); height: 500px; resize: none;"></textarea>
                 </div>
 
-                <div class="controls">
+                <div class="controls" style="display: flex; flex-direction: column; gap: 10px;">
                     <div class="control-group">
                         <h3>Case Converter</h3>
                         <button class="btn btn-secondary btn-block"
@@ -86,45 +89,44 @@
 
                     <div class="control-group">
                         <h3>Line Operations</h3>
-                        <button class="btn btn-secondary btn-block" onclick="apply(TextUtils.sortLines)">Sort Lines
-                            (A-Z)</button>
-                        <button class="btn btn-secondary btn-block"
-                            onclick="apply(TextUtils.removeDuplicateLines)">Remove Duplicates</button>
-                        <button class="btn btn-secondary btn-block" onclick="apply(TextUtils.reverseLines)">Reverse
+                        <button class="btn btn-secondary btn-block" onclick="apply(TextUtils.sortLines)">Sort
                             Lines</button>
+                        <button class="btn btn-secondary btn-block"
+                            onclick="apply(TextUtils.removeDuplicateLines)">Unique</button>
+                        <button class="btn btn-secondary btn-block"
+                            onclick="apply(TextUtils.reverseLines)">Reverse</button>
                     </div>
 
                     <div class="control-group">
                         <h3>Cleanup</h3>
-                        <button class="btn btn-secondary btn-block" onclick="apply(TextUtils.removeExtraSpaces)">Remove
-                            Extra Spaces</button>
-                        <button class="btn btn-secondary btn-block" onclick="apply(t => t.trim())">Trim
-                            Whitespace</button>
+                        <button class="btn btn-secondary btn-block" onclick="apply(TextUtils.removeExtraSpaces)">Fix
+                            Spaces</button>
+                        <button class="btn btn-secondary btn-block" onclick="apply(t => t.trim())">Trim</button>
                     </div>
                 </div>
 
                 <div class="output-area">
-                    <div style="display:flex; justify-content:space-between;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; align-items:center;">
                         <label>Output Result</label>
                         <button class="btn btn-primary" id="copy-btn"
-                            style="padding:2px 10px; font-size:0.8rem;">Copy</button>
+                            style="padding:4px 12px; font-size:0.8rem;">Copy</button>
                     </div>
-                    <textarea id="output" readonly style="background:#f9f9f9;"></textarea>
+                    <textarea id="output" readonly
+                        style="background: var(--bg-secondary); color: var(--text-color); height: 500px; resize: none; opacity: 0.8;"></textarea>
                 </div>
             </div>
 
             <!-- Find & Replace Section -->
-            <div class="control-group" style="margin-top: 20px;">
+            <div class="control-group" style="margin-top: 20px; background: rgba(0,0,0,0.2);">
                 <h3>Find & Replace</h3>
                 <div style="display:flex; gap:10px;">
                     <input type="text" id="find-text" placeholder="Find..." class="form-control"
-                        style="flex:1; padding:8px;">
+                        style="flex:1; padding:10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px;">
                     <input type="text" id="replace-text" placeholder="Replace with..." class="form-control"
-                        style="flex:1; padding:8px;">
+                        style="flex:1; padding:10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px;">
                     <button class="btn btn-primary" id="replace-btn">Replace All</button>
                 </div>
             </div>
-
         </div>
     </main>
 
