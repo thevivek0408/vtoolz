@@ -525,7 +525,7 @@ textarea {
 }
 
 /* Responsive & Mobile Menu */
-@media (max-width: 768px) {
+@media (max-width: 850px) {
     :root {
         --header-height: 60px;
         --container-width: 100%;
@@ -533,6 +533,14 @@ textarea {
 
     .container {
         padding: 0 15px;
+    }
+
+    /* Fixed Header Stacking Context */
+    header {
+        z-index: 1001;
+        /* Above overlay */
+        position: sticky;
+        top: 0;
     }
 
     /* Typography */
@@ -567,23 +575,33 @@ textarea {
         background: none;
         border: none;
         color: var(--text-color);
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         cursor: pointer;
-        z-index: 200;
+        z-index: 1002;
         padding: 10px;
+        margin-right: 10px;
+        min-width: 44px;
+        min-height: 44px;
     }
 
     nav {
+        display: block;
         position: fixed;
         top: 0;
         right: -100%;
         width: 80%;
         height: 100vh;
+        height: 100dvh;
+        /* Dynamic Viewport Height for Mobile */
         background: var(--surface-color);
-        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
         padding: 80px 20px;
-        transition: 0.3s ease;
-        z-index: 150;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1002;
+        /* Top level */
+        will-change: transform;
+        overflow-y: auto;
+        /* Allow menu internal scroll */
     }
 
     nav.nav-active {
@@ -601,7 +619,7 @@ textarea {
         font-size: 1.2rem;
         display: block;
         width: 100%;
-        padding: 10px 0;
+        padding: 15px 0;
         border-bottom: 1px solid var(--border-color);
     }
 
@@ -612,12 +630,14 @@ textarea {
         left: 0;
         width: 100%;
         height: 100vh;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 140;
+        height: 100dvh;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        /* Below Header */
         opacity: 0;
         visibility: hidden;
         transition: 0.3s;
-        backdrop-filter: blur(2px);
+        backdrop-filter: blur(4px);
     }
 
     .nav-overlay.active {
@@ -626,7 +646,9 @@ textarea {
     }
 }
 
-/* Hide hamburger on desktop */
-.mobile-menu-btn {
-    display: none;
+/* Hide hamburger on larger screens */
+@media (min-width: 851px) {
+    .mobile-menu-btn {
+        display: none !important;
+    }
 }
