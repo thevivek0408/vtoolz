@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reaction Duel - VtoolZ Arcade</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body {
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .duel-container {
+            position: fixed;
+            top: 70px;
+            /* Header height */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-zone {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.8);
+            transition: background 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* Player 1 (Top) - Rotated for facing opponent */
+        #p1Zone {
+            background: #e74c3c;
+            transform: rotate(180deg);
+            border-bottom: 5px solid rgba(0, 0, 0, 0.2);
+        }
+
+        /* Player 2 (Bottom) */
+        #p2Zone {
+            background: #3498db;
+        }
+
+        .center-msg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+            /* Let clicks pass through if needed, but usually we click zones */
+        }
+
+        .waiting {
+            background: #95a5a6 !important;
+            cursor: wait;
+        }
+
+        .go {
+            background: #2ecc71 !important;
+            cursor: pointer;
+        }
+
+        .win {
+            background: #f1c40f !important;
+            color: #000;
+        }
+
+        .lose {
+            background: #34495e !important;
+            color: #7f8c8d;
+        }
+
+        .score-display {
+            position: absolute;
+            font-size: 5rem;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Games Hub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="duel-container">
+        <div id="p1Zone" class="player-zone">
+            <span id="p1Text">Player 1</span>
+            <div class="score-display" id="p1Score">0</div>
+        </div>
+
+        <div id="centerMsg" class="center-msg">Tap to Start</div>
+
+        <div id="p2Zone" class="player-zone">
+            <span id="p2Text">Player 2</span>
+            <div class="score-display" id="p2Score">0</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flappy Runner - VtoolZ Arcade</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .game-wrapper {
+            position: relative;
+            width: fit-content;
+            margin: 20px auto;
+        }
+
+        canvas {
+            background: linear-gradient(to bottom, #70c5ce, #ffffff);
+            border: 4px solid #2c3e50;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            display: block;
+            touch-action: none;
+            /* Prevent scroll on tap */
+        }
+
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .overlay.visible {
+            display: block;
+        }
+
+        .score-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 2px 2px 0 #2c3e50;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Games Hub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="game-wrapper">
+            <div class="score-display" id="scoreDisplay">0</div>
+            <canvas id="gameCanvas" width="360" height="600"></canvas>
+
+            <div id="startScreen" class="overlay visible">
+                <h1>Flappy Runner</h1>
+                <p>Tap, Space, or Click to Jump</p>
+                <div style="margin: 20px 0; font-size:3rem;">🐦</div>
+                <button class="btn btn-primary btn-block" onclick="window.game.start()">START</button>
+            </div>
+
+            <div id="gameOverScreen" class="overlay">
+                <h2 style="color: #e74c3c;">Game Over</h2>
+                <div style="margin: 15px 0;">
+                    <p>Score: <span id="finalScore">0</span></p>
+                    <p>Best: <span id="bestScore">0</span></p>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="window.game.start()">REPLAY</button>
+            </div>
+        </div>
+
+        <p style="text-align:center; color: var(--text-muted); margin-top:10px;">
+            Avoid the pipes! High score is saved offline.
+        </p>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

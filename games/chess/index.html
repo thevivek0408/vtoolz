@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess - VtoolZ Arcade</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .chess-board {
+            width: 400px;
+            height: 400px;
+            max-width: 90vw;
+            max-height: 90vw;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            border: 5px solid #5d4037;
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .square.white {
+            background: #f0d9b5;
+        }
+
+        .square.black {
+            background: #b58863;
+        }
+
+        .square.selected {
+            background: #7b61ff !important;
+        }
+
+        .square.valid-move {
+            position: relative;
+        }
+
+        .square.valid-move::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+        }
+
+        /* Piece Colors */
+        .piece {
+            font-weight: bold;
+        }
+
+        .white-piece {
+            color: #fff;
+            text-shadow: 0 0 2px #000;
+        }
+
+        .black-piece {
+            color: #000;
+        }
+
+        .status-display {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 500px) {
+            .square {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Games Hub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="margin-top: 40px;">
+        <div class="status-display" id="status">White's Turn</div>
+        <div class="chess-board" id="board"></div>
+        <div style="text-align: center; margin-top:20px;">
+            <button class="btn btn-primary" onclick="window.game.reset()">Reset Board</button>
+        </div>
+        <p style="text-align:center; color: var(--text-muted); margin-top:10px; font-size:0.9rem;">
+            Simple Pass & Play. No move validation enforcement in this lite version (Valid check WIP).
+        </p>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
