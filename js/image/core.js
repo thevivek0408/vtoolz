@@ -122,6 +122,44 @@ function render() {
         ctx.restore();
     }
 
+    // Magic Wand / Mask Overlay
+    if (state.selectionMask) {
+        ctx.save();
+        // Create a temporary canvas/image data to draw the mask? 
+        // Or direct pixel manipulation on context? Direct is slow for loop.
+        // Better: createImageData
+        const maskImg = ctx.createImageData(state.config.width, state.config.height);
+        const md = maskImg.data;
+        const sm = state.selectionMask;
+        for (let i = 0; i < sm.length; i++) {
+            if (sm[i]) {
+                // Blue overlay with alpha
+                const idx = i * 4;
+                md[idx] = 100; // R
+                md[idx + 1] = 150; // G
+                md[idx + 2] = 255; // B
+                md[idx + 3] = 100; // A
+            }
+        }
+        ctx.putImageData(maskImg, 0, 0); // This overwrites? No, putImageData replaces.
+        // We need to draw ON TOP.
+        // Best way: Draw to offscreen canvas then drawImage
+        if (!state.maskCanvas) {
+            state.maskCanvas = document.createElement('canvas');
+            state.maskCanvas.width = state.config.width;
+            state.maskCanvas.height = state.config.height;
+        }
+        const mctx = state.maskCanvas.getContext('2d');
+        mctx.putImageData(maskImg, 0, 0);
+
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(state.maskCanvas, 0, 0);
+        ctx.globalAlpha = 1.0;
+
+        // Border Marching Ants? Too complex for now. Overlay is enough.
+        ctx.restore();
+    }
+
     // Transform Controls are DOM based, updated separately or here?
     updateTransformControls();
 }

@@ -452,7 +452,7 @@ export function updateOptionsBar() {
     };
 
     // Tool Specifics
-    if (state.tool === 'select-rect') {
+    if (state.tool === 'select-rect' || state.tool === 'select-lasso' || state.tool === 'magic-wand') {
         createSep();
         const btn = document.createElement('button');
         btn.innerText = 'Deselect (Ctrl+D)';
@@ -460,6 +460,8 @@ export function updateOptionsBar() {
         btn.style.padding = '2px 8px';
         btn.onclick = () => {
             state.selection = null;
+            state.selectionPath = null;
+            state.selectionMask = null;
             requestRender();
         };
         bar.appendChild(btn);
@@ -503,7 +505,7 @@ export function updateOptionsBar() {
         wrap.className = 'opt-group';
         wrap.innerHTML = `<span class="opt-label">Type:</span> <span style="color:#fff">Linear</span>`;
         bar.appendChild(wrap);
-    } else if (state.tool === 'fill') {
+    } else if (state.tool === 'fill' || state.tool === 'magic-wand') {
         createSep();
         createSlider(0, 100, state.toolSettings.tolerance, 'Tolerance', (v) => state.toolSettings.tolerance = v);
     }

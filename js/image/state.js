@@ -48,6 +48,7 @@ export const state = {
     // Selection & Data
     selection: null,
     selectionPath: null, // Array of {x, y} for polygon
+    selectionMask: null, // Uint8Array 0/1 for pixel mask
     lassoPoints: [], // Temp points during creation
     clipboard: null,
     transformHandle: null,

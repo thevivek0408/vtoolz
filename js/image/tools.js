@@ -68,6 +68,11 @@ function onMouseDown(e) {
         state.toolSettings.color = hex;
         // Update UI color picker?
         // document.getElementById('color-picker').value = hex; 
+    } else if (state.tool === 'magic-wand') {
+        const color = layer.ctx.getImageData(startX, startY, 1, 1).data;
+        const hex = rgbToHex(color[0], color[1], color[2]);
+        magicWandSelect(layer, Math.floor(startX), Math.floor(startY), hex);
+        requestRender();
     } else if (state.tool === 'select-rect') {
         // Start Selection
         state.selection = {
@@ -222,6 +227,17 @@ function onMouseMove(e) {
                 lastX = pos.x;
                 lastY = pos.y;
                 return;
+            }
+
+            // Mask Check (Magic Wand)
+            if (state.selectionMask) {
+                const idx = (Math.floor(pos.y) * layer.canvas.width + Math.floor(pos.x));
+                if (!state.selectionMask[idx]) {
+                    layer.ctx.moveTo(pos.x, pos.y);
+                    lastX = pos.x;
+                    lastY = pos.y;
+                    return;
+                }
             }
         }
 
@@ -524,4 +540,56 @@ function isPointInPolygon(p, polygon) {
         }
     }
     return isInside;
+}
+
+function magicWandSelect(layer, x, y, hexColor) {
+    const w = layer.canvas.width;
+    const h = layer.canvas.height;
+    const imgData = layer.ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    const startPos = (y * w + x) * 4;
+    const startR = data[startPos];
+    const startG = data[startPos + 1];
+    const startB = data[startPos + 2];
+    const startA = data[startPos + 3];
+
+    const tolerance = state.toolSettings.tolerance || 0;
+    const mask = new Uint8Array(w * h); // 0 or 1
+    const stack = [[x, y]];
+    const visited = new Uint8Array(w * h); // To avoid loops
+
+    while (stack.length) {
+        const [cx, cy] = stack.pop();
+        const idx = cy * w + cx;
+        const pos = idx * 4;
+
+        if (cx < 0 || cx >= w || cy < 0 || cy >= h || visited[idx]) continue;
+        visited[idx] = 1;
+
+        // Check Color Match
+        const r = data[pos];
+        const g = data[pos + 1];
+        const b = data[pos + 2];
+        const a = data[pos + 3];
+
+        const diff = Math.abs(r - startR) + Math.abs(g - startG) + Math.abs(b - startB) + Math.abs(a - startA);
+        // Simple diff sum, avg logic is better but this works for tolerance
+        if (diff <= tolerance * 4) { // tolerance * 3 channels + alpha? scale it
+            mask[idx] = 1;
+            stack.push([cx + 1, cy]);
+            stack.push([cx - 1, cy]);
+            stack.push([cx, cy + 1]);
+            stack.push([cx, cy - 1]);
+        }
+    }
+
+    state.selectionMask = mask;
+    // To enable "Deselect" to work, we need to ensure selection state is "active"
+    // We can set a dummy selection rect or just rely on selectionMask being present
+    // Let's set a dummy selection so render loop knows SOMETHING is selected if we want generic support
+    // But core.js will check for selectionMask specifically.
+
+    // Bounds for render overlay optimization?
+    state.selection = { x: 0, y: 0, w: w, h: h }; // Full bounds for now, renders generic box if we don't handle mask
 }
