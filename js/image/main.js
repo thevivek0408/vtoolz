@@ -53,14 +53,20 @@ function checkHomeVisibility() {
 // Global Exports
 // UI functions are handled in ui.js
 // Logic for Save Project should be imported/exported if needed, or attached in initUI
-window.saveProject = () => {
-    console.log("Saving project...");
-    // This looks like a placeholder. 
-    // Real save logic was in the monolithic editor.html but might be missing in modules if I didn't migrate it.
-    // I should check if saveProject logic exists. 
-    // The previous `editor.html` had a big `window.saveProject`.
-    // I should create `js/image/project.js` or put it in `core.js` / `main.js` properly.
-    // For now, let's keep the placeholder but NOT override New Project.
+import { saveProject, loadProject } from './project.js';
+
+// Global Exports
+window.saveProject = saveProject;
+window.handleFileLoad = loadProject;
+window.exportImage = () => {
+    // Basic export
+    const link = document.createElement('a');
+    link.download = 'export.png';
+    link.href = document.querySelector('canvas').toDataURL(); // We need to merge layers first!
+    // Merging is done in core.js render loop to the main canvas? No, main canvas IS the preview.
+    // The main 'canvas' exported from core.js IS where we draw everything.
+    // So toDataURL() on it should work IF we just called requestRender().
+    link.click();
 };
 
 // Global Error Handler

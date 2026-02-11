@@ -45,18 +45,73 @@ function render() {
     drawCheckerboard();
 
     // Render Layers
-    [...state.layers].forEach(layer => {
-        if (!layer.visible) return;
+    renderLayers(ctx, state.layers);
 
-        ctx.save();
-        ctx.globalAlpha = layer.opacity / 100;
-        ctx.globalCompositeOperation = layer.blendMode;
+    function renderLayers(targetCtx, layers) {
+        // Render from bottom to top?
+        // state.layers is usually ordered as [Background, Layer 1, Layer 2] for processing?
+        // In UI we reverse it (Layer 2 top).
+        // In Render, we draw [0] first (background). Yes.
 
-        // Draw the layer canvas
-        ctx.drawImage(layer.canvas, layer.x, layer.y, layer.width, layer.height);
+        layers.forEach(layer => {
+            if (!layer.visible) return;
 
-        ctx.restore();
-    });
+            targetCtx.save();
+            targetCtx.globalAlpha = layer.opacity / 100;
+            targetCtx.globalCompositeOperation = layer.blendMode;
+
+            if (layer.type === 'group') {
+                // Group Rendering:
+                // We should isolate group blending? 
+                // "Pass Through" (default) means we just recurse.
+                // If group has opacity/mode, usually in Photoshop 'Pass Through' ignores it unless 'Normal'.
+                // For simplified engine: Apply alpha/blend to the whole group context?
+                // Nested rendering is complex.
+                // Simple approach: Recurse on current context with applied alpha.
+                if (layer.children) {
+                    renderLayers(targetCtx, layer.children);
+                }
+            } else {
+                // Raster Layer
+                drawLayer(targetCtx, layer);
+            }
+
+            targetCtx.restore();
+        });
+    }
+
+    function drawLayer(targetCtx, layer) {
+        if (layer.mask) {
+            // Composite Mask
+            if (!state.compositeCanvas) {
+                state.compositeCanvas = document.createElement('canvas');
+                state.compositeCanvas.width = state.config.width;
+                state.compositeCanvas.height = state.config.height;
+            }
+            // Resize if needed
+            if (state.compositeCanvas.width !== state.config.width) {
+                state.compositeCanvas.width = state.config.width;
+                state.compositeCanvas.height = state.config.height;
+            }
+
+            const cCtx = state.compositeCanvas.getContext('2d');
+            cCtx.clearRect(0, 0, state.compositeCanvas.width, state.compositeCanvas.height);
+
+            // Draw Content
+            cCtx.globalCompositeOperation = 'source-over';
+            cCtx.drawImage(layer.canvas, layer.x, layer.y, layer.width, layer.height);
+
+            // Apply Mask
+            cCtx.globalCompositeOperation = 'destination-in';
+            cCtx.drawImage(layer.mask, layer.x, layer.y, layer.width, layer.height);
+
+            // Draw to Main
+            targetCtx.drawImage(state.compositeCanvas, 0, 0);
+
+        } else {
+            targetCtx.drawImage(layer.canvas, layer.x, layer.y, layer.width, layer.height);
+        }
+    }
 
     // Preview Layer (Shapes, Gradients)
     if (state.previewCanvas) {
@@ -70,12 +125,16 @@ function render() {
 
 
     // Selection Overlay
+    // Selection Overlay
+    const dashOffset = (performance.now() / 50) % 10; // Animate
+
     if (state.selectionPath) {
         // Polygonal Selection
         ctx.save();
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 1;
         ctx.setLineDash([5, 5]);
+        ctx.lineDashOffset = -dashOffset;
         ctx.beginPath();
         state.selectionPath.forEach((p, i) => {
             if (i === 0) ctx.moveTo(p.x, p.y);
@@ -85,7 +144,7 @@ function render() {
         ctx.stroke();
 
         ctx.strokeStyle = '#000';
-        ctx.lineDashOffset = 5;
+        ctx.lineDashOffset = -dashOffset + 5;
         ctx.stroke();
         ctx.restore();
     } else if (state.selection) {
@@ -93,10 +152,12 @@ function render() {
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 1;
         ctx.setLineDash([5, 5]);
+        ctx.lineDashOffset = -dashOffset;
         ctx.strokeRect(state.selection.x, state.selection.y, state.selection.w, state.selection.h);
+
         ctx.strokeStyle = '#000';
         ctx.setLineDash([5, 5]);
-        ctx.lineDashOffset = 5;
+        ctx.lineDashOffset = -dashOffset + 5;
         ctx.strokeRect(state.selection.x, state.selection.y, state.selection.w, state.selection.h);
         ctx.restore();
     }
@@ -162,6 +223,11 @@ function render() {
 
     // Transform Controls are DOM based, updated separately or here?
     updateTransformControls();
+
+    // Loop for animation if selection exists
+    if (state.selection || state.selectionPath) {
+        requestAnimationFrame(render);
+    }
 }
 
 function drawCheckerboard() {

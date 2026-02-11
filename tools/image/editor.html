@@ -17,10 +17,13 @@
         <a href="../../index.html" class="app-logo"><span>V</span> Photo Editor</a>
         <div class="menu-item" onclick="toggleDropdown('file-dd')">File
             <div class="dropdown-content" id="file-dd">
-                <div class="dropdown-item" onclick="document.getElementById('file-upload').click()">Open...</div>
-                <div class="dropdown-item" onclick="saveProject()">Save as PSD</div>
-                <div class="dropdown-item" onclick="document.getElementById('export-modal').style.display='flex'">Export
-                    As...</div>
+                <div class="dropdown-item" onclick="document.getElementById('new-project-modal').style.display='flex'">
+                    New Project...</div>
+                <div class="dropdown-item" onclick="document.getElementById('file-input-load').click()">Open Project...
+                </div>
+                <div class="dropdown-item" onclick="saveProject()">Save Project</div>
+                <div class="dropdown-item" onclick="exportImage()">Export as PNG...</div>
+                <div class="dropdown-item" onclick="closeProject()">Close Project</div>
             </div>
         </div>
         <div class="menu-item" onclick="toggleDropdown('edit-dd')">Edit
@@ -102,9 +105,10 @@
         <div class="tool active" data-tool="move" title="Move Tool (V)"><i class="fas fa-arrows-alt"></i></div>
         <div class="tool" data-tool="brush" title="Brush (B)"><i class="fas fa-paint-brush"></i></div>
         <div class="tool" data-tool="eraser" title="Eraser (E)"><i class="fas fa-eraser"></i></div>
-        <div class="tool" data-tool="fill" title="Paint Bucket (G)"><i class="fas fa-fill-drip"></i></div>
+        <div class="tool" data-tool="clone" title="Clone Stamp (S) - Alt+Click to Set Source"><i
+                class="fas fa-stamp"></i></div>
+        <div class="tool" data-tool="fill" title="Fill (G)"><i class="fas fa-fill-drip"></i></div>
         <div class="tool" data-tool="gradient" title="Gradient (L)"><i class="fas fa-magic"></i></div>
-        <div class="tool" data-tool="clone" title="Clone Stamp (S)"><i class="fas fa-stamp"></i></div>
         <div class="tool" data-tool="text" title="Text (T)"><i class="fas fa-font"></i></div>
         <div class="tool" data-tool="shape" title="Shapes (U)"><i class="fas fa-shapes"></i></div>
         <div class="tool" data-tool="pipette" title="Eyedropper (I)"><i class="fas fa-eye-dropper"></i></div>
@@ -219,8 +223,8 @@
             <div class="layer-controls">
                 <button class="layer-btn" id="btn-add-layer" title="New Layer"><i class="fas fa-plus"></i></button>
                 <button class="layer-btn" id="btn-del-layer" title="Delete"><i class="fas fa-trash"></i></button>
-                <button class="layer-btn" title="Folder"><i class="fas fa-folder"></i></button>
-                <button class="layer-btn" title="Mask"><i class="fas fa-mask"></i></button>
+                <button class="layer-btn" id="btn-add-group" title="New Group"><i class="fas fa-folder"></i></button>
+                <button class="layer-btn" id="btn-add-mask" title="Mask"><i class="fas fa-mask"></i></button>
                 <button class="layer-btn" title="Effects"><i class="fas fa-magic"></i></button>
             </div>
         </div>
@@ -383,6 +387,10 @@
             </div>
         </div>
     </div>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="file-input-load" style="display:none" accept=".vtz,.json"
+        onchange="handleFileLoad(this.files[0])">
 
     <script type="module" src="../../js/image/main.js"></script>
 </body>

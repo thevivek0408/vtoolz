@@ -25,7 +25,7 @@ function onHandleDown(e) {
     e.preventDefault();
 
     const layer = getActiveLayer();
-    if (!layer) return;
+    if (!layer || layer.type === 'group') return;
 
     state.isTransforming = true;
     state.transformHandle = e.target.dataset.handle;
@@ -52,7 +52,7 @@ function onMouseDown(e) {
     isDrawing = true;
 
     const layer = getActiveLayer();
-    if (!layer) return;
+    if (!layer || layer.type === 'group') return;
 
     state.start = { x: startX, y: startY };
 
@@ -65,9 +65,20 @@ function onMouseDown(e) {
     } else if (state.tool === 'pipette') {
         const p = layer.ctx.getImageData(startX, startY, 1, 1).data;
         const hex = rgbToHex(p[0], p[1], p[2]);
-        state.toolSettings.color = hex;
         // Update UI color picker?
         // document.getElementById('color-picker').value = hex; 
+    } else if (state.tool === 'clone') {
+        if (e.altKey) {
+            // Set Source
+            state.cloneSource = { x: startX, y: startY };
+            // Optional: Visual feedback?
+            alert(`Clone Source Set: ${Math.floor(startX)}, ${Math.floor(startY)}`); // temporary feedback
+            return;
+        }
+        if (!state.cloneSource) {
+            alert("Alt+Click to set a source point first!");
+            return;
+        }
     } else if (state.tool === 'magic-wand') {
         const color = layer.ctx.getImageData(startX, startY, 1, 1).data;
         const hex = rgbToHex(color[0], color[1], color[2]);
@@ -191,6 +202,12 @@ function onMouseMove(e) {
     const layer = getActiveLayer();
     if (!layer) return;
 
+    // Mask Support - Redirect Context
+    let targetCtx = layer.ctx;
+    if (layer.isMaskActive && layer.maskCtx) {
+        targetCtx = layer.maskCtx;
+    }
+
     if (state.tool === 'select-rect') {
         const w = pos.x - startX;
         const h = pos.y - startY;
@@ -215,7 +232,7 @@ function onMouseMove(e) {
             if (pos.x < state.selection.x || pos.x > state.selection.x + state.selection.w ||
                 pos.y < state.selection.y || pos.y > state.selection.y + state.selection.h) {
                 // Determine if we should lift pen or just not draw segment?
-                layer.ctx.moveTo(pos.x, pos.y); // Skip to new pos without drawing
+                targetCtx.moveTo(pos.x, pos.y); // Skip to new pos without drawing
                 lastX = pos.x;
                 lastY = pos.y;
                 return;
@@ -223,7 +240,7 @@ function onMouseMove(e) {
 
             // Polygon Check
             if (state.selectionPath && !isPointInPolygon(pos, state.selectionPath)) {
-                layer.ctx.moveTo(pos.x, pos.y);
+                targetCtx.moveTo(pos.x, pos.y);
                 lastX = pos.x;
                 lastY = pos.y;
                 return;
@@ -233,7 +250,7 @@ function onMouseMove(e) {
             if (state.selectionMask) {
                 const idx = (Math.floor(pos.y) * layer.canvas.width + Math.floor(pos.x));
                 if (!state.selectionMask[idx]) {
-                    layer.ctx.moveTo(pos.x, pos.y);
+                    targetCtx.moveTo(pos.x, pos.y);
                     lastX = pos.x;
                     lastY = pos.y;
                     return;
@@ -241,14 +258,84 @@ function onMouseMove(e) {
             }
         }
 
+        if (state.tool === 'clone') {
+            if (!state.cloneSource) return;
+
+            // Calculate source position based on delta from start
+            const deltaX = pos.x - startX;
+            const deltaY = pos.y - startY;
+            const srcX = state.cloneSource.x + deltaX;
+            const srcY = state.cloneSource.y + deltaY;
+
+            const r = state.toolSettings.size / 2;
+
+            // Draw from source to dest
+            // We use standard drawImage
+            layer.ctx.save();
+            layer.ctx.beginPath();
+            layer.ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
+            layer.ctx.clip();
+            // Draw image data from the layer itself (or a snapshot of it?)
+            // If we draw on the same layer, we might be cloning what we just painted.
+            // Standard clone stamp usually samples from the state at Start of stroke, or current state.
+            // Photoshop samples current state (so you can trail).
+
+            // To prevent clipping issues with source out of bounds, drawImage handles it.
+            layer.ctx.drawImage(layer.canvas,
+                srcX - r, srcY - r, r * 2, r * 2,
+                pos.x - r, pos.y - r, r * 2, r * 2
+            );
+            layer.ctx.restore();
+
+            // We don't use lineTo for clone, we stamp circles along the path?
+            // "Brush" logic uses lineTo which is smooth. Stamping circles might have gaps if fast.
+            // For MVP, stamping circles at mouse move check is okay, but interpolating is better.
+            // Let's stick to simple stamping for now.
+            lastX = pos.x;
+            lastY = pos.y;
+            requestRender();
+            return;
+        }
+
         // ... (existing)
-        layer.ctx.lineTo(pos.x, pos.y);
-        layer.ctx.lineCap = 'round';
-        layer.ctx.lineJoin = 'round';
-        layer.ctx.lineWidth = state.toolSettings.size;
-        layer.ctx.strokeStyle = state.tool === 'eraser' ? 'rgba(0,0,0,1)' : state.toolSettings.color;
-        layer.ctx.globalCompositeOperation = state.tool === 'eraser' ? 'destination-out' : 'source-over';
-        layer.ctx.stroke();
+        targetCtx.lineTo(pos.x, pos.y);
+        targetCtx.lineCap = 'round';
+        targetCtx.lineJoin = 'round';
+        targetCtx.lineWidth = state.toolSettings.size;
+
+        // Logic for mask vs layer
+        if (layer.isMaskActive) {
+            if (state.tool === 'eraser') {
+                targetCtx.globalCompositeOperation = 'destination-out'; // Erase mask = Hide
+                targetCtx.strokeStyle = 'rgba(0,0,0,1)';
+            } else {
+                targetCtx.globalCompositeOperation = 'source-over'; // Paint mask = Show
+                targetCtx.strokeStyle = '#fff'; // Always white for mask reveal?
+                // Or allow gray? For now assume reveal.
+                // Actually, standard masks: Black hides, White reveals.
+                // Brush (default black?) -> Hides?
+                // Usually User picks color.
+                // If mask active, we should force grayscale?
+                // Let's stick to using current color but maybe valid mask colors.
+                // If user picks Red, it draws grayscale red?
+                // For MVP, if Mask Active:
+                // Eraser -> destination-out (Black/Transparent) -> actually transparent in canvas means... 
+                // Wait, mask composition is `destination-in`.
+                // So Mask Canvas:
+                // - Transparent = Hidden
+                // - Opaque = Visible.
+                // So Eraser (destination-out) makes it transparent = Hidden. Correct.
+                // Brush (source-over) makes it opaque = Visible. Correct.
+                // Color doesn't matter for `destination-in` alpha composite, only Alpha matters.
+                // So any color works.
+                targetCtx.strokeStyle = state.toolSettings.color;
+            }
+        } else {
+            targetCtx.strokeStyle = state.tool === 'eraser' ? 'rgba(0,0,0,1)' : state.toolSettings.color;
+            targetCtx.globalCompositeOperation = state.tool === 'eraser' ? 'destination-out' : 'source-over';
+        }
+
+        targetCtx.stroke();
         requestRender();
     } else if (state.tool === 'move') {
         const dx = pos.x - lastX;
@@ -494,6 +581,223 @@ function floodFill(layer, x, y, hexColor) {
     }
 
     layer.ctx.putImageData(imgData, 0, 0);
+
+    // Generate Path from Mask (Marching Ants)
+    // We need to trace the boundary of the filled area.
+    // 1. Create a mask array from the filled color? 
+    // Actually we just filled it. 
+    // Optimized: We can trace while filling or after.
+    // Let's do a post-process trace on the image data we just modified.
+    // But we need to know WHICH pixels are part of the selection.
+
+    // Better: Magic Wand should create a bitmask first, then fill?
+    // Current implementation invalidates this because we modify layer directly.
+    // Magic Wand usually creates a SELECTION, not paint pixels.
+    // OH via `magicWandSelect` we set `state.selectionMask`.
+    // We should use that mask to generate `state.selectionPath`.
+
+    if (state.selectionMask) {
+        state.selectionPath = traceContourNew(state.selectionMask, w, h);
+    }
+}
+
+function traceContour(mask, w, h) {
+    // Moore-Neighbor Tracing
+    const points = [];
+    const B = []; // Boundary points set to avoid duplicates/loops if needed, but path is ordered.
+
+    // 1. Find start point
+    let s = null;
+    for (let i = 0; i < mask.length; i++) {
+        if (mask[i]) {
+            s = i;
+            break;
+        }
+    }
+    if (s === null) return null;
+
+    let p = s;
+    let b = p - w; // Backtrack pixel (enter from top)
+
+    // Helper xy from idx
+    const getXY = (idx) => ({ x: idx % w, y: Math.floor(idx / w) });
+    const getIdx = (x, y) => {
+        if (x < 0 || x >= w || y < 0 || y >= h) return -1;
+        return y * w + x;
+    };
+
+    // We need a robust tracer. Simple approach:
+    // March squares or just follow edge.
+    // Let's use a simplified approach since full Moore is complex to impl in one go.
+    // Marching Squares is easier for "vectorizing" a bitmap.
+
+    // Let's stick to a simpler edge detection for now:
+    // Collect all boundary pixels (pixels with at least one empty neighbor)
+    // Then sort them? No, sorting is hard.
+
+    // Let's try Moore again.
+    // Neighbors: P1 to P8 clockwise from b.
+    // This requires a valid generic algorithm. 
+
+    // Alternative: create a polygon directly from the flood fill stack?
+    // Too sparse.
+
+    // Let's use a library-free Marching Squares simplified.
+    // Or just a simple scan for lines (RLE).
+    // Marching Ants usually implies a vector path.
+
+    // Attempting Moore Neighbor Tracing:
+    const startPos = getXY(s);
+    let curr = { x: startPos.x, y: startPos.y };
+    // Enter from left/top?
+    let prev = { x: curr.x, y: curr.y - 1 }; // Dummy previous
+
+    // Only if start has empty neighbor? 
+    // Magic Wand selection might is solid.
+
+    // Fallback: Just return generic bounds if too complex?
+    // No, user wants refinement.
+
+    // Let's try a simpler approach: 
+    // "Isolate" the mask, then generic convex hull? No, concave.
+
+    // Implementation of Moore-Neighbor:
+    // https://en.wikipedia.org/wiki/Moore-neighbor_tracing
+
+    const boundary = [curr];
+
+    // Only works if there is a boundary.
+    // Check 8 neighbors.
+    const neighbors = [
+        { dx: 0, dy: -1 }, { dx: 1, dy: -1 }, { dx: 1, dy: 0 }, { dx: 1, dy: 1 },
+        { dx: 0, dy: 1 }, { dx: -1, dy: 1 }, { dx: -1, dy: 0 }, { dx: -1, dy: -1 }
+    ];
+
+    let P = curr;
+    let max = w * h; // safety
+
+    // Find first black pixel neighbor starting from backtracking
+    // But we are using 1D array.
+
+    // Let's defer full tracing to a separate task if it fails.
+    // For now, let's just make a box around it as placeholder?
+    // No, let's try to get edge pixels.
+
+    // Scan all pixels, if pixel is ON and has OFF neighbor, it's an edge.
+    // Collect edge pixels.
+    // This gives us a cloud of points. render() draws lineTo.
+    // Lines will be messy if not ordered.
+
+    // Let's stick to the Overlay for now, but refine it to be "Ants" style (dashed lines)?
+    // Problem: Overlay is raster. Ants are vector.
+
+    // Return empty for now to rely on Overlay until proper tracer implementation.
+    return null;
+}
+
+function traceContourNew(mask, w, h) {
+    // Moore-Neighbor Tracing
+    const points = [];
+
+    // 1. Find start point (s)
+    let s = null;
+    for (let i = 0; i < mask.length; i++) {
+        if (mask[i]) {
+            s = i;
+            break;
+        }
+    }
+    if (s === null) return null;
+
+    // Helper to get value at x,y
+    const getVal = (x, y) => {
+        if (x < 0 || x >= w || y < 0 || y >= h) return 0;
+        return mask[y * w + x];
+    };
+
+    const getXY = (idx) => ({ x: idx % w, y: Math.floor(idx / w) });
+
+    let sPos = getXY(s);
+    let curr = { x: sPos.x, y: sPos.y };
+    // Enter from top, so backtracking pixel is above
+    let prev = { x: curr.x, y: curr.y - 1 };
+
+    points.push({ x: curr.x, y: curr.y });
+
+    let p = curr;
+    let b = prev;
+
+    // Clockwise neighbors offset 
+    // 0: Top, 1: Top-Right, 2: Right ... 7: Top-Left
+    const neighbors = [
+        { x: 0, y: -1 }, { x: 1, y: -1 }, { x: 1, y: 0 }, { x: 1, y: 1 },
+        { x: 0, y: 1 }, { x: -1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }
+    ];
+
+    let guard = 0;
+    const limit = w * h * 2; // Safety limit
+
+    while (guard < limit) {
+        // 1. Find the starting direction to search for next pixel
+        // This direction is based on the backtracking pixel b.
+        // We want to start searching clockwise from b.
+
+        // Find vector p->b
+        let dx = b.x - p.x;
+        let dy = b.y - p.y;
+
+        let startDir = -1;
+        for (let i = 0; i < 8; i++) {
+            if (neighbors[i].x === dx && neighbors[i].y === dy) {
+                startDir = i;
+                break;
+            }
+        }
+        // If not found (e.g. b is out of bounds or invalid), standard start (Top)
+        if (startDir === -1) startDir = 0;
+
+        let found = false;
+        let nextP = null;
+        let nextB = null;
+
+        // Search 8 neighbors clockwise starting from (startDir + 1)
+        for (let i = 1; i <= 8; i++) {
+            const idx = (startDir + i) % 8;
+            const n = neighbors[idx];
+            const target = { x: p.x + n.x, y: p.y + n.y };
+
+            if (getVal(target.x, target.y)) {
+                // Found next boundary pixel
+                nextP = target;
+                // The new backtracking pixel b is the neighbor immediately preceding nextP in the rotation
+                // which is the one we just checked before this one (idx - 1).
+                // Or simply: the previous empty pixel in the scan.
+                const backIdx = (idx - 1 + 8) % 8;
+                const backN = neighbors[backIdx];
+                nextB = { x: p.x + backN.x, y: p.y + backN.y };
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            // Isolated single pixel
+            break;
+        }
+
+        p = nextP;
+        b = nextB;
+        points.push({ x: p.x, y: p.y });
+
+        // Stopping criteria (Jacob's)
+        if (p.x === sPos.x && p.y === sPos.y && b.x === prev.x && b.y === prev.y) {
+            break;
+        }
+
+        guard++;
+    }
+
+    return points;
 }
 
 function onDoubleClick(e) {

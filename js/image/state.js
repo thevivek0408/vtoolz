@@ -30,8 +30,11 @@ export const state = {
 
 
     // Navigation
-    zoom: 1.0,
-    pan: { x: 0, y: 0 },
+    transformHandle: null,
+    isTransforming: false,
+
+    // Clone Stamp
+    cloneSource: null, // {x, y}
 
     // History
     history: [],

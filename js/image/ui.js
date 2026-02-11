@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { requestRender, canvas } from './core.js';
-import { createLayer, deleteLayer, getActiveLayer } from './layers.js';
+import { createLayer, deleteLayer, getActiveLayer, addLayerMask, createGroup } from './layers.js';
 import { saveHistory, restoreHistory } from './history.js';
 import { PRESETS } from './presets.js';
 
@@ -131,8 +131,6 @@ export function initUI() {
 
     // Init Options
     updateOptionsBar();
-
-    // Moved closing brace to end of file to include all UI logic
 
 
     // --- Color Picker Logic (Photopea Style) ---
@@ -275,6 +273,15 @@ export function initUI() {
     window.addEventListener('layer-update', () => {
         updateLayerList();
     });
+
+    // Mask Btn
+    const maskBtn = document.getElementById('btn-add-mask');
+    if (maskBtn) {
+        maskBtn.addEventListener('click', () => {
+            addLayerMask();
+            updateLayerList();
+        });
+    }
 }
 
 // Global UI Functions
@@ -339,42 +346,126 @@ export function updateLayerList() {
     const list = document.getElementById('layer-list');
     list.innerHTML = '';
 
-    // Reverse logic: Top layer first in UI
-    [...state.layers].reverse().forEach(l => {
+    // Recursive render function
+    function renderItem(container, layer, depth = 0) {
         const item = document.createElement('div');
-        item.className = 'layer-item' + (l.id === state.activeLayerId ? ' active' : '');
-        item.onclick = () => {
-            state.activeLayerId = l.id;
+        item.className = 'layer-item' + (layer.id === state.activeLayerId ? ' active' : '');
+        item.style.paddingLeft = (depth * 20 + 5) + 'px'; // Indent
+
+        item.onclick = (e) => {
+            if (state.activeLayerId !== layer.id) {
+                state.activeLayerId = layer.id;
+                if (layer.type !== 'group') layer.isMaskActive = false;
+            }
             updateLayerList();
             requestRender();
 
             // Update UI props
-            document.getElementById('layer-opacity').value = l.opacity;
-            document.getElementById('layer-blend').value = l.blendMode;
+            const op = document.getElementById('layer-opacity');
+            if (op) op.value = layer.opacity;
+            const bl = document.getElementById('layer-blend');
+            if (bl) bl.value = layer.blendMode;
         };
 
+        // Visibility Toggle
         const vis = document.createElement('div');
-        vis.className = 'layer-vis' + (l.visible ? ' visible' : '');
-        vis.innerHTML = l.visible ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        vis.className = 'layer-vis' + (layer.visible ? ' visible' : '');
+        vis.innerHTML = layer.visible ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
         vis.onclick = (e) => {
             e.stopPropagation();
-            l.visible = !l.visible;
+            layer.visible = !layer.visible;
             requestRender();
             updateLayerList();
         };
+        item.appendChild(vis);
 
-        const thumb = document.createElement('img');
-        thumb.className = 'layer-thumb';
-        thumb.src = l.canvas.toDataURL(); // Expensive? Maybe optimize
+        // Group Toggle (Folder Icon)
+        if (layer.type === 'group') {
+            const folder = document.createElement('div');
+            folder.className = 'layer-group-toggle';
+            folder.style.marginRight = '5px';
+            folder.style.cursor = 'pointer';
+            folder.innerHTML = layer.expanded ? '<i class="fas fa-folder-open"></i>' : '<i class="fas fa-folder"></i>';
+            folder.onclick = (e) => {
+                e.stopPropagation();
+                layer.expanded = !layer.expanded;
+                updateLayerList();
+            };
+            item.appendChild(folder);
+        }
 
+        // Thumbnails (only for raster, unless we want group icon)
+        if (layer.type !== 'group') {
+            const thumbs = document.createElement('div');
+            thumbs.className = 'layer-thumbs';
+            thumbs.style.display = 'flex';
+            thumbs.style.alignItems = 'center';
+            thumbs.style.gap = '5px';
+
+            // Content Thumb
+            const contentThumb = document.createElement('div');
+            contentThumb.className = 'layer-thumb-wrap' + (!layer.isMaskActive ? ' active-target' : '');
+            contentThumb.style.border = (layer.id === state.activeLayerId && !layer.isMaskActive) ? '2px solid #fff' : '1px solid #444';
+
+            const img = document.createElement('img');
+            img.className = 'layer-thumb';
+            // Use placeholder for new empty layers to avoid issues? 
+            // layer.canvas should be valid.
+            img.src = layer.canvas.toDataURL();
+            contentThumb.appendChild(img);
+
+            contentThumb.onclick = (e) => {
+                e.stopPropagation();
+                state.activeLayerId = layer.id;
+                layer.isMaskActive = false;
+                updateLayerList();
+                requestRender();
+            };
+            thumbs.appendChild(contentThumb);
+
+            // Mask Thumb
+            if (layer.mask) {
+                const maskThumb = document.createElement('div');
+                maskThumb.className = 'layer-thumb-wrap' + (layer.isMaskActive ? ' active-target' : '');
+                maskThumb.style.border = (layer.id === state.activeLayerId && layer.isMaskActive) ? '2px solid #fff' : '1px solid #444';
+
+                const mImg = document.createElement('img');
+                mImg.className = 'layer-thumb';
+                mImg.src = layer.mask.toDataURL();
+
+                maskThumb.appendChild(mImg);
+                maskThumb.onclick = (e) => {
+                    e.stopPropagation();
+                    state.activeLayerId = layer.id;
+                    layer.isMaskActive = true;
+                    updateLayerList();
+                    requestRender();
+                };
+                thumbs.appendChild(maskThumb);
+            }
+            item.appendChild(thumbs);
+        }
+
+        // Name
         const name = document.createElement('div');
         name.className = 'layer-name';
-        name.innerText = l.name;
-
-        item.appendChild(vis);
-        item.appendChild(thumb);
+        name.innerText = layer.name;
         item.appendChild(name);
-        list.appendChild(item);
+
+        container.appendChild(item);
+
+        // Render Children if expanded
+        if (layer.type === 'group' && layer.expanded && layer.children) {
+            // Render children in reverse order (top to bottom)
+            [...layer.children].reverse().forEach(child => {
+                renderItem(container, child, depth + 1);
+            });
+        }
+    }
+
+    // Render Top Level Layers (Reverse order)
+    [...state.layers].reverse().forEach(l => {
+        renderItem(list, l, 0);
     });
 }
 
