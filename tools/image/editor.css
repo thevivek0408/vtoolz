@@ -279,8 +279,69 @@ input[type="color"] {
     position: relative;
     overflow: hidden;
     display: flex;
+    flex-direction: column;
+    /* Changed from center/center to column layout */
+}
+
+/* Project Bar Styles */
+.project-bar {
+    height: 30px;
+    background: #2a2a2a;
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.project-tab {
+    background: #333;
+    color: #aaa;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 3px 3px 0 0;
+    margin-right: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    position: relative;
+    top: 1px;
+    /* Overlap border */
+}
+
+.project-tab.active {
+    background: #444;
+    /* Matches header/options bg slightly */
+    color: #fff;
+    border-color: #555;
+    background: linear-gradient(#4d4d4d, #3d3d3d);
+}
+
+.project-close {
+    font-size: 1rem;
+    line-height: 0.8;
+    color: #888;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.project-close:hover {
+    color: #fff;
+    background: #666;
+}
+
+#viewport {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
 }
 
 #canvas-stage {

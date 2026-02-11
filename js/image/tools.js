@@ -11,6 +11,33 @@ export function initTools() {
     canvas.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+
+    // Bind Handles
+    document.querySelectorAll('.handle').forEach(h => {
+        h.addEventListener('mousedown', onHandleDown);
+    });
+}
+
+function onHandleDown(e) {
+    if (state.tool !== 'move' || !state.toolSettings.showTransformControls) return;
+    e.stopPropagation(); // Don't trigger canvas mousedown
+    e.preventDefault();
+
+    const layer = getActiveLayer();
+    if (!layer) return;
+
+    state.isTransforming = true;
+    state.transformHandle = e.target.dataset.handle;
+    state.start = getMousePos(e);
+    // Snapshot layer state
+    state.transformStart = {
+        x: layer.x,
+        y: layer.y,
+        w: layer.width,
+        h: layer.height
+    };
+    lastX = state.start.x;
+    lastY = state.start.y;
 }
 
 function onMouseDown(e) {
@@ -40,6 +67,15 @@ function onMouseDown(e) {
         state.toolSettings.color = hex;
         // Update UI color picker?
         // document.getElementById('color-picker').value = hex; 
+    } else if (state.tool === 'select-rect') {
+        // Start Selection
+        state.selection = {
+            x: startX,
+            y: startY,
+            w: 0,
+            h: 0
+        };
+        requestRender(); // Render initial selection (invisible)
     } else {
         // Brush/Eraser Start
         layer.ctx.beginPath();
@@ -111,12 +147,48 @@ function applyRetouch(e) {
 }
 
 function onMouseMove(e) {
+    // Transform Logic
+    if (state.isTransforming && state.transformHandle) {
+        handleTransform(e);
+        return;
+    }
+
     if (!isDrawing) return;
     const pos = getMousePos(e);
     const layer = getActiveLayer();
     if (!layer) return;
 
+    if (state.tool === 'select-rect') {
+        const w = pos.x - startX;
+        const h = pos.y - startY;
+        state.selection = {
+            x: w < 0 ? startX + w : startX,
+            y: h < 0 ? startY + h : startY,
+            w: Math.abs(w),
+            h: Math.abs(h)
+        };
+        requestRender();
+        return;
+    }
+
     if (state.tool === 'brush' || state.tool === 'eraser') {
+        // Selection Clipping Check
+        if (state.selection) {
+            // Simple Point Check (Clipping path is better but context state is tricky)
+            // If any part of the line segment is outside, we might skip or clip.
+            // For now, strict check: if current mouse pos is outside, don't draw.
+            // A better way for smooth strokes is using clip() on the context, but that requires save/restore per stroke or per frame.
+            // Let's try simple bounds check for the current point.
+            if (pos.x < state.selection.x || pos.x > state.selection.x + state.selection.w ||
+                pos.y < state.selection.y || pos.y > state.selection.y + state.selection.h) {
+                // Determine if we should lift pen or just not draw segment?
+                layer.ctx.moveTo(pos.x, pos.y); // Skip to new pos without drawing
+                lastX = pos.x;
+                lastY = pos.y;
+                return;
+            }
+        }
+
         // ... (existing)
         layer.ctx.lineTo(pos.x, pos.y);
         layer.ctx.lineCap = 'round';
@@ -134,6 +206,10 @@ function onMouseMove(e) {
         requestRender();
     } else if (['dodge', 'burn', 'blur-tool'].includes(state.tool)) {
         applyRetouch(e);
+    } else if (state.tool === 'shape') {
+        updateShapePreview(pos);
+    } else if (state.tool === 'gradient') {
+        updateGradientPreview(pos);
     }
 
     lastX = pos.x;
@@ -141,13 +217,182 @@ function onMouseMove(e) {
 }
 
 function onMouseUp(e) {
+    if (state.transformHandle) {
+        state.transformHandle = null;
+        saveHistory('Transform');
+        requestRender();
+    }
+
     if (isDrawing) {
         if (state.tool === 'brush' || state.tool === 'eraser' || state.tool === 'move') {
             saveHistory(state.tool);
+        } else if (state.tool === 'shape' || state.tool === 'gradient') {
+            commitPreviewToLayer();
+            saveHistory(state.tool);
+            // Clear preview
+            state.previewCanvas = null;
+            state.previewCtx = null;
+            requestRender();
         }
         isDrawing = false;
     }
 }
+
+function handleTransform(evt) {
+    const layer = getActiveLayer();
+    if (!layer) return;
+
+    const pos = getMousePos(evt);
+    const start = state.transformStart;
+    const handle = state.transformHandle;
+
+    // Delta from start mouse to current mouse
+    // NOTE: Mouse pos is in canvas coordinates. 
+    const dx = pos.x - state.start.x;
+    const dy = pos.y - state.start.y;
+
+    if (handle === 'br') {
+        layer.width = Math.max(1, start.w + dx);
+        layer.height = Math.max(1, start.h + dy);
+    } else if (handle === 'bl') {
+        layer.x = start.x + dx;
+        layer.width = Math.max(1, start.w - dx);
+        layer.height = Math.max(1, start.h + dy);
+    } else if (handle === 'tr') {
+        layer.y = start.y + dy;
+        layer.width = Math.max(1, start.w + dx);
+        layer.height = Math.max(1, start.h - dy);
+    } else if (handle === 'tl') {
+        layer.x = start.x + dx;
+        layer.y = start.y + dy;
+        layer.width = Math.max(1, start.w - dx);
+        layer.height = Math.max(1, start.h - dy);
+    }
+
+    // Update canvas size implies clearing/resizing internal canvas?
+    // Doing straightforward scaling of the internal canvas content is expensive (ctx.drawImage).
+    // Better approach: layer.width/height is the DISPLAY size. 
+    // internal canvas stays same size, or we resample on commit.
+    // For this simple editor, let's treat layer.width/height as display size.
+    // Core render loop uses `ctx.drawImage(layer.canvas, layer.x, layer.y, layer.width, layer.height)` which handles scaling!
+
+    requestRender();
+}
+
+// --- Tool Implementations ---
+
+function commitPreviewToLayer() {
+    const l = getActiveLayer();
+    if (!l || !state.previewCanvas) return;
+
+    // Draw preview onto active layer
+    l.ctx.drawImage(state.previewCanvas, 0, 0);
+}
+
+function updateShapePreview(pos) {
+    initPreviewCanvas();
+    const ctx = state.previewCtx;
+    const start = state.start;
+    const w = pos.x - start.x;
+    const h = pos.y - start.y;
+
+    ctx.clearRect(0, 0, state.previewCanvas.width, state.previewCanvas.height);
+
+    ctx.beginPath();
+    ctx.lineWidth = state.toolSettings.size;
+    ctx.strokeStyle = state.toolSettings.color;
+    ctx.fillStyle = state.toolSettings.color;
+
+    if (state.toolSettings.shape === 'rect') {
+        if (state.toolSettings.fillShape) ctx.fillRect(start.x, start.y, w, h);
+        else ctx.strokeRect(start.x, start.y, w, h);
+    } else if (state.toolSettings.shape === 'circle') {
+        // Simple ellipse approximation
+        ctx.beginPath();
+        const centerX = start.x + w / 2;
+        const centerY = start.y + h / 2;
+        ctx.ellipse(centerX, centerY, Math.abs(w / 2), Math.abs(h / 2), 0, 0, 2 * Math.PI);
+        if (state.toolSettings.fillShape) ctx.fill();
+        else ctx.stroke();
+    } else if (state.toolSettings.shape === 'line') {
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+    }
+    requestRender();
+}
+
+function updateGradientPreview(pos) {
+    initPreviewCanvas();
+    const ctx = state.previewCtx;
+    const start = state.start;
+
+    // Gradient is drawn over the WHOLE canvas usually, based on the line
+    // For local layer gradient, we should probably clip? 
+    // For now, full canvas gradient
+    const grad = ctx.createLinearGradient(start.x, start.y, pos.x, pos.y);
+    grad.addColorStop(0, state.toolSettings.color);
+    grad.addColorStop(1, state.toolSettings.bgColor); // Use BG color as end
+
+    ctx.clearRect(0, 0, state.previewCanvas.width, state.previewCanvas.height);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, state.previewCanvas.width, state.previewCanvas.height);
+    requestRender();
+}
+
+function initPreviewCanvas() {
+    if (!state.previewCanvas) {
+        state.previewCanvas = document.createElement('canvas');
+        state.previewCanvas.width = state.config.width;
+        state.previewCanvas.height = state.config.height;
+        state.previewCtx = state.previewCanvas.getContext('2d');
+    }
+}
+
+// Text Tool
+window.addEventListener('click', onOneClick); // We need a click handler for text
+
+function onOneClick(e) {
+    if (state.tool !== 'text') return;
+    // Don't trigger if dragging
+    if (Math.abs(lastX - startX) > 5 || Math.abs(lastY - startY) > 5) return;
+
+    const pos = getMousePos(e);
+    promptTextTool(pos, e.clientX, e.clientY);
+}
+
+function promptTextTool(pos, cx, cy) {
+    const input = document.getElementById('text-input');
+    const overlay = document.getElementById('text-editor-overlay');
+
+    overlay.style.display = 'block';
+    overlay.style.left = cx + 'px'; // Screen coordinates for input
+    overlay.style.top = cy + 'px';
+
+    input.value = "";
+    input.focus();
+
+    // One-time handler for OK or Enter
+    const onConfirm = () => {
+        const text = input.value;
+        if (text) {
+            const l = getActiveLayer();
+            if (l) {
+                l.ctx.font = `${state.toolSettings.fontSize}px ${state.toolSettings.font}`;
+                l.ctx.fillStyle = state.toolSettings.color;
+                l.ctx.fillText(text, pos.x, pos.y);
+                saveHistory("Type Text");
+                requestRender();
+            }
+        }
+        overlay.style.display = 'none';
+        document.getElementById('text-ok').removeEventListener('click', onConfirm);
+    };
+
+    document.getElementById('text-ok').addEventListener('click', onConfirm);
+}
+
 
 // Helpers
 function rgbToHex(r, g, b) {

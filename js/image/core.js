@@ -58,6 +58,17 @@ function render() {
         ctx.restore();
     });
 
+    // Preview Layer (Shapes, Gradients)
+    if (state.previewCanvas) {
+        ctx.save();
+        ctx.globalAlpha = 1.0;
+        // Preview is usually drawn at 0,0 of document or relative? 
+        // For simplicity, we assume previewCanvas is sized to document
+        ctx.drawImage(state.previewCanvas, 0, 0);
+        ctx.restore();
+    }
+
+
     // Selection Overlay
     if (state.selection) {
         ctx.save();

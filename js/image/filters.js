@@ -49,6 +49,99 @@ export function initFilters() {
             alert("Filter Applied");
         }
     };
+
+    // Hue/Sat Events
+    const btnApplyHS = document.getElementById('btn-apply-huesat');
+    if (btnApplyHS) {
+        btnApplyHS.addEventListener('click', () => {
+            const h = parseInt(document.getElementById('hs-hue').value);
+            const s = parseInt(document.getElementById('hs-sat').value);
+            const l = parseInt(document.getElementById('hs-light').value);
+            applyHueSat(h, s, l);
+            document.getElementById('huesat-modal').style.display = 'none';
+        });
+    }
+}
+
+export function applyHueSat(hue, sat, light) {
+    const layer = getActiveLayer();
+    if (!layer) return;
+
+    const w = layer.canvas.width;
+    const h = layer.canvas.height;
+    const imgData = layer.ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        // RGB to HSL
+        let [hVal, sVal, lVal] = rgbToHsl(r, g, b);
+
+        // Adjust
+        hVal = (hVal * 360 + hue) % 360;
+        if (hVal < 0) hVal += 360;
+        hVal /= 360; // back to 0-1
+
+        sVal = Math.max(0, Math.min(1, sVal + sat / 100));
+        lVal = Math.max(0, Math.min(1, lVal + light / 100));
+
+        // HSL to RGB
+        const [nr, ng, nb] = hslToRgb(hVal, sVal, lVal);
+
+        data[i] = nr;
+        data[i + 1] = ng;
+        data[i + 2] = nb;
+    }
+
+    layer.ctx.putImageData(imgData, 0, 0);
+    requestRender();
+    saveHistory("Hue/Saturation");
+}
+
+// Helpers
+function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+        h = s = 0; // achromatic
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    return [h, s, l];
+}
+
+function hslToRgb(h, s, l) {
+    let r, g, b;
+    if (s === 0) {
+        r = g = b = l; // achromatic
+    } else {
+        const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        };
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+    }
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
 export function applyFilter(type, val) {

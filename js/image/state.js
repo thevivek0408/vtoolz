@@ -17,10 +17,17 @@ export const state = {
         size: 5,
         font: 'Arial',
         fontSize: 40,
-        shape: 'rect',
+        shape: 'rect', // rect, circle, line
+        gradientType: 'linear', // linear, radial
         fillShape: false,
-        tolerance: 30
+        tolerance: 30,
+        showTransformControls: false
     },
+
+    // Preview Layer (For Shape/Gradient/Crop)
+    previewCanvas: null,
+    previewCtx: null,
+
 
     // Navigation
     zoom: 1.0,

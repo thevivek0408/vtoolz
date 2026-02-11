@@ -59,6 +59,7 @@ export function initUI() {
 
     // Create Button
     document.getElementById('btn-create-project').addEventListener('click', () => {
+        const name = document.getElementById('np-name').value || "New Project";
         const w = parseInt(document.getElementById('np-width').value);
         const h = parseInt(document.getElementById('np-height').value);
         const bgType = document.getElementById('np-bg-type').value;
@@ -70,6 +71,10 @@ export function initUI() {
         canvas.width = w;
         canvas.height = h;
         document.getElementById('canvas-dims').innerText = `${w}x${h}`;
+
+        // Update Tab
+        document.getElementById('project-bar').style.display = 'flex';
+        document.getElementById('project-name-display').innerText = name + ".psd"; // Mock extension
 
         state.layers = [];
 
@@ -89,6 +94,19 @@ export function initUI() {
         requestRender();
     });
 
+    window.closeProject = () => {
+        // Simple close logic
+        document.getElementById('project-bar').style.display = 'none';
+        document.getElementById('canvas-wrapper').classList.add('hidden');
+        document.getElementById('home-screen').classList.remove('hidden');
+
+        // Clear state (optional but good practice)
+        state.layers = [];
+        state.history = [];
+        updateLayerList();
+        updateHistoryPanel();
+    };
+
     // Init with Social
     renderPresets('social');
 
@@ -107,8 +125,12 @@ export function initUI() {
             t.classList.add('active');
             state.tool = t.dataset.tool;
             console.log("Tool selected:", state.tool);
+            updateOptionsBar();
         });
     });
+
+    // Init Options
+    updateOptionsBar();
 
     // Moved closing brace to end of file to include all UI logic
 
@@ -371,4 +393,118 @@ export function updateHistoryPanel() {
         list.appendChild(item);
     });
     list.scrollTop = list.scrollHeight;
+}
+
+export function updateOptionsBar() {
+    const bar = document.getElementById('options-bar');
+    bar.innerHTML = '';
+
+    const label = document.createElement('span');
+    label.style.color = '#aaa';
+    label.style.fontStyle = 'italic';
+    label.style.marginLeft = '10px';
+    label.style.marginRight = '15px';
+    label.innerText = state.tool.charAt(0).toUpperCase() + state.tool.slice(1);
+    bar.appendChild(label);
+
+    // Helpers
+    const createSep = () => {
+        const s = document.createElement('div');
+        s.style.width = '1px'; s.style.height = '20px'; s.style.background = '#555'; s.style.margin = '0 10px';
+        bar.appendChild(s);
+    };
+
+    const createSlider = (min, max, val, labelText, onChange) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'opt-group';
+        wrap.innerHTML = `<span class="opt-label">${labelText}:</span>`;
+        const input = document.createElement('input');
+        input.type = 'range'; input.min = min; input.max = max; input.value = val;
+        input.oninput = (e) => onChange(parseInt(e.target.value));
+        wrap.appendChild(input);
+        const valDisp = document.createElement('span');
+        valDisp.innerText = val;
+        valDisp.style.width = '25px'; valDisp.style.textAlign = 'center';
+        input.addEventListener('input', (e) => valDisp.innerText = e.target.value);
+        wrap.appendChild(valDisp);
+        bar.appendChild(wrap);
+    };
+
+    const createSelect = (opts, val, onChange) => {
+        const sel = document.createElement('select');
+        opts.forEach(o => {
+            const op = document.createElement('option');
+            op.value = o.val; op.innerText = o.text;
+            if (o.val === val) op.selected = true;
+            sel.appendChild(op);
+        });
+        sel.onchange = (e) => onChange(e.target.value);
+        bar.appendChild(sel);
+    };
+
+    const createCheck = (val, labelText, onChange) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'opt-group';
+        const id = 'opt-check-' + Math.random().toString(36).substr(2, 5);
+        wrap.innerHTML = `<input type="checkbox" id="${id}" ${val ? 'checked' : ''}><label for="${id}" class="opt-label">${labelText}</label>`;
+        wrap.querySelector('input').onchange = (e) => onChange(e.target.checked);
+        bar.appendChild(wrap);
+    };
+
+    // Tool Specifics
+    if (state.tool === 'select-rect') {
+        createSep();
+        const btn = document.createElement('button');
+        btn.innerText = 'Deselect (Ctrl+D)';
+        btn.className = 'btn-secondary'; // Helper class?
+        btn.style.padding = '2px 8px';
+        btn.onclick = () => {
+            state.selection = null;
+            requestRender();
+        };
+        bar.appendChild(btn);
+    } else if (state.tool === 'move') {
+        createSep();
+        createCheck(state.toolSettings.showTransformControls, 'Show Controls', (v) => {
+            state.toolSettings.showTransformControls = v;
+            state.isTransforming = v; // Auto-trigger transform mode
+            requestRender();
+        });
+    } else if (['brush', 'eraser', 'clone', 'blur-tool', 'dodge', 'burn', 'heal'].includes(state.tool)) {
+        createSep();
+        createSlider(1, 100, state.toolSettings.size, 'Size', (v) => state.toolSettings.size = v);
+    } else if (state.tool === 'shape') {
+        createSep();
+        createSelect([
+            { val: 'rect', text: 'Rectangle' },
+            { val: 'circle', text: 'Circle' },
+            { val: 'line', text: 'Line' }
+        ], state.toolSettings.shape, (v) => state.toolSettings.shape = v);
+
+        createSep();
+        createCheck(state.toolSettings.fillShape, 'Fill', (v) => state.toolSettings.fillShape = v);
+
+        createSep();
+        createSlider(1, 50, state.toolSettings.size, 'Stroke', (v) => state.toolSettings.size = v);
+    } else if (state.tool === 'text') {
+        createSep();
+        createSlider(8, 200, state.toolSettings.fontSize, 'Size', (v) => state.toolSettings.fontSize = v);
+        createSep();
+        createSelect([
+            { val: 'Arial', text: 'Arial' },
+            { val: 'Verdana', text: 'Verdana' },
+            { val: 'Times New Roman', text: 'Times New Roman' },
+            { val: 'Courier New', text: 'Courier New' },
+            { val: 'Impact', text: 'Impact' }
+        ], state.toolSettings.font, (v) => state.toolSettings.font = v);
+    } else if (state.tool === 'gradient') {
+        createSep();
+        const wrap = document.createElement('div');
+        wrap.className = 'opt-group';
+        wrap.innerHTML = `<span class="opt-label">Type:</span> <span style="color:#fff">Linear</span>`;
+        bar.appendChild(wrap);
+    } else if (state.tool === 'fill') {
+        createSep();
+        createSlider(0, 100, state.toolSettings.tolerance, 'Tolerance', (v) => state.toolSettings.tolerance = v);
+    }
 }
