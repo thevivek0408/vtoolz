@@ -21,6 +21,34 @@ self.onmessage = function (e) {
         case 'levels':
             result = levels(data, width, height, value.min, value.max);
             break;
+        case 'blur':
+            result = convolve(data, width, height, [
+                1 / 9, 1 / 9, 1 / 9,
+                1 / 9, 1 / 9, 1 / 9,
+                1 / 9, 1 / 9, 1 / 9
+            ]);
+            break;
+        case 'sharpen':
+            result = convolve(data, width, height, [
+                0, -1, 0,
+                -1, 5, -1,
+                0, -1, 0
+            ]);
+            break;
+        case 'emboss':
+            result = convolve(data, width, height, [
+                -2, -1, 0,
+                -1, 1, 1,
+                0, 1, 2
+            ]);
+            break;
+        case 'edge':
+            result = convolve(data, width, height, [
+                -1, -1, -1,
+                -1, 8, -1,
+                -1, -1, -1
+            ]);
+            break;
         default:
             result = data;
     }
@@ -160,5 +188,41 @@ function oilPaint(data, w, h, radius, levels) {
         }
     }
 
+    return output;
+}
+
+function convolve(data, w, h, kernel) {
+    const side = Math.round(Math.sqrt(kernel.length));
+    const halfSide = Math.floor(side / 2);
+    const output = new Uint8ClampedArray(data.length);
+    const width = w;
+    const height = h;
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            let r = 0, g = 0, b = 0;
+
+            for (let cy = 0; cy < side; cy++) {
+                for (let cx = 0; cx < side; cx++) {
+                    const scy = y + cy - halfSide;
+                    const scx = x + cx - halfSide;
+
+                    if (scy >= 0 && scy < height && scx >= 0 && scx < width) {
+                        const srcOff = (scy * width + scx) * 4;
+                        const wt = kernel[cy * side + cx];
+                        r += data[srcOff] * wt;
+                        g += data[srcOff + 1] * wt;
+                        b += data[srcOff + 2] * wt;
+                    }
+                }
+            }
+
+            const dstOff = (y * width + x) * 4;
+            output[dstOff] = r;
+            output[dstOff + 1] = g;
+            output[dstOff + 2] = b;
+            output[dstOff + 3] = data[dstOff + 3];
+        }
+    }
     return output;
 }

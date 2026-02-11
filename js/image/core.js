@@ -70,7 +70,25 @@ function render() {
 
 
     // Selection Overlay
-    if (state.selection) {
+    if (state.selectionPath) {
+        // Polygonal Selection
+        ctx.save();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        state.selectionPath.forEach((p, i) => {
+            if (i === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+        });
+        ctx.closePath();
+        ctx.stroke();
+
+        ctx.strokeStyle = '#000';
+        ctx.lineDashOffset = 5;
+        ctx.stroke();
+        ctx.restore();
+    } else if (state.selection) {
         ctx.save();
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 1;
@@ -80,6 +98,27 @@ function render() {
         ctx.setLineDash([5, 5]);
         ctx.lineDashOffset = 5;
         ctx.strokeRect(state.selection.x, state.selection.y, state.selection.w, state.selection.h);
+        ctx.restore();
+    }
+
+    // Lasso Preview
+    if (state.tool === 'select-lasso' && state.lassoPoints.length > 0) {
+        ctx.save();
+        ctx.strokeStyle = '#00f'; // Blue for active creation
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        state.lassoPoints.forEach((p, i) => {
+            if (i === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+        });
+        // Rubberband to mouse? Handled in tools.js previewCanvas usually, but let's draw points here
+        ctx.stroke();
+
+        // Draw vertices
+        ctx.fillStyle = '#fff';
+        state.lassoPoints.forEach(p => {
+            ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+        });
         ctx.restore();
     }
 

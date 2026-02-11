@@ -47,6 +47,8 @@ export const state = {
 
     // Selection & Data
     selection: null,
+    selectionPath: null, // Array of {x, y} for polygon
+    lassoPoints: [], // Temp points during creation
     clipboard: null,
     transformHandle: null,
 

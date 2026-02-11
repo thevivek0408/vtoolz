@@ -54,6 +54,10 @@
             <div class="dropdown-content" id="filter-dd">
                 <div class="dropdown-item" onclick="openHueSatModal()">Hue/Saturation</div>
                 <div class="dropdown-item" onclick="applyWorkerFilter('denoise')">Denoise</div>
+                <div class="dropdown-item" onclick="applyWorkerFilter('blur')">Blur</div>
+                <div class="dropdown-item" onclick="applyWorkerFilter('sharpen')">Sharpen</div>
+                <div class="dropdown-item" onclick="applyWorkerFilter('emboss')">Emboss</div>
+                <div class="dropdown-item" onclick="applyWorkerFilter('edge')">Edge Detect</div>
                 <div class="dropdown-item" onclick="applyWorkerFilter('oil')">Oil Paint</div>
                 <div class="dropdown-item" onclick="promptLevels()">Levels</div>
             </div>
@@ -80,7 +84,7 @@
 
         <div style="margin-left:auto; display:flex; gap:10px;">
             <!-- Zoom/Dims -->
-            <span id="canvas-dims" style="font-size:0.8rem; color:#aaa;">800x600</span>
+            <span id="canvas-dims" style="font-size:0.8rem; color:#aaa;">1080x720</span>
             <span id="zoom-level" style="font-size:0.8rem; color:#aaa;">100%</span>
         </div>
     </div>
@@ -93,6 +97,7 @@
     <!-- Toolbar -->
     <div class="toolbar" id="toolbar">
         <div class="tool" data-tool="select-rect" title="Rect Select (M)"><i class="far fa-square"></i></div>
+        <div class="tool" data-tool="select-lasso" title="Lasso Select (L)"><i class="fas fa-draw-polygon"></i></div>
         <div class="tool active" data-tool="move" title="Move Tool (V)"><i class="fas fa-arrows-alt"></i></div>
         <div class="tool" data-tool="brush" title="Brush (B)"><i class="fas fa-paint-brush"></i></div>
         <div class="tool" data-tool="eraser" title="Eraser (E)"><i class="fas fa-eraser"></i></div>

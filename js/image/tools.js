@@ -11,6 +11,7 @@ export function initTools() {
     canvas.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('dblclick', onDoubleClick); // Add double click
 
     // Bind Handles
     document.querySelectorAll('.handle').forEach(h => {
@@ -76,6 +77,33 @@ function onMouseDown(e) {
             h: 0
         };
         requestRender(); // Render initial selection (invisible)
+    } else if (state.tool === 'select-lasso') {
+        // Add point
+        const pt = { x: startX, y: startY };
+
+        // Check for closure (near start)
+        if (state.lassoPoints.length > 2) {
+            const start = state.lassoPoints[0];
+            const dist = Math.hypot(pt.x - start.x, pt.y - start.y);
+            if (dist < 10) {
+                // Close loop
+                state.selectionPath = [...state.lassoPoints];
+                state.lassoPoints = [];
+                // Calculate bounds for simple rect check optimization
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                state.selectionPath.forEach(p => {
+                    minX = Math.min(minX, p.x); minY = Math.min(minY, p.y);
+                    maxX = Math.max(maxX, p.x); maxY = Math.max(maxY, p.y);
+                });
+                state.selection = {
+                    x: minX, y: minY, w: maxX - minX, h: maxY - minY
+                };
+                requestRender();
+                return;
+            }
+        }
+        state.lassoPoints.push(pt);
+        requestRender();
     } else {
         // Brush/Eraser Start
         layer.ctx.beginPath();
@@ -183,6 +211,14 @@ function onMouseMove(e) {
                 pos.y < state.selection.y || pos.y > state.selection.y + state.selection.h) {
                 // Determine if we should lift pen or just not draw segment?
                 layer.ctx.moveTo(pos.x, pos.y); // Skip to new pos without drawing
+                lastX = pos.x;
+                lastY = pos.y;
+                return;
+            }
+
+            // Polygon Check
+            if (state.selectionPath && !isPointInPolygon(pos, state.selectionPath)) {
+                layer.ctx.moveTo(pos.x, pos.y);
                 lastX = pos.x;
                 lastY = pos.y;
                 return;
@@ -442,4 +478,50 @@ function floodFill(layer, x, y, hexColor) {
     }
 
     layer.ctx.putImageData(imgData, 0, 0);
+}
+
+function onDoubleClick(e) {
+    if (state.tool !== 'select-lasso') return;
+    // Finalize finding if points exist
+    if (state.lassoPoints.length > 2) {
+        state.selectionPath = [...state.lassoPoints];
+        state.lassoPoints = [];
+
+        // Bounds for optimization
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        state.selectionPath.forEach(p => {
+            minX = Math.min(minX, p.x); minY = Math.min(minY, p.y);
+            maxX = Math.max(maxX, p.x); maxY = Math.max(maxY, p.y);
+        });
+        state.selection = {
+            x: minX, y: minY, w: maxX - minX, h: maxY - minY
+        };
+        requestRender();
+    }
+}
+
+function isPointInPolygon(p, polygon) {
+    let isInside = false;
+    let minX = polygon[0].x, maxX = polygon[0].x;
+    let minY = polygon[0].y, maxY = polygon[0].y;
+    for (let n = 1; n < polygon.length; n++) {
+        const q = polygon[n];
+        minX = Math.min(q.x, minX);
+        maxX = Math.max(q.x, maxX);
+        minY = Math.min(q.y, minY);
+        maxY = Math.max(q.y, maxY);
+    }
+
+    if (p.x < minX || p.x > maxX || p.y < minY || p.y > maxY) {
+        return false;
+    }
+
+    let i = 0, j = polygon.length - 1;
+    for (i, j; i < polygon.length; j = i++) {
+        if ((polygon[i].y > p.y) != (polygon[j].y > p.y) &&
+            p.x < (polygon[j].x - polygon[i].x) * (p.y - polygon[i].y) / (polygon[j].y - polygon[i].y) + polygon[i].x) {
+            isInside = !isInside;
+        }
+    }
+    return isInside;
 }
