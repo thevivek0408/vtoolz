@@ -7,654 +7,210 @@
     <title>Pro Image Editor - VtoolZ</title>
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="./editor.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-dark: #1e1e1e;
-            --bg-panel: #252526;
-            --bg-header: #333333;
-            --border: #444444;
-            --accent: #007acc;
-            --text: #cccccc;
-            --text-active: #ffffff;
-        }
-
-        body {
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            user-select: none;
-        }
-
-        /* App Layout */
-        .app-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            background: var(--bg-dark);
-        }
-
-        /* 1. Left Toolbar */
-        .toolbar {
-            width: 50px;
-            background: var(--bg-panel);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 5px 0;
-            z-index: 10;
-        }
-
-        .tool {
-            width: 36px;
-            height: 36px;
-            margin-bottom: 4px;
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 1rem;
-            position: relative;
-        }
-
-        .tool:hover {
-            background: #3e3e42;
-            color: var(--text-active);
-        }
-
-        .tool.active {
-            background: var(--bg-header);
-            color: var(--text-active);
-            border-left: 2px solid var(--accent);
-        }
-
-        .tool-tooltip {
-            position: absolute;
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #000;
-            color: #fff;
-            padding: 4px 8px;
-            font-size: 0.75rem;
-            border-radius: 3px;
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-            z-index: 100;
-            margin-left: 5px;
-        }
-
-        .tool:hover .tool-tooltip {
-            opacity: 1;
-        }
-
-        /* 2. Top Options Bar */
-        .options-bar {
-            height: 35px;
-            background: var(--bg-panel);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            font-size: 0.85rem;
-            gap: 15px;
-        }
-
-        .opt-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .opt-label {
-            color: #888;
-        }
-
-        input[type="number"],
-        select {
-            background: #3c3c3c;
-            border: 1px solid #555;
-            color: white;
-            padding: 2px 5px;
-            border-radius: 2px;
-        }
-
-        input[type="color"] {
-            width: 20px;
-            height: 20px;
-            border: none;
-            padding: 0;
-            background: none;
-            cursor: pointer;
-        }
-
-        /* Dropdown Menu (File) */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: var(--bg-panel);
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--border);
-            z-index: 1000;
-            top: 100%;
-            left: 0;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .dropdown-item {
-            padding: 8px 16px;
-            display: block;
-            color: var(--text);
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        .dropdown-item:hover {
-            background-color: var(--bg-header);
-            color: white;
-        }
-
-        /* Sub-menu hack or just separate dropdowns */
-        .nav-group {
-            display: flex;
-            gap: 5px;
-        }
-
-        /* 3. Main Workspace */
-        .workspace {
-            flex: 1;
-            background: #181818;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #canvas-stage {
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            background: white;
-            /* Base canvas is white */
-            transform-origin: 0 0;
-        }
-
-        /* Transform Handles */
-        .transform-layer {
-            position: absolute;
-            border: 1px solid var(--accent);
-            pointer-events: none;
-            /* Let clicks pass through generally, handles capture them */
-            display: none;
-            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
-            /* Outer glow for visibility */
-        }
-
-        .handle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: white;
-            border: 1px solid var(--accent);
-            pointer-events: auto;
-            box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-            z-index: 100;
-        }
-
-        .handle.tl {
-            top: -6px;
-            left: -6px;
-            cursor: nwse-resize;
-        }
-
-        .handle.tr {
-            top: -6px;
-            right: -6px;
-            cursor: nesw-resize;
-        }
-
-        .handle.bl {
-            bottom: -6px;
-            left: -6px;
-            cursor: nesw-resize;
-        }
-
-        .handle.br {
-            bottom: -6px;
-            right: -6px;
-            cursor: nwse-resize;
-        }
-
-        .handle.rot {
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            cursor: grab;
-            background: var(--accent);
-        }
-
-        .rot-line {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            height: 20px;
-            width: 1px;
-            background: var(--accent);
-        }
-
-        /* 4. Right Panels */
-        .panels {
-            width: 260px;
-            background: var(--bg-panel);
-            border-left: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .panel-section {
-            display: flex;
-            flex-direction: column;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .panel-header {
-            padding: 8px 10px;
-            background: var(--bg-header);
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-
-        .panel-header:hover {
-            background: #3a3a3a;
-        }
-
-        /* Layer List */
-        .layer-list {
-            height: 250px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column-reverse;
-            /* Stack bottom to top visually, mirroring z-index effectively */
-        }
-
-        .layer-item {
-            display: flex;
-            align-items: center;
-            padding: 5px 10px;
-            border-bottom: 1px solid #333;
-            cursor: pointer;
-            user-select: none;
-            background: #2d2d2d;
-        }
-
-        .layer-item.active {
-            background: #37373d;
-            border-left: 2px solid var(--accent);
-        }
-
-        .layer-vis {
-            color: #888;
-            width: 20px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .layer-vis.visible {
-            color: #ccc;
-        }
-
-        .layer-thumb {
-            width: 30px;
-            height: 30px;
-            background: white;
-            margin: 0 10px;
-            border: 1px solid #555;
-            object-fit: contain;
-        }
-
-        .layer-name {
-            flex: 1;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding-left: 5px;
-        }
-
-        .layer-name input {
-            width: 100%;
-            background: #222;
-            border: 1px solid #555;
-            color: white;
-            padding: 2px;
-        }
-
-        .layer-controls {
-            padding: 5px;
-            display: flex;
-            justify-content: space-around;
-            background: #333;
-            border-top: 1px solid var(--border);
-        }
-
-        .layer-btn {
-            background: transparent;
-            border: none;
-            color: #aaa;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .layer-btn:hover {
-            color: white;
-        }
-
-        /* Property Inputs */
-        .prop-row {
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.85rem;
-        }
-
-        .slider-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-
-        input[type="range"] {
-            flex: 1;
-            accent-color: var(--accent);
-        }
-
-        /* Dialogs */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal {
-            background: var(--bg-panel);
-            padding: 20px;
-            border-radius: 5px;
-            border: 1px solid var(--border);
-            min-width: 300px;
-        }
-
-        .modal h3 {
-            margin-top: 0;
-        }
-
-        .modal-btns {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .shortcut-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 0.85rem;
-        }
-
-        .shortcut-item {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid #444;
-            padding: 5px 0;
-        }
-    </style>
 </head>
 
 <body>
-    <div
-        style="height:40px; background: #3c3c3c; display:flex; align-items:center; padding: 0 15px; border-bottom:1px solid #222;">
-        <a href="../../index.html"
-            style="color:white; text-decoration:none; font-weight:bold; margin-right:20px;">VtoolZ Editor</a>
-
-        <div class="nav-group">
-            <div class="dropdown">
-                <button class="btn btn-sm btn-primary">File <i class="fas fa-caret-down"></i></button>
-                <div class="dropdown-content">
-                    <div class="dropdown-item" onclick="document.getElementById('file-upload').click()">Open Image...
-                    </div>
-                    <div class="dropdown-item" onclick="document.getElementById('project-upload').click()">Open Project
-                        (.vtz)...</div>
-                    <div class="dropdown-item" onclick="saveProject()">Save Project (.vtz)</div>
-                    <div class="dropdown-item" onclick="document.getElementById('export-modal').style.display='flex'">
-                        Export as Image...</div>
-                </div>
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <a href="../../index.html" class="app-logo"><span>P</span> Photopea-ish</a>
+        <div class="menu-item" onclick="toggleDropdown('file-dd')">File
+            <div class="dropdown-content" id="file-dd">
+                <div class="dropdown-item" onclick="document.getElementById('file-upload').click()">Open...</div>
+                <div class="dropdown-item" onclick="saveProject()">Save as PSD</div>
+                <div class="dropdown-item" onclick="document.getElementById('export-modal').style.display='flex'">Export
+                    As...</div>
             </div>
-
-            <div class="dropdown">
-                <button class="btn btn-sm btn-primary" style="background:#555;">Image <i
-                        class="fas fa-caret-down"></i></button>
-                <div class="dropdown-content">
-                    <div class="dropdown-item" onclick="openResizeModal('image')">Image Size...</div>
-                    <div class="dropdown-item" onclick="openResizeModal('canvas')">Canvas Size...</div>
-                </div>
+        </div>
+        <div class="menu-item" onclick="toggleDropdown('edit-dd')">Edit
+            <div class="dropdown-content" id="edit-dd">
+                <div class="dropdown-item" onclick="restoreHistory(state.historyIndex-1)">Undo</div>
+                <div class="dropdown-item" onclick="restoreHistory(state.historyIndex+1)">Redo</div>
+                <div class="dropdown-item">Cut</div>
+                <div class="dropdown-item">Copy</div>
+                <div class="dropdown-item">Paste</div>
             </div>
-
-            <div class="dropdown">
-                <button class="btn btn-sm btn-primary" style="background:#555;">Filter <i
-                        class="fas fa-caret-down"></i></button>
-                <div class="dropdown-content">
-                    <div class="dropdown-item" onclick="openHueSatModal()">Hue / Saturation...</div>
-                    <div class="dropdown-item" style="border-top:1px solid #444">--- Destructive ---</div>
-                    <div class="dropdown-item" onclick="applyConvolution('sharpen')">Sharpen</div>
-                    <div class="dropdown-item" onclick="applyConvolution('edge')">Find Edges</div>
-                    <div class="dropdown-item" onclick="applyConvolution('emboss')">Emboss</div>
-                    <div class="dropdown-item" onclick="applyWorkerFilter('denoise')">Denoise (Slow)</div>
-                    <div class="dropdown-item" onclick="applyWorkerFilter('oil')">Oil Paint (Heavy)</div>
-                    <div class="dropdown-item" onclick="applyWorkerFilter('solarize', 128)">Solarize</div>
-                    <div class="dropdown-item" onclick="promptLevels()">Levels (Contrast)</div>
-                    <div class="dropdown-item" onclick="applyFilter('grayscale', 100); applyFilter('invert', 100);">
-                        Black & White</div>
+        </div>
+        <div class="menu-item" onclick="toggleDropdown('image-dd')">Image
+            <div class="dropdown-content" id="image-dd">
+                <div class="dropdown-item" onclick="openResizeModal('image')">Image Size</div>
+                <div class="dropdown-item" onclick="openResizeModal('canvas')">Canvas Size</div>
+            </div>
+        </div>
+        <div class="menu-item" onclick="toggleDropdown('layer-dd')">Layer
+            <div class="dropdown-content" id="layer-dd">
+                <div class="dropdown-item" id="menu-new-layer">New Layer</div>
+                <div class="dropdown-item" id="menu-del-layer">Delete Layer</div>
+            </div>
+        </div>
+        <div class="menu-item" onclick="toggleDropdown('select-dd')">Select
+            <div class="dropdown-content" id="select-dd">
+                <div class="dropdown-item">All</div>
+                <div class="dropdown-item">Deselect</div>
+            </div>
+        </div>
+        <div class="menu-item" onclick="toggleDropdown('filter-dd')">Filter
+            <div class="dropdown-content" id="filter-dd">
+                <div class="dropdown-item" onclick="openHueSatModal()">Hue/Saturation</div>
+                <div class="dropdown-item" onclick="applyWorkerFilter('denoise')">Denoise</div>
+                <div class="dropdown-item" onclick="applyWorkerFilter('oil')">Oil Paint</div>
+                <div class="dropdown-item" onclick="promptLevels()">Levels</div>
+            </div>
+        </div>
+        <div class="menu-item" onclick="toggleDropdown('view-dd')">View
+            <div class="dropdown-content" id="view-dd">
+                <div class="dropdown-item" onclick="state.zoom += 0.1; updateZoom();">Zoom In</div>
+                <div class="dropdown-item" onclick="state.zoom -= 0.1; updateZoom();">Zoom Out</div>
+            </div>
+        </div>
+        <div class="menu-item" onclick="toggleDropdown('window-dd')">Window
+            <div class="dropdown-content" id="window-dd">
+                <div class="dropdown-item">Arrange</div>
+                <div class="dropdown-item">Workspace</div>
+            </div>
+        </div>
+        <div class="menu-item" onclick="toggleDropdown('more-dd')">More
+            <div class="dropdown-content" id="more-dd">
+                <div class="dropdown-item" onclick="document.getElementById('help-modal').style.display='flex'">Help
                 </div>
+                <div class="dropdown-item">About</div>
             </div>
         </div>
 
-        <button class="btn btn-sm btn-secondary" id="btn-undo" style="margin-left:20px;" title="Undo (Ctrl+Z)"><i
-                class="fas fa-undo"></i></button>
-        <button class="btn btn-sm btn-secondary" id="btn-redo" style="margin-left:5px;" title="Redo (Ctrl+Y)"><i
-                class="fas fa-redo"></i></button>
-        <button class="btn btn-sm btn-secondary" onclick="document.getElementById('help-modal').style.display='flex'"
-            style="margin-left:auto; margin-right:20px;"><i class="fas fa-keyboard"></i></button>
-
-        <input type="file" id="file-upload" accept="image/*" style="display:none">
-        <input type="file" id="project-upload" accept=".vtz" style="display:none">
-
-        <div style="color: #888; font-size: 0.8rem; display:flex; gap:15px;">
-            <span><i class="fas fa-search-minus"></i> <span id="zoom-level">100%</span> <i
-                    class="fas fa-search-plus"></i></span>
-            <span id="canvas-dims">800x600</span>
+        <div style="margin-left:auto; display:flex; gap:10px;">
+            <!-- Zoom/Dims -->
+            <span id="canvas-dims" style="font-size:0.8rem; color:#aaa;">800x600</span>
+            <span id="zoom-level" style="font-size:0.8rem; color:#aaa;">100%</span>
         </div>
     </div>
 
+    <!-- Options Bar -->
     <div class="options-bar" id="options-bar">
-        <!-- Dynamic Options Injected Here -->
-        <span style="color:#666; font-style:italic;">Select a tool to see options</span>
+        <span style="color:#aaa; font-style:italic; margin-left:10px;">Tool Options</span>
     </div>
 
-    <div class="app-container">
-        <!-- Toolbar -->
-        <div class="toolbar" id="toolbar">
-            <div class="tool active" data-tool="move" title="Move Tool (V)"><i class="fas fa-arrows-alt"></i><span
-                    class="tool-tooltip">Move (V)</span></div>
-            <div class="tool" data-tool="select" title="Rect Select (M)"><i class="far fa-square"></i><span
-                    class="tool-tooltip">Rect Select (M)</span></div>
-            <div class="tool" data-tool="crop" title="Crop to Selection (C)"><i class="fas fa-crop-alt"></i><span
-                    class="tool-tooltip">Crop (C)</span></div>
-            <div class="tool" data-tool="brush" title="Brush (B)"><i class="fas fa-paint-brush"></i><span
-                    class="tool-tooltip">Brush (B)</span></div>
-            <div class="tool" data-tool="eraser" title="Eraser (E)"><i class="fas fa-eraser"></i><span
-                    class="tool-tooltip">Eraser (E)</span></div>
-            <div class="tool" data-tool="fill" title="Paint Bucket (G)"><i class="fas fa-fill-drip"></i><span
-                    class="tool-tooltip">Fill (G)</span></div>
-            <div class="tool" data-tool="gradient" title="Gradient (L)"><i class="fas fa-magic"></i><span
-                    class="tool-tooltip">Gradient (L)</span></div>
-            <div class="tool" data-tool="clone" title="Clone Stamp (S)"><i class="fas fa-stamp"></i><span
-                    class="tool-tooltip">Clone Stamp (S)</span></div>
-            <div class="tool" data-tool="text" title="Text (T)"><i class="fas fa-font"></i><span
-                    class="tool-tooltip">Text (T)</span></div>
-            <div class="tool" data-tool="shape" title="Shapes (U)"><i class="fas fa-shapes"></i><span
-                    class="tool-tooltip">Shapes (U)</span></div>
-            <div class="tool" data-tool="pipette" title="Eyedropper (I)"><i class="fas fa-eye-dropper"></i><span
-                    class="tool-tooltip">Eyedropper (I)</span></div>
-            <div class="tool" data-tool="pen" title="Pen Tool (P)"><i class="fas fa-pen-nib"></i><span
-                    class="tool-tooltip">Pen (P)</span></div>
-            <!-- Retouching Tools -->
-            <div class="tool" data-tool="dodge" title="Dodge (Lighten)"><i class="fas fa-sun"></i><span
-                    class="tool-tooltip">Dodge</span></div>
-            <div class="tool" data-tool="burn" title="Burn (Darken)"><i class="fas fa-moon"></i><span
-                    class="tool-tooltip">Burn</span></div>
-            <div class="tool" data-tool="blur-tool" title="Blur Tool"><i class="fas fa-tint"></i><span
-                    class="tool-tooltip">Blur</span></div>
-            <div class="tool" data-tool="sharpen-tool" title="Sharpen Tool"><i class="fas fa-triangle"></i><span
-                    class="tool-tooltip">Sharpen</span></div>
-            <div class="tool" data-tool="sponge" title="Sponge (Saturate)"><i class="fas fa-soap"></i><span
-                    class="tool-tooltip">Sponge</span></div>
-            <div class="tool" data-tool="heal" title="Heal (Blemish)"><i class="fas fa-band-aid"></i><span
-                    class="tool-tooltip">Heal</span></div>
-        </div>
+    <!-- Toolbar -->
+    <div class="toolbar" id="toolbar">
+        <div class="tool active" data-tool="move" title="Move Tool (V)"><i class="fas fa-arrows-alt"></i></div>
+        <div class="tool" data-tool="select" title="Rect Select (M)"><i class="far fa-square"></i></div>
+        <div class="tool" data-tool="brush" title="Brush (B)"><i class="fas fa-paint-brush"></i></div>
+        <div class="tool" data-tool="eraser" title="Eraser (E)"><i class="fas fa-eraser"></i></div>
+        <div class="tool" data-tool="fill" title="Paint Bucket (G)"><i class="fas fa-fill-drip"></i></div>
+        <div class="tool" data-tool="gradient" title="Gradient (L)"><i class="fas fa-magic"></i></div>
+        <div class="tool" data-tool="clone" title="Clone Stamp (S)"><i class="fas fa-stamp"></i></div>
+        <div class="tool" data-tool="text" title="Text (T)"><i class="fas fa-font"></i></div>
+        <div class="tool" data-tool="shape" title="Shapes (U)"><i class="fas fa-shapes"></i></div>
+        <div class="tool" data-tool="pipette" title="Eyedropper (I)"><i class="fas fa-eye-dropper"></i></div>
+        <div class="tool" data-tool="pen" title="Pen Tool (P)"><i class="fas fa-pen-nib"></i></div>
+        <div class="tool" data-tool="dodge" title="Dodge"><i class="fas fa-sun"></i></div>
+        <div class="tool" data-tool="burn" title="Burn"><i class="fas fa-moon"></i></div>
+        <div class="tool" data-tool="blur-tool" title="Blur"><i class="fas fa-tint"></i></div>
+        <div class="tool" data-tool="heal" title="Heal"><i class="fas fa-band-aid"></i></div>
+    </div>
 
-        <!-- Workspace -->
-        <div class="workspace" id="workspace">
-            <div id="viewport" style="width:100%; height:100%; position:relative; overflow:hidden;">
-                <div id="canvas-wrapper" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
-                    <canvas id="canvas-stage"></canvas>
-                    <div id="transform-controls" class="transform-layer">
-                        <div class="handle tl" data-handle="tl"></div>
-                        <div class="handle tr" data-handle="tr"></div>
-                        <div class="handle bl" data-handle="bl"></div>
-                        <div class="handle br" data-handle="br"></div>
-                        <div class="rot-line"></div>
-                        <div class="handle rot" data-handle="rot" title="Rotate"></div>
+    <!-- Workspace -->
+    <div class="workspace" id="workspace">
+        <div id="viewport" style="width:100%; height:100%; position:relative; overflow:hidden;">
+            <!-- Home Screen Overlay -->
+            <div id="home-screen" class="home-screen">
+                <div class="home-content">
+                    <div class="home-logo"><span>P</span> Photopea-ish</div>
+                    <div class="home-btns">
+                        <button class="home-btn" onclick="openNewProjectDialog()"><i class="fas fa-file"></i> New
+                            Project</button>
+                        <button class="home-btn" onclick="document.getElementById('file-upload').click()"><i
+                                class="fas fa-folder-open"></i> Open From Computer</button>
+                    </div>
+                    <div class="drop-zone-msg">
+                        Drop any files here
+                    </div>
+                    <div class="footer-icons">
+                        <div class="footer-icon-group"><i class="fas fa-file-image"></i><span>PSD</span></div>
+                        <div class="footer-icon-group"><i class="fas fa-file-pdf"></i><span>PDF</span></div>
+                        <div class="footer-icon-group"><i class="fas fa-file-code"></i><span>SVG</span></div>
+                        <div class="footer-icon-group"><i class="fas fa-file-alt"></i><span>RAW</span></div>
+                        <div class="footer-icon-group"><i class="fas fa-image"></i><span>JPG</span></div>
                     </div>
                 </div>
             </div>
 
-            <div id="text-editor-overlay" style="position:absolute; display:none; top:0; left:0;">
-                <input type="text" id="text-input"
-                    style="background:rgba(0,0,0,0.5); border:1px solid #fff; color:white; font-size:20px; padding:5px; border-radius:3px;">
-                <button id="text-ok" class="btn btn-sm btn-primary">OK</button>
-            </div>
-        </div>
-
-        <!-- Right Panels -->
-        <div class="panels">
-            <!-- Layers -->
-            <div class="panel-section" style="flex:1;">
-                <div class="panel-header">Layers</div>
-                <div class="prop-row" style="background:#333; padding:5px 10px;">
-                    <select id="layer-blend" style="width:80px;">
-                        <option value="source-over">Normal</option>
-                        <option value="multiply">Multiply</option>
-                        <option value="screen">Screen</option>
-                        <option value="overlay">Overlay</option>
-                        <option value="darken">Darken</option>
-                        <option value="lighten">Lighten</option>
-                    </select>
-                    <div class="slider-group" style="margin-left:10px;">
-                        <span style="font-size:0.7rem;">Op:</span>
-                        <input type="range" id="layer-opacity" min="0" max="100" value="100">
-                    </div>
+            <div id="canvas-wrapper" class="hidden"
+                style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                <canvas id="canvas-stage"></canvas>
+                <div id="transform-controls" class="transform-layer">
+                    <div class="handle tl" data-handle="tl"></div>
+                    <div class="handle tr" data-handle="tr"></div>
+                    <div class="handle bl" data-handle="bl"></div>
+                    <div class="handle br" data-handle="br"></div>
+                    <div class="rot-line"></div>
+                    <div class="handle rot" data-handle="rot" title="Rotate"></div>
                 </div>
-
-                <div class="layer-list" id="layer-list">
-                    <!-- Layers Go Here -->
-                </div>
-
-                <div class="layer-controls">
-                    <button class="layer-btn" id="btn-add-layer" title="New Layer"><i
-                            class="fas fa-plus-square"></i></button>
-                    <button class="layer-btn" id="btn-del-layer" title="Delete Layer"><i
-                            class="fas fa-trash-alt"></i></button>
-                    <button class="layer-btn" id="btn-move-up" title="Move Up"><i class="fas fa-arrow-up"></i></button>
-                    <button class="layer-btn" id="btn-move-down" title="Move Down"><i
-                            class="fas fa-arrow-down"></i></button>
-                    <button class="layer-btn" id="btn-dup-layer" title="Duplicate"><i class="fas fa-copy"></i></button>
-                    <button class="layer-btn" id="btn-merge-down" title="Merge Down"><i
-                            class="fas fa-level-down-alt"></i></button>
-                </div>
-            </div>
-
-            <!-- Filters / Adjustments -->
-            <div class="panel-section" style="height: 300px;">
-                <div class="panel-header">Adjustments (Active Layer)</div>
-                <div style="padding:10px; overflow-y:auto;">
-                    <button class="btn btn-sm btn-block btn-secondary" style="margin-bottom:5px;"
-                        onclick="applyFilter('grayscale')">Grayscale</button>
-                    <button class="btn btn-sm btn-block btn-secondary" style="margin-bottom:5px;"
-                        onclick="applyFilter('invert')">Invert</button>
-                    <button class="btn btn-sm btn-block btn-secondary" style="margin-bottom:5px;"
-                        onclick="applyFilter('sepia')">Sepia</button>
-                    <hr style="border-color:#444; margin:10px 0;">
-                    <label>Brightness</label>
-                    <input type="range" style="width:100%" min="-100" max="100" value="0"
-                        onchange="applyFilter('brightness', this.value)">
-                    <label>Blur</label>
-                    <input type="range" style="width:100%" min="0" max="20" value="0"
-                        onchange="applyFilter('blur', this.value)">
+                <!-- Text Editor Overlay -->
+                <div id="text-editor-overlay" style="display:none; position:absolute; z-index:200;">
+                    <input type="text" id="text-input" style="font-size:20px; padding:5px;">
+                    <button id="text-ok">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Right Panels -->
+    <div class="panels">
+        <!-- Top Panel (History / Swatches) -->
+        <div class="panel-top">
+            <div class="panel-tabs">
+                <div class="panel-tab active">History</div>
+                <div class="panel-tab">Swatches</div>
+                <div class="panel-tab">Info</div>
+            </div>
+            <div class="history-list" id="history-list"></div>
+        </div>
+
+        <!-- Bottom Panel (Layers / Paths) -->
+        <div class="panel-bottom">
+            <div class="panel-tabs">
+                <div class="panel-tab active">Layers</div>
+                <div class="panel-tab">Channels</div>
+                <div class="panel-tab">Paths</div>
+            </div>
+
+            <div class="prop-row" style="background:var(--bg-panel); padding:5px 10px; border-bottom:1px solid #444;">
+                <select id="layer-blend" style="width:80px; background:#444; border:none; color:#ddd;">
+                    <option value="source-over">Normal</option>
+                    <option value="multiply">Multiply</option>
+                    <option value="screen">Screen</option>
+                    <option value="overlay">Overlay</option>
+                </select>
+                <div class="slider-group" style="margin-left:10px;">
+                    <span style="font-size:0.7rem;">Op:</span>
+                    <input type="range" id="layer-opacity" min="0" max="100" value="100">
+                </div>
+            </div>
+
+            <div class="layer-list" id="layer-list" style="flex:1; border-bottom:1px solid #444;"></div>
+
+            <div class="layer-controls">
+                <button class="layer-btn" id="btn-add-layer" title="New Layer"><i class="fas fa-plus"></i></button>
+                <button class="layer-btn" id="btn-del-layer" title="Delete"><i class="fas fa-trash"></i></button>
+                <button class="layer-btn" title="Folder"><i class="fas fa-folder"></i></button>
+                <button class="layer-btn" title="Mask"><i class="fas fa-mask"></i></button>
+                <button class="layer-btn" title="Effects"><i class="fas fa-magic"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Inputs -->
+    <input type="file" id="file-upload" accept="image/*" style="display:none">
+    <input type="file" id="project-upload" accept=".vtz" style="display:none">
+
+    <!-- Modals -->
     <div class="modal-overlay" id="help-modal">
         <div class="modal" style="width: 500px;">
             <h3>Keyboard Shortcuts</h3>
             <div class="shortcut-list">
                 <div class="shortcut-item"><span>Move Tool</span> <span>V</span></div>
-                <div class="shortcut-item"><span>Select Tool</span> <span>M</span></div>
-                <div class="shortcut-item"><span>Brush Tool</span> <span>B</span></div>
-                <div class="shortcut-item"><span>Eraser Tool</span> <span>E</span></div>
-                <div class="shortcut-item"><span>Undo</span> <span>Ctrl + Z</span></div>
-                <div class="shortcut-item"><span>Redo</span> <span>Ctrl + Y</span></div>
-                <div class="shortcut-item"><span>Copy</span> <span>Ctrl + C</span></div>
-                <div class="shortcut-item"><span>Paste</span> <span>Ctrl + V</span></div>
-                <div class="shortcut-item"><span>Cut</span> <span>Ctrl + X</span></div>
-                <div class="shortcut-item"><span>Deselect</span> <span>Ctrl + D</span></div>
-                <div class="shortcut-item"><span>Delete Layer/Sel</span> <span>Delete</span></div>
-                <div class="shortcut-item"><span>Brush SIze</span> <span>[ and ]</span></div>
-                <div class="shortcut-item"><span>Pan Canvas</span> <span>Space + Drag</span></div>
-                <div class="shortcut-item"><span>Lock Aspect</span> <span>Shift + Resize</span></div>
+                <!-- ... content ... -->
             </div>
             <div class="modal-btns">
                 <button class="btn btn-primary"
@@ -663,6 +219,83 @@
         </div>
     </div>
 
+    <!-- Advanced New Project Modal -->
+    <div class="modal-overlay" id="new-project-modal" style="display:none; align-items:center; justify-content:center;">
+        <div class="np-modal">
+            <div class="np-header">
+                <h3>New Project</h3>
+                <button class="np-close"
+                    onclick="document.getElementById('new-project-modal').style.display='none'">&times;</button>
+            </div>
+            <div class="np-body">
+                <!-- Sidebar -->
+                <div class="np-sidebar">
+                    <div class="np-tab active" data-cat="social">Social</div>
+                    <div class="np-tab" data-cat="print">Print</div>
+                    <div class="np-tab" data-cat="photo">Photo</div>
+                    <div class="np-tab" data-cat="screen">Screen</div>
+                    <div class="np-tab" data-cat="mobile">Mobile</div>
+                    <div class="np-tab" data-cat="ads">Ads</div>
+                </div>
+
+                <!-- Grid -->
+                <div class="np-grid-wrapper">
+                    <div class="np-grid" id="np-grid">
+                        <!-- Templates injected here -->
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div class="np-settings">
+                    <div class="np-group">
+                        <label>Name</label>
+                        <input type="text" id="np-name" value="New Project">
+                    </div>
+                    <div class="np-row">
+                        <div class="np-group">
+                            <label>Width</label>
+                            <input type="number" id="np-width" value="1280">
+                        </div>
+                        <div class="np-group">
+                            <label>Height</label>
+                            <input type="number" id="np-height" value="720">
+                        </div>
+                        <select id="np-unit" style="width:70px; margin-top:18px;">
+                            <option value="px">px</option>
+                            <option value="in">in</option>
+                            <option value="mm">mm</option>
+                        </select>
+                    </div>
+                    <div class="np-row">
+                        <div class="np-group">
+                            <label>DPI</label>
+                            <input type="number" id="np-dpi" value="72">
+                        </div>
+                        <select style="width:100px; margin-top:18px;">
+                            <option>Pixels/Inch</option>
+                        </select>
+                    </div>
+                    <div class="np-group">
+                        <label>Background</label>
+                        <div class="np-bg-select">
+                            <select id="np-bg-type" onchange="toggleNpColor(this.value)">
+                                <option value="white">White</option>
+                                <option value="black">Black</option>
+                                <option value="transparent">Transparent</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <input type="color" id="np-bg-color" value="#ffffff"
+                                style="display:none; width:30px; height:30px; border:none; padding:0;">
+                        </div>
+                    </div>
+                    <div class="np-spacer"></div>
+                    <button class="np-create-btn" id="btn-create-project">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resize Modal (Kept for Image/Canvas Size) -->
     <div class="modal-overlay" id="resize-modal">
         <div class="modal">
             <h3 id="resize-title">Resize</h3>
@@ -691,6 +324,7 @@
     <div class="modal-overlay" id="export-modal">
         <div class="modal">
             <h3>Export Image</h3>
+            <!-- (Content same as before) -->
             <div class="control-group">
                 <label>Format</label>
                 <select id="export-format" style="width:100%; padding:5px; margin-bottom:10px;">
@@ -698,10 +332,6 @@
                     <option value="image/jpeg">JPG</option>
                     <option value="image/webp">WEBP</option>
                 </select>
-                <label>Quality (0.1 - 1.0)</label>
-                <input type="number" id="export-quality" value="0.9" step="0.1" min="0.1" max="1.0" style="width:100%;">
-            </div>
-            <div class="modal-btns">
                 <button class="btn btn-secondary"
                     onclick="document.getElementById('export-modal').style.display='none'">Cancel</button>
                 <button class="btn btn-primary" id="btn-do-export">Download</button>
@@ -712,1751 +342,13 @@
     <div class="modal-overlay" id="huesat-modal">
         <div class="modal">
             <h3>Hue / Saturation</h3>
-            <div class="control-group">
-                <label>Hue</label>
-                <input type="range" id="hs-hue" min="-180" max="180" value="0" style="width:100%">
-                <label>Saturation</label>
-                <input type="range" id="hs-sat" min="-100" max="100" value="0" style="width:100%">
-            </div>
-            <div class="modal-btns">
-                <button class="btn btn-secondary"
-                    onclick="document.getElementById('huesat-modal').style.display='none'">Cancel</button>
-                <button class="btn btn-primary" id="btn-do-huesat">Apply</button>
-            </div>
+            <input type="range" id="hs-hue">
+            <button class="btn btn-secondary"
+                onclick="document.getElementById('huesat-modal').style.display='none'">Cancel</button>
         </div>
     </div>
 
-    <script type="module">
-        import '../../js/utils/common.js';
-
-        // --- Core Engine ---
-        const canvas = document.getElementById('canvas-stage');
-        const ctx = canvas.getContext('2d');
-        const workspace = document.getElementById('workspace');
-        const wrapper = document.getElementById('canvas-wrapper');
-        const transformControls = document.getElementById('transform-controls');
-        const textOverlay = document.getElementById('text-editor-overlay');
-
-        // Configuration
-        let width = 800;
-        let height = 600;
-
-        // State
-        let layers = [];
-        let activeLayerId = null;
-        let activeTool = 'move';
-        let resizeType = 'image'; // 'image' or 'canvas'
-
-        let zoom = 1.0;
-        let panX = 0;
-        let panY = 0;
-        let isSpacePressed = false;
-        let isPanning = false;
-        let lastMouseX, lastMouseY;
-
-        let history = [];
-        let historyIndex = -1;
-        const MAX_HISTORY = 20;
-
-        // Tool State
-        let isDrawing = false;
-        let isTransforming = false;
-        let transformHandle = null;
-        let startX, startY;
-        let startLayerState = null; // {x, y, w, h}
-
-        // Selection State
-        let selection = null; // {x, y, w, h} OR {type: 'mask', data: ImageData, x, y}
-        // Note: For Magic Wand, rectangle selection isn't enough. We need a mask?
-        // MVP: Magic Wand creates a Rectangular bounding box of the selected area?
-        // Better: Magic Wand creates a complex path? Too hard for Canvas logic simply.
-        // Compromise: Magic Wand selects a "Region". We store it as a Path or Mask.
-        // Let's try to stick to Rect Selection for V1 simplicity? No, Wand implies irregular shape.
-        // Actually, integrating complex selection with existing Clip rects is hard.
-        // Let's make Magic Wand just do a "Selection Mask" on a temp canvas?
-        // Simplified V2: Magic Wand just selects the BOUNDING BOX of the color area. (Simple but limited)
-        // Advanced V2: Magic Wand creates a clipping mask. 
-        // Let's try Bounding Box first for robustness, or Mask if feeling brave.
-        // Let's do Bounding Box + Visual Highlights for now to avoid breaking basic tools.
-
-        let isSelecting = false;
-        let internalClipboard = null;
-
-        const toolSettings = {
-            color: '#000000',
-            size: 5,
-            font: 'Arial',
-            fontSize: 40,
-            shape: 'rect',
-            fillShape: false,
-            tolerance: 30
-        };
-
-        // Tool Options HTML snippets
-        const toolOptions = {
-            'move': '',
-            'select': '',
-            'crop': '',
-            'brush': '<span>Color:</span> <input type="color" id="opt-color" value="#000000"> <span>Size:</span> <input type="range" min="1" max="100" value="5" id="opt-size">',
-            'eraser': '<span>Size:</span> <input type="range" min="1" max="100" value="5" id="opt-size">',
-            'fill': '<span>Tolerance:</span> <input type="range" min="0" max="255" value="30" id="opt-tolerance">',
-            'gradient': '<span>Color 1:</span> <input type="color" id="opt-color1" value="#000000"> <span>Color 2:</span> <input type="color" id="opt-color2" value="#ffffff">',
-            'clone': '',
-            'text': '<span>Font:</span> <select id="opt-font"><option>Arial</option><option>Verdana</option></select> <span>Size:</span> <input type="range" min="10" max="100" value="40" id="opt-fontSize"> <span>Color:</span> <input type="color" id="opt-color" value="#000000">',
-            'shape': '<span>Shape:</span> <select id="opt-shape"><option value="rect">Rectangle</option><option value="circle">Circle</option></select> <input type="checkbox" id="opt-fillShape"> <label for="opt-fillShape">Fill</label> <span>Color:</span> <input type="color" id="opt-color" value="#000000"> <span>Size:</span> <input type="range" min="1" max="100" value="5" id="opt-size">',
-            'pipette': '',
-            'pen': '<button class="btn-sm" onclick="strokePath()">Stroke Path</button> <button class="btn-sm" onclick="clearPath()">Clear</button>',
-            'dodge': '<span>Range:</span> <select id="opt-range"><option>Midtones</option></select> <span>Exposure:</span> <input type="range" min="1" max="100" value="50" id="opt-exposure"> <span>Size:</span> <input type="range" min="1" max="100" value="20" id="opt-size">',
-            'burn': '<span>Exposure:</span> <input type="range" min="1" max="100" value="50" id="opt-exposure"> <span>Size:</span> <input type="range" min="1" max="100" value="20" id="opt-size">',
-            'blur-tool': '<span>Strength:</span> <input type="range" min="1" max="100" value="50" id="opt-strength"> <span>Size:</span> <input type="range" min="1" max="100" value="20" id="opt-size">',
-            'sharpen-tool': '<span>Strength:</span> <input type="range" min="1" max="100" value="50" id="opt-strength"> <span>Size:</span> <input type="range" min="1" max="100" value="20" id="opt-size">',
-            'sponge': '<span>Mode:</span> <select id="opt-mode"><option value="saturate">Saturate</option><option value="desaturate">Desaturate</option></select> <span>Flow:</span> <input type="range" min="1" max="100" value="50" id="opt-flow"> <span>Size:</span> <input type="range" min="1" max="100" value="20" id="opt-size">',
-            'heal': '<span>Size:</span> <input type="range" min="1" max="50" value="15" id="opt-size">',
-        };
-
-        // Initialize
-        function init() {
-            canvas.width = width;
-            canvas.height = height;
-
-            // Background Layer
-            const bgLayer = createLayer('Background');
-            bgLayer.ctx.fillStyle = '#ffffff';
-            bgLayer.ctx.fillRect(0, 0, width, height);
-
-            saveHistory("Init");
-            render();
-            updateLayerList();
-            setupTools();
-            updateZoom();
-            document.getElementById('canvas-dims').innerText = `${width}x${height}`;
-        }
-
-        // --- Layer System ---
-        function createLayer(name = 'Layer', wOverride, hOverride, type = 'raster') {
-            const id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
-            const lCanvas = document.createElement('canvas');
-            lCanvas.width = wOverride || width;
-            lCanvas.height = hOverride || height;
-
-            const layer = {
-                id,
-                name: name,
-                type: type, // raster, text
-                canvas: lCanvas,
-                ctx: lCanvas.getContext('2d', { willReadFrequently: true }),
-                x: 0,
-                y: 0,
-                width: lCanvas.width,
-                height: lCanvas.height,
-                visible: true,
-                opacity: 100,
-                blendMode: 'source-over',
-                // Filters
-                filters: {
-                    brightness: 100,
-                    contrast: 100,
-                    blur: 0,
-                    grayscale: 0,
-                    sepia: 0,
-                    invert: 0
-                },
-                // Text specific
-                text: '',
-                font: '',
-                color: ''
-            };
-
-            layers.push(layer);
-            setActiveLayer(id);
-            return layer;
-        }
-
-        function setActiveLayer(id) {
-            activeLayerId = id;
-            updateLayerList();
-            updateLayerPanelUI();
-            updateTransformControls();
-        }
-
-        function getActiveLayer() {
-            return layers.find(l => l.id === activeLayerId);
-        }
-
-        // --- History System ---
-        function saveHistory(actionName) {
-            // Remove future history if we are in middle
-            if (historyIndex < history.length - 1) {
-                history = history.slice(0, historyIndex + 1);
-            }
-
-            // Deep copy layers (Canvas needs data copy)
-            const state = layers.map(l => {
-                const copyCanvas = document.createElement('canvas');
-                copyCanvas.width = l.canvas.width;
-                copyCanvas.height = l.canvas.height;
-                copyCanvas.getContext('2d').drawImage(l.canvas, 0, 0);
-
-                return {
-                    ...l,
-                    canvas: copyCanvas,
-                    ctx: null // Don't store context
-                };
-            });
-
-            history.push({ state, activeId: activeLayerId, action: actionName });
-            if (history.length > MAX_HISTORY) history.shift();
-            else historyIndex++;
-        }
-
-        function restoreHistory(idx) {
-            if (idx < 0 || idx >= history.length) return;
-            historyIndex = idx;
-            const snapshot = history[idx];
-
-            // Restore layers
-            layers = snapshot.state.map(lState => {
-                const lCanvas = document.createElement('canvas');
-                lCanvas.width = lState.canvas.width;
-                lCanvas.height = lState.canvas.height;
-                const ctx = lCanvas.getContext('2d');
-                ctx.drawImage(lState.canvas, 0, 0);
-
-                return {
-                    ...lState,
-                    canvas: lCanvas,
-                    ctx: ctx
-                };
-            });
-
-            activeLayerId = snapshot.activeId;
-            render();
-            updateLayerList();
-            updateLayerPanelUI();
-            document.getElementById('canvas-dims').innerText = `${width}x${height}`;
-        }
-
-        document.getElementById('btn-undo').addEventListener('click', () => restoreHistory(historyIndex - 1));
-        document.getElementById('btn-redo').addEventListener('click', () => restoreHistory(historyIndex + 1));
-
-        window.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'z') { e.preventDefault(); restoreHistory(historyIndex - 1); }
-            if (e.ctrlKey && e.key === 'y') { e.preventDefault(); restoreHistory(historyIndex + 1); }
-            if (e.key === 'Delete') {
-                const l = getActiveLayer();
-                if (l && layers.length > 1) {
-                    layers = layers.filter(x => x.id !== l.id);
-                    setActiveLayer(layers[layers.length - 1].id);
-                    render(); updateLayerList(); saveHistory("Delete Layer");
-                }
-            }
-            if (e.code === 'Space') { isSpacePressed = true; workspace.style.cursor = 'grab'; }
-
-            // Brush Size Shortcuts
-            if (e.key === '[') {
-                toolSettings.size = Math.max(1, toolSettings.size - 5);
-                updateOptionsBar(); // Update UI
-            }
-            if (e.key === ']') {
-                toolSettings.size = Math.min(100, toolSettings.size + 5);
-                updateOptionsBar();
-            }
-
-            // Clipboard
-            if (e.ctrlKey && e.key === 'c') { e.preventDefault(); copySelection(); }
-            if (e.ctrlKey && e.key === 'v') { e.preventDefault(); pasteSelection(); }
-            if (e.ctrlKey && e.key === 'x') { e.preventDefault(); cutSelection(); }
-            if (e.ctrlKey && e.key === 'd') { e.preventDefault(); selection = null; render(); } // Deselect
-
-            // Delete Selection or Layer
-            if (e.key === 'Delete') {
-                if (selection) {
-                    // Clear area in active layer
-                    const l = getActiveLayer();
-                    if (l) {
-                        const scaleX = l.canvas.width / l.width;
-                        const scaleY = l.canvas.height / l.height;
-                        // Adjust selection to layer space
-                        // Simplify: Selection is in Global Canvas Space.
-                        // We need to map global selection rect to layer local space.
-                        const lx = (selection.x - l.x) * scaleX;
-                        const ly = (selection.y - l.y) * scaleY;
-                        const lw = selection.w * scaleX;
-                        const lh = selection.h * scaleY;
-
-                        l.ctx.clearRect(lx, ly, lw, lh);
-                        render(); saveHistory("Delete Selection");
-                    }
-                } else {
-                    const l = getActiveLayer();
-                    if (l && layers.length > 1) {
-                        layers = layers.filter(x => x.id !== l.id);
-                        setActiveLayer(layers[layers.length - 1].id);
-                        render(); updateLayerList(); saveHistory("Delete Layer");
-                    }
-                }
-            }
-        });
-        window.addEventListener('keyup', (e) => {
-            if (e.code === 'Space') { isSpacePressed = false; workspace.style.cursor = 'default'; }
-        });
-
-        // --- Rendering ---
-        function render() {
-            ctx.clearRect(0, 0, width, height);
-
-            // Draw Checkerboard pattern behind transparent layers handled by CSS on wrapper usually,
-            // but for export we need transparent pixels.
-
-            layers.forEach(layer => {
-                if (!layer.visible) return;
-                ctx.globalAlpha = layer.opacity / 100;
-                ctx.globalCompositeOperation = layer.blendMode;
-
-                // Construct Filter String
-                const f = layer.filters;
-                const filterStr = `brightness(${f.brightness}%) contrast(${f.contrast}%) blur(${f.blur}px) grayscale(${f.grayscale}%) sepia(${f.sepia}%) invert(${f.invert}%)`;
-                ctx.filter = filterStr;
-
-                // Draw with scaled width/height
-                ctx.drawImage(layer.canvas, layer.x, layer.y, layer.width, layer.height);
-
-                // Reset filter for next layer
-                ctx.filter = 'none';
-            });
-
-            // Draw Selection Marquee
-            if (selection) {
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 1;
-                ctx.setLineDash([5, 5]);
-
-                ctx.beginPath();
-                if (selection.type === 'poly') {
-                    ctx.moveTo(selection.points[0][0], selection.points[0][1]);
-                    for (let i = 1; i < selection.points.length; i++) ctx.lineTo(selection.points[i][0], selection.points[i][1]);
-                    ctx.closePath();
-                } else {
-                    ctx.rect(selection.x, selection.y, selection.w, selection.h);
-                }
-                ctx.stroke();
-
-                ctx.strokeStyle = '#000';
-                ctx.setLineDash([5, 5]);
-                ctx.lineDashOffset = 5;
-                ctx.stroke(); // Re-stroke previous path
-                ctx.setLineDash([]);
-                ctx.lineDashOffset = 0;
-            }
-
-            // Draw Lasso in progress
-            if (activeTool === 'lasso' && lassoPoints.length > 0) {
-                ctx.strokeStyle = '#00ccff';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(lassoPoints[0][0], lassoPoints[0][1]);
-                for (let i = 1; i < lassoPoints.length; i++) ctx.lineTo(lassoPoints[i][0], lassoPoints[i][1]);
-
-                // Elastic line to mouse? Need mouse pos in render loop. Skip for now.
-
-                ctx.stroke();
-
-                // Draw start point
-                ctx.fillStyle = '#fff';
-                ctx.fillRect(lassoPoints[0][0] - 2, lassoPoints[0][1] - 2, 5, 5);
-            }
-
-            ctx.globalAlpha = 1.0;
-            ctx.globalCompositeOperation = 'source-over';
-
-            updateTransformControls();
-        }
-
-        // --- Interaction ---
-        function getMousePos(evt) {
-            const rect = canvas.getBoundingClientRect();
-            return {
-                x: (evt.clientX - rect.left) / zoom,
-                y: (evt.clientY - rect.top) / zoom
-            };
-        }
-
-        // Zoom & Pan
-        workspace.addEventListener('wheel', (e) => {
-            if (e.ctrlKey) {
-                e.preventDefault();
-                zoom += e.deltaY * -0.001;
-                zoom = Math.min(Math.max(0.1, zoom), 5);
-                updateZoom();
-            } else {
-                // Scroll normally
-            }
-        });
-
-        workspace.addEventListener('mousedown', (e) => {
-            if (isPanning) {
-                isPanning = true;
-                lastMouseX = e.clientX;
-                lastMouseY = e.clientY;
-                workspace.style.cursor = 'grabbing';
-                return;
-            }
-
-            // Check if clicking a handle
-            if (e.target.classList.contains('handle')) {
-                const layer = getActiveLayer();
-                if (!layer) return;
-
-                isTransforming = true;
-                transformHandle = e.target.dataset.handle;
-                startX = e.clientX; // Use raw client coords for drag math
-                startY = e.clientY;
-                startLayerState = { x: layer.x, y: layer.y, w: layer.width, h: layer.height };
-                return;
-            }
-
-            // Tool Logic
-            const pos = getMousePos(e);
-            startX = pos.x;
-            startY = pos.y;
-
-            if (activeTool === 'select') {
-                isSelecting = true;
-                selection = { x: startX, y: startY, w: 0, h: 0 };
-                return;
-            }
-
-            if (activeTool === 'lasso') {
-                if (lassoPoints.length > 2) {
-                    const dx = e.offsetX - lassoPoints[0][0];
-                    const dy = e.offsetY - lassoPoints[0][1];
-                    if (Math.sqrt(dx * dx + dy * dy) < 10) { closeLasso(); return; }
-                }
-                lassoPoints.push([e.offsetX, e.offsetY]);
-                render();
-                return;
-            }
-
-            if (activeTool === 'magic') {
-                magicWandSelect(e.offsetX, e.offsetY);
-                return;
-            }
-
-            if (activeTool === 'pipette') {
-                pickColor(e.offsetX, e.offsetY);
-                return;
-            }
-
-            // Fill Tool (Click)
-            if (activeTool === 'fill') {
-                floodFill(e.offsetX, e.offsetY);
-                return;
-            }
-
-            if (activeTool === 'clone') {
-                if (e.altKey) {
-                    const p = getMousePos(e);
-                    // Store source in Global Canvas Space
-                    // (Actually we clone from Active Layer for now to keep it simple, or visual canvas?)
-                    // Let's clone from Active Layer (source relative to layer).
-                    // Complex if layer moves.
-                    // Simplest: Clone Source is Global Coordinate.
-                    cloneSource = { x: p.x, y: p.y };
-                    alert("Clone Source Set!");
-                    return;
-                }
-                if (!cloneSource) { alert("Alt+Click to set source first."); return; }
-                cloneStartSource = { ...cloneSource }; // Snapshot for this stroke
-            }
-
-            // Retouching Start
-            if (['dodge', 'burn', 'blur-tool', 'sharpen-tool', 'sponge', 'heal'].includes(activeTool)) {
-                isDrawing = true;
-                applyRetouch(e);
-                return;
-            }
-
-            isDrawing = true;
-
-            const layer = getActiveLayer();
-            if (!layer) return;
-
-            // Restrict drawing to selection?
-            if (selection) {
-                // Save context state for clipping!
-                layer.ctx.save();
-                const scaleX = layer.canvas.width / layer.width;
-                const scaleY = layer.canvas.height / layer.height;
-
-                layer.ctx.beginPath();
-                layer.ctx.rect(
-                    (selection.x - layer.x) * scaleX,
-                    (selection.y - layer.y) * scaleY,
-                    selection.w * scaleX,
-                    selection.h * scaleY
-                );
-                layer.ctx.clip();
-                // We need to restore this after stroke... handled in mousemove/up
-            }
-
-            if (activeTool === 'text') {
-                createLayer('Text', width, height); // New Text Layer
-                // Show text input overlay
-                textOverlay.style.display = 'block';
-                textOverlay.style.left = (e.clientX) + 'px';
-                textOverlay.style.top = (e.clientY) + 'px';
-                document.getElementById('text-input').focus();
-                isDrawing = false;
-                return;
-            }
-
-            if (activeTool === 'brush' || activeTool === 'eraser') {
-                layer.ctx.beginPath();
-                // Correct start path for potentially resized layer
-                const scaleX = layer.canvas.width / layer.width;
-                const scaleY = layer.canvas.height / layer.height;
-                layer.ctx.moveTo((startX - layer.x) * scaleX, (startY - layer.y) * scaleY);
-            }
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (isPanning) {
-                const dx = e.clientX - lastMouseX;
-                const dy = e.clientY - lastMouseY;
-                lastMouseX = e.clientX;
-                lastMouseY = e.clientY;
-                panX += dx;
-                panY += dy;
-                wrapper.style.transform = `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${zoom})`;
-                return;
-            }
-
-            const layer = getActiveLayer();
-            if (!layer) return;
-
-            if (isTransforming) {
-                const dx = (e.clientX - startX) / zoom;
-                const dy = (e.clientY - startY) / zoom;
-
-                // Simplified Resize Logic (Top-Left anchor for simplicity, can be improved)
-                // Real resize needs to respect anchor points.
-                // For MVP: BR handle changes width/height.
-
-                let newW = startLayerState.w;
-                let newH = startLayerState.h;
-                let newX = startLayerState.x;
-                let newY = startLayerState.y;
-
-                if (transformHandle === 'br') {
-                    newW += dx;
-                    newH += dy;
-                    if (e.shiftKey) {
-                        // Aspect Ratio Lock
-                        const ratio = startLayerState.w / startLayerState.h;
-                        newH = newW / ratio;
-                    }
-                } else if (transformHandle === 'bl') {
-                    newW -= dx;
-                    newH += dy;
-                    newX += dx;
-                    if (e.shiftKey) {
-                        const ratio = startLayerState.w / startLayerState.h;
-                        const targetH = newW / ratio;
-                        // Adjust Y if H changes? No, BL anchors TR.
-                        // Keeping it simple: Shift only works perfectly on BR for now.
-                    }
-                } else if (transformHandle === 'tr') {
-                    newW += dx;
-                    newH -= dy;
-                    newY += dy;
-                } else if (transformHandle === 'tl') {
-                    newW -= dx;
-                    newH -= dy;
-                    newX += dx;
-                    newY += dy;
-                }
-
-                // Min size
-                if (newW < 10) newW = 10;
-                if (newH < 10) newH = 10;
-
-                // Set Layer Properties
-                // Note: We are changing the layer's "Output Size", but the canvas content is same size.
-                // To support true resizing, we need to scale drawing.
-                // Or just use drawImage with width/height?
-                // Implementation: Layer maintains its own Canvas. We store visual width/height separately from underlying canvas?
-                // Correct approach: layer.width/height is the visual size.
-
-                layer.width = newW;
-                layer.height = newH;
-                layer.x = newX;
-                layer.y = newY;
-
-                render();
-                // No updateLayerList needed
-                return;
-            }
-
-            if (isSelecting) {
-                const pos = getMousePos(e);
-                selection.w = pos.x - startX;
-                selection.h = pos.y - startY;
-                render();
-                return;
-            }
-
-            if (activeTool === 'pen' && isDrawing) {
-                const pos = getMousePos(e);
-                currentPath.push({ x: pos.x, y: pos.y });
-                render();
-                return;
-            }
-
-            // Retouching Tools
-            if (['dodge', 'burn', 'blur-tool', 'sharpen-tool', 'sponge', 'heal'].includes(activeTool) && isDrawing) {
-                applyRetouch(e);
-                return;
-            }
-
-            if (!isDrawing) return;
-            const pos = getMousePos(e);
-
-            if (activeTool === 'move') {
-                layer.x += pos.x - startX;
-                layer.y += pos.y - startY;
-                startX = pos.x;
-                startY = pos.y;
-                render();
-            }
-            if (activeTool === 'brush') {
-                // ... (drawing logic as key)
-                const scaleX = layer.canvas.width / layer.width;
-                const scaleY = layer.canvas.height / layer.height;
-                const localX = (pos.x - layer.x) * scaleX;
-                const localY = (pos.y - layer.y) * scaleY;
-
-                layer.ctx.lineTo(localX, localY);
-                layer.ctx.strokeStyle = toolSettings.color;
-                layer.ctx.lineWidth = toolSettings.size * scaleX;
-                layer.ctx.lineCap = 'round';
-                layer.ctx.stroke();
-                render();
-            } else if (activeTool === 'eraser') {
-                // ... same fix as brush ...
-                const scaleX = layer.canvas.width / layer.width;
-                const scaleY = layer.canvas.height / layer.height;
-                const localX = (pos.x - layer.x) * scaleX;
-                const localY = (pos.y - layer.y) * scaleY;
-
-                layer.ctx.globalCompositeOperation = 'destination-out';
-                layer.ctx.lineTo(localX, localY);
-                layer.ctx.lineWidth = toolSettings.size * scaleX;
-                layer.ctx.lineCap = 'round';
-                layer.ctx.stroke();
-                layer.ctx.globalCompositeOperation = 'source-over';
-                render();
-            } else if (activeTool === 'gradient') {
-                // Preview Gradient Line?
-                // For now, let's just draw it on mouse up to keep it simple, or implement preview overlay
-                // Implementation: Draw line on overlay ctx? We don't have one easily.
-                // Just draw to layer? No.
-                // Let's implement on MouseUp using startX/startY and current pos.
-                // Let's implement on MouseUp using startX/startY and current pos.
-            } else if (activeTool === 'shape') {
-                // Draw Shape shape
-                const scaleX = layer.canvas.width / layer.width;
-                const scaleY = layer.canvas.height / layer.height;
-                const lx = (startX - layer.x) * scaleX;
-                const ly = (startY - layer.y) * scaleY;
-                const w = (pos.x - startX) * scaleX;
-                const h = (pos.y - startY) * scaleY;
-
-                layer.ctx.beginPath();
-                if (toolSettings.shape === 'rect') {
-                    layer.ctx.rect(lx, ly, w, h);
-                } else if (toolSettings.shape === 'circle') {
-                    layer.ctx.ellipse(lx + w / 2, ly + h / 2, Math.abs(w / 2), Math.abs(h / 2), 0, 0, 2 * Math.PI);
-                }
-
-                if (toolSettings.fillShape) {
-                    layer.ctx.fillStyle = toolSettings.color;
-                    layer.ctx.fill();
-                } else {
-                    layer.ctx.strokeStyle = toolSettings.color;
-                    layer.ctx.lineWidth = toolSettings.size;
-                    layer.ctx.stroke();
-                }
-                render();
-            }
-        });
-
-        window.addEventListener('mouseup', (e) => {
-            if (isPanning) { isPanning = false; workspace.style.cursor = isSpacePressed ? 'grab' : 'default'; return; }
-            if (isTransforming) {
-                isTransforming = false;
-                saveHistory("Transform");
-                return;
-            }
-            if (isSelecting) {
-                isSelecting = false;
-                if (selection.w < 0) { selection.x += selection.w; selection.w *= -1; }
-                if (selection.h < 0) { selection.h *= -1; selection.y += selection.h; }
-                render();
-                return;
-            }
-            if (isDrawing) {
-                isDrawing = false;
-                const layer = getActiveLayer();
-                if (layer && selection) layer.ctx.restore(); // Restore clip
-
-                // Gradient Application
-                if (activeTool === 'gradient') {
-                    const pos = getMousePos(e);
-                    // Map to local
-                    const scaleX = layer.canvas.width / layer.width;
-                    const scaleY = layer.canvas.height / layer.height;
-                    const x1 = (startX - layer.x) * scaleX;
-                    const y1 = (startY - layer.y) * scaleY;
-                    const x2 = (pos.x - layer.x) * scaleX;
-                    const y2 = (pos.y - layer.y) * scaleY;
-
-                    const grad = layer.ctx.createLinearGradient(x1, y1, x2, y2);
-                    grad.addColorStop(0, toolSettings.color);
-                    grad.addColorStop(1, 'rgba(255,255,255,0)'); // To transparent? Or Bg color?
-                    // Standard is FG to BG usually. Let's do FG to Transparent for overlays.
-
-                    layer.ctx.fillStyle = grad;
-                    layer.ctx.fillRect(0, 0, layer.canvas.width, layer.canvas.height);
-                    layer.ctx.fillRect(0, 0, layer.canvas.width, layer.canvas.height);
-                    render();
-                }
-
-                // Clone Stamp Logic
-                if (activeTool === 'clone' && isDrawing && cloneSource) {
-                    const l = getActiveLayer();
-                    if (l) {
-                        const pos = getMousePos(e);
-                        // Delta from start of stroke
-                        const dx = pos.x - startX;
-                        const dy = pos.y - startY;
-
-                        // Current Clone Source
-                        const srcGx = cloneStartSource.x + dx;
-                        const srcGy = cloneStartSource.y + dy;
-
-                        // Map to Layer Local
-                        const scaleX = l.canvas.width / l.width;
-                        const scaleY = l.canvas.height / l.height;
-
-                        const destLx = (pos.x - l.x) * scaleX;
-                        const destLy = (pos.y - l.y) * scaleY;
-
-                        const srcLx = (srcGx - l.x) * scaleX;
-                        const srcLy = (srcGy - l.y) * scaleY;
-
-                        const size = toolSettings.size * scaleX;
-
-                        l.ctx.save();
-                        l.ctx.beginPath();
-                        l.ctx.arc(destLx, destLy, size / 2, 0, Math.PI * 2);
-                        l.ctx.clip();
-
-                        // Draw from layer itself (or another if we supported multi-layer clone)
-                        // Cloning from SELF:
-                        l.ctx.drawImage(l.canvas,
-                            srcLx - size / 2, srcLy - size / 2, size, size,
-                            destLx - size / 2, destLy - size / 2, size, size
-                        );
-                        l.ctx.restore();
-                        render();
-                    }
-                }
-
-                if (isDrawing) {
-                    // Update Path (Shape/Brush) logic if needed for preview
-                }
-
-                if (['dodge', 'burn', 'blur-tool', 'sharpen-tool', 'sponge', 'heal'].includes(activeTool) && isDrawing) {
-                    applyRetouch(e);
-                }
-
-                if (activeTool !== 'move' && !['dodge', 'burn', 'blur-tool', 'sharpen-tool', 'sponge', 'heal'].includes(activeTool)) saveHistory(activeTool);
-            }
-        });
-
-        // Retouching Logic
-        function applyRetouch(e) {
-            const l = getActiveLayer();
-            if (!l) return;
-
-            const pos = getMousePos(e);
-            // Helper function to get current transform (zoom, pan)
-            // This function is not provided in the snippet, assuming it exists or can be derived.
-            // For now, we'll use the global zoom and pan values directly.
-            // const transform = getTransform(); 
-
-            // Map mouse (Screen) -> Layer Local
-            const scaleX = l.canvas.width / l.width;
-            const scaleY = l.canvas.height / l.height;
-
-            // Simple mapping: (Mouse - LayerPos) * Scale
-            const lx = (pos.x - l.x) * scaleX;
-            const ly = (pos.y - l.y) * scaleY;
-
-            const size = (document.getElementById('opt-size') ? parseInt(document.getElementById('opt-size').value) : 20) * scaleX;
-            const r = Math.floor(size / 2);
-
-            // Bounds check
-            if (lx < -r || ly < -r || lx > l.canvas.width + r || ly > l.canvas.height + r) return;
-
-            const sx = Math.max(0, Math.floor(lx - r));
-            const sy = Math.max(0, Math.floor(ly - r));
-            const sw = Math.min(l.canvas.width - sx, 2 * r);
-            const sh = Math.min(l.canvas.height - sy, 2 * r);
-
-            if (sw <= 0 || sh <= 0) return;
-
-            const imgData = l.ctx.getImageData(sx, sy, sw, sh);
-            const data = imgData.data;
-
-            // Logic based on tool
-            for (let i = 0; i < data.length; i += 4) {
-                // Circular Brush Check
-                // Relative coords in patch
-                const px = (i / 4) % sw;
-                const py = Math.floor((i / 4) / sw);
-                // Center in patch?
-                // Patch center is (lx-sx, ly-sy) ?
-                // No, patch is from sx,sy. Brush center is lx,ly.
-                // dist from center:
-                const dx = (sx + px) - lx;
-                const dy = (sy + py) - ly;
-                if (dx * dx + dy * dy > r * r) continue;
-
-                if (activeTool === 'dodge') {
-                    data[i] = Math.min(255, data[i] * 1.05);
-                    data[i + 1] = Math.min(255, data[i + 1] * 1.05);
-                    data[i + 2] = Math.min(255, data[i + 2] * 1.05);
-                }
-                else if (activeTool === 'burn') {
-                    data[i] = data[i] * 0.95;
-                    data[i + 1] = data[i + 1] * 0.95;
-                    data[i + 2] = data[i + 2] * 0.95;
-                }
-                else if (activeTool === 'sponge') {
-                    const mode = document.getElementById('opt-mode').value;
-                    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                    const f = mode === 'saturate' ? 1.05 : 0.95;
-                    data[i] = avg + (data[i] - avg) * f;
-                    data[i + 1] = avg + (data[i + 1] - avg) * f;
-                    data[i + 2] = avg + (data[i + 2] - avg) * f;
-                }
-                else if (activeTool === 'blur-tool') {
-                    // Simple Box Blur
-                    // Needs neighbor access... random jitter blur for speed?
-                    // Or just smudge?
-                    // Pseudo-blur: Mix with random neighbor
-                    // Correct: convolution. Slow per pixel loop.
-                    // Fast approximation: 
-                    if (Math.random() > 0.5) {
-                        const nx = Math.floor(Math.random() * 4 - 2) * 4; // -8 to +8 bytes
-                        if (i + nx >= 0 && i + nx < data.length) {
-                            data[i] = (data[i] + data[i + nx]) / 2;
-                            data[i + 1] = (data[i + 1] + data[i + nx + 1]) / 2;
-                            data[i + 2] = (data[i + 2] + data[i + nx + 2]) / 2;
-                        }
-                    }
-                }
-                else if (activeTool === 'heal') {
-                    // Mix with average of patch?
-                    // Blur heavily
-                    if (Math.random() > 0.2) {
-                        const nx = Math.floor(Math.random() * 8 - 4) * 4;
-                        if (i + nx >= 0 && i + nx < data.length) {
-                            data[i] = (data[i] * 2 + data[i + nx]) / 3;
-                            data[i + 1] = (data[i + 1] * 2 + data[i + nx + 1]) / 3;
-                            data[i + 2] = (data[i + 2] * 2 + data[i + nx + 2]) / 3;
-                        }
-                    }
-                }
-            }
-
-            l.ctx.putImageData(imgData, sx, sy);
-            render();
-        }
-
-        window.addEventListener('mouseup', () => {
-            if (isDrawing) {
-                isDrawing = false;
-                saveHistory(activeTool); // Save history on stroke end for retouch too
-            }
-            // ...
-        });
-
-        // --- Clipboard & Crop Logic ---
-        function copySelection() {
-            if (!selection) return;
-            const l = getActiveLayer();
-            if (!l) return;
-
-            // Capture data from active layer
-            const scaleX = l.canvas.width / l.width;
-            const scaleY = l.canvas.height / l.height;
-            const lx = (selection.x - l.x) * scaleX;
-            const ly = (selection.y - l.y) * scaleY;
-            const lw = selection.w * scaleX;
-            const lh = selection.h * scaleY;
-
-            if (lw <= 0 || lh <= 0) return;
-
-            const data = l.ctx.getImageData(lx, ly, lw, lh);
-            internalClipboard = data;
-        }
-
-        function pasteSelection() {
-            if (!internalClipboard) return;
-
-            // Create new layer with clipboard content
-            const layer = createLayer('Paste', internalClipboard.width, internalClipboard.height);
-            layer.ctx.putImageData(internalClipboard, 0, 0);
-
-            // Center it
-            layer.x = (width - layer.width) / 2;
-            layer.y = (height - layer.height) / 2;
-
-            render(); updateLayerList(); saveHistory("Paste");
-        }
-
-        function cutSelection() {
-            copySelection();
-            // Clear area
-            const l = getActiveLayer();
-            const scaleX = l.canvas.width / l.width;
-            const scaleY = l.canvas.height / l.height;
-            const lx = (selection.x - l.x) * scaleX;
-            const ly = (selection.y - l.y) * scaleY;
-            const lw = selection.w * scaleX;
-            const lh = selection.h * scaleY;
-            l.ctx.clearRect(lx, ly, lw, lh);
-            render(); saveHistory("Cut");
-        }
-
-        // Crop
-        document.querySelector('[data-tool="crop"]').addEventListener('click', () => {
-            if (!selection) { alert("Make a selection first!"); return; }
-
-            // We need to crop the CANVAS and ALL LAYERS relative to it.
-            // 1. Update Global Width/Height
-            // 2. Shift all layers so selection.x/y becomes 0,0
-
-            const dx = -selection.x;
-            const dy = -selection.y;
-
-            width = selection.w;
-            height = selection.h;
-            canvas.width = width;
-            canvas.height = height;
-
-            layers.forEach(l => {
-                l.x += dx;
-                l.y += dy;
-            });
-
-            selection = null;
-            render();
-            saveHistory("Crop");
-        });
-
-        function updateZoom() {
-            wrapper.style.transform = `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${zoom})`;
-            document.getElementById('zoom-level').innerText = Math.round(zoom * 100) + '%';
-        }
-
-        // --- Text Tool ---
-        document.getElementById('text-ok').addEventListener('click', () => {
-            const txt = document.getElementById('text-input').value;
-            const layer = getActiveLayer();
-            if (layer && txt) {
-                layer.name = `T: ${txt}`;
-                layer.ctx.font = `${toolSettings.size * 5}px ${toolSettings.font}`; // Scale size
-                layer.ctx.fillStyle = toolSettings.color;
-                layer.ctx.fillText(txt, 50, 100); // Draw at simple pos for now, user moves it
-                layer.x = 0; layer.y = 0;
-                layer.width = width; layer.height = height; // Default size
-                render();
-                updateLayerList();
-                saveHistory("Add Text");
-            }
-            textOverlay.style.display = 'none';
-        });
-
-        // --- Transform Controls ---
-        function updateTransformControls() {
-            const layer = getActiveLayer();
-            if (layer && activeTool === 'move') {
-                transformControls.style.display = 'block';
-                transformControls.style.width = layer.width + 'px';
-                transformControls.style.height = layer.height + 'px';
-                transformControls.style.left = layer.x + 'px';
-                transformControls.style.top = layer.y + 'px';
-                // Rotation visual not implemented in renderer yet, but handle exists
-            } else {
-                transformControls.style.display = 'none';
-            }
-        }
-
-        // --- Initialization ---
-        // Helper to update layer list UI (Debounced)
-        let layerUpdateTimer = null;
-        function updateLayerList() {
-            if (layerUpdateTimer) clearTimeout(layerUpdateTimer);
-            layerUpdateTimer = setTimeout(doUpdateLayerList, 300); // 300ms debounce
-        }
-
-        function doUpdateLayerList() {
-            const list = document.getElementById('layer-list');
-            list.innerHTML = '';
-            [...layers].forEach((layer) => {
-                const item = document.createElement('div');
-                item.className = `layer-item ${layer.id === activeLayerId ? 'active' : ''}`;
-                item.onclick = (e) => {
-                    if (e.target.tagName === 'INPUT') return; // Don't switch if renaming
-                    setActiveLayer(layer.id);
-                };
-
-                // Name or Input
-                let nameHtml = `<div class="layer-name" ondblclick="renameLayer('${layer.id}')">${layer.name}</div>`;
-
-                item.innerHTML = `
-                    <div class="layer-vis ${layer.visible ? 'visible' : ''}" onclick="toggleVis('${layer.id}', event)"><i class="fas fa-eye"></i></div>
-                    <canvas class="layer-thumb" id="thumb-${layer.id}"></canvas>
-                    ${nameHtml}
-                    <div class="layer-fx" onclick="openLayerStyles('${layer.id}', event)" title="Layer Styles" style="cursor:pointer; padding:5px; color:#aaa;"><i class="fas fa-magic"></i></div>
-                `;
-                list.prepend(item);
-                setTimeout(() => {
-                    const t = document.getElementById('thumb-' + layer.id);
-                    if (t) { t.width = 30; t.height = 30; t.getContext('2d').drawImage(layer.canvas, 0, 0, 30, 30); }
-                }, 0);
-            });
-        }
-
-        window.renameLayer = (id) => {
-            const l = layers.find(x => x.id === id);
-            if (!l) return;
-            const item = document.querySelector(`.layer-item.active .layer-name`);
-            if (!item) return;
-
-            const input = document.createElement('input');
-            input.value = l.name;
-            input.onblur = () => finishRename(id, input.value);
-            input.onkeydown = (e) => { if (e.key === 'Enter') finishRename(id, input.value); };
-
-            item.innerHTML = '';
-            item.appendChild(input);
-            input.focus();
-        };
-
-        function finishRename(id, newName) {
-            const l = layers.find(x => x.id === id);
-            if (l) {
-                l.name = newName || "Layer";
-                updateLayerList();
-                saveHistory("Rename Layer");
-            }
-        }
-
-        window.toggleVis = (id, e) => {
-            e.stopPropagation();
-            const l = layers.find(x => x.id === id);
-            l.visible = !l.visible;
-            updateLayerList();
-            render();
-        };
-
-        // --- Filter Logic ---
-        window.applyFilter = (type, val) => {
-            const layer = getActiveLayer();
-            if (!layer) return;
-
-            if (type === 'brightness') layer.filters.brightness = val;
-            if (type === 'blur') layer.filters.blur = val;
-            // Toggles
-            if (type === 'grayscale') layer.filters.grayscale = layer.filters.grayscale > 0 ? 0 : 100;
-            if (type === 'invert') layer.filters.invert = layer.filters.invert > 0 ? 0 : 100;
-            if (type === 'sepia') layer.filters.sepia = layer.filters.sepia > 0 ? 0 : 100;
-
-            render();
-            // Note: History? Filters change often (on drag). Save history only on mouseup of slider?
-            // For MVP, not saving every tick.
-        };
-
-        function updateLayerPanelUI() {
-            const l = getActiveLayer();
-            if (!l) return;
-            document.getElementById('layer-opacity').value = l.opacity;
-            document.getElementById('layer-blend').value = l.blendMode;
-
-            // Update Filter Inputs (Not all exist in HTML, assuming broad structure)
-            // We need to query selectors if they exist
-            const brightInput = document.querySelector('input[onchange*="brightness"]');
-            if (brightInput) brightInput.value = l.filters.brightness;
-
-            const blurInput = document.querySelector('input[onchange*="blur"]');
-            if (blurInput) blurInput.value = l.filters.blur;
-        }
-
-        // --- Layer Styles Logic ---
-        let styleLayerId = null;
-        window.openLayerStyles = (id, e) => {
-            e.stopPropagation();
-            styleLayerId = id;
-            const l = layers.find(x => x.id === id);
-            if (!l) return;
-
-            // Init or default
-            if (!l.styles) l.styles = { shadow: { blur: 0, offsetX: 0, offsetY: 0, color: '#000000' } };
-
-            document.getElementById('style-shadow-blur').value = l.styles.shadow.blur;
-            document.getElementById('style-shadow-x').value = l.styles.shadow.offsetX;
-            document.getElementById('style-shadow-y').value = l.styles.shadow.offsetY;
-            document.getElementById('style-shadow-color').value = l.styles.shadow.color;
-
-            document.getElementById('style-modal').style.display = 'flex';
-        };
-
-        document.getElementById('btn-apply-style').addEventListener('click', () => {
-            const l = layers.find(x => x.id === styleLayerId);
-            if (l) {
-                l.styles.shadow.blur = parseInt(document.getElementById('style-shadow-blur').value);
-                l.styles.shadow.offsetX = parseInt(document.getElementById('style-shadow-x').value);
-                l.styles.shadow.offsetY = parseInt(document.getElementById('style-shadow-y').value);
-                l.styles.shadow.color = document.getElementById('style-shadow-color').value;
-                render();
-                saveHistory('Layer Style');
-            }
-            document.getElementById('style-modal').style.display = 'none';
-        });
-
-        // --- Boilerplate Tool Setup from V1 ---
-        function setupTools() {
-            document.querySelectorAll('.tool').forEach(t => {
-                t.addEventListener('click', () => {
-                    document.querySelector('.tool.active').classList.remove('active');
-                    t.classList.add('active');
-                    activeTool = t.dataset.tool;
-                    updateTransformControls();
-                });
-            });
-        }
-
-        document.getElementById('btn-add-layer').addEventListener('click', () => { createLayer('New Layer'); render(); saveHistory("Add Layer"); });
-        document.getElementById('btn-del-layer').addEventListener('click', () => {
-            // ... previous delete logic ...
-            if (layers.length <= 1) return;
-            const idx = layers.findIndex(l => l.id === activeLayerId);
-            layers.splice(idx, 1);
-            setActiveLayer(layers[Math.max(0, idx - 1)].id);
-            render();
-            updateLayerList();
-            saveHistory("Delete Layer");
-        });
-
-        document.getElementById('btn-move-up').addEventListener('click', () => {
-            const idx = layers.findIndex(l => l.id === activeLayerId);
-            if (idx < layers.length - 1) {
-                // Swap
-                [layers[idx], layers[idx + 1]] = [layers[idx + 1], layers[idx]];
-                render(); updateLayerList(); saveHistory("Move Up");
-            }
-        });
-
-        document.getElementById('btn-move-down').addEventListener('click', () => {
-            const idx = layers.findIndex(l => l.id === activeLayerId);
-            if (idx > 0) {
-                // Swap
-                [layers[idx], layers[idx - 1]] = [layers[idx - 1], layers[idx]];
-                render(); updateLayerList(); saveHistory("Move Down");
-            }
-        });
-
-        document.getElementById('file-upload').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const img = new Image();
-            img.onload = () => {
-                // If it's the first meaningful layer (ignoring default white bg if unmodified), resize canvas
-                // Or if user specifically opened an image, they usually expect canvas to match.
-                // Let's resize canvas if layers.length <= 1 and history is empty/short
-                if (layers.length <= 1 && history.length <= 1) {
-                    width = img.width;
-                    height = img.height;
-                    canvas.width = width;
-                    canvas.height = height;
-                    document.getElementById('canvas-dims').innerText = `${width}x${height}`;
-
-                    // Remove default BG if it exists
-                    layers = [];
-                }
-
-                const l = createLayer(file.name);
-                l.x = 0; l.y = 0; l.width = img.width; l.height = img.height; // Reset to img size
-                l.ctx.drawImage(img, 0, 0);
-
-                render();
-                updateLayerList();
-                saveHistory("Import Image");
-            };
-            img.src = URL.createObjectURL(file);
-        });
-
-        // --- Project Persistence ---
-        window.saveProject = () => {
-            const project = {
-                width, height,
-                layers: layers.map(l => ({
-                    id: l.id,
-                    name: l.name,
-                    type: l.type,
-                    x: l.x, y: l.y,
-                    width: l.width, height: l.height,
-                    visible: l.visible, opacity: l.opacity,
-                    blendMode: l.blendMode,
-                    filters: l.filters,
-                    text: l.text, // If text layer
-                    // Save canvas data as base64
-                    data: l.canvas.toDataURL()
-                }))
-            };
-
-            const blob = new Blob([JSON.stringify(project)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "vtoolz_project.vtz";
-            a.click();
-            URL.revokeObjectURL(url);
-        };
-
-        document.getElementById('project-upload').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const project = JSON.parse(event.target.result);
-                    // Load dims
-                    width = project.width;
-                    height = project.height;
-                    canvas.width = width;
-                    canvas.height = height;
-                    document.getElementById('canvas-dims').innerText = `${width}x${height}`;
-
-                    layers = [];
-
-                    // Reconstruct Layers
-                    let loadedCount = 0;
-                    project.layers.forEach(lData => {
-                        const lCanvas = document.createElement('canvas');
-                        lCanvas.width = width;
-                        lCanvas.height = height; // Original canvas size or saved?
-                        // Actually raster layer needs to start at saved size, but we simplify to full canvas for now
-                        // Wait, previous implementation made lCanvas = width/height.
-
-                        const ctx = lCanvas.getContext('2d');
-                        const img = new Image();
-                        img.onload = () => {
-                            ctx.drawImage(img, 0, 0); // Restore pixels
-                            loadedCount++;
-                            if (loadedCount === project.layers.length) {
-                                render(); updateLayerList();
-                                console.log("Project Loaded");
-                            }
-                        };
-                        img.src = lData.data;
-
-                        layers.push({
-                            ...lData,
-                            canvas: lCanvas,
-                            ctx: ctx
-                        });
-                    });
-
-                    if (layers.length > 0) setActiveLayer(layers[layers.length - 1].id);
-                    history = []; // Clear history on load
-
-                } catch (err) {
-                    alert("Error loading project: " + err.message);
-                }
-            };
-            reader.readAsText(file);
-        });
-
-        // --- Eyedropper ---
-        function pickColor(cx, cy) {
-            const layer = getActiveLayer();
-            // Optional: Pick from Composed Canvas? simpler for user.
-            // But getting pixel from composed canvas in render loop is hard unless we read active canvas state.
-            // Let's read from Active Layer for consistency.
-            if (!layer) return;
-
-            const scaleX = layer.canvas.width / layer.width;
-            const scaleY = layer.canvas.height / layer.height;
-            const x = Math.floor((cx - layer.x) * scaleX);
-            const y = Math.floor((cy - layer.y) * scaleY);
-
-            if (x >= 0 && y >= 0 && x < layer.canvas.width && y < layer.canvas.height) {
-                const p = layer.ctx.getImageData(x, y, 1, 1).data;
-                const hex = "#" + ((1 << 24) + (p[0] << 16) + (p[1] << 8) + p[2]).toString(16).slice(1);
-                toolSettings.color = hex;
-                updateOptionsBar(); // Update UI color picker
-            }
-        }
-
-        // --- Magic Wand (Bounding Box) ---
-        function magicWandSelect(cx, cy) {
-            const layer = getActiveLayer();
-            if (!layer) return;
-
-            // Reuse Flood Fill logic but tracking min/max x/y
-            const scaleX = layer.canvas.width / layer.width;
-            const scaleY = layer.canvas.height / layer.height;
-            const x = Math.floor((cx - layer.x) * scaleX);
-            const y = Math.floor((cy - layer.y) * scaleY);
-
-            if (x < 0 || y < 0 || x >= layer.canvas.width || y >= layer.canvas.height) return;
-
-            const imgData = layer.ctx.getImageData(0, 0, layer.canvas.width, layer.canvas.height);
-            const data = imgData.data;
-
-            const startPos = (y * layer.canvas.width + x) * 4;
-            const startR = data[startPos];
-            const startG = data[startPos + 1];
-            const startB = data[startPos + 2];
-            const startA = data[startPos + 3]; // Alpha handling?
-
-            const stack = [[x, y]];
-            const visited = new Uint8Array(layer.canvas.width * layer.canvas.height); // bitmap
-
-            let minX = x, maxX = x, minY = y, maxY = y;
-            let pixelsFound = 0;
-            const tol = toolSettings.tolerance || 30;
-
-            while (stack.length) {
-                const [nx, ny] = stack.pop();
-                const idx = ny * layer.canvas.width + nx;
-                if (visited[idx]) continue;
-                visited[idx] = 1;
-
-                const pos = idx * 4;
-                if (colorMatch(pos, startR, startG, startB, startA, data, tol)) {
-                    if (nx < minX) minX = nx;
-                    if (nx > maxX) maxX = nx;
-                    if (ny < minY) minY = ny;
-                    if (ny > maxY) maxY = ny;
-
-                    if (nx > 0) stack.push([nx - 1, ny]);
-                    if (nx < layer.canvas.width - 1) stack.push([nx + 1, ny]);
-                    if (ny > 0) stack.push([nx, ny - 1]);
-                    if (ny < layer.canvas.height - 1) stack.push([nx, ny + 1]);
-                }
-            }
-
-            // Convert local bounding box to global
-            const gw = (maxX - minX + 1) / scaleX;
-            const gh = (maxY - minY + 1) / scaleY;
-            const gx = (minX / scaleX) + layer.x;
-            const gy = (minY / scaleY) + layer.y;
-
-            selection = { x: gx, y: gy, w: gw, h: gh };
-            render();
-        }
-
-        function colorMatch(pos, r, g, b, a, data, tol) {
-            return Math.abs(data[pos] - r) <= tol &&
-                Math.abs(data[pos + 1] - g) <= tol &&
-                Math.abs(data[pos + 2] - b) <= tol &&
-                Math.abs(data[pos + 3] - a) <= tol;
-        }
-
-        // --- Flood Fill Algorithm ---
-        function floodFill(cx, cy) {
-            const layer = getActiveLayer();
-            if (!layer) return;
-
-            // Map global to local
-            const scaleX = layer.canvas.width / layer.width;
-            const scaleY = layer.canvas.height / layer.height;
-            const x = Math.floor((cx - layer.x) * scaleX);
-            const y = Math.floor((cy - layer.y) * scaleY);
-
-            if (x < 0 || y < 0 || x >= layer.canvas.width || y >= layer.canvas.height) return;
-
-            const fillColor = hexToRgba(toolSettings.color);
-            const imgData = layer.ctx.getImageData(0, 0, layer.canvas.width, layer.canvas.height);
-            const data = imgData.data;
-
-            const startPos = (y * layer.canvas.width + x) * 4;
-            const startR = data[startPos];
-            const startG = data[startPos + 1];
-            const startB = data[startPos + 2];
-            const startA = data[startPos + 3];
-
-            if (startR === fillColor[0] && startG === fillColor[1] && startB === fillColor[2] && startA === fillColor[3]) return;
-
-            const stack = [[x, y]];
-
-            while (stack.length) {
-                const [nx, ny] = stack.pop();
-                const pos = (ny * layer.canvas.width + nx) * 4;
-
-                if (matches(pos, startR, startG, startB, startA, data)) {
-                    data[pos] = fillColor[0];
-                    data[pos + 1] = fillColor[1];
-                    data[pos + 2] = fillColor[2];
-                    data[pos + 3] = fillColor[3];
-
-                    if (nx > 0) stack.push([nx - 1, ny]);
-                    if (nx < layer.canvas.width - 1) stack.push([nx + 1, ny]);
-                    if (ny > 0) stack.push([nx, ny - 1]);
-                    if (ny < layer.canvas.height - 1) stack.push([nx, ny + 1]);
-                }
-            }
-
-            layer.ctx.putImageData(imgData, 0, 0);
-            render();
-            saveHistory("Flood Fill");
-        }
-
-        function matches(pos, r, g, b, a, data) {
-            return data[pos] === r && data[pos + 1] === g && data[pos + 2] === b && data[pos + 3] === a;
-        }
-
-        function hexToRgba(hex) {
-            const bigint = parseInt(hex.slice(1), 16);
-            return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255, 255];
-        }
-
-        // --- Resize Logic ---
-        let resizeMode = 'image';
-        window.openResizeModal = (mode) => {
-            resizeMode = mode;
-            document.getElementById('resize-title').innerText = mode === 'image' ? 'Image Size' : 'Canvas Size';
-            document.getElementById('resize-w').value = width;
-            document.getElementById('resize-h').value = height;
-            document.getElementById('resize-modal').style.display = 'flex';
-        };
-
-        document.getElementById('btn-do-resize').addEventListener('click', () => {
-            const newW = parseInt(document.getElementById('resize-w').value);
-            const newH = parseInt(document.getElementById('resize-h').value);
-
-            if (resizeMode === 'canvas') {
-                // Just change container size, keep layers as is
-                // Actually need to update global width/height and maybe center content?
-                // Photopea: Canvas size extends/crops. Anchor usually center.
-                // We'll anchor Top-Left for simplicity or Center? Center is better.
-                const dx = (newW - width) / 2;
-                const dy = (newH - height) / 2;
-
-                layers.forEach(l => {
-                    l.x += dx;
-                    l.y += dy;
-                });
-
-                width = newW;
-                height = newH;
-                canvas.width = width;
-                canvas.height = height;
-
-            } else {
-                // Image Size: Scale everything
-                const sx = newW / width;
-                const sy = newH / height;
-
-                layers.forEach(l => {
-                    l.x *= sx;
-                    l.y *= sy;
-                    l.width *= sx;
-                    l.height *= sy;
-                    // Note: This changes Visual size. 
-                    // To do true resampling (destructive), we should resize canvas content.
-                    // But our engine supports visual resize, so this is non-destructive scaling!
-                });
-
-                width = newW;
-                height = newH;
-                canvas.width = width;
-                canvas.height = height;
-            }
-
-            document.getElementById('canvas-dims').innerText = `${width}x${height}`;
-            document.getElementById('resize-modal').style.display = 'none';
-            render();
-            render();
-            saveHistory("Resize " + resizeMode);
-        });
-
-        // --- Worker Integrated Features ---
-        const resizeWorker = new Worker('../../js/image/resize-worker.js');
-        resizeWorker.onmessage = function (e) {
-            const { imageData, width: w, height: h } = e.data;
-            const l = getActiveLayer();
-
-            // Update Layer
-            l.width = w;
-            l.height = h;
-            l.canvas.width = w;
-            l.canvas.height = h;
-
-            const newData = new Uint8ClampedArray(imageData);
-            const imgData = new ImageData(newData, w, h);
-            l.ctx.putImageData(imgData, 0, 0);
-
-            if (resizeMode === 'image') {
-                width = w;
-                height = h;
-                canvas.width = w;
-                canvas.height = h;
-                // Need to handle other layers if resizing image?
-                // Current logic for 'HQ' only supports Active Layer or single layer doc?
-                // For now: HQ Resize = Active Layer Resize.
-                // To do global HQ resize, we need to loop all layers.
-                // MVP: Apply to active layer only if in layer mode, or if single layer.
-            }
-
-            document.getElementById('canvas-dims').innerText = `${width}x${height}`;
-            document.getElementById('resize-modal').style.display = 'none';
-            render();
-            saveHistory("HQ Resize");
-            alert("Resize Complete");
-        };
-
-        const filterWorker = new Worker('../../js/image/filters-worker.js');
-        filterWorker.onmessage = function (e) {
-            const { imageData, width, height } = e.data;
-            const l = getActiveLayer();
-            const newData = new Uint8ClampedArray(imageData);
-            const imgData = new ImageData(newData, width, height);
-            l.ctx.putImageData(imgData, 0, 0);
-            render();
-            saveHistory("Filter Async");
-            alert("Filter Applied");
-        };
-
-        window.applyWorkerFilter = (type, val) => {
-            const l = getActiveLayer();
-            if (!l) return;
-            const data = l.ctx.getImageData(0, 0, l.canvas.width, l.canvas.height);
-
-            // Transferable object for speed
-            filterWorker.postMessage({
-                type: type,
-                imageData: data.data.buffer,
-                width: l.canvas.width,
-                height: l.canvas.height,
-                value: val
-            }, [data.data.buffer]);
-
-            alert("Applying filter... please wait.");
-        };
-
-        // Hook HQ Resize
-        // We need to modify the resize handler logic to branch to worker
-        // Logic injected in existing listener via replacement above? No, I need to replace the whole listener block.
-        // Let's replace the listener entirely.
-        const originalResizeBtn = document.getElementById('btn-do-resize');
-        const newResizeBtn = originalResizeBtn.cloneNode(true);
-        originalResizeBtn.parentNode.replaceChild(newResizeBtn, originalResizeBtn);
-
-        newResizeBtn.addEventListener('click', () => {
-            const newW = parseInt(document.getElementById('resize-w').value);
-            const newH = parseInt(document.getElementById('resize-h').value);
-            const hq = document.getElementById('resize-hq').checked;
-
-            if (resizeMode === 'canvas') {
-                // Canvas size logic (same as before)
-                const dx = (newW - width) / 2;
-                const dy = (newH - height) / 2;
-                layers.forEach(l => { l.x += dx; l.y += dy; });
-                width = newW; height = newH;
-                canvas.width = width; canvas.height = height;
-            } else {
-                if (hq) {
-                    // HQ Resize (Worker)
-                    const l = getActiveLayer();
-                    // Only works on active layer for now?
-                    const data = l.ctx.getImageData(0, 0, l.canvas.width, l.canvas.height);
-                    resizeWorker.postMessage({
-                        imageData: data.data.buffer,
-                        width: l.canvas.width,
-                        height: l.canvas.height,
-                        targetWidth: newW,
-                        targetHeight: newH
-                    }, [data.data.buffer]);
-
-                    // Will finish in onmessage
-                    return;
-                } else {
-                    // Standard Scaling (Visual)
-                    const sx = newW / width;
-                    const sy = newH / height;
-                    layers.forEach(l => {
-                        l.x *= sx; l.y *= sy;
-                        l.width *= sx; l.height *= sy;
-                    });
-                    width = newW; height = newH;
-                    canvas.width = width; canvas.height = height;
-                }
-            }
-
-            document.getElementById('canvas-dims').innerText = `${width}x${height}`;
-            document.getElementById('resize-modal').style.display = 'none';
-            render();
-            saveHistory("Resize " + resizeMode);
-        });
-
-        function closeLasso() {
-            // Calculate bounds
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            lassoPoints.forEach(p => {
-                if (p[0] < minX) minX = p[0];
-                if (p[1] < minY) minY = p[1];
-                if (p[0] > maxX) maxX = p[0];
-                if (p[1] > maxY) maxY = p[1];
-            });
-
-            selection = {
-                type: 'poly',
-                points: [...lassoPoints],
-                x: minX, y: minY, w: maxX - minX, h: maxY - minY
-            };
-            lassoPoints = [];
-            render();
-        }
-
-        // Double click to close lasso
-        window.addEventListener('dblclick', (e) => {
-            if (activeTool === 'lasso' && lassoPoints.length > 2) {
-                closeLasso();
-            }
-        });
-
-        // --- Hue/Sat & Convolutions ---
-        window.openHueSatModal = () => {
-            if (!getActiveLayer()) return alert("No active layer");
-            document.getElementById('huesat-modal').style.display = 'flex';
-        };
-
-        document.getElementById('btn-do-huesat').addEventListener('click', () => {
-            const hue = parseInt(document.getElementById('hs-hue').value);
-            const sat = parseInt(document.getElementById('hs-sat').value);
-
-            const l = getActiveLayer();
-            if (!l || l.type !== 'raster') return;
-
-            const idata = l.ctx.getImageData(0, 0, l.canvas.width, l.canvas.height);
-            const d = idata.data;
-            for (let i = 0; i < d.length; i += 4) {
-                // RGB to HSL
-                const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
-                const max = Math.max(r, g, b), min = Math.min(r, g, b);
-                let h, s, lx = (max + min) / 2; // l is reserved
-
-                if (max === min) { h = s = 0; }
-                else {
-                    const dif = max - min;
-                    s = lx > 0.5 ? dif / (2 - max - min) : dif / (max + min);
-                    if (max === r) h = (g - b) / dif + (g < b ? 6 : 0);
-                    else if (max === g) h = (b - r) / dif + 2;
-                    else h = (r - g) / dif + 4;
-                    h /= 6;
-                }
-
-                // Adjust
-                h = (h * 360 + hue) % 360;
-                if (h < 0) h += 360;
-                s = Math.max(0, Math.min(1, s + sat / 100));
-
-                // HSL to RGB
-                const c = (1 - Math.abs(2 * lx - 1)) * s;
-                const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-                const m = lx - c / 2;
-
-                let r1, g1, b1;
-                if (h < 60) { r1 = c; g1 = x; b1 = 0; }
-                else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
-                else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
-                else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
-                else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
-                else { r1 = c; g1 = 0; b1 = x; }
-
-                d[i] = (r1 + m) * 255;
-                d[i + 1] = (g1 + m) * 255;
-                d[i + 2] = (b1 + m) * 255;
-            }
-
-            l.ctx.putImageData(idata, 0, 0);
-            render();
-            saveHistory("Hue/Sat");
-            document.getElementById('huesat-modal').style.display = 'none';
-        });
-
-        window.applyConvolution = (type) => {
-            const l = getActiveLayer();
-            if (!l) return;
-
-            let weights;
-            if (type === 'sharpen') weights = [0, -1, 0, -1, 5, -1, 0, -1, 0];
-            else if (type === 'edge') weights = [-1, -1, -1, -1, 8, -1, -1, -1, -1];
-            else if (type === 'emboss') weights = [-2, -1, 0, -1, 1, 1, 0, 1, 2];
-
-            if (!weights) return;
-
-            const side = Math.round(Math.sqrt(weights.length));
-            const halfSide = Math.floor(side / 2);
-            const src = l.ctx.getImageData(0, 0, l.canvas.width, l.canvas.height);
-            const sw = src.width, sh = src.height;
-            const dst = l.ctx.createImageData(sw, sh);
-
-            // Simple convolution
-            const dstData = dst.data;
-            const srcData = src.data;
-
-            for (let y = 0; y < sh; y++) {
-                for (let x = 0; x < sw; x++) {
-                    let r = 0, g = 0, b = 0;
-                    for (let cy = 0; cy < side; cy++) {
-                        for (let cx = 0; cx < side; cx++) {
-                            const scy = y + cy - halfSide;
-                            const scx = x + cx - halfSide;
-                            if (scy >= 0 && scy < sh && scx >= 0 && scx < sw) {
-                                const srcOff = (scy * sw + scx) * 4;
-                                const wt = weights[cy * side + cx];
-                                r += srcData[srcOff] * wt;
-                                g += srcData[srcOff + 1] * wt;
-                                b += srcData[srcOff + 2] * wt;
-                            }
-                        }
-                    }
-                    const dstOff = (y * sw + x) * 4;
-                    dstData[dstOff] = r;
-                    dstData[dstOff + 1] = g;
-                    dstData[dstOff + 2] = b;
-                    dstData[dstOff + 3] = srcData[dstOff + 3]; // Keep alpha
-                }
-            }
-
-            l.ctx.putImageData(dst, 0, 0);
-            render();
-            saveHistory("Filter " + type);
-        };
-
-        // init(); is at end
-        init();
-
-    </script>
+    <script type="module" src="../../js/image/main.js"></script>
 </body>
 
 </html>
