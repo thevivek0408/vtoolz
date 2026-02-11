@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentage Calculator - VtoolZ</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .calc-row {
+            background: var(--surface-color);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .calc-row input {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            width: 100px;
+            font-size: 1.1rem;
+        }
+
+        .calc-row span {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .result-box {
+            background: var(--bg-color);
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--primary-color);
+            min-width: 100px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Math Tools</a></li>
+                    <li><a href="#" class="active">Percentage</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <h1>Percentage Calculator</h1>
+
+            <!-- Case 1: X% of Y is Z -->
+            <div class="calc-row">
+                <span>What is</span>
+                <input type="number" id="p1_num" placeholder="%">
+                <span>% of</span>
+                <input type="number" id="p1_total" placeholder="Value">
+                <span>?</span>
+                <div class="result-box" id="p1_result">--</div>
+            </div>
+
+            <!-- Case 2: X is what % of Y -->
+            <div class="calc-row">
+                <input type="number" id="p2_num" placeholder="Part">
+                <span>is what % of</span>
+                <input type="number" id="p2_total" placeholder="Total">
+                <span>?</span>
+                <div class="result-box" id="p2_result">--</div>
+            </div>
+
+            <!-- Case 3: % Change from X to Y -->
+            <div class="calc-row">
+                <span>Change from</span>
+                <input type="number" id="p3_from" placeholder="Old">
+                <span>to</span>
+                <input type="number" id="p3_to" placeholder="New">
+                <span>?</span>
+                <div class="result-box" id="p3_result">--</div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        function calculate() {
+            // Case 1
+            const p1_num = parseFloat(document.getElementById('p1_num').value);
+            const p1_total = parseFloat(document.getElementById('p1_total').value);
+            if (!isNaN(p1_num) && !isNaN(p1_total)) {
+                document.getElementById('p1_result').textContent = ((p1_num / 100) * p1_total).toFixed(2);
+            } else {
+                document.getElementById('p1_result').textContent = '--';
+            }
+
+            // Case 2
+            const p2_num = parseFloat(document.getElementById('p2_num').value);
+            const p2_total = parseFloat(document.getElementById('p2_total').value);
+            if (!isNaN(p2_num) && !isNaN(p2_total) && p2_total !== 0) {
+                document.getElementById('p2_result').textContent = ((p2_num / p2_total) * 100).toFixed(2) + '%';
+            } else {
+                document.getElementById('p2_result').textContent = '--';
+            }
+
+            // Case 3
+            const p3_from = parseFloat(document.getElementById('p3_from').value);
+            const p3_to = parseFloat(document.getElementById('p3_to').value);
+            if (!isNaN(p3_from) && !isNaN(p3_to) && p3_from !== 0) {
+                const diff = p3_to - p3_from;
+                const change = (diff / p3_from) * 100;
+                const sign = change > 0 ? '+' : '';
+                document.getElementById('p3_result').textContent = sign + change.toFixed(2) + '%';
+                document.getElementById('p3_result').style.color = change >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
+            } else {
+                document.getElementById('p3_result').textContent = '--';
+                document.getElementById('p3_result').style.color = 'var(--primary-color)';
+            }
+        }
+
+        // Add listeners to all inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+    </script>
+</body>
+
+</html>

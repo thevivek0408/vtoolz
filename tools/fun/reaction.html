@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Time Test - VtoolZ</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .reaction-area {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .reaction-area.idle {
+            background-color: #3498db;
+        }
+
+        .reaction-area.wait {
+            background-color: #e74c3c;
+        }
+
+        .reaction-area.click {
+            background-color: #2ecc71;
+        }
+
+        .reaction-area.early {
+            background-color: #f39c12;
+        }
+
+        .stats {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Fun Tools</a></li>
+                    <li><a href="#" class="active">Reaction</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <h1>Reaction Time Test</h1>
+            <p>Test your visual reflexes. Click as soon as the screen turns GREEN.</p>
+
+            <div id="target" class="reaction-area idle">
+                <i class="fas fa-bolt" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                <div>Click to Start</div>
+            </div>
+
+            <div class="stats">
+                <div>Last: <strong id="lastScore">--</strong> ms</div>
+                <div>Best: <strong id="bestScore">--</strong> ms</div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const target = document.getElementById('target');
+        const lastEl = document.getElementById('lastScore');
+        const bestEl = document.getElementById('bestScore');
+
+        let state = 'idle'; // idle, wait, click, result
+        let timer;
+        let startTime;
+        let bestScore = Infinity;
+
+        target.addEventListener('mousedown', () => {
+            if (state === 'idle' || state === 'result') {
+                startTest();
+            } else if (state === 'wait') {
+                tooEarly();
+            } else if (state === 'click') {
+                finish();
+            }
+        });
+
+        function startTest() {
+            state = 'wait';
+            target.className = 'reaction-area wait';
+            target.innerHTML = '<i class="fas fa-ellipsis-h" style="font-size: 4rem; margin-bottom: 20px;"></i><div>Wait for Green...</div>';
+
+            const delay = Math.floor(Math.random() * 3000) + 1000; // 1-4 seconds
+            timer = setTimeout(() => {
+                state = 'click';
+                startTime = Date.now();
+                target.className = 'reaction-area click';
+                target.innerHTML = '<i class="fas fa-exclamation" style="font-size: 4rem; margin-bottom: 20px;"></i><div>CLICK!</div>';
+            }, delay);
+        }
+
+        function tooEarly() {
+            clearTimeout(timer);
+            state = 'result'; // or back to idle
+            target.className = 'reaction-area early';
+            target.innerHTML = '<i class="fas fa-times" style="font-size: 4rem; margin-bottom: 20px;"></i><div>Too Early!</div><div style="font-size:1rem">Click to try again</div>';
+        }
+
+        function finish() {
+            const time = Date.now() - startTime;
+            state = 'result';
+            target.className = 'reaction-area idle';
+            target.innerHTML = `<i class="fas fa-clock" style="font-size: 4rem; margin-bottom: 20px;"></i><div>${time} ms</div><div style="font-size:1rem">Click to measure again</div>`;
+
+            lastEl.textContent = time;
+            if (time < bestScore) {
+                bestScore = time;
+                bestEl.textContent = bestScore;
+            }
+        }
+    </script>
+</body>
+
+</html>

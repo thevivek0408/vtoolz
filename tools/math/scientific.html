@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator - VtoolZ</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .calculator {
+            max-width: 500px;
+            margin: 20px auto;
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .display {
+            background: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            font-size: 2rem;
+            text-align: right;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            word-wrap: break-word;
+            min-height: 80px;
+            border: 1px solid var(--border-color);
+        }
+
+        .display .history {
+            font-size: 1rem;
+            color: var(--text-muted);
+            min-height: 20px;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .btn-calc {
+            padding: 15px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+
+        .btn-calc:hover {
+            background: var(--border-color);
+        }
+
+        .btn-calc.operator {
+            color: var(--primary-color);
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .btn-calc.equals {
+            background: var(--primary-color);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .btn-calc.clear {
+            color: var(--danger-color);
+        }
+
+        .scientific-mode {
+            grid-column: span 4;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .btn-sci {
+            padding: 10px;
+            font-size: 0.9rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-muted);
+        }
+
+        .btn-sci:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Math Tools</a></li>
+                    <li><a href="#" class="active">Calculator</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <h1>Scientific Calculator</h1>
+
+            <div class="calculator">
+                <div class="display">
+                    <div class="history" id="history"></div>
+                    <div id="result">0</div>
+                </div>
+
+                <div class="scientific-mode">
+                    <button class="btn-sci" onclick="appendFunc('Math.sin(')">sin</button>
+                    <button class="btn-sci" onclick="appendFunc('Math.cos(')">cos</button>
+                    <button class="btn-sci" onclick="appendFunc('Math.tan(')">tan</button>
+                    <button class="btn-sci" onclick="appendFunc('Math.log10(')">log</button>
+                    <button class="btn-sci" onclick="appendFunc('Math.log(')">ln</button>
+
+                    <button class="btn-sci" onclick="appendFunc('Math.sqrt(')">√</button>
+                    <button class="btn-sci" onclick="appendFunc('Math.pow(')">x^y</button>
+                    <button class="btn-sci" onclick="appendChar('**2')">x²</button>
+                    <button class="btn-sci" onclick="appendChar('(')">(</button>
+                    <button class="btn-sci" onclick="appendChar(')')">)</button>
+
+                    <button class="btn-sci" onclick="appendChar(Math.PI)">π</button>
+                    <button class="btn-sci" onclick="appendChar(Math.E)">e</button>
+                    <button class="btn-sci" onclick="appendFunc('Math.abs(')">|x|</button>
+                    <button class="btn-sci" onclick="backspace()">⌫</button>
+                    <button class="btn-sci clear" onclick="clearDisplay()">AC</button>
+                </div>
+
+                <div class="keypad">
+                    <button class="btn-calc" onclick="appendChar('7')">7</button>
+                    <button class="btn-calc" onclick="appendChar('8')">8</button>
+                    <button class="btn-calc" onclick="appendChar('9')">9</button>
+                    <button class="btn-calc operator" onclick="appendChar('/')">÷</button>
+
+                    <button class="btn-calc" onclick="appendChar('4')">4</button>
+                    <button class="btn-calc" onclick="appendChar('5')">5</button>
+                    <button class="btn-calc" onclick="appendChar('6')">6</button>
+                    <button class="btn-calc operator" onclick="appendChar('*')">×</button>
+
+                    <button class="btn-calc" onclick="appendChar('1')">1</button>
+                    <button class="btn-calc" onclick="appendChar('2')">2</button>
+                    <button class="btn-calc" onclick="appendChar('3')">3</button>
+                    <button class="btn-calc operator" onclick="appendChar('-')">-</button>
+
+                    <button class="btn-calc" onclick="appendChar('0')">0</button>
+                    <button class="btn-calc" onclick="appendChar('.')">.</button>
+                    <button class="btn-calc equals" onclick="calculate()">=</button>
+                    <!-- <button class="btn-calc operator" onclick="appendChar('+')">+</button> --> <!-- Fix grid -->
+                </div>
+            </div>
+            <!-- Hacky grid fix -->
+            <style>
+                .keypad {
+                    grid-template-columns: repeat(4, 1fr);
+                }
+
+                /* Manual adjustment for last row */
+            </style>
+            <!-- Re-doing keypad structure properly -->
+            <div class="calculator-body-fix" style="display:none;">
+                <!-- JS will handle logic, structure inside script for cleanliness or just rewrite structure above -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Correcting the keypad structure inline -->
+    <script>
+        document.querySelector('.keypad').innerHTML = `
+            <button class="btn-calc" onclick="appendChar('7')">7</button>
+            <button class="btn-calc" onclick="appendChar('8')">8</button>
+            <button class="btn-calc" onclick="appendChar('9')">9</button>
+            <button class="btn-calc operator" onclick="appendChar('/')">÷</button>
+
+            <button class="btn-calc" onclick="appendChar('4')">4</button>
+            <button class="btn-calc" onclick="appendChar('5')">5</button>
+            <button class="btn-calc" onclick="appendChar('6')">6</button>
+            <button class="btn-calc operator" onclick="appendChar('*')">×</button>
+
+            <button class="btn-calc" onclick="appendChar('1')">1</button>
+            <button class="btn-calc" onclick="appendChar('2')">2</button>
+            <button class="btn-calc" onclick="appendChar('3')">3</button>
+            <button class="btn-calc operator" onclick="appendChar('-')">-</button>
+
+            <button class="btn-calc" onclick="appendChar('0')">0</button>
+            <button class="btn-calc" onclick="appendChar('.')">.</button>
+            <button class="btn-calc equals" onclick="calculate()">=</button>
+            <button class="btn-calc operator" onclick="appendChar('+')">+</button>
+        `;
+        // Fix grid span for equals
+        const equalsBtn = document.querySelector('.btn-calc.equals');
+        equalsBtn.style.gridColumn = "span 1";
+        // Wait, standard is 4 cols. 0 . = + . 
+        // Let's do: 0 . = +
+    </script>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const display = document.getElementById('result');
+        const history = document.getElementById('history');
+        let currentExpr = '';
+
+        window.appendChar = (char) => {
+            if (display.textContent === '0' && char !== '.') {
+                display.textContent = '';
+                currentExpr = '';
+            }
+            // Display logic vs Calc logic
+            if (char === '*') display.textContent += '×';
+            else if (char === '/') display.textContent += '÷';
+            else display.textContent += char;
+
+            currentExpr += char;
+        };
+
+        window.appendFunc = (func) => {
+            if (display.textContent === '0') {
+                display.textContent = '';
+                currentExpr = '';
+            }
+            const funcName = func.replace('Math.', '').replace('(', '');
+            display.textContent += funcName + '(';
+            currentExpr += func;
+        }
+
+        window.clearDisplay = () => {
+            display.textContent = '0';
+            currentExpr = '';
+            history.textContent = '';
+        };
+
+        window.backspace = () => {
+            display.textContent = display.textContent.slice(0, -1);
+            currentExpr = currentExpr.slice(0, -1);
+            if (display.textContent === '') display.textContent = '0';
+        };
+
+        window.calculate = () => {
+            try {
+                history.textContent = display.textContent + ' =';
+                // Safe eval replacement? For a calculator, eval is standard if input is sanitized or just math. 
+                // Using Function to avoid local scope access.
+                let result = new Function('return ' + currentExpr)();
+
+                // Format decimal
+                if (result % 1 !== 0) {
+                    result = parseFloat(result.toFixed(8)); // Avoid 0.000000004
+                }
+
+                display.textContent = result;
+                currentExpr = result.toString();
+            } catch (e) {
+                display.textContent = 'Error';
+                currentExpr = '';
+            }
+        };
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            const key = e.key;
+            if (/[0-9.]/.test(key)) appendChar(key);
+            if (['+', '-', '*', '/'].includes(key)) appendChar(key);
+            if (key === 'Enter') calculate();
+            if (key === 'Backspace') backspace();
+            if (key === 'Escape') clearDisplay();
+        });
+    </script>
+</body>
+
+</html>

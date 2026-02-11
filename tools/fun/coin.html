@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Coin Flip - VtoolZ</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .coin-container {
+            width: 200px;
+            height: 200px;
+            margin: 50px auto;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .coin {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .coin div {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+            border: 10px solid #f1c40f;
+        }
+
+        .heads {
+            background-color: #f39c12;
+            color: white;
+            transform: rotateX(0deg);
+        }
+
+        .heads::after {
+            content: "HEADS";
+        }
+
+        .tails {
+            background-color: #bdc3c7;
+            color: #2c3e50;
+            transform: rotateX(180deg);
+            border-color: #95a5a6;
+        }
+
+        .tails::after {
+            content: "TAILS";
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Fun Tools</a></li>
+                    <li><a href="#" class="active">Coin Flip</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <h1>3D Coin Flip</h1>
+
+            <div class="coin-container">
+                <div class="coin" id="coin">
+                    <div class="heads"></div>
+                    <div class="tails"></div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button id="flipBtn" class="btn btn-primary btn-lg">FLIP COIN</button>
+                <div id="result" style="margin-top: 20px; font-weight: bold; height: 1.5rem;"></div>
+            </div>
+
+            <div class="stats">
+                <div>Heads: <strong id="headsCount">0</strong></div>
+                <div>Tails: <strong id="tailsCount">0</strong></div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const coin = document.getElementById('coin');
+        const flipBtn = document.getElementById('flipBtn');
+        const resultEl = document.getElementById('result');
+        const headsEl = document.getElementById('headsCount');
+        const tailsEl = document.getElementById('tailsCount');
+
+        let heads = 0;
+        let tails = 0;
+        let isFlipping = false;
+
+        flipBtn.addEventListener('click', () => {
+            if (isFlipping) return;
+            isFlipping = true;
+            resultEl.textContent = "Flipping...";
+
+            // Random outcome 0 or 1
+            const outcome = Math.floor(Math.random() * 2);
+
+            // To animate, we need to spin a lot then land.
+            // basic rots: Heads = 0, Tails = 180
+            // Add (5 * 360) for 5 full spins
+            const spins = 1800; // 5 spins
+            const degrees = spins + (outcome === 0 ? 0 : 180);
+
+            // Reset transition for instant rewind if needed? No, let's accumulate if possible or reset.
+            // Resetting is cleaner to avoid huge numbers.
+            coin.style.transition = 'none';
+            coin.style.transform = 'rotateX(0deg)';
+
+            setTimeout(() => {
+                coin.style.transition = 'transform 3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                coin.style.transform = `rotateX(${degrees}deg)`;
+            }, 50);
+
+            setTimeout(() => {
+                if (outcome === 0) {
+                    heads++;
+                    headsEl.textContent = heads;
+                    resultEl.textContent = "It's HEADS!";
+                } else {
+                    tails++;
+                    tailsEl.textContent = tails;
+                    resultEl.textContent = "It's TAILS!";
+                }
+                isFlipping = false;
+            }, 3000);
+        });
+    </script>
+</body>
+
+</html>

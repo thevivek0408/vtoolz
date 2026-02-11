@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to ASCII Art - VtoolZ</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .output-area {
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            background: black;
+            color: white;
+            padding: 10px;
+            font-size: 8px;
+            /* Small font for detail */
+            line-height: 8px;
+            letter-spacing: 0;
+            width: 100%;
+            min-height: 300px;
+        }
+
+        .controls {
+            margin: 20px 0;
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Fun Tools</a></li>
+                    <li><a href="#" class="active">ASCII</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <h1>Image to ASCII Generator</h1>
+
+            <div class="controls">
+                <input type="file" id="imageInput" accept="image/*">
+                <br><br>
+                <label>Width (Resolution): <span id="widthVal">100</span> chars</label>
+                <input type="range" id="widthRange" min="50" max="200" value="100">
+                <br><br>
+                <button id="processBtn" class="btn btn-primary">Generate ASCII</button>
+            </div>
+
+            <div id="asciiOutput" class="output-area">Upload an image to start...</div>
+            <button id="copyBtn" class="btn btn-secondary" style="margin-top:10px;">Copy ASCII</button>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const fileInput = document.getElementById('imageInput');
+        const widthRange = document.getElementById('widthRange');
+        const widthVal = document.getElementById('widthVal');
+        const output = document.getElementById('asciiOutput');
+
+        // Density string: dark to light
+        const density = "Ñ@#W$9876543210?!abc;:+=-,._                    ";
+
+        widthRange.addEventListener('input', (e) => widthVal.textContent = e.target.value);
+
+        document.getElementById('processBtn').addEventListener('click', () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => processImage(img);
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function processImage(img) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            const w = parseInt(widthRange.value);
+            const ratio = img.height / img.width;
+            const h = Math.floor(w * ratio * 0.55); // 0.55 corrects for char aspect ratio
+
+            canvas.width = w;
+            canvas.height = h;
+            ctx.drawImage(img, 0, 0, w, h);
+
+            const data = ctx.getImageData(0, 0, w, h).data;
+            let asciiStr = "";
+
+            for (let i = 0; i < h; i++) {
+                for (let j = 0; j < w; j++) {
+                    const idx = (i * w + j) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    const avg = (r + g + b) / 3;
+
+                    const charIdx = Math.floor(map(avg, 0, 255, density.length - 1, 0));
+                    asciiStr += density[charIdx];
+                }
+                asciiStr += '\n';
+            }
+            output.textContent = asciiStr;
+        }
+
+        function map(value, low1, high1, low2, high2) {
+            return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+        }
+
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            navigator.clipboard.writeText(output.textContent);
+            alert("Copied!");
+        });
+    </script>
+</body>
+
+</html>

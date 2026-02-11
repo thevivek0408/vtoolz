@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Randomizer - VtoolZ</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .split-view {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .actions {
+                width: 150px;
+            }
+        }
+
+        .winner-box {
+            background: var(--success-color);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: none;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Fun Tools</a></li>
+                    <li><a href="#" class="active">Randomizer</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <h1>List Randomizer</h1>
+
+            <div id="winnerDisplay" class="winner-box"></div>
+
+            <div class="split-view">
+                <div class="col">
+                    <label>Original List</label>
+                    <textarea id="inputList" placeholder="1. Apple
+2. Banana
+3. Cherry"></textarea>
+                </div>
+
+                <div class="actions">
+                    <button id="shuffleBtn" class="btn btn-primary">Randomize &rarr;</button>
+                    <button id="sortBtn" class="btn btn-secondary">Sort A-Z</button>
+                    <button id="reverseBtn" class="btn btn-secondary">Reverse</button>
+                    <button id="pickBtn" class="btn btn-warning"><i class="fas fa-trophy"></i> Pick One</button>
+                </div>
+
+                <div class="col">
+                    <label>Result List</label>
+                    <textarea id="outputList" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const input = document.getElementById('inputList');
+        const output = document.getElementById('outputList');
+        const winnerDisplay = document.getElementById('winnerDisplay');
+
+        function getItems() {
+            return input.value.split('\n').filter(line => line.trim() !== '');
+        }
+
+        document.getElementById('shuffleBtn').addEventListener('click', () => {
+            const items = getItems();
+            for (let i = items.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [items[i], items[j]] = [items[j], items[i]];
+            }
+            output.value = items.join('\n');
+        });
+
+        document.getElementById('sortBtn').addEventListener('click', () => {
+            const items = getItems();
+            items.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+            output.value = items.join('\n');
+        });
+
+        document.getElementById('reverseBtn').addEventListener('click', () => {
+            const items = getItems();
+            items.reverse();
+            output.value = items.join('\n');
+        });
+
+        document.getElementById('pickBtn').addEventListener('click', () => {
+            const items = getItems();
+            if (items.length === 0) return;
+            const winner = items[Math.floor(Math.random() * items.length)];
+            winnerDisplay.innerHTML = `<i class="fas fa-trophy"></i> Winner: <strong>${winner}</strong>`;
+            winnerDisplay.style.display = 'block';
+        });
+    </script>
+</body>
+
+</html>

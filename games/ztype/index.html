@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZType Shooter - VtoolZ Games</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #eee;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #p5_loading {
+            display: none;
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .level {
+            font-size: 1.2rem;
+            margin-top: 5px;
+            color: var(--text-muted);
+        }
+
+        #gameOverScreen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 20;
+        }
+
+        .game-over-title {
+            font-size: 3rem;
+            color: var(--danger-color);
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .ship-base {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid var(--primary-color);
+            filter: drop-shadow(0 0 10px var(--primary-color));
+        }
+
+        /* Canvas Styles */
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header style="position: absolute; width: 100%; z-index: 5;">
+        <div class="container"
+            style="display:flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+            <a href="../../index.html" class="logo" style="font-size: 1.2rem;">VtoolZ</a>
+            <nav>
+                <a href="../index.html" style="color: #ccc; text-decoration: none;">&larr; Exit</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="game-ui">
+        <div class="score">Score: <span id="scoreVal">0</span></div>
+        <div class="level">Level: <span id="levelVal">1</span></div>
+    </div>
+
+    <div id="ship" class="ship-base"></div>
+
+    <div id="gameOverScreen">
+        <div class="game-over-title">GAME OVER</div>
+        <div class="final-score">Score: <span id="finalScoreVal">0</span></div>
+        <button class="btn btn-primary btn-lg" id="restartBtn">Play Again</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('scoreVal');
+        const levelEl = document.getElementById('levelVal');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScoreEl = document.getElementById('finalScoreVal');
+        const restartBtn = document.getElementById('restartBtn');
+        const ship = document.getElementById('ship');
+
+        // Word List
+        const wordList = [
+            "space", "ship", "laser", "galaxy", "orbit", "planet", "star", "nebula", "comet",
+            "alien", "ufo", "void", "energy", "force", "pilot", "drive", "warp", "hyper",
+            "shield", "armor", "blast", "zoom", "sector", "delta", "alpha", "omega", "base",
+            "cosmos", "dust", "earth", "field", "gravity", "halo", "ion", "jump", "kinetic",
+            "light", "moon", "nova", "optic", "pulse", "quasar", "radar", "solar", "time",
+            "unit", "vector", "wave", "xenon", "yield", "zero", "attack", "battle", "combat",
+            "defend", "empire", "fighter", "guard", "heavy", "inter", "jungle", "knight",
+            "lunar", "mars", "nuclear", "orbital", "power", "quest", "rocket", "station",
+            "target", "union", "vessel", "weapon", "xray", "yellow", "zone", "asteroid",
+            "binary", "colony", "danger", "engine", "future", "global", "hunter", "impact",
+            "journey", "killer", "launch", "marine", "neutron", "oxygen", "plasma", "quantum",
+            "rescue", "system", "turret", "ultra", "visual", "walker", "xenon", "year", "zoom"
+        ];
+
+        let width, height;
+        let p_x, p_y; // Player/Ship coords
+
+        let enemies = [];
+        let projectiles = [];
+        let particles = [];
+
+        let score = 0;
+        let level = 1;
+        let spawnRate = 2000; // ms
+        let lastSpawn = 0;
+        let gameActive = false;
+
+        // Typing State
+        let activeTarget = null; // The enemy currently being typed
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            p_x = width / 2;
+            p_y = height - 50;
+            ship.style.left = p_x + 'px';
+            ship.style.bottom = (height - p_y) + 'px'; // Actually simple css center is easier
+            // Let's rely on CSS for ship position visually, but logical coords for bullets
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Enemy {
+            constructor() {
+                this.word = wordList[Math.floor(Math.random() * wordList.length)];
+                this.x = Math.random() * (width - 100) + 50;
+                this.y = -30;
+                this.speed = Math.random() * 0.5 + 0.3 + (level * 0.1);
+                this.typedIndex = 0; // How many chars typed
+                this.color = '#fff';
+            }
+
+            draw() {
+                ctx.font = "24px 'Courier New', monospace";
+
+                // Draw remaining part
+                const remaining = this.word.substring(this.typedIndex);
+                const typed = this.word.substring(0, this.typedIndex);
+
+                // Measure to center text
+                const totalWidth = ctx.measureText(this.word).width;
+
+                // Draw typed part (Red/Highlighted)
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillText(typed, this.x - totalWidth / 2, this.y);
+
+                // Draw remaining part (White)
+                ctx.fillStyle = this.color;
+                const typedWidth = ctx.measureText(typed).width;
+                ctx.fillText(remaining, this.x - totalWidth / 2 + typedWidth, this.y);
+
+                // Draw target indicator if active
+                if (activeTarget === this) {
+                    ctx.strokeStyle = '#e74c3c';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y - 10, 30, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+
+            update() {
+                this.y += this.speed;
+                if (this.y > height - 40) { // Hit player zone
+                    gameOver();
+                }
+            }
+        }
+
+        class Projectile {
+            constructor(tx, ty) {
+                this.x = width / 2; // Start from ship
+                this.y = height - 50;
+                this.tx = tx;
+                this.ty = ty;
+
+                const angle = Math.atan2(ty - this.y, tx - this.x);
+                this.vx = Math.cos(angle) * 15;
+                this.vy = Math.sin(angle) * 15;
+                this.active = true;
+                this.target = activeTarget; // Track who we shot at
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // If close to target, hit
+                if (this.target && this.active) {
+                    const dx = this.x - this.target.x;
+                    const dy = this.y - this.target.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 30) {
+                        this.active = false;
+                        createExplosion(this.x, this.y, '#e74c3c');
+                        // Logic handled in keypress basically, visual only
+                    }
+                }
+
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) this.active = false;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fill();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.vx = (Math.random() - 0.5) * 5;
+                this.vy = (Math.random() - 0.5) * 5;
+                this.life = 1.0;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 0.05;
+            }
+            draw() {
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, 3, 3);
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 10; i++) particles.push(new Particle(x, y, color));
+        }
+
+        function update(timestamp) {
+            if (!gameActive) return;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Spawning
+            if (timestamp - lastSpawn > spawnRate) {
+                enemies.push(new Enemy());
+                lastSpawn = timestamp;
+                // Increase difficulty slightly
+                if (spawnRate > 500) spawnRate -= 10;
+            }
+
+            // Update Entities
+            enemies.forEach(e => {
+                e.update();
+                e.draw();
+            });
+
+            projectiles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            projectiles = projectiles.filter(p => p.active);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            particles = particles.filter(p => p.life > 0);
+
+            requestAnimationFrame(update);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+            const key = e.key.toLowerCase();
+
+            // If we have a locked target
+            if (activeTarget) {
+                const requiredChar = activeTarget.word[activeTarget.typedIndex];
+                if (key === requiredChar) {
+                    activeTarget.typedIndex++;
+                    shoot(activeTarget.x, activeTarget.y);
+
+                    if (activeTarget.typedIndex >= activeTarget.word.length) {
+                        // Destroyed
+                        destroyEnemy(activeTarget);
+                        activeTarget = null;
+                        score += 10;
+                        updateScore();
+                    }
+                } else {
+                    // Penalty or ignore? ZType mostly ignores or plays error sound
+                }
+            } else {
+                // Find new target
+                // Find enemies starting with this letter
+                // Prioritize closest (highest Y) or matching?
+                // Get all matching starts
+                const candidates = enemies.filter(e => e.word.startsWith(key));
+
+                if (candidates.length > 0) {
+                    // Pick the one closest to bottom (highest Y)
+                    candidates.sort((a, b) => b.y - a.y);
+                    activeTarget = candidates[0];
+                    activeTarget.typedIndex++;
+                    shoot(activeTarget.x, activeTarget.y);
+
+                    // Instant destroy single letter words (unlikely but possible)
+                    if (activeTarget.typedIndex >= activeTarget.word.length) {
+                        destroyEnemy(activeTarget);
+                        activeTarget = null;
+                        score += 10;
+                        updateScore();
+                    }
+                }
+            }
+        });
+
+        function shoot(tx, ty) {
+            projectiles.push(new Projectile(tx, ty));
+        }
+
+        function destroyEnemy(enemy) {
+            createExplosion(enemy.x, enemy.y, '#fff');
+            enemies = enemies.filter(e => e !== enemy);
+        }
+
+        function updateScore() {
+            scoreEl.textContent = score;
+            const newLevel = Math.floor(score / 100) + 1;
+            if (newLevel > level) {
+                level = newLevel;
+                levelEl.textContent = level;
+                // Maybe text popup "LEVEL UP"
+            }
+        }
+
+        function gameOver() {
+            gameActive = false;
+            finalScoreEl.textContent = score;
+            gameOverScreen.style.display = 'flex';
+        }
+
+        restartBtn.addEventListener('click', () => {
+            enemies = [];
+            projectiles = [];
+            particles = [];
+            score = 0;
+            level = 1;
+            spawnRate = 2000;
+            activeTarget = null;
+            scoreEl.textContent = '0';
+            levelEl.textContent = '1';
+            gameOverScreen.style.display = 'none';
+            gameActive = true;
+            lastSpawn = performance.now();
+            requestAnimationFrame(update);
+        });
+
+        // Start Game
+        gameActive = true;
+        requestAnimationFrame(update);
+
+    </script>
+</body>
+
+</html>

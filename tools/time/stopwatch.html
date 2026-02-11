@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch & Timer - VtoolZ</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .time-display {
+            font-size: 4rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary-color);
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .lap-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .lap-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .lap-item:last-child {
+            border-bottom: none;
+        }
+
+        .lap-item:nth-child(even) {
+            background-color: var(--bg-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Time Tools</a></li>
+                    <li><a href="#" class="active">Stopwatch</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <h1>Stopwatch</h1>
+
+            <div class="time-display" id="display">00:00:00.00</div>
+
+            <div class="controls">
+                <button id="startBtn" class="btn btn-primary"><i class="fas fa-play"></i> Start</button>
+                <button id="lapBtn" class="btn btn-secondary" disabled><i class="fas fa-flag"></i> Lap</button>
+                <button id="resetBtn" class="btn btn-danger" disabled><i class="fas fa-redo"></i> Reset</button>
+            </div>
+
+            <div class="lap-container">
+                <h3>Laps</h3>
+                <ul id="lapList" class="lap-list">
+                    <li class="lap-item" style="justify-content: center; color: var(--text-muted);">No laps recorded
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        let startTime;
+        let elapsedTime = 0;
+        let timerInterval;
+        let running = false;
+        let lapCount = 0;
+
+        const display = document.getElementById('display');
+        const startBtn = document.getElementById('startBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapList = document.getElementById('lapList');
+
+        function formatTime(time) {
+            let date = new Date(time);
+            let hours = date.getUTCHours().toString().padStart(2, '0');
+            let minutes = date.getUTCMinutes().toString().padStart(2, '0');
+            let seconds = date.getUTCSeconds().toString().padStart(2, '0');
+            let milliseconds = Math.floor(date.getUTCMilliseconds() / 10).toString().padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+        }
+
+        function updateDisplay() {
+            let now = Date.now();
+            let time = elapsedTime + (now - startTime);
+            display.textContent = formatTime(time);
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (!running) {
+                startTime = Date.now();
+                timerInterval = setInterval(updateDisplay, 10);
+                startBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                startBtn.classList.replace('btn-primary', 'btn-warning');
+                lapBtn.disabled = false;
+                resetBtn.disabled = false;
+                running = true;
+            } else {
+                elapsedTime += Date.now() - startTime;
+                clearInterval(timerInterval);
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Start';
+                startBtn.classList.replace('btn-warning', 'btn-primary');
+                running = false;
+            }
+        });
+
+        lapBtn.addEventListener('click', () => {
+            if (running) {
+                lapCount++;
+                let now = Date.now();
+                let currentLapTime = elapsedTime + (now - startTime);
+
+                if (lapCount === 1) lapList.innerHTML = ''; // Clear placeholder
+
+                const li = document.createElement('li');
+                li.className = 'lap-item';
+                li.innerHTML = `<span>Lap ${lapCount}</span> <span>${formatTime(currentLapTime)}</span>`;
+                lapList.prepend(li); // Add to top
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            running = false;
+            elapsedTime = 0;
+            lapCount = 0;
+            display.textContent = "00:00:00.00";
+            startBtn.innerHTML = '<i class="fas fa-play"></i> Start';
+            startBtn.classList.replace('btn-warning', 'btn-primary');
+            lapBtn.disabled = true;
+            resetBtn.disabled = true;
+            lapList.innerHTML = '<li class="lap-item" style="justify-content: center; color: var(--text-muted);">No laps recorded</li>';
+        });
+    </script>
+</body>
+
+</html>

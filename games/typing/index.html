@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Test - VtoolZ</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #323437;
+            --main-color: #e2b714;
+            --sub-color: #646669;
+            --text-color: #d1d0c5;
+            --error-color: #ca4754;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto Mono', monospace;
+            /* Monospace is better for typing */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .logo,
+        h1 {
+            color: var(--text-color);
+        }
+
+        .nav-link {
+            color: var(--sub-color);
+        }
+
+        .nav-link.active {
+            color: var(--main-color);
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 50px;
+            font-size: 1.5rem;
+            color: var(--main-color);
+            margin-bottom: 20px;
+            opacity: 0;
+            /* Hidden until start or result */
+            transition: opacity 0.3s;
+        }
+
+        .stats-row.visible {
+            opacity: 1;
+        }
+
+        .words-wrapper {
+            font-size: 1.5rem;
+            line-height: 2.2rem;
+            color: var(--sub-color);
+            width: 100%;
+            height: 150px;
+            overflow: hidden;
+            position: relative;
+            user-select: none;
+            cursor: text;
+        }
+
+        .word {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .letter {
+            position: relative;
+        }
+
+        .letter.correct {
+            color: var(--text-color);
+        }
+
+        .letter.incorrect {
+            color: var(--error-color);
+        }
+
+        .letter.active::before {
+            content: '|';
+            position: absolute;
+            left: -2px;
+            color: var(--main-color);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Hidden Input */
+        #hiddenInput {
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            left: 0;
+        }
+
+        /* Result Overlay */
+        .result-overlay {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .big-wpm {
+            font-size: 6rem;
+            color: var(--main-color);
+            font-weight: bold;
+        }
+
+        .sub-stats {
+            display: flex;
+            gap: 30px;
+            font-size: 1.2rem;
+            color: var(--sub-color);
+        }
+
+        .restart-btn {
+            background: var(--surface-color);
+            border: none;
+            color: var(--sub-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+            transition: color 0.2s;
+        }
+
+        .restart-btn:hover {
+            color: var(--text-color);
+        }
+
+        .timer-display {
+            font-size: 1.5rem;
+            color: var(--main-color);
+            margin-bottom: 10px;
+            text-align: left;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html" class="nav-link">Home</a></li>
+                    <li><a href="../index.html" class="nav-link">Games</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="game-container">
+        <!-- Live Stats (Timer) -->
+        <div class="timer-display" id="timer">60</div>
+
+        <!-- Words Rendering -->
+        <div class="words-wrapper" id="words" onclick="focusInput()">
+            <!-- Generated Layout -->
+        </div>
+
+        <input type="text" id="hiddenInput" autocomplete="off">
+
+        <!-- Result Screen -->
+        <div class="result-overlay" id="result">
+            <div class="big-wpm" id="finalWpm">0</div>
+            <div>WPM</div>
+            <div class="sub-stats">
+                <div>Acc: <span id="finalAcc">0%</span></div>
+                <div>Chars: <span id="finalChars">0/0/0</span></div>
+            </div>
+            <div style="color: var(--sub-color); margin-top: 20px;">Press <span
+                    style="background:#444; padding:2px 5px; border-radius:3px;">Tab</span> to restart</div>
+        </div>
+
+        <button class="restart-btn" id="restartBtn"><i class="fas fa-redo"></i></button>
+        <div style="color: var(--sub-color); margin-top: 10px; font-size: 0.8rem;">Tab to restart</div>
+    </main>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const wordsList = [
+            "the", "be", "of", "and", "a", "to", "in", "he", "have", "it", "that", "for", "they", "I", "with", "as", "not", "on", "she", "at", "by", "this", "we", "you", "do", "but", "from", "or", "which", "one", "would", "all", "will", "there", "say", "who", "make", "when", "can", "more", "if", "no", "man", "out", "other", "so", "what", "time", "up", "go", "about", "than", "into", "could", "state", "only", "new", "year", "some", "take", "come", "these", "know", "see", "use", "get", "like", "then", "first", "any", "work", "now", "may", "such", "give", "over", "think", "most", "even", "find", "day", "also", "after", "way", "many", "must", "look", "before", "great", "back", "through", "long", "where", "much", "should", "well", "people", "down", "own", "just", "because", "good", "each", "those", "feel", "seem", "how", "high", "too", "place", "little", "world", "very", "still", "nation", "hand", "old", "life", "tell", "write", "become", "here", "show", "house", "both", "between", "need", "mean", "call", "develop", "under", "last", "right", "move", "thing", "general", "school", "never", "same", "another", "begin", "while", "number", "part", "turn", "real", "leave", "might", "want", "point", "form", "off", "child", "few", "small", "since", "against", "ask", "late", "home", "interest", "large", "person", "end", "open", "public", "follow", "during", "present", "without", "again", "hold", "govern", "around", "possible", "head", "consider", "word", "program", "problem", "however", "lead", "system", "set", "order", "eye", "plan", "run", "keep", "face", "fact", "group", "play", "stand", "increase", "early", "course", "change", "help", "line"
+        ];
+
+        const wordsWrapper = document.getElementById('words');
+        const hiddenInput = document.getElementById('hiddenInput');
+        const timerEl = document.getElementById('timer');
+        const resultEl = document.getElementById('result');
+        const restartBtn = document.getElementById('restartBtn');
+
+        let words = [];
+        let startTime = null;
+        let timerInterval = null;
+        let timeLimit = 60;
+        let timeLeft = timeLimit;
+
+        let correctChars = 0;
+        let incorrectChars = 0; // Mistakes made
+        let totalChars = 0; // Total keystrokes
+
+        // State
+        let currentWordIndex = 0;
+        let currentCharIndex = 0; // relative to word
+        let isRunning = false;
+        let isGameOver = false;
+
+        // Initialize
+        function init() {
+            // Reset variables
+            words = [];
+            for (let i = 0; i < 100; i++) {
+                words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
+            }
+
+            timeLeft = timeLimit;
+            timerEl.innerText = timeLeft;
+            correctChars = 0;
+            incorrectChars = 0;
+            totalChars = 0;
+            currentWordIndex = 0;
+            currentCharIndex = 0;
+            isRunning = false;
+            isGameOver = false;
+            hiddenInput.value = '';
+
+            // Render
+            wordsWrapper.innerHTML = '';
+            wordsWrapper.style.display = 'block';
+            resultEl.style.display = 'none';
+            timerEl.style.visibility = 'visible';
+
+            words.forEach(word => {
+                const wordDiv = document.createElement('div');
+                wordDiv.className = 'word';
+                word.split('').forEach(char => {
+                    const charSpan = document.createElement('span');
+                    charSpan.innerText = char;
+                    charSpan.className = 'letter';
+                    wordDiv.appendChild(charSpan);
+                });
+                wordsWrapper.appendChild(wordDiv);
+            });
+
+            // Set active
+            updateActiveCursor();
+
+            // Focus
+            hiddenInput.focus();
+        }
+
+        function updateActiveCursor() {
+            // Remove previous active
+            document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
+
+            const currentWordDiv = wordsWrapper.childNodes[currentWordIndex];
+            if (!currentWordDiv) return;
+
+            const letters = currentWordDiv.childNodes;
+
+            if (currentCharIndex < letters.length) {
+                letters[currentCharIndex].classList.add('active');
+            } else {
+                // End of word, active on the "space" (conceptually)
+                // We can add a class to the wordDiv to show cursor at end
+                currentWordDiv.classList.add('active-end'); // css needed if we want visible space cursor
+                // For simplified UI, we might just keep cursor on last char or next word?
+                // MonkeyType logic: cursor moves to next word only after space is typed.
+                // But visual feedback usually shows a "space" cursor.
+                // Let's attach active to the last char but formatted differently?
+                // Or just append a dummy space span?
+            }
+
+            // Auto-scroll
+            if (currentWordDiv.offsetTop > wordsWrapper.scrollTop + 60) {
+                wordsWrapper.scrollTop = currentWordDiv.offsetTop - 10;
+            }
+        }
+
+        window.focusInput = () => hiddenInput.focus();
+        document.addEventListener('click', () => hiddenInput.focus());
+
+        hiddenInput.addEventListener('keydown', (e) => {
+            if (isGameOver) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    init();
+                }
+                return;
+            }
+
+            if (!isRunning) {
+                startTimer();
+                isRunning = true;
+            }
+
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                init();
+                return;
+            }
+
+            const currentWord = words[currentWordIndex];
+            const currentWordDiv = wordsWrapper.childNodes[currentWordIndex];
+            const letters = currentWordDiv.childNodes;
+
+            // Backspace
+            if (e.key === 'Backspace') {
+                if (currentCharIndex > 0) {
+                    currentCharIndex--;
+                    const charSpan = letters[currentCharIndex];
+                    charSpan.className = 'letter'; // Reset
+                } else {
+                    // Go back to previous word if allowed?
+                    // MonkeyType allows ensuring you can fix mistakes.
+                    if (currentWordIndex > 0) {
+                        // Logic to go back is complex, simpler MVP: Backspace only within current word
+                    }
+                }
+                updateActiveCursor();
+                return;
+            }
+
+            // Ignore non-char keys
+            if (e.key.length !== 1 || e.ctrlKey || e.metaKey) return;
+
+            // Space (Next Word)
+            if (e.key === ' ') {
+                if (currentCharIndex === 0) return; // Don't skip empty words?
+
+                // Mark remaining chars as incorrect if any
+                // Or just move on
+                currentWordIndex++;
+                currentCharIndex = 0;
+                hiddenInput.value = '';
+                updateActiveCursor();
+                return;
+            }
+
+            // Character Typed
+            if (currentCharIndex < currentWord.length) {
+                const charSpan = letters[currentCharIndex];
+                if (e.key === currentWord[currentCharIndex]) {
+                    charSpan.classList.add('correct');
+                    correctChars++;
+                } else {
+                    charSpan.classList.add('incorrect');
+                    incorrectChars++;
+                }
+                totalChars++;
+                currentCharIndex++;
+                updateActiveCursor();
+            } else {
+                // Overtyped logic? (Extra chars)
+                // For MVP, ignore extra chars or mark word as bad.
+            }
+        });
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    gameOver();
+                }
+            }, 1000);
+        }
+
+        function gameOver() {
+            clearInterval(timerInterval);
+            isGameOver = true;
+            isRunning = false;
+
+            const timeElapsed = timeLimit - timeLeft; // should be 60 generally
+            const grossWpm = Math.round((totalChars / 5) / (timeLimit / 60));
+            const netWpm = Math.round(((totalChars - incorrectChars) / 5) / (timeLimit / 60));
+            const acc = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+
+            wordsWrapper.style.display = 'none';
+            timerEl.style.visibility = 'hidden';
+            resultEl.style.display = 'flex';
+
+            document.getElementById('finalWpm').innerText = netWpm < 0 ? 0 : netWpm;
+            document.getElementById('finalAcc').innerText = acc + '%';
+            document.getElementById('finalChars').innerText = `${correctChars}/${incorrectChars}/${totalChars}`;
+        }
+
+        restartBtn.addEventListener('click', init);
+
+        init();
+    </script>
+</body>
+
+</html>

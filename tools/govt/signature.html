@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Pad - VtoolZ Government Tools</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .canvas-container {
+            background-color: white;
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            cursor: crosshair;
+            touch-action: none;
+            /* Prevent scrolling while drawing */
+            margin: 20px auto;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .canvas-container:hover {
+            border-color: var(--primary-color);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            justify-content: center;
+            background: var(--surface-color);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">VtoolZ</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Govt Tools</a></li>
+                    <li><a href="#" class="active">Signature</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <h1>Signature Pad</h1>
+            <p>Draw your signature and download it for official documents. (Private & Client-side)</p>
+
+            <div class="toolbar">
+                <div>
+                    <label>Pen Color</label>
+                    <input type="color" id="penColor" value="#000000" class="color-picker">
+                </div>
+                <div>
+                    <label>Width</label>
+                    <input type="range" id="penWidth" min="1" max="10" value="2">
+                </div>
+                <div>
+                    <button id="clearBtn" class="btn btn-danger"><i class="fas fa-trash"></i> Clear</button>
+                    <button id="undoBtn" class="btn btn-secondary"><i class="fas fa-undo"></i> Undo</button>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper" style="text-align:center;">
+                <canvas id="sigCanvas" width="600" height="300" class="canvas-container"></canvas>
+            </div>
+
+            <div class="actions" style="text-align: center; margin-top: 20px;">
+                <button id="downloadPngBtn" class="btn btn-primary btn-lg"><i class="fas fa-download"></i> Download PNG
+                    (Transparent)</button>
+                <button id="downloadJpgBtn" class="btn btn-secondary btn-lg"><i class="fas fa-download"></i> Download
+                    JPG (White BG)</button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const canvas = document.getElementById('sigCanvas');
+        const ctx = canvas.getContext('2d');
+        const colorInput = document.getElementById('penColor');
+        const widthInput = document.getElementById('penWidth');
+        const clearBtn = document.getElementById('clearBtn');
+        const undoBtn = document.getElementById('undoBtn');
+        const dlPngBtn = document.getElementById('downloadPngBtn');
+        const dlJpgBtn = document.getElementById('downloadJpgBtn');
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let history = [];
+        const maxHistory = 20;
+
+        // Resize canvas for high DPI
+        function resizeCanvas() {
+            // Simple resize for now, fixed size is often better for signatures to ensure consistent output size
+            // preventing the canvas from being cleared on resize if not needed.
+            // keeping fixed 600x300 for standard signature box feel.
+        }
+
+        // Event Listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            startDrawing({
+                offsetX: touch.clientX - rect.left,
+                offsetY: touch.clientY - rect.top
+            });
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            draw({
+                offsetX: touch.clientX - rect.left,
+                offsetY: touch.clientY - rect.top
+            });
+        });
+
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function startDrawing(e) {
+            isDrawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+            saveState(); // Save before new stroke
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.strokeStyle = colorInput.value;
+            ctx.lineWidth = widthInput.value;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        // History / Undo
+        function saveState() {
+            if (history.length >= maxHistory) history.shift();
+            history.push(canvas.toDataURL());
+            undoBtn.disabled = false;
+        }
+
+        undoBtn.addEventListener('click', () => {
+            if (history.length === 0) return;
+            const previousState = history.pop();
+            const img = new Image();
+            img.src = previousState;
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+            if (history.length === 0) {
+                // If we popped the last state, we might want to clear or just leave it. 
+                // Actually standard undo logic: pop current state to get previous? 
+                // Canvas undo is tricky without a "current" and "stack".
+                // MVP: Simple "Restore last snapshot".
+            }
+        });
+
+        // Initialize state
+        saveState(); // Blank state
+
+        clearBtn.addEventListener('click', () => {
+            saveState();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        // Downloads
+        dlPngBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'signature.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+
+        dlJpgBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'signature.jpg';
+
+            // Composite transparent canvas onto white background for JPG
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tCtx = tempCanvas.getContext('2d');
+            tCtx.fillStyle = '#FFFFFF';
+            tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            tCtx.drawImage(canvas, 0, 0);
+
+            link.href = tempCanvas.toDataURL('image/jpeg');
+            link.click();
+            link.remove();
+        });
+
+    </script>
+</body>
+
+</html>
