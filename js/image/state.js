@@ -13,6 +13,7 @@ export const state = {
     tool: 'move',
     toolSettings: {
         color: '#000000',
+        bgColor: '#ffffff', // Added background color for swatches
         size: 5,
         font: 'Arial',
         fontSize: 40,

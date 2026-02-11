@@ -63,5 +63,39 @@ window.saveProject = () => {
     // For now, let's keep the placeholder but NOT override New Project.
 };
 
+// Global Error Handler
+window.onerror = function (msg, url, line) {
+    console.error("VtoolZ Error:", msg, url, line);
+    const toast = document.createElement('div');
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.right = '20px';
+    toast.style.background = '#ff4444';
+    toast.style.color = 'white';
+    toast.style.padding = '15px';
+    toast.style.borderRadius = '5px';
+    toast.style.boxShadow = '0 5px 15px rgba(0,0,0,0.5)';
+    toast.style.zIndex = '10000';
+    toast.style.fontFamily = 'Segoe UI, sans-serif';
+    toast.innerText = `Error: ${msg}`;
+
+    const close = document.createElement('button');
+    close.innerText = 'x';
+    close.style.background = 'none';
+    close.style.border = 'none';
+    close.style.color = 'white';
+    close.style.marginLeft = '10px';
+    close.style.cursor = 'pointer';
+    close.style.fontWeight = 'bold';
+    close.onclick = () => toast.remove();
+
+    toast.appendChild(close);
+    document.body.appendChild(toast);
+
+    // Auto remove after 5s
+    setTimeout(() => toast.remove(), 5000);
+    return false; // Let default handler run too
+};
+
 // Start
 window.addEventListener('load', init);

@@ -2,7 +2,7 @@ import { state } from './state.js';
 import { requestRender } from './core.js';
 import { getActiveLayer } from './layers.js'; // Helper
 import { saveHistory } from './history.js';
-import { updateLayerPanelUI } from './ui.js';
+import { updateLayerList } from './ui.js';
 
 // Workers
 // Logic: Paths are relative to editor.html (tools/image/)

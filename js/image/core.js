@@ -17,6 +17,12 @@ export function getMousePos(evt) {
     };
 }
 
+// Window Resize Auto-Fit
+window.addEventListener('resize', () => {
+    updateZoom();
+    requestRender();
+});
+
 // Main Render Loop
 let isRenderPending = false;
 

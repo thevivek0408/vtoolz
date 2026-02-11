@@ -110,13 +110,65 @@ export function initUI() {
         });
     });
 
+    // Moved closing brace to end of file to include all UI logic
+
+
+    // --- Color Picker Logic (Photopea Style) ---
+    const fgDisplay = document.getElementById('fg-color-display');
+    const bgDisplay = document.getElementById('bg-color-display');
+    const fgInput = document.getElementById('fg-color-picker');
+    const bgInput = document.getElementById('bg-color-picker');
+    const switchBtn = document.getElementById('btn-switch-colors');
+
+    // Safety check (fixes the error popup if elements missing)
+    if (fgDisplay && bgDisplay && fgInput && bgInput) {
+        // Init Defaults
+        state.toolSettings.color = state.toolSettings.color || '#000000';
+        state.toolSettings.bgColor = state.toolSettings.bgColor || '#ffffff';
+
+        function updateSwatches() {
+            fgDisplay.style.backgroundColor = state.toolSettings.color;
+            bgDisplay.style.backgroundColor = state.toolSettings.bgColor;
+            fgInput.value = state.toolSettings.color;
+            bgInput.value = state.toolSettings.bgColor;
+        }
+
+        // FG Click
+        fgDisplay.addEventListener('click', () => fgInput.click());
+        fgInput.addEventListener('input', (e) => {
+            state.toolSettings.color = e.target.value;
+            updateSwatches();
+        });
+
+        // BG Click
+        bgDisplay.addEventListener('click', () => bgInput.click());
+        bgInput.addEventListener('input', (e) => {
+            state.toolSettings.bgColor = e.target.value;
+            updateSwatches();
+        });
+
+        // Switch Colors
+        switchBtn.addEventListener('click', () => {
+            const temp = state.toolSettings.color;
+            state.toolSettings.color = state.toolSettings.bgColor;
+            state.toolSettings.bgColor = temp;
+            updateSwatches();
+        });
+
+        updateSwatches();
+    }
+    // --- End Color Logic ---
+
     // Layer Buttons
-    document.getElementById('btn-add-layer').addEventListener('click', () => {
-        createLayer("Layer " + (state.layers.length + 1));
-        saveHistory("New Layer");
-        updateLayerList();
-        requestRender();
-    });
+    const btnAddLayer = document.getElementById('btn-add-layer');
+    if (btnAddLayer) {
+        btnAddLayer.addEventListener('click', () => {
+            createLayer("Layer " + (state.layers.length + 1));
+            saveHistory("New Layer");
+            updateLayerList();
+            requestRender();
+        });
+    }
 
     document.getElementById('btn-del-layer').addEventListener('click', () => {
         deleteLayer();
@@ -192,6 +244,14 @@ export function initUI() {
         requestRender();
         saveHistory("Resize " + state.resizeType);
         document.getElementById('resize-modal').style.display = 'none';
+    });
+    // Event Listeners for State Changes
+    window.addEventListener('history-update', () => {
+        updateHistoryPanel();
+    });
+
+    window.addEventListener('layer-update', () => {
+        updateLayerList();
     });
 }
 

@@ -167,6 +167,18 @@
             <div class="history-list" id="history-list"></div>
         </div>
 
+        <!-- Color Swatches (Photopea Style) -->
+        <div class="tool-separator"></div>
+        <div class="color-swatches">
+            <div class="color-swatch bg-swatch" id="bg-color-display" title="Background Color"></div>
+            <div class="color-swatch fg-swatch" id="fg-color-display" title="Foreground Color"></div>
+            <div class="color-switch" id="btn-switch-colors" title="Switch Colors (X)"><i
+                    class="fas fa-exchange-alt"></i></div>
+
+            <!-- Hidden Inputs for logic -->
+            <input type="color" id="fg-color-picker" style="display:none;">
+            <input type="color" id="bg-color-picker" style="display:none;">
+        </div>
         <!-- Bottom Panel (Layers / Paths) -->
         <div class="panel-bottom">
             <div class="panel-tabs">

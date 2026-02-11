@@ -62,6 +62,8 @@ body {
     align-items: center;
     cursor: pointer;
     color: var(--text);
+    position: relative;
+    /* Essential for dropdown positioning */
 }
 
 .menu-item:hover {
@@ -136,6 +138,57 @@ body {
     opacity: 1;
 }
 
+.tool-separator {
+    width: 80%;
+    height: 1px;
+    background: #444;
+    margin: 5px 0;
+}
+
+.color-swatches {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    margin-top: 5px;
+}
+
+.color-swatch {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    border: 1px solid #fff;
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.bg-swatch {
+    background: #fff;
+    bottom: 2px;
+    right: 2px;
+    z-index: 1;
+}
+
+.fg-swatch {
+    background: #000;
+    top: 2px;
+    left: 2px;
+    z-index: 2;
+}
+
+.color-switch {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 0.6rem;
+    color: #aaa;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.color-switch:hover {
+    color: #fff;
+}
+
 /* 2. Top Options Bar */
 .options-bar {
     grid-row: 2 / 3;
@@ -190,7 +243,7 @@ input[type="color"] {
     min-width: 160px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--border);
-    z-index: 1000;
+    z-index: 2000;
     top: 100%;
     left: 0;
 }

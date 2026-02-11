@@ -1,11 +1,8 @@
 import { state } from './state.js';
-import { createLayer } from './layers.js'; // To recreate layer structure if needed
+// import { createLayer } from './layers.js'; // Removed to fix circular dependency
 import { requestRender, updateZoom } from './core.js';
-import { updateLayerList } from './ui.js'; // Circular Ref Risk! 
-// UI needs history to update list. History needs UI to update list.
-// Standard pattern: Events or explicitly calling UI update from main loop.
-// For now, let's export a callback or something?
-// Helper: "notifyStateChange"?
+
+// Removed ui.js import to fix circular dependency
 
 export function saveHistory(actionName) {
     if (state.historyIndex < state.history.length - 1) {
@@ -36,7 +33,7 @@ export function saveHistory(actionName) {
     if (state.history.length > state.maxHistory) state.history.shift();
     else state.historyIndex++;
 
-    // updateHistoryPanel(); // We need to trigger this
+    window.dispatchEvent(new CustomEvent('history-update'));
 }
 
 export function restoreHistory(index) {
@@ -44,6 +41,8 @@ export function restoreHistory(index) {
 
     state.historyIndex = index;
     const snapshot = state.history[index];
+    // ... continue restore
+
 
     state.config.width = snapshot.width;
     state.config.height = snapshot.height;
@@ -64,8 +63,9 @@ export function restoreHistory(index) {
     });
 
     requestRender();
-    updateZoom(); // In case dims changed
-    // updateLayerList(); 
+    updateZoom();
+    window.dispatchEvent(new CustomEvent('history-update'));
+    window.dispatchEvent(new CustomEvent('layer-update')); // Since layers changed
 }
 
 export function undo() {
