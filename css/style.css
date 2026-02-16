@@ -1,3 +1,53 @@
+/* Magic Drop Overlay */
+.drop-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(52, 152, 219, 0.9);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.drop-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.drop-content {
+    text-align: center;
+    color: white;
+    transform: scale(0.8);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.drop-overlay.active .drop-content {
+    transform: scale(1);
+}
+
+.drop-content i {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    animation: float 2s infinite ease-in-out;
+}
+
+.drop-content h3 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.drop-content p {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
 /* Modern Privacy-First CSS */
 
 :root {

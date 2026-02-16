@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Merge PDF - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
+    <!-- PDF.js for Thumbnails -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
 </head>
 
 <body>
@@ -77,13 +82,18 @@
             updateUI();
         }
 
-        function addFileToList(file) {
+        async function addFileToList(file) {
             const item = document.createElement('div');
             item.className = 'file-item';
 
+            // Thumbnail Container
+            const thumbContainer = document.createElement('div');
+            thumbContainer.className = 'file-thumb';
+            thumbContainer.innerHTML = '<div class="spinner"></div>'; // Loading state
+
             const info = document.createElement('div');
             info.className = 'file-info';
-            info.innerHTML = `<span class="file-icon">📄</span> <span>${file.name} <small class="text-muted">(${window.Utils.formatBytes(file.size)})</small></span>`;
+            info.innerHTML = `<span>${file.name} <small class="text-muted">(${window.Utils.formatBytes(file.size)})</small></span>`;
 
             const removeBtn = document.createElement('button');
             removeBtn.className = 'remove-btn';
@@ -95,9 +105,35 @@
                 updateUI();
             };
 
+            item.appendChild(thumbContainer);
             item.appendChild(info);
             item.appendChild(removeBtn);
             fileList.appendChild(item);
+
+            // Generate Thumbnail
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                const page = await pdf.getPage(1);
+
+                const scale = 0.5;
+                const viewport = page.getViewport({ scale });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                thumbContainer.innerHTML = '';
+                canvas.style.maxWidth = '60px';
+                canvas.style.maxHeight = '80px';
+                canvas.style.border = '1px solid #ddd';
+                thumbContainer.appendChild(canvas);
+            } catch (err) {
+                console.error('Thumbnail error:', err);
+                thumbContainer.innerHTML = '<span style="font-size: 2rem;">📄</span>';
+            }
         }
 
         function updateUI() {
