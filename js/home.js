@@ -82,13 +82,38 @@ function setupEventListeners() {
         renderTools(results);
     });
 
-    // Keyboard shortcut '/'
-    document.addEventListener('keydown', (e) => {
-        if (e.key === '/' && document.activeElement !== searchInput) {
-            e.preventDefault();
-            searchInput.focus();
+    // Search Button
+    document.getElementById('search-btn').addEventListener('click', () => {
+        const results = filterTools(searchInput.value);
+        renderTools(results);
+        toolsGrid.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Enter Key Search
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            toolsGrid.scrollIntoView({ behavior: 'smooth' });
         }
     });
+
+    // Explore Button (Go to All)
+    const exploreBtn = document.getElementById('btn-explore');
+    if (exploreBtn) {
+        exploreBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Reset to All
+            searchInput.value = '';
+            filterTabs.forEach(t => t.classList.remove('active'));
+            document.querySelector('.filter-tab[data-category="all"]').classList.add('active');
+
+            currentCategory = 'all';
+            renderTools(tools);
+
+            // Scroll
+            document.getElementById('tools').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
 
     // Tabs
     filterTabs.forEach(tab => {

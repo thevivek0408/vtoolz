@@ -802,87 +802,124 @@ body.neon-mode h3 {
     .search-container {
         position: relative;
         max-width: 600px;
-        margin: 0 auto 30px;
+        margin: 0 auto 10px;
         z-index: 10;
+        width: 100%;
     }
 
     .search-input-wrapper {
         position: relative;
         display: flex;
         align-items: center;
+        background: var(--surface-color);
+        border-radius: 50px;
+        padding: 5px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .search-input-wrapper:focus-within {
+        box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2);
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
     }
 
     .search-icon {
         position: absolute;
         left: 20px;
         color: var(--text-muted);
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         pointer-events: none;
     }
 
     #tool-search {
         width: 100%;
-        padding: 18px 20px 18px 50px;
+        padding: 15px 50px 15px 45px;
         font-size: 1.1rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 50px;
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
+        border: none;
+        background: transparent;
         color: var(--text-color);
+        outline: none;
+        /* create distinct stacking context */
+        border-radius: 50px;
     }
 
-    #tool-search:focus {
-        outline: none;
-        box-shadow: 0 8px 32px rgba(52, 152, 219, 0.2);
-        border-color: var(--primary-color);
-        transform: scale(1.02);
+    .search-btn {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        margin-right: 5px;
+        flex-shrink: 0;
+    }
+
+    .search-btn:hover {
+        background: var(--primary-dark);
+        transform: scale(1.05);
     }
 
     .search-shortcut {
-        position: absolute;
-        right: 20px;
-        background: rgba(128, 128, 128, 0.2);
-        border-radius: 6px;
-        padding: 3px 8px;
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        font-family: monospace;
-        pointer-events: none;
+        display: none;
+        /* Hide shortcut hint to clean up UI */
     }
 
-    /* Filter Tabs */
+    /* Filter Tabs - Horizontal Scrollbar Style */
     .filter-tabs {
         display: flex;
         justify-content: center;
+        /* Center on desktop */
         gap: 10px;
-        flex-wrap: wrap;
         margin-bottom: 40px;
+        padding: 5px;
+        overflow-x: auto;
+        /* Allow scroll on mobile */
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        /* Hide scrollbar Firefox */
+        flex-wrap: nowrap;
+        /* Prevent wrapping */
+    }
+
+    .filter-tabs::-webkit-scrollbar {
+        display: none;
+        /* Hide scrollbar Chrome/Safari */
     }
 
     .filter-tab {
-        padding: 8px 20px;
-        border-radius: 20px;
+        padding: 10px 25px;
+        border-radius: 30px;
         border: 1px solid var(--border-color);
         background: var(--surface-color);
         cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s;
+        font-weight: 600;
+        white-space: nowrap;
+        /* Prevent wrap */
+        transition: all 0.3s ease;
         color: var(--text-muted);
+        font-size: 0.95rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
     }
 
     .filter-tab:hover {
         background: var(--secondary-surface);
-        transform: translateY(-2px);
+        color: var(--primary-color);
+        border-color: var(--primary-color);
     }
 
     .filter-tab.active {
         background: var(--primary-color);
         color: white;
         border-color: var(--primary-color);
-        box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        transform: scale(1.05);
     }
 
     /* New Tool Card Style */
@@ -990,4 +1027,5 @@ body.neon-mode h3 {
             top: 20px;
             right: 20px;
         }
-    }}
+    }
+}
