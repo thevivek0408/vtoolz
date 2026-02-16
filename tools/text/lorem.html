@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorem Ipsum Generator - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">Vibox</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Text Tools</a></li>
+                    <li><a href="#" class="active">Lorem Ipsum</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <h1>Lorem Ipsum Generator</h1>
+            <p>Generate placeholder text for your designs.</p>
+
+            <div class="tool-card-internal" style="max-width: 800px; margin: 0 auto;">
+                <div class="control-group"
+                    style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: center;">
+                    <label>Paragraphs:</label>
+                    <input type="number" id="paraCount" value="3" min="1" max="20"
+                        style="padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); width: 80px;">
+                    <button id="generateBtn" class="btn btn-primary">Generate</button>
+                    <button id="copyBtn" class="btn btn-secondary"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+
+                <textarea id="output"
+                    style="width: 100%; height: 400px; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); resize: vertical; background: var(--surface-color); color: var(--text-color);"
+                    readonly></textarea>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const paraCount = document.getElementById('paraCount');
+        const generateBtn = document.getElementById('generateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const output = document.getElementById('output');
+
+        const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+        function generate() {
+            const count = parseInt(paraCount.value) || 3;
+            let text = [];
+            for (let i = 0; i < count; i++) {
+                text.push(lorem);
+            }
+            output.value = text.join('\n\n');
+        }
+
+        generateBtn.addEventListener('click', generate);
+
+        copyBtn.addEventListener('click', () => {
+            output.select();
+            document.execCommand('copy');
+            // Assuming common.js has showToast or similar, checking previously
+        });
+
+        // Initial
+        generate();
+    </script>
+</body>
+
+</html>
