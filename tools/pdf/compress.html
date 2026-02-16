@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compress PDF - Privacy-First Tools</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">Vibox</a>
+            <nav>
+                <ul>
+                    <li><a href="../pdf/index.html">PDF Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-container" id="tool-container">
+            <div class="step-indicator">
+                <span class="step active">1. Upload</span>
+                <span class="step">2. Compress</span>
+                <span class="step">3. Download</span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1>Compress PDF</h1>
+                <p class="text-muted">Reduce PDF size directly in your browser. No uploads. No tracking.</p>
+            </div>
+
+            <div class="drop-zone" id="drop-zone">
+                <span class="drop-zone-icon">🗜️</span>
+                <h3>Drop PDF Here</h3>
+                <p class="text-muted">or click to browse</p>
+                <input type="file" id="file-input" accept="application/pdf" hidden>
+            </div>
+
+            <div id="controls" style="display:none; margin-top: 1.5rem;">
+                <div class="tool-card" style="margin-bottom: 1rem;">
+                    <h3>Compression Preset</h3>
+                    <p class="text-muted" style="margin-bottom: 10px;">Best for document upload portals.</p>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button id="preset-low" class="btn btn-secondary">Low</button>
+                        <button id="preset-medium" class="btn btn-primary">Medium</button>
+                        <button id="preset-high" class="btn btn-secondary">High</button>
+                    </div>
+                </div>
+
+                <div class="tool-card" style="margin-bottom: 1rem;">
+                    <h3>File Summary</h3>
+                    <p id="original-size" class="text-muted">Original: -</p>
+                    <p id="compressed-size" class="text-muted">Compressed: -</p>
+                    <p id="saving" class="text-muted">Savings: -</p>
+                    <small class="text-muted">Note: Savings depend on PDF structure. Scanned/image PDFs usually reduce more.</small>
+                </div>
+
+                <div class="action-bar" style="text-align: center; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                    <button id="compress-btn" class="btn btn-primary" style="min-width: 200px;">Compress PDF</button>
+                    <button id="download-btn" class="btn btn-secondary" style="display:none; min-width: 200px;">Download Compressed PDF</button>
+                </div>
+
+                <p class="text-muted" style="text-align:center; margin-top: 12px;">Processed locally in your browser 🔒</p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import '../../js/pdf/pdf-main.js';
+
+        const controls = document.getElementById('controls');
+        const compressBtn = document.getElementById('compress-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const originalSizeEl = document.getElementById('original-size');
+        const compressedSizeEl = document.getElementById('compressed-size');
+        const savingEl = document.getElementById('saving');
+
+        const presetButtons = {
+            low: document.getElementById('preset-low'),
+            medium: document.getElementById('preset-medium'),
+            high: document.getElementById('preset-high')
+        };
+
+        let currentFile = null;
+        let currentPreset = 'medium';
+        let compressedBlob = null;
+
+        window.Utils.initDragAndDrop('#drop-zone', (files) => {
+            if (files.length > 0) loadFile(files[0]);
+        });
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) loadFile(e.target.files[0]);
+        });
+
+        function setPreset(preset) {
+            currentPreset = preset;
+            Object.entries(presetButtons).forEach(([name, btn]) => {
+                btn.classList.toggle('btn-primary', name === preset);
+                btn.classList.toggle('btn-secondary', name !== preset);
+            });
+        }
+
+        presetButtons.low.addEventListener('click', () => setPreset('low'));
+        presetButtons.medium.addEventListener('click', () => setPreset('medium'));
+        presetButtons.high.addEventListener('click', () => setPreset('high'));
+
+        function loadFile(file) {
+            if (file.type !== 'application/pdf') {
+                window.Utils.showToast('Please upload a valid PDF file.', 'error');
+                return;
+            }
+
+            currentFile = file;
+            compressedBlob = null;
+            document.getElementById('drop-zone').style.display = 'none';
+            controls.style.display = 'block';
+            downloadBtn.style.display = 'none';
+
+            originalSizeEl.textContent = `Original: ${window.Utils.formatBytes(file.size)}`;
+            compressedSizeEl.textContent = 'Compressed: -';
+            savingEl.textContent = 'Savings: -';
+
+            window.Utils.showToast('PDF ready to compress.', 'success');
+        }
+
+        function getCompressionOptions(preset) {
+            switch (preset) {
+                case 'low':
+                    return { compact: false, removeMetadata: false };
+                case 'high':
+                    return { compact: true, removeMetadata: true };
+                case 'medium':
+                default:
+                    return { compact: true, removeMetadata: false };
+            }
+        }
+
+        compressBtn.addEventListener('click', async () => {
+            if (!currentFile) {
+                window.Utils.showToast('Please upload a PDF first.', 'error');
+                return;
+            }
+
+            try {
+                window.Utils.showToast('Compressing PDF...', 'info');
+
+                const fileBuffer = await window.PdfTools.readFileAsBuffer(currentFile);
+                const options = getCompressionOptions(currentPreset);
+
+                compressedBlob = await window.PdfTools.runPdfTask('COMPRESS_PDF', {
+                    file: fileBuffer,
+                    options
+                });
+
+                const before = currentFile.size;
+                const after = compressedBlob.size;
+                const savedBytes = Math.max(0, before - after);
+                const savedPct = before > 0 ? ((savedBytes / before) * 100).toFixed(1) : '0.0';
+
+                compressedSizeEl.textContent = `Compressed: ${window.Utils.formatBytes(after)}`;
+                savingEl.textContent = `Savings: ${window.Utils.formatBytes(savedBytes)} (${savedPct}%)`;
+
+                downloadBtn.style.display = 'inline-block';
+                window.Utils.showToast('Compression complete!', 'success');
+            } catch (err) {
+                console.error(err);
+                window.Utils.showToast('Compression failed: ' + err.message, 'error');
+            }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if (!compressedBlob) {
+                window.Utils.showToast('Please compress the file first.', 'error');
+                return;
+            }
+
+            const originalName = currentFile?.name?.replace(/\.pdf$/i, '') || 'document';
+            window.Utils.downloadBlob(compressedBlob, `${originalName}-compressed.pdf`);
+        });
+    </script>
+</body>
+
+</html>

@@ -57,7 +57,78 @@ async function resizeImage(file, targetWidth, targetHeight, options = {}) {
     else if (!w) { w = Math.round(bitmap.width * (targetHeight / bitmap.height)); }
     else if (!h) { h = Math.round(bitmap.height * (targetWidth / bitmap.width)); }
 
+    // If targetBytes is provided, try to meet that size by tuning quality.
+    if (options.targetBytes && options.targetBytes > 0) {
+        const format = options.format || 'image/jpeg';
+        const minQuality = typeof options.minQuality === 'number' ? options.minQuality : 0.3;
+        const maxIterations = typeof options.maxIterations === 'number' ? options.maxIterations : 10;
+
+        return fitImageToTargetSize(bitmap, w, h, format, options.targetBytes, minQuality, maxIterations);
+    }
+
     return processImage(file, { width: w, height: h, ...options });
+}
+
+async function fitImageToTargetSize(bitmap, baseWidth, baseHeight, format, targetBytes, minQuality = 0.3, maxIterations = 10) {
+    let scale = 1;
+    let smallestBlob = null;
+    let preferredResult = null;
+
+    // Try up to 8 downscale rounds (quality + dimensions).
+    for (let round = 0; round < 8; round++) {
+        const width = Math.max(64, Math.round(baseWidth * scale));
+        const height = Math.max(64, Math.round(baseHeight * scale));
+
+        const canvas = new OffscreenCanvas(width, height);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(bitmap, 0, 0, width, height);
+
+        const blob = await fitCanvasByQuality(canvas, format, targetBytes, minQuality, maxIterations);
+
+        if (!smallestBlob || blob.size < smallestBlob.size) {
+            smallestBlob = blob;
+        }
+
+        if (blob.size <= targetBytes) {
+            preferredResult = blob;
+            break;
+        }
+
+        // Can't meet target yet, reduce dimensions and retry.
+        scale *= 0.85;
+    }
+
+    return preferredResult || smallestBlob;
+}
+
+async function fitCanvasByQuality(canvas, format, targetBytes, minQuality = 0.3, maxIterations = 10) {
+    // PNG ignores quality; export once.
+    if (format === 'image/png') {
+        return canvas.convertToBlob({ type: 'image/png' });
+    }
+
+    let low = Math.max(0.01, minQuality);
+    let high = 0.95;
+    let bestUnderTarget = null;
+    let smallestBlob = null;
+
+    for (let i = 0; i < maxIterations; i++) {
+        const q = (low + high) / 2;
+        const blob = await canvas.convertToBlob({ type: format, quality: q });
+
+        if (!smallestBlob || blob.size < smallestBlob.size) {
+            smallestBlob = blob;
+        }
+
+        if (blob.size <= targetBytes) {
+            bestUnderTarget = blob;
+            low = q;
+        } else {
+            high = q;
+        }
+    }
+
+    return bestUnderTarget || smallestBlob || canvas.convertToBlob({ type: format, quality: minQuality });
 }
 
 async function convertFormat(file, format) {

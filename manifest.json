@@ -1,6 +1,6 @@
 {
-    "name": "VtoolZ",
-    "short_name": "VtoolZ",
+    "name": "Vibox",
+    "short_name": "Vibox",
     "description": "Free, private, offline-capable web utilities.",
     "start_url": "/vtoolz/index.html",
     "scope": "/vtoolz/",

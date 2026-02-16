@@ -33,6 +33,9 @@ self.onmessage = async function (e) {
             case 'IMAGES_TO_PDF':
                 result = await imagesToPdf(payload.images, payload.options);
                 break;
+            case 'COMPRESS_PDF':
+                result = await compressPdf(payload.file, payload.options);
+                break;
             default:
                 throw new Error(`Unknown operation: ${type}`);
         }
@@ -212,4 +215,39 @@ async function imagesToPdf(imageBuffers, options = {}) {
 
     const pdfBytes = await pdfDoc.save();
     return new Blob([pdfBytes], { type: 'application/pdf' });
+}
+
+async function compressPdf(fileBuffer, options = {}) {
+    const { PDFDocument } = PDFLib;
+
+    // Parse and re-save with compact options.
+    const pdfDoc = await PDFDocument.load(fileBuffer, {
+        ignoreEncryption: true,
+        updateMetadata: false
+    });
+
+    if (options.removeMetadata) {
+        try {
+            pdfDoc.setTitle('');
+            pdfDoc.setAuthor('');
+            pdfDoc.setSubject('');
+            pdfDoc.setKeywords([]);
+            pdfDoc.setProducer('');
+            pdfDoc.setCreator('');
+        } catch (e) {
+            // Some docs may reject metadata updates; ignore and continue.
+        }
+    }
+
+    const compact = !!options.compact;
+    const pdfBytes = await pdfDoc.save({
+        useObjectStreams: compact,
+        addDefaultPage: false,
+        updateFieldAppearances: false,
+        objectsPerTick: compact ? 50 : 250
+    });
+
+    // Keep original if compression did not help.
+    const outputBytes = (pdfBytes.length > fileBuffer.byteLength) ? new Uint8Array(fileBuffer) : pdfBytes;
+    return new Blob([outputBytes], { type: 'application/pdf' });
 }

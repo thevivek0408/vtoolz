@@ -347,15 +347,16 @@ window.addEventListener('DOMContentLoaded', () => {
             } catch (e) {
                 console.warn('Manifest URL parse failed', e);
             }
-        } else {
-            // Fallback if no manifest link (e.g. sub-pages missing tag)
-            // If we are at /vtoolz/tools/pdf/index.html, we want /vtoolz/sw.js
-            // We can guess based on script location? 
-            // Better: just check consistent locations.
-            if (window.location.pathname.includes('/vtoolz/')) {
-                swPath = '/vtoolz/sw.js';
-                swScope = '/vtoolz/';
-            }
+        }
+
+        // Fallback / Override check
+        const path = window.location.pathname;
+        if (path.includes('/vtoolz/')) {
+            swPath = '/vtoolz/sw.js';
+            swScope = '/vtoolz/';
+        } else if (path.includes('/vibox/')) {
+            swPath = '/vibox/sw.js';
+            swScope = '/vibox/';
         }
 
         // Log for debugging

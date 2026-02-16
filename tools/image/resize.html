@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="container">
-            <a href="../../index.html" class="logo">VtoolZ</a>
+            <a href="../../index.html" class="logo">Vibox</a>
             <nav>
                 <ul>
                     <li><a href="../image/index.html">Image Tools</a></li>
@@ -31,7 +31,7 @@
 
                 <div style="text-align: center; margin-bottom: 2rem;">
                     <h1>Image Resizer</h1>
-                    <p class="text-muted">Resize images to specific dimensions (pixels) or percentage.</p>
+                       <p class="text-muted">Resize by dimensions (px) or target file size (KB/MB), fully in-browser.</p>
                 </div>
 
                 <div class="drop-zone" id="drop-zone">
@@ -43,19 +43,56 @@
 
                 <div id="controls" style="display:none; max-width: 600px; margin: 0 auto;">
                     <div class="tool-card">
-                        <div style="display:flex; gap:15px;">
-                            <div style="flex:1">
-                                <label style="display:block; margin-bottom:5px;">Width (px)</label>
-                                <input type="number" id="width-input" class="form-control" placeholder="Width">
-                            </div>
-                            <div style="flex:1">
-                                <label style="display:block; margin-bottom:5px;">Height (px)</label>
-                                <input type="number" id="height-input" class="form-control" placeholder="Height">
-                            </div>
-                        </div>
-                        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">
-                            * Leave one empty to maintain aspect ratio.
-                        </p>
+                           <label style="display:block; margin-bottom:8px;">Resize Mode</label>
+                           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 15px;">
+                               <button id="mode-dimensions" class="btn btn-primary" type="button">By Width / Height</button>
+                               <button id="mode-size" class="btn btn-secondary" type="button">By File Size</button>
+                           </div>
+
+                           <div id="dimension-controls">
+                               <div style="display:flex; gap:15px;">
+                                   <div style="flex:1">
+                                       <label style="display:block; margin-bottom:5px;">Width (px)</label>
+                                       <input type="number" id="width-input" class="form-control" placeholder="Width">
+                                   </div>
+                                   <div style="flex:1">
+                                       <label style="display:block; margin-bottom:5px;">Height (px)</label>
+                                       <input type="number" id="height-input" class="form-control" placeholder="Height">
+                                   </div>
+                               </div>
+                               <p style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">
+                                   * Leave one empty to maintain aspect ratio.
+                               </p>
+                           </div>
+
+                           <div id="size-controls" style="display:none;">
+                               <div style="display:flex; gap:15px; align-items:end; flex-wrap:wrap;">
+                                   <div style="flex:1; min-width: 180px;">
+                                       <label style="display:block; margin-bottom:5px;">Target Size</label>
+                                       <input type="number" id="target-size-input" class="form-control" placeholder="e.g. 300">
+                                   </div>
+                                   <div style="width:120px;">
+                                       <label style="display:block; margin-bottom:5px;">Unit</label>
+                                       <select id="target-size-unit" class="form-control">
+                                           <option value="KB">KB</option>
+                                           <option value="MB">MB</option>
+                                       </select>
+                                   </div>
+                               </div>
+
+                               <div style="margin-top:12px;">
+                                   <label style="display:block; margin-bottom:5px;">Output Format</label>
+                                   <select id="size-format" class="form-control">
+                                       <option value="image/jpeg" selected>JPEG (best for fixed size)</option>
+                                       <option value="image/webp">WEBP</option>
+                                       <option value="image/png">PNG</option>
+                                   </select>
+                               </div>
+
+                               <p style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">
+                                   * Fixed-size output is approximate and depends on image complexity.
+                               </p>
+                           </div>
                     </div>
 
                     <div class="action-bar" style="text-align: center; margin-top: 2rem;">
@@ -94,7 +131,28 @@
             const results = document.getElementById('results');
             const controls = document.getElementById('controls');
             const dropZone = document.getElementById('drop-zone');
+               const modeDimensionsBtn = document.getElementById('mode-dimensions');
+               const modeSizeBtn = document.getElementById('mode-size');
+               const dimensionControls = document.getElementById('dimension-controls');
+               const sizeControls = document.getElementById('size-controls');
             let selectedFiles = [];
+               let resizeMode = 'dimensions';
+
+               function setResizeMode(mode) {
+                   resizeMode = mode;
+                   const isDimensions = mode === 'dimensions';
+
+                   modeDimensionsBtn.classList.toggle('btn-primary', isDimensions);
+                   modeDimensionsBtn.classList.toggle('btn-secondary', !isDimensions);
+                   modeSizeBtn.classList.toggle('btn-primary', !isDimensions);
+                   modeSizeBtn.classList.toggle('btn-secondary', isDimensions);
+
+                   dimensionControls.style.display = isDimensions ? 'block' : 'none';
+                   sizeControls.style.display = isDimensions ? 'none' : 'block';
+               }
+
+               modeDimensionsBtn.addEventListener('click', () => setResizeMode('dimensions'));
+               modeSizeBtn.addEventListener('click', () => setResizeMode('size'));
 
             window.Utils.initDragAndDrop('#drop-zone', (files) => handleFiles(files));
             fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
@@ -121,24 +179,54 @@
             }
 
             document.getElementById('resize-btn').addEventListener('click', async () => {
-                const w = parseInt(document.getElementById('width-input').value) || 0;
-                const h = parseInt(document.getElementById('height-input').value) || 0;
+                   const w = parseInt(document.getElementById('width-input').value) || 0;
+                   const h = parseInt(document.getElementById('height-input').value) || 0;
+                   const targetSizeValue = parseFloat(document.getElementById('target-size-input').value) || 0;
+                   const targetSizeUnit = document.getElementById('target-size-unit').value;
+                   const sizeFormat = document.getElementById('size-format').value;
 
-                if (!w && !h) {
-                    window.Utils.showToast('Enter at least one dimension', 'error');
-                    return;
-                }
+                   if (selectedFiles.length === 0) {
+                       window.Utils.showToast('Please upload at least one image.', 'error');
+                       return;
+                   }
+
+                   if (resizeMode === 'dimensions' && !w && !h) {
+                       window.Utils.showToast('Enter at least one dimension.', 'error');
+                       return;
+                   }
+
+                   if (resizeMode === 'size' && targetSizeValue <= 0) {
+                       window.Utils.showToast('Enter a valid target size.', 'error');
+                       return;
+                   }
+
+                   const targetBytes = targetSizeUnit === 'MB'
+                       ? Math.round(targetSizeValue * 1024 * 1024)
+                       : Math.round(targetSizeValue * 1024);
 
                 for (const file of selectedFiles) {
                     const status = file.uiElement.querySelector('.status');
-                    status.textContent = 'Resizing...';
+                       status.textContent = resizeMode === 'dimensions' ? 'Resizing...' : 'Optimizing to target size...';
+
+                       // Remove previous download button if user runs again
+                       const oldBtn = file.uiElement.querySelector('button');
+                       if (oldBtn) oldBtn.remove();
 
                     try {
+                           const options = resizeMode === 'size'
+                               ? { targetBytes, format: sizeFormat }
+                               : {};
+
                         const blob = await window.ImageTools.runImageTask('RESIZE', {
-                            file, width: w, height: h
+                               file,
+                               width: resizeMode === 'dimensions' ? w : 0,
+                               height: resizeMode === 'dimensions' ? h : 0,
+                               options
                         });
 
-                        status.textContent = 'Done!';
+                       const delta = file.size - blob.size;
+                       const deltaPct = file.size > 0 ? Math.round((delta / file.size) * 100) : 0;
+                       status.textContent = `Done! ${window.Utils.formatBytes(blob.size)} (${deltaPct >= 0 ? '-' : '+'}${Math.abs(deltaPct)}%)`;
                         status.style.color = 'var(--accent-color)';
 
                         const btn = document.createElement('button');
