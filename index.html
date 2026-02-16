@@ -44,21 +44,53 @@
                 </div>
                 <h1>Your Data, Your Tools.</h1>
                 <p>Powerful utilities that run entirely in your browser. <br>No uploads. No servers. 100% Private.</p>
-                <div style="display:flex; justify-content:center; gap:15px;">
-                    <a href="#tools" class="btn btn-primary">Explore Tools</a>
+
+                <!-- New Search Bar -->
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="tool-search"
+                            placeholder="Search tools (e.g., 'merge', 'resize', 'qr')..." autocomplete="off">
+                        <span class="search-shortcut">/</span>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="tools" class="container">
-            <!-- ... -->
-            <footer
-                style="text-align: center; padding: 20px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 30px;">
-                <p style="margin-bottom: 5px;">&copy; 2026 Vibox. Open Source & Client-Side.</p>
-                <p style="font-size: 0.8rem; opacity: 0.5; margin: 0;">v22.1 (Gov Tools Fix)</p>
-            </footer>
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <div class="filter-tab active" data-category="all">All</div>
+                <div class="filter-tab" data-category="pdf">PDF</div>
+                <div class="filter-tab" data-category="image">Image</div>
+                <div class="filter-tab" data-category="text">Text</div>
+                <div class="filter-tab" data-category="dev">Dev</div>
+                <div class="filter-tab" data-category="media">Media</div>
+                <div class="filter-tab" data-category="fun">Fun</div>
+                <div class="filter-tab" data-category="govt">Govt</div>
+            </div>
 
-            <script src="js/utils/common.js" type="module"></script>
+            <!-- Dynamic Tool Grid -->
+            <div class="tool-grid" id="tools-grid">
+                <!-- Javascript will populate this -->
+            </div>
+
+            <!-- No Results State -->
+            <div class="no-results" id="no-results">
+                <div class="no-results-icon"><i class="fas fa-search"></i></div>
+                <h3>No tools found</h3>
+                <p>Try searching for a different keyword like "PDF" or "Color".</p>
+            </div>
+        </section>
+
+        <footer
+            style="text-align: center; padding: 20px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 30px;">
+            <p style="margin-bottom: 5px;">&copy; 2026 Vibox. Open Source & Client-Side.</p>
+            <p style="font-size: 0.8rem; opacity: 0.5; margin: 0;">v22.1 (Gov Tools Fix)</p>
+        </footer>
+
+        <script src="js/utils/common.js" type="module"></script>
+        <script src="js/home.js" type="module"></script>
 </body>
 
 </html>

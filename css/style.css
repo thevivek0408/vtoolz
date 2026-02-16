@@ -795,4 +795,199 @@ body.neon-mode h3 {
     .mobile-menu-btn {
         display: none !important;
     }
-}
+
+    /* --- Home Page V2 Styles --- */
+
+    /* Search Container */
+    .search-container {
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto 30px;
+        z-index: 10;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 20px;
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        pointer-events: none;
+    }
+
+    #tool-search {
+        width: 100%;
+        padding: 18px 20px 18px 50px;
+        font-size: 1.1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        color: var(--text-color);
+    }
+
+    #tool-search:focus {
+        outline: none;
+        box-shadow: 0 8px 32px rgba(52, 152, 219, 0.2);
+        border-color: var(--primary-color);
+        transform: scale(1.02);
+    }
+
+    .search-shortcut {
+        position: absolute;
+        right: 20px;
+        background: rgba(128, 128, 128, 0.2);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-family: monospace;
+        pointer-events: none;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+    }
+
+    .filter-tab {
+        padding: 8px 20px;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        background: var(--surface-color);
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+        color: var(--text-muted);
+    }
+
+    .filter-tab:hover {
+        background: var(--secondary-surface);
+        transform: translateY(-2px);
+    }
+
+    .filter-tab.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+    }
+
+    /* New Tool Card Style */
+    .tool-card {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        /* Horizontal layout for density */
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: var(--surface-color);
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        text-decoration: none;
+        overflow: hidden;
+    }
+
+    .tool-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .tool-icon {
+        font-size: 1.8rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(128, 128, 128, 0.05);
+        border-radius: 12px;
+        flex-shrink: 0;
+    }
+
+    .tool-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.1rem;
+        color: var(--text-color);
+    }
+
+    .tool-info p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.3;
+    }
+
+    .tool-arrow {
+        margin-left: auto;
+        color: var(--border-color);
+        transition: transform 0.3s, color 0.3s;
+    }
+
+    .tool-card:hover .tool-arrow {
+        color: var(--primary-color);
+        transform: translateX(5px);
+    }
+
+    /* Animations */
+    @keyframes zoomIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .zoom-in {
+        animation: zoomIn 0.3s forwards;
+    }
+
+    /* No Results */
+    .no-results {
+        text-align: center;
+        padding: 40px;
+        display: none;
+    }
+
+    .no-results-icon {
+        font-size: 4rem;
+        color: var(--border-color);
+        margin-bottom: 20px;
+    }
+
+    /* Responsive Grid overrides */
+    @media (max-width: 600px) {
+        .tool-card {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .tool-icon {
+            margin-bottom: 10px;
+        }
+
+        .tool-arrow {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    }}
