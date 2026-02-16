@@ -36,8 +36,8 @@ function renderTools(toolsToRender) {
         card.style.borderLeft = `4px solid ${tool.color}`;
 
         card.innerHTML = `
-            <div class="tool-thumb" style="background: linear-gradient(135deg, ${tool.color}22, ${tool.color}44);">
-                <i class="${tool.icon}" style="color: ${tool.color}"></i>
+            <div class="tool-thumb">
+                <i class="${tool.icon}" style="color: ${tool.color}; text-shadow: 0 4px 10px ${tool.color}44;"></i>
             </div>
             <div class="tool-info">
                 <h3>${tool.name}</h3>

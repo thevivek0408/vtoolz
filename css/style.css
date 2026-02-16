@@ -12,8 +12,9 @@
     --surface-color: #ffffff;
     --secondary-surface: #e9ecef;
     --text-color: #2c3e50;
-    --text-muted: #6c757d;
-    --border-color: #dee2e6;
+    /* Explicit Dark Blue-Grey */
+    --text-muted: #7f8c8d;
+    --border-color: #ecf0f1;
 
     /* Effects */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -948,34 +949,45 @@ body.neon-mode h3 {
 }
 
 .tool-thumb {
-    width: 100px;
-    height: 100%;
+    width: 90px;
+    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 2.2rem;
-    transition: transform 0.3s ease;
+    font-size: 3rem;
+    /* Much larger icon */
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: transparent;
+    /* No background box */
+    margin-left: 5px;
 }
 
 .tool-card:hover .tool-thumb {
-    transform: scale(1.05);
-    /* Subtle zoom effect */
+    transform: scale(1.15) rotate(5deg);
+    /* playful hover */
 }
 
 .tool-info {
-    padding: 15px 20px;
+    padding: 15px 15px 15px 5px;
+    /* Less left padding since thumb is open */
     flex-grow: 1;
     overflow: hidden;
+    /* Keep hidden for height safety but ensure content fits */
+    min-width: 0;
+    position: relative;
+    /* Ensure z-index works */
+    z-index: 2;
 }
 
 .tool-info h3 {
     margin: 0 0 5px 0;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
     color: var(--text-color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    /* white-space: nowrap;  Removed to allow wrapping if tight */
+    line-height: 1.2;
+    /* overflow: hidden; Removed to ensure visibility */
 }
 
 .tool-info p {
