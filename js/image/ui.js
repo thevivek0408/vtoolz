@@ -182,20 +182,29 @@ export function initUI() {
     // Layer Buttons
     const btnAddLayer = document.getElementById('btn-add-layer');
     if (btnAddLayer) {
-        btnAddLayer.addEventListener('click', () => {
-            createLayer("Layer " + (state.layers.length + 1));
-            saveHistory("New Layer");
-            updateLayerList();
+        btnAddLayer.onclick = () => {
+            createLayer('Layer ' + (state.layers.length + 1));
+            saveHistory("New Layer"); // Re-added saveHistory
             requestRender();
-        });
+            updateLayerList();
+        };
     }
 
-    document.getElementById('btn-del-layer').addEventListener('click', () => {
+    const btnAddGroup = document.getElementById('btn-add-group');
+    if (btnAddGroup) {
+        btnAddGroup.onclick = () => {
+            createGroup('Group ' + (Math.floor(Math.random() * 100)));
+            saveHistory("New Group"); // Added saveHistory for new group
+            updateLayerList();
+        };
+    }
+
+    document.getElementById('btn-del-layer').onclick = () => {
         deleteLayer();
         saveHistory("Delete Layer");
         updateLayerList();
         requestRender();
-    });
+    };
 
     // Opacity Slider
     const opacityInput = document.getElementById('layer-opacity');
