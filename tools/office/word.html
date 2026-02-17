@@ -387,6 +387,108 @@
             color: #e0e0e0;
         }
 
+        /* Header/Footer */
+        .hf-bar {
+            padding: 6px 50px;
+            font-size: 11px;
+            color: #888;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .hf-bar.footer {
+            border-bottom: none;
+            border-top: 1px dashed #ccc;
+        }
+
+        .hf-bar input {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 11px;
+            width: 100%;
+            text-align: center;
+            outline: none;
+        }
+
+        .hf-bar input:focus {
+            color: #333;
+        }
+
+        .hf-bar input::placeholder {
+            color: #bbb;
+        }
+
+        /* Versions Modal */
+        .versions-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, .7);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .versions-modal.open {
+            display: flex;
+        }
+
+        .versions-modal .vm-inner {
+            background: var(--card-bg, #1e1e2e);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, .5);
+            position: relative;
+        }
+
+        .versions-modal h2 {
+            margin-bottom: 14px;
+            font-size: 1.2em;
+        }
+
+        .versions-modal .close-modal {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .ver-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, .06);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+
+        .ver-item button {
+            background: var(--word-blue);
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .ver-item button:hover {
+            opacity: .8;
+        }
+
         @media(max-width:600px) {
             .ql-editor {
                 padding: 20px;
@@ -492,6 +594,8 @@
                         <button id="btnFocus" title="Focus Mode"><i class="fas fa-expand"></i></button>
                         <button id="btnDarkEditor" title="Dark/Light Editor"><i class="fas fa-moon"></i></button>
                         <button id="btnPrint" title="Print"><i class="fas fa-print"></i></button>
+                        <button id="btnVersions" title="Version History"><i class="fas fa-history"></i></button>
+                        <button id="btnHF" title="Header/Footer"><i class="fas fa-heading"></i></button>
                     </div>
                 </div>
 
@@ -513,7 +617,11 @@
                 </div>
 
                 <div class="editor-container" id="editorWrap">
+                    <div class="hf-bar" id="headerBar" style="display:none;"><input type="text" id="headerInput"
+                            placeholder="Header text (shown on print/export)..."></div>
                     <div id="editor"></div>
+                    <div class="hf-bar footer" id="footerBar" style="display:none;"><input type="text" id="footerInput"
+                            placeholder="Footer text (shown on print/export)..."></div>
                 </div>
 
                 <div class="status-bar">
@@ -548,6 +656,17 @@
     <div class="focus-overlay" id="focusOverlay">
         <button class="focus-exit" onclick="exitFocus()">✕ Exit Focus</button>
         <div class="focus-editor" id="focusEditor" contenteditable="true"></div>
+    </div>
+
+    <!-- Version History Modal -->
+    <div class="versions-modal" id="versionsModal">
+        <div class="vm-inner">
+            <button class="close-modal" onclick="closeVersions()">✕</button>
+            <h2>📋 Version History</h2>
+            <p style="font-size:12px;opacity:.5;margin-bottom:12px;">Auto-saved every 30 seconds. Up to 10 versions
+                kept.</p>
+            <div id="versionsList"></div>
+        </div>
     </div>
 
     <input type="file" id="fileInput" accept=".txt,.docx,.doc" style="display:none;">
@@ -773,11 +892,95 @@
         }
         function dlBlob(b, n) { const u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = n; a.click(); URL.revokeObjectURL(u); }
 
+        // ── HEADER / FOOTER ──
+        $('btnHF').onclick = () => {
+            const show = $('headerBar').style.display === 'none';
+            $('headerBar').style.display = show ? 'block' : 'none';
+            $('footerBar').style.display = show ? 'block' : 'none';
+            $('btnHF').classList.toggle('active', show);
+        };
+
         // ── AUTO-SAVE ──
-        const SK = 'vibox-word-doc';
-        quill.on('text-change', debounce(() => { try { localStorage.setItem(SK, JSON.stringify({ c: quill.getContents(), t: $('docTitle').value })); } catch (e) { } }, 1000));
-        try { const s = JSON.parse(localStorage.getItem(SK)); if (s && s.c) { quill.setContents(s.c); if (s.t) $('docTitle').value = s.t; } } catch (e) { }
+        const SK = 'vibox-word-doc', VK = 'vibox-word-versions';
+        quill.on('text-change', debounce(() => {
+            try {
+                localStorage.setItem(SK, JSON.stringify({
+                    c: quill.getContents(), t: $('docTitle').value,
+                    hdr: $('headerInput').value, ftr: $('footerInput').value
+                }));
+            } catch (e) { }
+        }, 1000));
+
+        // Restore current save
+        try {
+            const s = JSON.parse(localStorage.getItem(SK));
+            if (s && s.c) { quill.setContents(s.c); if (s.t) $('docTitle').value = s.t; }
+            if (s && s.hdr) $('headerInput').value = s.hdr;
+            if (s && s.ftr) $('footerInput').value = s.ftr;
+        } catch (e) { }
         function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+        // ── VERSION HISTORY ──
+        function saveVersion() {
+            try {
+                let versions = JSON.parse(localStorage.getItem(VK) || '[]');
+                versions.unshift({
+                    ts: Date.now(),
+                    c: quill.getContents(),
+                    t: $('docTitle').value
+                });
+                if (versions.length > 10) versions = versions.slice(0, 10);
+                localStorage.setItem(VK, JSON.stringify(versions));
+            } catch (e) { }
+        }
+        setInterval(saveVersion, 30000); // every 30s
+
+        $('btnVersions').onclick = () => {
+            $('versionsModal').classList.add('open');
+            renderVersions();
+        };
+        function closeVersions() { $('versionsModal').classList.remove('open'); }
+        $('versionsModal').onclick = e => { if (e.target === $('versionsModal')) closeVersions(); };
+
+        function renderVersions() {
+            const list = $('versionsList');
+            try {
+                const versions = JSON.parse(localStorage.getItem(VK) || '[]');
+                if (versions.length === 0) { list.innerHTML = '<p style="opacity:.5;font-size:13px;">No versions saved yet. Auto-saves every 30 seconds.</p>'; return; }
+                list.innerHTML = '';
+                versions.forEach((v, i) => {
+                    const d = document.createElement('div');
+                    d.className = 'ver-item';
+                    const date = new Date(v.ts);
+                    const text = quill.getText.call({ getContents: () => v.c }) || '';
+                    d.innerHTML = `<span>${date.toLocaleString()} — "${v.t || 'Untitled'}"</span><button onclick="restoreVersion(${i})">Restore</button>`;
+                    list.appendChild(d);
+                });
+            } catch (e) { list.innerHTML = '<p style="opacity:.5;">Error loading versions.</p>'; }
+        }
+        window.restoreVersion = function (i) {
+            try {
+                const versions = JSON.parse(localStorage.getItem(VK) || '[]');
+                if (versions[i]) {
+                    quill.setContents(versions[i].c);
+                    if (versions[i].t) $('docTitle').value = versions[i].t;
+                    closeVersions();
+                }
+            } catch (e) { }
+        };
+
+        // Include header/footer in print
+        const origPrint = $('btnPrint').onclick;
+        $('btnPrint').onclick = () => {
+            const hdr = $('headerInput').value, ftr = $('footerInput').value;
+            const w = window.open('', '', 'width=800,height=600');
+            w.document.write(`<html><head><title>${$('docTitle').value}</title><style>body{font-family:Georgia,serif;padding:40px;line-height:1.8;color:#1a1a2e;}.hdr,.ftr{text-align:center;font-size:10px;color:#888;padding:8px;border-bottom:1px solid #eee;margin-bottom:16px;}.ftr{border-bottom:none;border-top:1px solid #eee;margin-top:16px;}h1,h2{color:#2b5797;}img{max-width:100%;}blockquote{border-left:4px solid #2b5797;padding-left:12px;color:#555;}</style></head><body>`);
+            if (hdr) w.document.write(`<div class="hdr">${hdr}</div>`);
+            w.document.write(quill.root.innerHTML);
+            if (ftr) w.document.write(`<div class="ftr">${ftr}</div>`);
+            w.document.write('</body></html>');
+            w.document.close(); w.print();
+        };
     </script>
     <script src="../../js/utils/common.js" type="module"></script>
 </body>

@@ -601,7 +601,8 @@
                         <button onclick="addShape('line')" title="Line"><i class="fas fa-minus"></i></button>
                         <button onclick="addShape('arrow')" title="Arrow"><i class="fas fa-arrow-right"></i></button>
                         <button onclick="addShape('star')" title="Star"><i class="fas fa-star"></i></button>
-                        <button onclick="addImage()" title="Image"><i class="fas fa-image"></i></button>
+                        <button onclick="addImage()" title="Image File"><i class="fas fa-image"></i></button>
+                        <button onclick="addImageURL()" title="Image from URL"><i class="fas fa-link"></i> Img</button>
                     </div>
                     <div class="tg">
                         <select id="slideLayout" onchange="applyLayout(this.value)">
@@ -618,6 +619,10 @@
                         <input type="color" id="slideBg" value="#ffffff" title="Slide BG"
                             onchange="changeSlideBg(this.value)"
                             style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
+                        <input type="color" id="slideBg2" value="#000000" title="Gradient End Color"
+                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
+                        <button onclick="applyGradientBg()" title="Apply Gradient BG"><i
+                                class="fas fa-fill-drip"></i></button>
                     </div>
                     <div class="tg">
                         <button onclick="deleteSelected()" title="Delete"><i class="fas fa-trash"></i></button>
@@ -814,7 +819,7 @@
                 const t = document.createElement('div');
                 t.className = 'slide-thumb' + (i === curSlide ? ' active' : '');
                 t.onclick = e => { if (!e.target.classList.contains('del-slide')) selectSlide(i); };
-                t.style.background = s.background;
+                t.style.background = s.gradient || s.background;
                 const prev = document.createElement('div');
                 prev.style.cssText = 'width:100%;height:100%;position:relative;overflow:hidden;';
                 s.elements.forEach(el => {
@@ -836,7 +841,7 @@
         function renderSlide() {
             const ed = _$('slideEditor'); ed.innerHTML = '';
             const s = slides[curSlide];
-            ed.style.background = s.background;
+            ed.style.background = s.gradient || s.background;
             _$('slideBg').value = s.background;
             s.elements.forEach((el, i) => ed.appendChild(createElDOM(el, i)));
             // Apply transition
@@ -860,6 +865,8 @@
                 d.style.color = el.color || activeTheme.text;
                 d.style.fontFamily = el.fontFamily || 'Arial';
                 d.style.textAlign = el.align || 'left';
+                d.style.lineHeight = (el.lineHeight || 1.4);
+                if (el.underline) d.style.textDecoration = 'underline';
                 d.ondblclick = () => { d.contentEditable = 'true'; d.focus(); d.style.cursor = 'text'; };
                 d.onblur = () => { d.contentEditable = 'false'; d.style.cursor = 'move'; slides[curSlide].elements[idx].text = d.textContent; saveToStorage(); };
             } else if (el.type === 'rect') {
@@ -921,6 +928,8 @@
                 h += `<div class="prop-row"><label>Align</label><select onchange="uProp('align',this.value)"><option ${el.align === 'left' ? 'selected' : ''}>left</option><option ${el.align === 'center' ? 'selected' : ''}>center</option><option ${el.align === 'right' ? 'selected' : ''}>right</option></select></div>`;
                 h += `<div class="prop-row"><label><input type="checkbox" ${el.bold ? 'checked' : ''} onchange="uProp('bold',this.checked)"> Bold</label></div>`;
                 h += `<div class="prop-row"><label><input type="checkbox" ${el.italic ? 'checked' : ''} onchange="uProp('italic',this.checked)"> Italic</label></div>`;
+                h += `<div class="prop-row"><label><input type="checkbox" ${el.underline ? 'checked' : ''} onchange="uProp('underline',this.checked)"> Underline</label></div>`;
+                h += `<div class="prop-row"><label>Line Height</label><input type="number" step="0.1" min="1" max="3" value="${el.lineHeight || 1.4}" onchange="uProp('lineHeight',+this.value)"></div>`;
             } else if (['rect', 'circle', 'triangle', 'star', 'arrow', 'line'].includes(el.type)) {
                 h += `<div class="prop-row"><label>Fill</label><input type="color" value="${el.fill || '#4a90d9'}" onchange="uProp('fill',this.value)"></div>`;
                 h += `<div class="prop-row"><label>Width</label><input type="number" value="${el.w}" onchange="uProp('w',+this.value)"></div>`;
@@ -977,6 +986,31 @@
             inp.onchange = () => { const f = inp.files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { slides[curSlide].elements.push({ type: 'image', src: e.target.result, x: 80, y: 80, w: 200, h: 150 }); renderSlide(); renderSlidePanel(); }; r.readAsDataURL(f); };
             inp.click();
         }
+        function addImageURL() {
+            const url = prompt('Enter image URL:');
+            if (!url) return;
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                // Convert to data URL for PPTX export compatibility
+                const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+                c.getContext('2d').drawImage(img, 0, 0);
+                try {
+                    const dataUrl = c.toDataURL('image/png');
+                    slides[curSlide].elements.push({ type: 'image', src: dataUrl, x: 80, y: 80, w: 200, h: 150 });
+                } catch (e) {
+                    // CORS fallback: use URL directly
+                    slides[curSlide].elements.push({ type: 'image', src: url, x: 80, y: 80, w: 200, h: 150 });
+                }
+                renderSlide(); renderSlidePanel();
+            };
+            img.onerror = () => {
+                // If load fails, still add as URL
+                slides[curSlide].elements.push({ type: 'image', src: url, x: 80, y: 80, w: 200, h: 150 });
+                renderSlide(); renderSlidePanel();
+            };
+            img.src = url;
+        }
         function deleteSelected() {
             if (selEl === null) return;
             slides[curSlide].elements.splice(selEl, 1); selEl = null;
@@ -987,7 +1021,15 @@
             const els = slides[curSlide].elements;[els[selEl], els[selEl + 1]] = [els[selEl + 1], els[selEl]]; selEl++;
             renderSlide(); const d = document.querySelector(`.slide-element[data-idx="${selEl}"]`); if (d) selectEl(d, selEl);
         }
-        function changeSlideBg(v) { slides[curSlide].background = v; _$('slideEditor').style.background = v; renderSlidePanel(); saveToStorage(); }
+        function changeSlideBg(v) { slides[curSlide].background = v; slides[curSlide].gradient = null; _$('slideEditor').style.background = v; renderSlidePanel(); saveToStorage(); }
+        function applyGradientBg() {
+            const c1 = _$('slideBg').value, c2 = _$('slideBg2').value;
+            const grad = `linear-gradient(135deg, ${c1}, ${c2})`;
+            slides[curSlide].background = c1; // fallback solid
+            slides[curSlide].gradient = grad;
+            _$('slideEditor').style.background = grad;
+            renderSlidePanel(); saveToStorage();
+        }
 
         // ── LAYOUTS ──
         function applyLayout(layout) {

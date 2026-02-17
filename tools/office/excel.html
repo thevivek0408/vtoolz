@@ -379,6 +379,32 @@
             background: #2980b9;
             color: #fff;
         }
+
+        /* Cell comment tooltip */
+        .comment-indicator {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-top: 6px solid #e67e22;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .comment-tooltip {
+            position: fixed;
+            background: #2c3e50;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            max-width: 200px;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+        }
     </style>
 </head>
 
@@ -441,6 +467,10 @@
                                 class="fas fa-paint-roller"></i></button>
                         <button id="btnFreeze" title="Freeze Row 1"><i class="fas fa-thumbtack"></i></button>
                         <button id="btnPrint" title="Print"><i class="fas fa-print"></i></button>
+                        <button id="btnAutoFill" title="Auto-Fill Down" class="wide"><i
+                                class="fas fa-arrow-down"></i>Fill</button>
+                        <button id="btnComment" title="Add Comment" class="wide"><i
+                                class="fas fa-comment"></i>Note</button>
                     </div>
                 </div>
 
@@ -794,9 +824,121 @@
 
         function dlBlob(b, n) { const u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = n; a.click(); URL.revokeObjectURL(u); }
 
+        // ── AUTO-FILL ──
+        _$('btnAutoFill').onclick = () => {
+            if (!table) return;
+            const sel = table.getSelected(true);
+            if (!sel || sel.length === 0) { alert('Select at least 2 cells (first cell is the pattern source, rest will be filled).'); return; }
+            // Get bounding box
+            let minC = Infinity, maxC = -1, minR = Infinity, maxR = -1;
+            sel.forEach(s => { minC = Math.min(minC, s[0]); maxC = Math.max(maxC, s[2] || s[0]); minR = Math.min(minR, s[1]); maxR = Math.max(maxR, s[3] || s[1]); });
+            // Fill column-wise
+            for (let c = minC; c <= maxC; c++) {
+                const first = table.getValueFromCoords(c, minR);
+                const second = (minR + 1 <= maxR) ? table.getValueFromCoords(c, minR + 1) : null;
+                const num1 = parseFloat(first), num2 = second !== null ? parseFloat(second) : NaN;
+                const step = (!isNaN(num1) && !isNaN(num2)) ? num2 - num1 : 1;
+                for (let r = minR; r <= maxR; r++) {
+                    if (r === minR) continue;
+                    if (r === minR + 1 && second !== null && !isNaN(num2)) continue;
+                    if (!isNaN(num1)) {
+                        const startVal = !isNaN(num2) ? num2 : num1;
+                        const offset = !isNaN(num2) ? (r - minR - 1) : (r - minR);
+                        table.setValueFromCoords(c, r, startVal + step * offset);
+                    } else {
+                        // Text pattern: repeat
+                        table.setValueFromCoords(c, r, first);
+                    }
+                }
+            }
+        };
+
+        // ── CELL COMMENTS ──
+        const cellComments = {}; // key: 'col,row' -> string
+        _$('btnComment').onclick = () => {
+            if (!table) return;
+            const sel = table.getSelected(true);
+            if (!sel || sel.length === 0) { alert('Select a cell first.'); return; }
+            const c = sel[0][0], r = sel[0][1];
+            const key = c + ',' + r;
+            const existing = cellComments[key] || '';
+            const note = prompt('Cell Note (leave empty to remove):', existing);
+            if (note === null) return;
+            if (note.trim() === '') {
+                delete cellComments[key];
+            } else {
+                cellComments[key] = note;
+            }
+            renderCommentIndicators();
+            saveToStorage();
+        };
+
+        function renderCommentIndicators() {
+            // Remove old indicators
+            document.querySelectorAll('.comment-indicator').forEach(el => el.remove());
+            if (!table) return;
+            const tds = document.querySelectorAll('#spreadsheet td');
+            Object.keys(cellComments).forEach(key => {
+                const [c, r] = key.split(',').map(Number);
+                // Find the corresponding td
+                const rows = document.querySelectorAll('#spreadsheet tbody tr');
+                if (rows[r]) {
+                    const cells = rows[r].querySelectorAll('td');
+                    if (cells[c]) {
+                        cells[c].style.position = 'relative';
+                        const ind = document.createElement('div');
+                        ind.className = 'comment-indicator';
+                        cells[c].appendChild(ind);
+                    }
+                }
+            });
+        }
+
+        // Tooltip on hover
+        let commentTooltip = null;
+        document.addEventListener('mouseover', e => {
+            const td = e.target.closest('#spreadsheet td');
+            if (!td) return;
+            const row = td.parentElement;
+            const tbody = row?.parentElement;
+            if (!tbody) return;
+            const ri = Array.from(tbody.children).indexOf(row);
+            const ci = Array.from(row.children).indexOf(td);
+            const key = ci + ',' + ri;
+            if (cellComments[key]) {
+                if (!commentTooltip) {
+                    commentTooltip = document.createElement('div');
+                    commentTooltip.className = 'comment-tooltip';
+                    document.body.appendChild(commentTooltip);
+                }
+                commentTooltip.textContent = cellComments[key];
+                commentTooltip.style.display = 'block';
+                const rect = td.getBoundingClientRect();
+                commentTooltip.style.left = (rect.right + 4) + 'px';
+                commentTooltip.style.top = (rect.top) + 'px';
+            }
+        });
+        document.addEventListener('mouseout', e => {
+            const td = e.target.closest('#spreadsheet td');
+            if (td && commentTooltip) commentTooltip.style.display = 'none';
+        });
+
         // ── AUTO-SAVE ──
-        function saveToStorage() { if (!table) return; try { localStorage.setItem('vibox-excel-doc', JSON.stringify({ d: table.getData(), t: _$('docTitle').value })); } catch (e) { } }
-        try { const s = JSON.parse(localStorage.getItem('vibox-excel-doc')); if (s && s.d && table) { table.setData(s.d); if (s.t) _$('docTitle').value = s.t; } } catch (e) { }
+        function saveToStorage() {
+            if (!table) return;
+            try {
+                localStorage.setItem('vibox-excel-doc', JSON.stringify({
+                    d: table.getData(), t: _$('docTitle').value,
+                    comments: cellComments
+                }));
+            } catch (e) { }
+        }
+        try {
+            const s = JSON.parse(localStorage.getItem('vibox-excel-doc'));
+            if (s && s.d && table) { table.setData(s.d); if (s.t) _$('docTitle').value = s.t; }
+            if (s && s.comments) Object.assign(cellComments, s.comments);
+            setTimeout(renderCommentIndicators, 500);
+        } catch (e) { }
     </script>
     <script src="../../js/utils/common.js" type="module"></script>
 </body>

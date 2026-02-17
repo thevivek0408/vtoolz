@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v29-office-enhanced';
+const CACHE_NAME = 'vtoolz-v30-office-complete';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
