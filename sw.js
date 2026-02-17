@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v24-pwa-fix-5';
+const CACHE_NAME = 'vtoolz-v27-pdf-complete';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -15,6 +15,16 @@ const ASSETS_TO_CACHE = [
     './tools/hardware/gamepad.html',
     './tools/hardware/screen.html',
     './tools/hardware/audio.html',
+    './tools/network/index.html',
+    './tools/network/ip-calc.html',
+    './tools/network/speed-test.html',
+    './tools/network/wifi-qr.html',
+    './tools/text/transcoding.html',
+    './tools/pdf/index.html',
+    './tools/pdf/word-to-pdf.html',
+    './tools/pdf/pdf-to-word.html',
+    './tools/pdf/html-to-pdf.html',
+    './tools/pdf/excel-to-pdf.html',
 
     // Core Vendors
     '/js/vendor/pdf-lib.min.js',
@@ -29,6 +39,10 @@ const ASSETS_TO_CACHE = [
     './js/vendor/purify.min.js',
     './js/vendor/highlight.min.js',
     './js/vendor/jszip.min.js',
+    './js/vendor/qrcode.min.js',
+    './js/vendor/mammoth.browser.min.js',
+    './js/vendor/html2pdf.bundle.min.js',
+    './js/vendor/xlsx.full.min.js',
 
     // Tool Scripts (Just main ones, others cached at runtime)
     './js/pdf/pdf-main.js',

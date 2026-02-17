@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Transcoder - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .transcode-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .converter-box {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .converter-box.active {
+            display: grid;
+        }
+
+        @media (max-width: 768px) {
+            .converter-box {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-area,
+        .output-area {
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-cube"></i> Vibox
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html">Home</a>
+                <a href="index.html">Text</a>
+                <a href="#" class="active">Transcoder</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container page-content">
+        <div class="page-header">
+            <h1>Text Transcoder</h1>
+            <p>Convert text between different formats and encodings.</p>
+        </div>
+
+        <div class="transcode-container">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="morse">Morse Code</button>
+                <button class="tab-btn" data-tab="binary">Binary</button>
+                <button class="tab-btn" data-tab="base64">Base64</button>
+                <button class="tab-btn" data-tab="braille">Braille</button>
+            </div>
+
+            <!-- MORSE CODE -->
+            <div class="converter-box active" id="morse">
+                <div class="input-area">
+                    <h3>Text Input</h3>
+                    <textarea id="morseInput" placeholder="Enter text here..."></textarea>
+                    <div class="controls">
+                        <button class="action-btn" onclick="copyToClipboard('morseInput')"><i class="fas fa-copy"></i>
+                            Copy</button>
+                        <button class="action-btn" onclick="clearText('morseInput', 'morseOutput')"><i
+                                class="fas fa-trash"></i> Clear</button>
+                    </div>
+                </div>
+                <div class="output-area">
+                    <h3>Morse Output</h3>
+                    <textarea id="morseOutput" placeholder="... --- ..."></textarea>
+                    <div class="controls">
+                        <button class="action-btn" onclick="playMorse()"><i class="fas fa-play"></i> Play Audio</button>
+                        <button class="action-btn" onclick="copyToClipboard('morseOutput')"><i class="fas fa-copy"></i>
+                            Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BINARY -->
+            <div class="converter-box" id="binary">
+                <div class="input-area">
+                    <h3>Text Input</h3>
+                    <textarea id="binaryInput" placeholder="Enter text here..."></textarea>
+                    <div class="controls">
+                        <button class="action-btn" onclick="copyToClipboard('binaryInput')"><i class="fas fa-copy"></i>
+                            Copy</button>
+                        <button class="action-btn" onclick="clearText('binaryInput', 'binaryOutput')"><i
+                                class="fas fa-trash"></i> Clear</button>
+                    </div>
+                </div>
+                <div class="output-area">
+                    <h3>Binary Output</h3>
+                    <textarea id="binaryOutput" placeholder="01001000 01100101..."></textarea>
+                    <div class="controls">
+                        <button class="action-btn" onclick="copyToClipboard('binaryOutput')"><i class="fas fa-copy"></i>
+                            Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BASE64 -->
+            <div class="converter-box" id="base64">
+                <div class="input-area">
+                    <h3>Text Input</h3>
+                    <textarea id="base64Input" placeholder="Enter text here..."></textarea>
+                    <div class="controls">
+                        <button class="action-btn" onclick="copyToClipboard('base64Input')"><i class="fas fa-copy"></i>
+                            Copy</button>
+                        <button class="action-btn" onclick="clearText('base64Input', 'base64Output')"><i
+                                class="fas fa-trash"></i> Clear</button>
+                    </div>
+                </div>
+                <div class="output-area">
+                    <h3>Base64 Output</h3>
+                    <textarea id="base64Output" placeholder="SGVsbG8gV29ybGQ="></textarea>
+                    <div class="controls">
+                        <button class="action-btn" onclick="copyToClipboard('base64Output')"><i class="fas fa-copy"></i>
+                            Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BRAILLE -->
+            <div class="converter-box" id="braille">
+                <div class="input-area">
+                    <h3>Text Input</h3>
+                    <textarea id="brailleInput" placeholder="Enter text here..."></textarea>
+                    <div class="controls">
+                        <button class="action-btn" onclick="copyToClipboard('brailleInput')"><i class="fas fa-copy"></i>
+                            Copy</button>
+                        <button class="action-btn" onclick="clearText('brailleInput', 'brailleOutput')"><i
+                                class="fas fa-trash"></i> Clear</button>
+                    </div>
+                </div>
+                <div class="output-area">
+                    <h3>Braille Output</h3>
+                    <textarea id="brailleOutput" placeholder="⠓⠑⠇⠇⠕"></textarea>
+                    <div class="controls">
+                        <button class="action-btn" onclick="copyToClipboard('brailleOutput')"><i
+                                class="fas fa-copy"></i> Copy</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../../js/utils/common.js" type="module"></script>
+    <script>
+        // --- Tab Logic ---
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.converter-box');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // --- Common Utils ---
+        function copyToClipboard(id) {
+            const el = document.getElementById(id);
+            el.select();
+            document.execCommand('copy'); // Legacy but works everywhere, or use navigator.clipboard
+            // navigator.clipboard.writeText(el.value);
+            // Show toast (if available via common.js or makeshift)
+        }
+
+        function clearText(inId, outId) {
+            document.getElementById(inId).value = '';
+            document.getElementById(outId).value = '';
+        }
+
+        // --- Morse Logic ---
+        const morseMap = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..', '1': '.----', '2': '..---', '3': '...--',
+            '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..',
+            '9': '----.', '0': '-----', ' ': ' / ' // Space separator
+        };
+        const revMorseMap = Object.fromEntries(Object.entries(morseMap).map(a => a.reverse()));
+
+        const morseIn = document.getElementById('morseInput');
+        const morseOut = document.getElementById('morseOutput');
+
+        morseIn.addEventListener('input', () => {
+            const text = morseIn.value.toUpperCase();
+            morseOut.value = text.split('').map(c => morseMap[c] || c).join(' ');
+        });
+
+        morseOut.addEventListener('input', () => {
+            // Basic decode attempt
+            const text = morseOut.value.trim();
+            // Split by 3 spaces for word, 1 space for char usually, but here we used ' / '
+            // Let's try flexible split
+            const words = text.split(' / ');
+            morseIn.value = words.map(w => w.split(' ').map(c => revMorseMap[c] || '').join('')).join(' ');
+        });
+
+        // Audio Context for Morse
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playMorse() {
+            const code = morseOut.value;
+            const dot = 0.08; // seconds
+            let t = audioCtx.currentTime;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 600;
+
+            gain.gain.value = 0;
+            osc.start(t);
+
+            for (let c of code) {
+                if (c === '.') {
+                    gain.gain.setValueAtTime(1, t);
+                    t += dot;
+                    gain.gain.setValueAtTime(0, t);
+                    t += dot; // Inner space
+                } else if (c === '-') {
+                    gain.gain.setValueAtTime(1, t);
+                    t += dot * 3;
+                    gain.gain.setValueAtTime(0, t);
+                    t += dot; // Inner space
+                } else if (c === ' ' || c === '/') {
+                    t += dot * 3; // Word/Char space
+                }
+            }
+
+            osc.stop(t);
+        }
+
+        // --- Binary Logic ---
+        const binIn = document.getElementById('binaryInput');
+        const binOut = document.getElementById('binaryOutput');
+
+        binIn.addEventListener('input', () => {
+            binOut.value = binIn.value.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+        });
+
+        binOut.addEventListener('input', () => {
+            // Try to decode
+            const bins = binOut.value.trim().split(/\s+/);
+            binIn.value = bins.map(b => String.fromCharCode(parseInt(b, 2))).join('');
+        });
+
+        // --- Base64 Logic ---
+        const b64In = document.getElementById('base64Input');
+        const b64Out = document.getElementById('base64Output');
+
+        b64In.addEventListener('input', () => {
+            try {
+                b64Out.value = btoa(b64In.value);
+            } catch (e) { /* typing... */ }
+        });
+
+        b64Out.addEventListener('input', () => {
+            try {
+                b64In.value = atob(b64Out.value);
+            } catch (e) { /* typing... */ }
+        });
+
+
+        // --- Braille Logic ---
+        // Basic mapping for English letters (Grade 1)
+        const brailleMap = {
+            'a': '⠁', 'b': '⠃', 'c': '⠉', 'd': '⠙', 'e': '⠑', 'f': '⠋', 'g': '⠛', 'h': '⠓', 'i': '⠊', 'j': '⠚',
+            'k': '⠅', 'l': '⠇', 'm': '⠍', 'n': '⠝', 'o': '⠕', 'p': '⠏', 'q': '⠟', 'r': '⠗', 's': '⠎', 't': '⠞',
+            'u': '⠥', 'v': '⠧', 'w': '⠺', 'x': '⠭', 'y': '⠽', 'z': '⠵',
+            '1': '⠼⠁', '2': '⠼⠃', '3': '⠼⠉', '4': '⠼⠙', '5': '⠼⠑', '6': '⠼⠋', '7': '⠼⠛', '8': '⠼⠓', '9': '⠼⠊', '0': '⠼⠚',
+            ' ': ' ', ',': '⠂', ';': '⠆', ':': '⠒', '.': '⠲', '!': '⠖', '(': '⠦', ')': '⠴', '?': '⠦', '"': '⠶'
+        };
+        // Invert map? Braille is ambiguous sometimes but for Grade 1 it's mostly 1-1
+
+        const brailleIn = document.getElementById('brailleInput');
+        const brailleOut = document.getElementById('brailleOutput');
+
+        brailleIn.addEventListener('input', () => {
+            brailleOut.value = brailleIn.value.toLowerCase().split('').map(c => brailleMap[c] || c).join('');
+        });
+
+    </script>
+</body>
+
+</html>

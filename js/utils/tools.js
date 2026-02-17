@@ -10,6 +10,10 @@ export const tools = [
     { id: 'pdf-rotate', name: 'Rotate PDF', category: 'pdf', url: 'tools/pdf/rotate.html', description: 'Rotate pages 90/180 deg.', icon: 'fas fa-sync-alt', color: '#e74c3c', keywords: 'turn orientation' },
     { id: 'pdf-delete', name: 'Delete Pages', category: 'pdf', url: 'tools/pdf/delete.html', description: 'Remove unwanted pages.', icon: 'fas fa-trash-alt', color: '#e74c3c', keywords: 'remove cut' },
     { id: 'pdf-extract', name: 'Extract Pages', category: 'pdf', url: 'tools/pdf/extract.html', description: 'Save specific pages.', icon: 'fas fa-file-export', color: '#e74c3c', keywords: 'save separate' },
+    { id: 'word-to-pdf', name: 'Word to PDF', category: 'pdf', url: 'tools/pdf/word-to-pdf.html', description: 'Convert Word documents to PDF.', icon: 'fas fa-file-pdf', color: '#e74c3c', keywords: 'doc docx convert' },
+    { id: 'pdf-to-word', name: 'PDF to Word', category: 'pdf', url: 'tools/pdf/pdf-to-word.html', description: 'Convert PDF to editable Word.', icon: 'fas fa-file-word', color: '#e74c3c', keywords: 'convert doc docx' },
+    { id: 'html-to-pdf', name: 'HTML to PDF', category: 'pdf', url: 'tools/pdf/html-to-pdf.html', description: 'Convert HTML files to PDF.', icon: 'fas fa-code', color: '#e74c3c', keywords: 'webpage convert' },
+    { id: 'excel-to-pdf', name: 'Excel to PDF', category: 'pdf', url: 'tools/pdf/excel-to-pdf.html', description: 'Convert Excel spreadsheets to PDF.', icon: 'fas fa-file-excel', color: '#e74c3c', keywords: 'xls xlsx convert' },
     { id: 'pdf-reorder', name: 'Reorder PDF', category: 'pdf', url: 'tools/pdf/reorder.html', description: 'Rearrange page order.', icon: 'fas fa-sort', color: '#e74c3c', keywords: 'organize sort' },
 
     // Image Tools
@@ -28,6 +32,7 @@ export const tools = [
     { id: 'txt-case', name: 'Text Modifier', category: 'text', url: 'tools/text/modifier.html', description: 'Case, Sort, Clean.', icon: 'fas fa-text-height', color: '#2ecc71', keywords: 'upper lower title sort' },
     { id: 'txt-lorem', name: 'Lorem Ipsum', category: 'text', url: 'tools/text/lorem.html', description: 'Generate placeholder text.', icon: 'fas fa-paragraph', color: '#2ecc71', keywords: 'dummy text generator' },
     { id: 'txt-diff', name: 'Diff Checker', category: 'text', url: 'tools/dev/diff-checker.html', description: 'Compare two texts.', icon: 'fas fa-columns', color: '#2ecc71', keywords: 'compare difference changes' },
+    { id: 'text-transcoder', name: 'Text Transcoder', category: 'text', url: 'tools/text/transcoding.html', description: 'Convert text (Morse, Binary, Base64).', icon: 'fas fa-exchange-alt', color: '#e67e22', keywords: 'transcode morse binary base64 braille convert' },
     { id: 'txt-tts', name: 'Text to Speech', category: 'text', url: 'tools/text/tts.html', description: 'Read text aloud.', icon: 'fas fa-volume-up', color: '#2ecc71', keywords: 'speak audio voice' },
 
     // Dev Tools
@@ -51,7 +56,7 @@ export const tools = [
     { id: 'govt-age', name: 'Age Calculator', category: 'govt', url: 'tools/government/age-calculator.html', description: 'Calculate exact age.', icon: 'fas fa-birthday-cake', color: '#9c27b0', keywords: 'dob years months' },
     { id: 'govt-resize', name: 'KB Resizer', category: 'govt', url: 'tools/government/kb-resizer.html', description: 'Resize to target KB.', icon: 'fas fa-compress-arrows-alt', color: '#9c27b0', keywords: 'size compress' },
     { id: 'govt-jpg2pdf', name: 'JPG to PDF', category: 'govt', url: 'tools/government/jpg-to-pdf.html', description: 'Convert images to PDF.', icon: 'fas fa-file-pdf', color: '#9c27b0', keywords: 'convert image document' },
-    { id: 'util-wifi', name: 'Wi-Fi QR', category: 'utility', url: 'tools/utility/wifi-qr.html', description: 'Share Wi-Fi easily.', icon: 'fas fa-wifi', color: '#9c27b0', keywords: 'network internet' },
+    { id: 'wifi-qr', name: 'WiFi QR Generator', category: 'network', url: 'tools/network/wifi-qr.html', description: 'Share Wi-Fi access via QR code.', icon: 'fas fa-wifi', color: '#8e44ad', keywords: 'wifi internet qr code share network' },
     { id: 'util-encrypt', name: 'The Vault', category: 'utility', url: 'tools/utility/encrypt.html', description: 'Encrypt files securely.', icon: 'fas fa-lock', color: '#2c3e50', keywords: 'secure aes private' },
     { id: 'util-kanban', name: 'Kanban Board', category: 'utility', url: 'tools/productivity/kanban.html', description: 'Manage tasks offline.', icon: 'fas fa-columns', color: '#27ae60', keywords: 'todo plan project' },
     { id: 'util-screen', name: 'Screen Recorder', category: 'media', url: 'tools/media/screen-recorder.html', description: 'Record screen & mic.', icon: 'fas fa-video', color: '#e91e63', keywords: 'capture video' },

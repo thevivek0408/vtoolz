@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Subnet Calculator - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .calc-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--surface-color);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .input-field {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: monospace;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .result-table th,
+        .result-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            width: 40%;
+        }
+
+        .result-table td {
+            font-family: monospace;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-cube"></i> Vibox
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html">Home</a>
+                <a href="index.html">Network</a>
+                <a href="#" class="active">IP Calc</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container page-content">
+        <div class="page-header">
+            <h1>IP Subnet Calculator</h1>
+            <p>Calculate network range, netmask, and broadcast address.</p>
+        </div>
+
+        <div class="calc-container">
+            <div class="input-group">
+                <input type="text" id="ipInput" class="input-field" placeholder="IP Address (e.g., 192.168.1.1)"
+                    value="192.168.1.1">
+                <select id="maskInput" class="input-field">
+                    <!-- JS will populate CIDR options -->
+                </select>
+            </div>
+
+            <table class="result-table">
+                <tr>
+                    <th>IP Address</th>
+                    <td id="resIp">192.168.1.1</td>
+                </tr>
+                <tr>
+                    <th>Subnet Mask</th>
+                    <td id="resMask">255.255.255.0</td>
+                </tr>
+                <tr>
+                    <th>Network Address</th>
+                    <td id="resNetwork">192.168.1.0</td>
+                </tr>
+                <tr>
+                    <th>Broadcast Address</th>
+                    <td id="resBroadcast">192.168.1.255</td>
+                </tr>
+                <tr>
+                    <th>Usable Host Range</th>
+                    <td id="resRange">192.168.1.1 - 192.168.1.254</td>
+                </tr>
+                <tr>
+                    <th>Total Hosts</th>
+                    <td id="resHosts">254</td>
+                </tr>
+                <tr>
+                    <th>CIDR Notation</th>
+                    <td id="resCidr">/24</td>
+                </tr>
+                <tr>
+                    <th>IP Class</th>
+                    <td id="resClass">Class C</td>
+                </tr>
+                <tr>
+                    <th>IP Type</th>
+                    <td id="resType">Private</td>
+                </tr>
+            </table>
+        </div>
+    </main>
+
+    <script src="../../js/utils/common.js" type="module"></script>
+    <script>
+        const els = {
+            ip: document.getElementById('ipInput'),
+            mask: document.getElementById('maskInput'),
+            resIp: document.getElementById('resIp'),
+            resMask: document.getElementById('resMask'),
+            resNetwork: document.getElementById('resNetwork'),
+            resBroadcast: document.getElementById('resBroadcast'),
+            resRange: document.getElementById('resRange'),
+            resHosts: document.getElementById('resHosts'),
+            resCidr: document.getElementById('resCidr'),
+            resClass: document.getElementById('resClass'),
+            resType: document.getElementById('resType')
+        };
+
+        // Populate CIDR dropdown
+        for (let i = 32; i >= 1; i--) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = `/${i} (${getNetmask(i)})`;
+            if (i === 24) opt.selected = true;
+            els.mask.appendChild(opt);
+        }
+
+        function getNetmask(cidr) {
+            let mask = [];
+            for (let i = 0; i < 4; i++) {
+                let n = Math.min(cidr, 8);
+                mask.push(256 - Math.pow(2, 8 - n));
+                cidr -= n;
+            }
+            return mask.join('.');
+        }
+
+        function calculate() {
+            const ip = els.ip.value;
+            const cidr = parseInt(els.mask.value);
+
+            if (!isValidIP(ip)) {
+                // simple validation visual
+                els.ip.style.borderColor = 'red';
+                return;
+            } else {
+                els.ip.style.borderColor = '';
+            }
+
+            const ipParts = ip.split('.').map(Number);
+            const maskParts = getNetmask(cidr).split('.').map(Number);
+
+            // Calculate Network
+            const netParts = ipParts.map((part, i) => part & maskParts[i]);
+
+            // Calculate Broadcast
+            const broadParts = ipParts.map((part, i) => part | (~maskParts[i] & 255));
+
+            // Hosts
+            const hosts = Math.pow(2, 32 - cidr) - 2;
+
+            // Range
+            const startIP = [...netParts];
+            startIP[3]++;
+
+            const endIP = [...broadParts];
+            endIP[3]--;
+
+            // Determining Class
+            let ipClass = 'Unknown';
+            if (ipParts[0] >= 1 && ipParts[0] <= 126) ipClass = 'Class A';
+            else if (ipParts[0] >= 128 && ipParts[0] <= 191) ipClass = 'Class B';
+            else if (ipParts[0] >= 192 && ipParts[0] <= 223) ipClass = 'Class C';
+            else if (ipParts[0] >= 224 && ipParts[0] <= 239) ipClass = 'Class D (Multicast)';
+            else if (ipParts[0] >= 240 && ipParts[0] <= 255) ipClass = 'Class E (Experimental)';
+
+            // Type (Private/Public)
+            let type = 'Public';
+            // Private ranges: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+            if (ipParts[0] === 10) type = 'Private';
+            else if (ipParts[0] === 172 && (ipParts[1] >= 16 && ipParts[1] <= 31)) type = 'Private';
+            else if (ipParts[0] === 192 && ipParts[1] === 168) type = 'Private';
+            else if (ipParts[0] === 127) type = 'Loopback';
+
+            // Update UI
+            els.resIp.textContent = ip;
+            els.resMask.textContent = maskParts.join('.');
+            els.resNetwork.textContent = netParts.join('.');
+            els.resBroadcast.textContent = broadParts.join('.');
+            els.resRange.textContent = (hosts > 0) ? `${startIP.join('.')} - ${endIP.join('.')}` : 'N/A';
+            els.resHosts.textContent = (hosts > 0) ? hosts.toLocaleString() : '0';
+            els.resCidr.textContent = `/${cidr}`;
+            els.resClass.textContent = ipClass;
+            els.resType.textContent = type;
+        }
+
+        function isValidIP(ip) {
+            return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip);
+        }
+
+        els.ip.addEventListener('input', calculate);
+        els.mask.addEventListener('change', calculate);
+
+        // Initial calc
+        calculate();
+
+    </script>
+</body>
+
+</html>

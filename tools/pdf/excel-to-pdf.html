@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel to PDF - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .converter-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .preview-area {
+            background: white;
+            color: black;
+            padding: 20px;
+            margin: 20px auto;
+            min-height: 400px;
+            width: 100%;
+            text-align: left;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+            display: none;
+        }
+
+        /* Basic Table Styling */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .controls {
+            display: none;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-cube"></i> Vibox
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html">Home</a>
+                <a href="index.html">PDF Tools</a>
+                <a href="#" class="active">Excel to PDF</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container page-content">
+        <div class="page-header">
+            <h1>Excel to PDF Converter</h1>
+            <p>Convert Excel spreadsheets (.xlsx, .xls, .csv) to PDF.</p>
+        </div>
+
+        <div class="converter-container">
+            <div class="upload-area" id="dropZone">
+                <i class="fas fa-file-excel fa-3x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                <h3>Choose an Excel file</h3>
+                <p>or drag and drop it here</p>
+                <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" style="display: none">
+            </div>
+
+            <div class="controls" id="controls">
+                <button class="btn btn-primary" id="downloadBtn"><i class="fas fa-file-pdf"></i> Download PDF</button>
+            </div>
+
+            <div id="preview" class="preview-area"></div>
+        </div>
+    </main>
+
+    <!-- Dependencies -->
+    <script src="../../js/vendor/xlsx.full.min.js"></script>
+    <script src="../../js/vendor/html2pdf.bundle.min.js"></script>
+    <script src="../../js/utils/common.js" type="module"></script>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const controls = document.getElementById('controls');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--primary-color)';
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--border-color)';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--border-color)';
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Get first sheet
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert to HTML
+                const html = XLSX.utils.sheet_to_html(worksheet);
+
+                preview.innerHTML = html;
+                preview.style.display = 'block';
+                controls.style.display = 'flex';
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        downloadBtn.addEventListener('click', () => {
+            const opt = {
+                margin: 0.5,
+                filename: 'spreadsheet.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' } // Landscape for tables usually better
+            };
+
+            html2pdf().set(opt).from(preview).save();
+        });
+
+    </script>
+</body>
+
+</html>
