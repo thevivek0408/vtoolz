@@ -358,11 +358,15 @@
                 <div class="control-item">
                     <label>Character Set</label>
                     <select id="charSet" class="form-control">
-                        <option value="simple">Simple (Gradient)</option>
-                        <option value="complex">Complex (Detailed)</option>
-                        <option value="binary">Binary (0/1)</option>
-                        <option value="blocks">Blocks (█▓▒░)</option>
+                        <option value="standard">Standard (70 chars)</option>
+                        <option value="simple">Simple (10 chars)</option>
+                        <option value="minimal">Minimal (3 chars)</option>
+                        <option value="blocks">Blocks (Shading)</option>
+                        <option value="binary">Binary (Matrix)</option>
+                        <option value="custom">Custom...</option>
                     </select>
+                    <input type="text" id="customCharInput" class="form-control" placeholder="e.g. @#$%"
+                        style="display:none; margin-top:10px;" value="@#$%">
                 </div>
 
                 <div class="control-item">
@@ -462,7 +466,9 @@
             resDisp: document.getElementById('resDisp'),
             sizeDisp: document.getElementById('sizeDisp'),
             matrixToggle: document.getElementById('matrixToggle'),
+            matrixToggle: document.getElementById('matrixToggle'),
             charSet: document.getElementById('charSet'),
+            customCharInput: document.getElementById('customCharInput'),
             modeImg: document.getElementById('modeImg'),
             modeVid: document.getElementById('modeVid'),
             modeText: document.getElementById('modeText'),
@@ -474,12 +480,14 @@
             bgColor: document.getElementById('bgColor')
         };
 
-        // Charsets
+        // Charsets (Ordered: Dark(0)/Low -> Light(255)/High)
+        // Since we draw White Text on Black BG, High Value (255) should be Dense Char
         const charsets = {
-            simple: " .:-=+*#%@".split('').reverse().join(''),
-            complex: "Ñ@#W$9876543210?!abc;:+=-,._ ".split(''),
-            binary: "01",
-            blocks: " ░▒▓█"
+            standard: " .'`^,:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$",
+            simple: " .:-=+*#%@",
+            minimal: " .@",
+            blocks: " ░▒▓█",
+            binary: "01"
         };
 
         let animationId;
@@ -490,7 +498,13 @@
             els.resInput.addEventListener('input', updateParams);
             els.sizeInput.addEventListener('input', updateParams);
             els.matrixToggle.addEventListener('change', updateParams);
-            els.charSet.addEventListener('change', updateParams);
+            els.matrixToggle.addEventListener('change', updateParams);
+            els.charSet.addEventListener('change', (e) => {
+                if (e.target.value === 'custom') els.customCharInput.style.display = 'block';
+                else els.customCharInput.style.display = 'none';
+                updateParams();
+            });
+            els.customCharInput.addEventListener('input', updateParams);
             els.fgColor.addEventListener('input', updateParams);
             els.bgColor.addEventListener('input', updateParams);
 
@@ -535,7 +549,9 @@
             state.resolution = parseInt(els.resInput.value);
             state.fontSize = parseInt(els.sizeInput.value);
             state.matrix = els.matrixToggle.checked;
+            state.matrix = els.matrixToggle.checked;
             state.charSet = els.charSet.value;
+            state.customChars = els.customCharInput.value;
             state.fgColor = els.fgColor.value;
             state.bgColor = els.bgColor.value;
 
@@ -626,7 +642,15 @@
             ctx.drawImage(source, 0, 0, w, h);
 
             const data = ctx.getImageData(0, 0, w, h).data;
-            const chars = charsets[state.charSet] || charsets.simple;
+            let currentChars = charsets[state.charSet];
+            if (state.charSet === 'custom') currentChars = state.customChars;
+            if (!currentChars || currentChars.length === 0) currentChars = charsets.simple;
+
+            // Ensure charset is ordered from Dark to Light (Density)
+            // If user types "AB", we assume they want A=Dark, B=Light or vice versa.
+            // But standard ascii algos use density maps. 
+            // We just reverse if needed? No, let's keep it raw for custom.
+            const chars = currentChars.split('');
             let str = "";
 
             for (let y = 0; y < h; y++) {
