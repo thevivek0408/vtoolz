@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Free Online Spreadsheet Editor - Create spreadsheets with formulas, sorting, formatting. Import & Export XLSX/CSV. Works offline.">
+        content="Free Online Spreadsheet Editor - Formulas, Charts, Conditional Formatting. Import/Export XLSX/CSV. Works offline.">
     <title>Spreadsheet Editor - Vibox</title>
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../../css/style.css">
@@ -14,8 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --excel-green: #1d6f42;
-            --excel-green-light: #21a366;
+            --xg: #1d6f42;
+            --xgl: #21a366;
         }
 
         .excel-app {
@@ -24,54 +24,62 @@
             background: var(--card-bg, #1e1e2e);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .3);
         }
 
         .excel-toolbar {
-            background: linear-gradient(135deg, var(--excel-green), var(--excel-green-light));
-            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--xg), var(--xgl));
+            padding: 10px 14px;
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
 
-        .excel-toolbar .tool-group {
+        .excel-toolbar .tg {
             display: flex;
-            gap: 4px;
-            padding-right: 12px;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            gap: 3px;
+            padding-right: 10px;
+            border-right: 1px solid rgba(255, 255, 255, .2);
         }
 
-        .excel-toolbar .tool-group:last-child {
+        .excel-toolbar .tg:last-child {
             border-right: none;
         }
 
         .excel-toolbar button,
         .excel-toolbar select {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, .12);
             border: none;
             color: #fff;
-            height: 36px;
-            border-radius: 8px;
+            height: 34px;
+            border-radius: 7px;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
+            font-size: 13px;
+            transition: .2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .excel-toolbar button {
-            width: 36px;
+            width: 34px;
+        }
+
+        .excel-toolbar button.wide {
+            width: auto;
+            padding: 0 10px;
+            gap: 4px;
+            font-size: 12px;
         }
 
         .excel-toolbar select {
-            padding: 0 8px;
+            padding: 0 6px;
+            font-size: 12px;
         }
 
         .excel-toolbar button:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, .25);
         }
 
         .excel-toolbar select option {
@@ -80,12 +88,12 @@
         }
 
         .doc-title-bar {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 8px 16px;
+            background: rgba(255, 255, 255, .04);
+            padding: 6px 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
         }
 
         .doc-title-bar input {
@@ -99,60 +107,108 @@
         }
 
         .doc-title-bar input:focus {
-            border-color: var(--excel-green-light);
+            border-color: var(--xgl);
             outline: none;
         }
 
         .formula-bar {
             display: flex;
             align-items: center;
-            padding: 6px 16px;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 5px 16px;
+            gap: 6px;
+            background: rgba(255, 255, 255, .03);
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
         }
 
         .formula-bar .cell-ref {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 4px 10px;
-            border-radius: 6px;
+            background: rgba(255, 255, 255, .08);
+            padding: 3px 8px;
+            border-radius: 5px;
             font-family: monospace;
-            font-size: 13px;
-            min-width: 50px;
+            font-size: 12px;
+            min-width: 44px;
             text-align: center;
         }
 
         .formula-bar .fx {
-            color: var(--excel-green-light);
+            color: var(--xgl);
             font-weight: bold;
-            margin: 0 6px;
+            font-size: 13px;
         }
 
         .formula-bar input {
             flex: 1;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
             color: inherit;
             padding: 4px 10px;
             border-radius: 6px;
             font-family: monospace;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .formula-bar input:focus {
-            border-color: var(--excel-green-light);
+            border-color: var(--xgl);
             outline: none;
+        }
+
+        /* Find Panel */
+        .find-panel {
+            display: none;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, .06);
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .find-panel.open {
+            display: flex;
+        }
+
+        .find-panel input {
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .1);
+            color: inherit;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            width: 140px;
+        }
+
+        .find-panel input:focus {
+            border-color: var(--xgl);
+            outline: none;
+        }
+
+        .find-panel button {
+            background: rgba(255, 255, 255, .12);
+            border: none;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .find-panel button:hover {
+            background: rgba(255, 255, 255, .25);
+        }
+
+        .find-panel .count {
+            font-size: 11px;
+            opacity: .7;
         }
 
         .spreadsheet-container {
             overflow: auto;
-            margin: 16px;
+            margin: 14px;
             border-radius: 8px;
             background: #fff;
             min-height: 400px;
         }
 
-        /* jspreadsheet overrides for dark hosting page */
         .jexcel {
             width: 100% !important;
         }
@@ -166,65 +222,39 @@
             background-color: #d4edda !important;
         }
 
-        .sheet-tabs {
+        .status-bar {
+            background: rgba(255, 255, 255, .04);
+            padding: 5px 16px;
+            font-size: 11px;
+            opacity: .6;
             display: flex;
-            gap: 4px;
-            padding: 8px 16px;
-            align-items: center;
-        }
-
-        .sheet-tab {
-            padding: 6px 16px;
-            border-radius: 8px 8px 0 0;
-            background: rgba(255, 255, 255, 0.08);
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-bottom: none;
-        }
-
-        .sheet-tab.active {
-            background: rgba(33, 163, 102, 0.3);
-        }
-
-        .sheet-tab-add {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
         }
 
         .export-panel {
-            padding: 16px;
+            padding: 12px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             justify-content: flex-end;
             flex-wrap: wrap;
         }
 
         .export-btn {
-            padding: 10px 20px;
+            padding: 9px 16px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
+            font-size: 13px;
+            transition: .2s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .export-btn.xlsx {
-            background: var(--excel-green);
+            background: var(--xg);
             color: #fff;
         }
 
@@ -234,30 +264,127 @@
         }
 
         .export-btn.import {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, .1);
             color: inherit;
+        }
+
+        .export-btn.pdf {
+            background: #e74c3c;
+            color: #fff;
         }
 
         .export-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
         }
 
-        .status-bar {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 6px 16px;
-            font-size: 12px;
-            opacity: 0.6;
+        /* Chart Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, .7);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
             display: flex;
-            gap: 20px;
+        }
+
+        .modal {
+            background: var(--card-bg, #1e1e2e);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, .5);
+            position: relative;
+        }
+
+        .modal h2 {
+            margin-bottom: 16px;
+            font-size: 1.2em;
+        }
+
+        .modal .close-modal {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .chart-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .chart-options label {
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chart-options select,
+        .chart-options input {
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .1);
+            color: inherit;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .chart-canvas-wrap {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            max-height: 400px;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .chart-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .chart-actions .gen {
+            background: var(--xg);
+            color: #fff;
+        }
+
+        .chart-actions .dl {
+            background: #2980b9;
+            color: #fff;
         }
     </style>
 </head>
 
 <body>
     <header>
-        <div class="container">
-            <a href="../../index.html" class="logo">Vibox</a>
+        <div class="container"><a href="../../index.html" class="logo">Vibox</a>
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
@@ -272,26 +399,26 @@
         <div class="container tool-container" style="padding-top:20px;max-width:1200px;">
             <div class="excel-app">
                 <div class="excel-toolbar">
-                    <div class="tool-group">
-                        <button id="btnBoldE" title="Bold"><i class="fas fa-bold"></i></button>
-                        <button id="btnItalicE" title="Italic"><i class="fas fa-italic"></i></button>
-                        <input type="color" id="cellColor" value="#ffffff" title="Cell Background"
-                            style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;">
-                        <input type="color" id="fontColorE" value="#000000" title="Font Color"
-                            style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;">
+                    <div class="tg">
+                        <button id="btnBold" title="Bold"><i class="fas fa-bold"></i></button>
+                        <button id="btnItalic" title="Italic"><i class="fas fa-italic"></i></button>
+                        <input type="color" id="cellBg" value="#ffffff" title="Cell Background"
+                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
+                        <input type="color" id="cellFg" value="#000000" title="Font Color"
+                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
                     </div>
-                    <div class="tool-group">
-                        <button id="btnAlignLE" title="Align Left"><i class="fas fa-align-left"></i></button>
-                        <button id="btnAlignCE" title="Center"><i class="fas fa-align-center"></i></button>
-                        <button id="btnAlignRE" title="Right"><i class="fas fa-align-right"></i></button>
+                    <div class="tg">
+                        <button id="btnAlignL" title="Left"><i class="fas fa-align-left"></i></button>
+                        <button id="btnAlignC" title="Center"><i class="fas fa-align-center"></i></button>
+                        <button id="btnAlignR" title="Right"><i class="fas fa-align-right"></i></button>
                     </div>
-                    <div class="tool-group">
-                        <button id="btnAddRow" title="Add Row"><i class="fas fa-plus"></i> Row</button>
-                        <button id="btnAddCol" title="Add Column"><i class="fas fa-plus"></i> Col</button>
-                        <button id="btnDelRow" title="Delete Row"><i class="fas fa-minus"></i> Row</button>
-                        <button id="btnDelCol" title="Delete Column"><i class="fas fa-minus"></i> Col</button>
+                    <div class="tg">
+                        <button id="btnAddRow" class="wide" title="Add Row"><i class="fas fa-plus"></i>Row</button>
+                        <button id="btnAddCol" class="wide" title="Add Col"><i class="fas fa-plus"></i>Col</button>
+                        <button id="btnDelRow" class="wide" title="Del Row"><i class="fas fa-minus"></i>Row</button>
+                        <button id="btnDelCol" class="wide" title="Del Col"><i class="fas fa-minus"></i>Col</button>
                     </div>
-                    <div class="tool-group">
+                    <div class="tg">
                         <select id="formulaInsert" title="Insert Formula">
                             <option value="">⚡ Formula</option>
                             <option value="=SUM(">SUM</option>
@@ -300,12 +427,36 @@
                             <option value="=MIN(">MIN</option>
                             <option value="=MAX(">MAX</option>
                             <option value="=IF(">IF</option>
+                            <option value="=CONCATENATE(">CONCAT</option>
+                            <option value="=ROUND(">ROUND</option>
+                            <option value="=ABS(">ABS</option>
+                            <option value="=UPPER(">UPPER</option>
+                            <option value="=LOWER(">LOWER</option>
                         </select>
+                    </div>
+                    <div class="tg">
+                        <button id="btnFind" title="Find & Replace (Ctrl+F)"><i class="fas fa-search"></i></button>
+                        <button id="btnChart" title="Create Chart"><i class="fas fa-chart-bar"></i></button>
+                        <button id="btnCondFmt" title="Conditional Formatting"><i
+                                class="fas fa-paint-roller"></i></button>
+                        <button id="btnFreeze" title="Freeze Row 1"><i class="fas fa-thumbtack"></i></button>
+                        <button id="btnPrint" title="Print"><i class="fas fa-print"></i></button>
                     </div>
                 </div>
 
+                <!-- Find & Replace -->
+                <div class="find-panel" id="findPanel">
+                    <input type="text" id="findInput" placeholder="Find...">
+                    <input type="text" id="replaceInput" placeholder="Replace...">
+                    <button onclick="findInSheet()">Find</button>
+                    <button onclick="replaceInSheet()">Replace</button>
+                    <button onclick="replaceAllInSheet()">All</button>
+                    <span class="count" id="findCount"></span>
+                    <button onclick="closeFindPanel()" style="margin-left:auto;">✕</button>
+                </div>
+
                 <div class="doc-title-bar">
-                    <i class="fas fa-file-excel" style="color:var(--excel-green-light);"></i>
+                    <i class="fas fa-file-excel" style="color:var(--xgl);"></i>
                     <input type="text" id="docTitle" value="Untitled Spreadsheet" placeholder="Spreadsheet name...">
                 </div>
 
@@ -321,23 +472,49 @@
 
                 <div class="status-bar">
                     <span id="cellInfo">Ready</span>
-                    <span id="selectionStats"></span>
+                    <span id="selStats"></span>
                 </div>
 
                 <div class="export-panel">
-                    <button class="export-btn import" onclick="importFile()">
-                        <i class="fas fa-file-import"></i> Import XLSX/CSV
-                    </button>
-                    <button class="export-btn csv" onclick="exportCSV()">
-                        <i class="fas fa-file-csv"></i> Export CSV
-                    </button>
-                    <button class="export-btn xlsx" onclick="exportXLSX()">
-                        <i class="fas fa-file-excel"></i> Export XLSX
-                    </button>
+                    <button class="export-btn import" onclick="importFile()"><i class="fas fa-file-import"></i>
+                        Import</button>
+                    <button class="export-btn csv" onclick="exportCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+                    <button class="export-btn xlsx" onclick="exportXLSX()"><i class="fas fa-file-excel"></i>
+                        XLSX</button>
+                    <button class="export-btn pdf" onclick="printSheet()"><i class="fas fa-print"></i> Print</button>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Chart Modal -->
+    <div class="modal-overlay" id="chartModal">
+        <div class="modal">
+            <button class="close-modal" onclick="closeChartModal()">✕</button>
+            <h2>📊 Create Chart</h2>
+            <div class="chart-options">
+                <label>Type<select id="chartType">
+                        <option value="bar">Bar</option>
+                        <option value="line">Line</option>
+                        <option value="pie">Pie</option>
+                        <option value="doughnut">Doughnut</option>
+                        <option value="radar">Radar</option>
+                    </select></label>
+                <label>Data Range<input type="text" id="chartRange" placeholder="e.g. A1:D5" value="A1:E5"></label>
+                <label>Labels Row/Col<select id="chartLabels">
+                        <option value="row">First Row = Labels</option>
+                        <option value="col">First Col = Labels</option>
+                    </select></label>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="chartCanvas" height="300"></canvas></div>
+            <div class="chart-actions">
+                <button class="gen" onclick="generateChart()">Generate Chart</button>
+                <button class="dl" onclick="downloadChart()">Download PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;">
 
     <footer>
         <div class="container">
@@ -345,208 +522,281 @@
         </div>
     </footer>
 
-    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;">
-
     <script src="../../js/vendor/jsuites.js"></script>
     <script src="../../js/vendor/jspreadsheet.js"></script>
     <script src="../../js/vendor/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script>
-        // Create default data
-        const defaultData = [];
-        for (let i = 0; i < 30; i++) {
-            defaultData.push(new Array(15).fill(''));
-        }
+        const _$ = id => document.getElementById(id);
+        // ── INIT SPREADSHEET ──
+        const ROWS = 40, COLS = 20;
+        const defaultData = Array.from({ length: ROWS }, () => Array(COLS).fill(''));
+        const colHeaders = Array.from({ length: COLS }, (_, i) => ({ title: String.fromCharCode(65 + (i % 26)) + (i >= 26 ? '2' : ''), width: 90 }));
+        let table, frozenRow = false;
 
-        const colHeaders = [];
-        for (let i = 0; i < 15; i++) {
-            colHeaders.push({ title: String.fromCharCode(65 + i), width: 100 });
-        }
-
-        let table;
         try {
-            table = jspreadsheet(document.getElementById('spreadsheet'), {
-                data: defaultData,
-                columns: colHeaders,
-                minDimensions: [15, 30],
-                tableOverflow: true,
-                tableWidth: '100%',
-                tableHeight: '450px',
-                onselection: onCellSelect,
-                onchange: onCellChange,
-                contextMenu: function () { return false; }
+            table = jspreadsheet(_$('spreadsheet'), {
+                data: defaultData, columns: colHeaders,
+                minDimensions: [COLS, ROWS], tableOverflow: true,
+                tableWidth: '100%', tableHeight: '450px',
+                onselection: onSel, onchange: onChange,
+                contextMenu: () => false
             });
-        } catch (e) {
-            // Fallback: Create a simple HTML table editor
-            createFallbackEditor();
-        }
+        } catch (e) { _$('spreadsheet').innerHTML = '<p style="padding:20px;color:#333;">Spreadsheet engine loading... try refreshing.</p>'; }
 
-        function onCellSelect(el, borderLeft, borderTop, borderRight, borderBottom, origin) {
-            if (table) {
-                const cell = table.getSelectedColumns();
-                const selected = table.getSelected(true);
-                if (selected && selected.length > 0) {
-                    const r = selected[0];
-                    const col = String.fromCharCode(65 + (borderLeft || 0));
-                    const row = (borderTop || 0) + 1;
-                    document.getElementById('cellRef').textContent = col + row;
-                    const val = table.getValueFromCoords(borderLeft, borderTop);
-                    document.getElementById('formulaInput').value = val || '';
-                }
+        function onSel(el, bL, bT) {
+            if (!table) return;
+            const col = String.fromCharCode(65 + (bL || 0));
+            const row = (bT || 0) + 1;
+            _$('cellRef').textContent = col + row;
+            _$('formulaInput').value = table.getValueFromCoords(bL, bT) || '';
+            updateSelStats();
+        }
+        function onChange() { saveToStorage(); updateSelStats(); }
+
+        function updateSelStats() {
+            if (!table) return;
+            const sel = table.getSelected(true);
+            if (!sel || sel.length <= 1) { _$('selStats').textContent = ''; return; }
+            let nums = [];
+            sel.forEach(c => { const v = parseFloat(table.getValueFromCoords(c[0], c[1])); if (!isNaN(v)) nums.push(v); });
+            if (nums.length > 0) {
+                const sum = nums.reduce((a, b) => a + b, 0);
+                _$('selStats').textContent = `Sum: ${sum.toFixed(2)} | Avg: ${(sum / nums.length).toFixed(2)} | Count: ${nums.length}`;
             }
         }
 
-        function onCellChange() {
-            saveToStorage();
-        }
-
-        // Formula bar interaction
-        document.getElementById('formulaInput').addEventListener('keydown', function (e) {
+        // ── FORMULA BAR ──
+        _$('formulaInput').addEventListener('keydown', e => {
             if (e.key === 'Enter' && table) {
-                const selected = table.getSelected(true);
-                if (selected && selected.length > 0) {
-                    const cell = selected[0];
-                    table.setValueFromCoords(cell[0], cell[1], this.value);
-                }
+                const s = table.getSelected(true);
+                if (s && s.length > 0) table.setValueFromCoords(s[0][0], s[0][1], _$('formulaInput').value);
             }
         });
+        _$('formulaInsert').onchange = function () { if (this.value) { _$('formulaInput').value = this.value; _$('formulaInput').focus(); this.value = ''; } };
 
-        // Formula insert
-        document.getElementById('formulaInsert').onchange = function () {
-            if (this.value) {
-                document.getElementById('formulaInput').value = this.value;
-                document.getElementById('formulaInput').focus();
-                this.value = '';
-            }
+        // ── TOOLBAR ACTIONS ──
+        _$('btnAddRow').onclick = () => { if (table) table.insertRow(); };
+        _$('btnAddCol').onclick = () => { if (table) table.insertColumn(); };
+        _$('btnDelRow').onclick = () => { if (table) { const s = table.getSelected(true); if (s && s.length > 0) table.deleteRow(s[0][1]); } };
+        _$('btnDelCol').onclick = () => { if (table) { const s = table.getSelected(true); if (s && s.length > 0) table.deleteColumn(s[0][0]); } };
+
+        function styleCell(p, v) { if (!table) return; const c = table.getSelected(true); if (!c) return; c.forEach(s => { table.setStyle(jspreadsheet.getColumnNameFromId([s[0], s[1]]), p, v); }); }
+        _$('btnBold').onclick = () => styleCell('font-weight', 'bold');
+        _$('btnItalic').onclick = () => styleCell('font-style', 'italic');
+        _$('cellBg').oninput = function () { styleCell('background-color', this.value); };
+        _$('cellFg').oninput = function () { styleCell('color', this.value); };
+        _$('btnAlignL').onclick = () => styleCell('text-align', 'left');
+        _$('btnAlignC').onclick = () => styleCell('text-align', 'center');
+        _$('btnAlignR').onclick = () => styleCell('text-align', 'right');
+
+        // ── FREEZE ROW 1 ──
+        _$('btnFreeze').onclick = () => {
+            frozenRow = !frozenRow;
+            _$('btnFreeze').style.background = frozenRow ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.12)';
+            // Visual indicator only — jspreadsheet CE doesn't support freeze natively
+            const hdr = document.querySelector('.jexcel thead');
+            if (hdr) hdr.style.position = frozenRow ? 'sticky' : '';
+            if (hdr) hdr.style.top = frozenRow ? '0' : '';
+            if (hdr) hdr.style.zIndex = frozenRow ? '10' : '';
+            _$('cellInfo').textContent = frozenRow ? 'Row 1 frozen' : 'Ready';
         };
 
-        // Toolbar actions
-        document.getElementById('btnAddRow').onclick = () => { if (table) table.insertRow(); };
-        document.getElementById('btnAddCol').onclick = () => { if (table) table.insertColumn(); };
-        document.getElementById('btnDelRow').onclick = () => {
-            if (table) {
-                const s = table.getSelected(true);
-                if (s && s.length > 0) table.deleteRow(s[0][1]);
-            }
-        };
-        document.getElementById('btnDelCol').onclick = () => {
-            if (table) {
-                const s = table.getSelected(true);
-                if (s && s.length > 0) table.deleteColumn(s[0][0]);
-            }
-        };
-
-        // Style buttons
-        function applyStyleToSelected(prop, val) {
+        // ── CONDITIONAL FORMATTING ──
+        _$('btnCondFmt').onclick = () => {
+            const rule = prompt('Conditional Format Rule:\n1 = Highlight cells > value (green)\n2 = Highlight cells < value (red)\n3 = Highlight cells = text (blue)', '1');
+            if (!rule) return;
+            const val = prompt('Enter threshold/value:');
+            if (val === null) return;
             if (!table) return;
-            const cells = table.getSelected(true);
-            if (!cells) return;
-            cells.forEach(c => {
-                const cellName = jspreadsheet.getColumnNameFromId([c[0], c[1]]);
-                table.setStyle(cellName, prop, val);
+            const data = table.getData();
+            data.forEach((row, r) => {
+                row.forEach((cell, c) => {
+                    const cn = jspreadsheet.getColumnNameFromId([c, r]);
+                    const num = parseFloat(cell);
+                    if (rule === '1' && !isNaN(num) && num > parseFloat(val)) {
+                        table.setStyle(cn, 'background-color', '#c6efce'); table.setStyle(cn, 'color', '#006100');
+                    } else if (rule === '2' && !isNaN(num) && num < parseFloat(val)) {
+                        table.setStyle(cn, 'background-color', '#ffc7ce'); table.setStyle(cn, 'color', '#9c0006');
+                    } else if (rule === '3' && cell.toString().toLowerCase() === val.toLowerCase()) {
+                        table.setStyle(cn, 'background-color', '#bdd7ee'); table.setStyle(cn, 'color', '#1f4e79');
+                    }
+                });
+            });
+        };
+
+        // ── FIND & REPLACE ──
+        _$('btnFind').onclick = () => { _$('findPanel').classList.toggle('open'); _$('findInput').focus(); };
+        function closeFindPanel() { _$('findPanel').classList.remove('open'); }
+        document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); _$('btnFind').click(); } });
+
+        function findInSheet() {
+            if (!table) return;
+            const q = _$('findInput').value.toLowerCase(); if (!q) return;
+            const data = table.getData(); let count = 0, first = null;
+            data.forEach((row, r) => row.forEach((cell, c) => {
+                if ((cell || '').toString().toLowerCase().includes(q)) {
+                    count++;
+                    if (!first) first = [c, r];
+                    table.setStyle(jspreadsheet.getColumnNameFromId([c, r]), 'background-color', '#ffeb3b');
+                }
+            }));
+            _$('findCount').textContent = count + ' found';
+            if (first) table.updateSelectionFromCoords(first[0], first[1], first[0], first[1]);
+        }
+        function replaceInSheet() {
+            if (!table) return;
+            const q = _$('findInput').value, r = _$('replaceInput').value; if (!q) return;
+            const sel = table.getSelected(true);
+            if (sel && sel.length > 0) {
+                const val = table.getValueFromCoords(sel[0][0], sel[0][1]);
+                if (val && val.toString().toLowerCase().includes(q.toLowerCase())) {
+                    table.setValueFromCoords(sel[0][0], sel[0][1], val.toString().replace(new RegExp(q, 'i'), r));
+                }
+            }
+        }
+        function replaceAllInSheet() {
+            if (!table) return;
+            const q = _$('findInput').value, r = _$('replaceInput').value; if (!q) return;
+            const data = table.getData(); let count = 0;
+            data.forEach((row, ri) => row.forEach((cell, ci) => {
+                if ((cell || '').toString().toLowerCase().includes(q.toLowerCase())) {
+                    table.setValueFromCoords(ci, ri, cell.toString().replace(new RegExp(q, 'gi'), r));
+                    count++;
+                }
+            }));
+            _$('findCount').textContent = count + ' replaced';
+        }
+
+        // ── CHARTS ──
+        let chartInstance = null;
+        _$('btnChart').onclick = () => _$('chartModal').classList.add('open');
+        function closeChartModal() { _$('chartModal').classList.remove('open'); }
+        _$('chartModal').onclick = e => { if (e.target === _$('chartModal')) closeChartModal(); };
+
+        function parseRange(range) {
+            const m = range.match(/([A-Z])(\d+):([A-Z])(\d+)/i);
+            if (!m) return null;
+            return { c1: m[1].toUpperCase().charCodeAt(0) - 65, r1: parseInt(m[2]) - 1, c2: m[3].toUpperCase().charCodeAt(0) - 65, r2: parseInt(m[4]) - 1 };
+        }
+
+        function generateChart() {
+            if (!table) return;
+            const rng = parseRange(_$('chartRange').value);
+            if (!rng) { alert('Invalid range. Use format like A1:D5'); return; }
+            const data = table.getData();
+            const type = _$('chartType').value;
+            const labelsFrom = _$('chartLabels').value;
+
+            let labels = [], datasets = [];
+            if (labelsFrom === 'row') {
+                // First row = labels
+                for (let c = rng.c1 + 1; c <= rng.c2; c++) labels.push(data[rng.r1][c] || ('Col ' + (c + 1)));
+                for (let r = rng.r1 + 1; r <= rng.r2; r++) {
+                    const vals = [];
+                    for (let c = rng.c1 + 1; c <= rng.c2; c++) vals.push(parseFloat(data[r][c]) || 0);
+                    datasets.push({
+                        label: data[r][rng.c1] || ('Row ' + (r + 1)), data: vals,
+                        backgroundColor: getColors(vals.length, .6), borderColor: getColors(vals.length, 1), borderWidth: 1
+                    });
+                }
+            } else {
+                // First col = labels
+                for (let r = rng.r1 + 1; r <= rng.r2; r++) labels.push(data[r][rng.c1] || ('Row ' + (r + 1)));
+                for (let c = rng.c1 + 1; c <= rng.c2; c++) {
+                    const vals = [];
+                    for (let r = rng.r1 + 1; r <= rng.r2; r++) vals.push(parseFloat(data[r][c]) || 0);
+                    datasets.push({
+                        label: data[rng.r1][c] || ('Col ' + (c + 1)), data: vals,
+                        backgroundColor: getColors(vals.length, .6), borderColor: getColors(vals.length, 1), borderWidth: 1
+                    });
+                }
+            }
+
+            if (chartInstance) chartInstance.destroy();
+            const ctx = _$('chartCanvas').getContext('2d');
+
+            // For pie/doughnut, flatten to single dataset
+            let chartData;
+            if ((type === 'pie' || type === 'doughnut') && datasets.length > 0) {
+                chartData = { labels: labels, datasets: [{ data: datasets[0].data, backgroundColor: getColors(labels.length, .7), borderWidth: 1 }] };
+            } else {
+                chartData = { labels: labels, datasets: datasets };
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: type,
+                data: chartData,
+                options: { responsive: true, plugins: { legend: { position: 'top', labels: { color: '#333' } }, title: { display: true, text: _$('docTitle').value || 'Chart', color: '#333' } }, scales: type === 'pie' || type === 'doughnut' || type === 'radar' ? {} : { y: { beginAtZero: true } } }
             });
         }
 
-        document.getElementById('btnBoldE').onclick = () => applyStyleToSelected('font-weight', 'bold');
-        document.getElementById('btnItalicE').onclick = () => applyStyleToSelected('font-style', 'italic');
-        document.getElementById('cellColor').oninput = function () { applyStyleToSelected('background-color', this.value); };
-        document.getElementById('fontColorE').oninput = function () { applyStyleToSelected('color', this.value); };
-        document.getElementById('btnAlignLE').onclick = () => applyStyleToSelected('text-align', 'left');
-        document.getElementById('btnAlignCE').onclick = () => applyStyleToSelected('text-align', 'center');
-        document.getElementById('btnAlignRE').onclick = () => applyStyleToSelected('text-align', 'right');
+        function getColors(n, a) {
+            const palette = ['rgba(52,152,219,' + a + ')', 'rgba(231,76,60,' + a + ')', 'rgba(46,204,113,' + a + ')', 'rgba(155,89,182,' + a + ')', 'rgba(241,196,15,' + a + ')', 'rgba(230,126,34,' + a + ')', 'rgba(26,188,156,' + a + ')', 'rgba(52,73,94,' + a + ')', 'rgba(142,68,173,' + a + ')', 'rgba(22,160,133,' + a + ')'];
+            return Array.from({ length: n }, (_, i) => palette[i % palette.length]);
+        }
 
-        // Export as CSV
+        function downloadChart() {
+            const c = _$('chartCanvas');
+            const a = document.createElement('a'); a.download = (_$('docTitle').value || 'chart') + '.png'; a.href = c.toDataURL('image/png'); a.click();
+        }
+
+        // ── PRINT ──
+        function printSheet() {
+            if (!table) return;
+            const data = table.getData();
+            let html = '<html><head><title>' + (_$('docTitle').value || 'Sheet') + '</title><style>table{border-collapse:collapse;width:100%;font-family:Arial;font-size:12px;}td,th{border:1px solid #ccc;padding:6px 8px;text-align:left;}th{background:#f0f0f0;font-weight:bold;}@media print{body{margin:0;}}</style></head><body><h3>' + (_$('docTitle').value || 'Spreadsheet') + '</h3><table>';
+            data.forEach((row, i) => {
+                html += '<tr>';
+                row.forEach(cell => html += (i === 0 ? '<th>' : '<td>') + (cell || '') + (i === 0 ? '</th>' : '</td>'));
+                html += '</tr>';
+            });
+            html += '</table></body></html>';
+            const w = window.open('', ''); w.document.write(html); w.document.close(); w.print();
+        }
+
+        // ── EXPORTS ──
         function exportCSV() {
             if (!table) return;
-            const csv = table.copy(false, ',', true);
-            const title = document.getElementById('docTitle').value || 'spreadsheet';
-            const data = table.getData();
-            let csvStr = '';
-            data.forEach(row => {
-                csvStr += row.map(c => {
-                    const v = (c || '').toString();
-                    return v.includes(',') ? '"' + v + '"' : v;
-                }).join(',') + '\n';
-            });
-            const blob = new Blob([csvStr], { type: 'text/csv' });
-            downloadBlob(blob, title + '.csv');
+            const data = table.getData(), title = _$('docTitle').value || 'sheet';
+            let csv = '';
+            data.forEach(row => { csv += row.map(c => { const v = (c || '').toString(); return v.includes(',') ? '"' + v + '"' : v; }).join(',') + '\n'; });
+            dlBlob(new Blob([csv], { type: 'text/csv' }), title + '.csv');
         }
-
-        // Export as XLSX using SheetJS
         function exportXLSX() {
             if (!table) return;
-            const data = table.getData();
-            const title = document.getElementById('docTitle').value || 'spreadsheet';
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(data);
+            const data = table.getData(), title = _$('docTitle').value || 'sheet';
+            const wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(data);
             XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
             XLSX.writeFile(wb, title + '.xlsx');
         }
-
-        // Import XLSX/CSV
-        function importFile() {
-            document.getElementById('fileInput').click();
-        }
-        document.getElementById('fileInput').onchange = function () {
-            const file = this.files[0];
-            if (!file) return;
+        function importFile() { _$('fileInput').click(); }
+        _$('fileInput').onchange = function () {
+            const file = this.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = e => {
                 try {
                     const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
                     if (table) {
-                        // Pad rows
-                        while (jsonData.length < 30) jsonData.push([]);
-                        jsonData.forEach(row => {
-                            while (row.length < 15) row.push('');
-                        });
-                        table.setData(jsonData);
+                        while (json.length < ROWS) json.push([]);
+                        json.forEach(r => { while (r.length < COLS) r.push(''); });
+                        table.setData(json);
                     }
-                    document.getElementById('docTitle').value = file.name.replace(/\.[^.]+$/, '');
-                } catch (err) {
-                    alert('Error reading file: ' + err.message);
-                }
+                    _$('docTitle').value = file.name.replace(/\.[^.]+$/, '');
+                } catch (err) { alert('Error: ' + err.message); }
             };
             reader.readAsArrayBuffer(file);
+            this.value = '';
         };
 
-        function downloadBlob(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
+        function dlBlob(b, n) { const u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = n; a.click(); URL.revokeObjectURL(u); }
 
-        // Auto-save
-        function saveToStorage() {
-            if (!table) return;
-            try {
-                localStorage.setItem('vibox-excel-doc', JSON.stringify({
-                    data: table.getData(),
-                    title: document.getElementById('docTitle').value
-                }));
-            } catch (e) { }
-        }
-
-        // Restore
-        try {
-            const saved = JSON.parse(localStorage.getItem('vibox-excel-doc'));
-            if (saved && saved.data && table) {
-                table.setData(saved.data);
-                if (saved.title) document.getElementById('docTitle').value = saved.title;
-            }
-        } catch (e) { }
-
-        // Fallback editor if jspreadsheet fails to load
-        function createFallbackEditor() {
-            const container = document.getElementById('spreadsheet');
-            container.innerHTML = '<p style="padding:20px;color:#333;">Loading spreadsheet engine... If this persists, try refreshing.</p>';
-        }
+        // ── AUTO-SAVE ──
+        function saveToStorage() { if (!table) return; try { localStorage.setItem('vibox-excel-doc', JSON.stringify({ d: table.getData(), t: _$('docTitle').value })); } catch (e) { } }
+        try { const s = JSON.parse(localStorage.getItem('vibox-excel-doc')); if (s && s.d && table) { table.setData(s.d); if (s.t) _$('docTitle').value = s.t; } } catch (e) { }
     </script>
     <script src="../../js/utils/common.js" type="module"></script>
 </body>

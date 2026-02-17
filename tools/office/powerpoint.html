@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Free Online Presentation Maker - Create slides with text, shapes, images. Export as PPTX for PowerPoint. Works offline.">
+        content="Free Online Presentation Maker - Theme presets, transitions, speaker notes. Export PPTX. Works offline.">
     <title>Presentation Maker - Vibox</title>
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --ppt-orange: #d04423;
-            --ppt-orange-light: #ff6f43;
+            --po: #d04423;
+            --pol: #ff6f43;
         }
 
         .ppt-app {
@@ -22,48 +22,48 @@
             background: var(--card-bg, #1e1e2e);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .3);
         }
 
         .ppt-toolbar {
-            background: linear-gradient(135deg, var(--ppt-orange), var(--ppt-orange-light));
-            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--po), var(--pol));
+            padding: 10px 14px;
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
 
-        .ppt-toolbar .tool-group {
+        .ppt-toolbar .tg {
             display: flex;
-            gap: 4px;
-            padding-right: 12px;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            gap: 3px;
+            padding-right: 10px;
+            border-right: 1px solid rgba(255, 255, 255, .2);
         }
 
-        .ppt-toolbar .tool-group:last-child {
+        .ppt-toolbar .tg:last-child {
             border-right: none;
         }
 
         .ppt-toolbar button,
         .ppt-toolbar select {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, .12);
             border: none;
             color: #fff;
-            height: 36px;
-            border-radius: 8px;
+            height: 34px;
+            border-radius: 7px;
             cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
+            font-size: 12px;
+            transition: .2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            padding: 0 10px;
+            gap: 3px;
+            padding: 0 8px;
         }
 
         .ppt-toolbar button:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, .25);
         }
 
         .ppt-toolbar select option {
@@ -72,12 +72,12 @@
         }
 
         .doc-title-bar {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 8px 16px;
+            background: rgba(255, 255, 255, .04);
+            padding: 6px 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
         }
 
         .doc-title-bar input {
@@ -91,41 +91,89 @@
         }
 
         .doc-title-bar input:focus {
-            border-color: var(--ppt-orange-light);
+            border-color: var(--pol);
             outline: none;
+        }
+
+        /* Find Panel */
+        .find-panel {
+            display: none;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, .06);
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .find-panel.open {
+            display: flex;
+        }
+
+        .find-panel input {
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .1);
+            color: inherit;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            width: 140px;
+        }
+
+        .find-panel input:focus {
+            border-color: var(--pol);
+            outline: none;
+        }
+
+        .find-panel button {
+            background: rgba(255, 255, 255, .12);
+            border: none;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .find-panel button:hover {
+            background: rgba(255, 255, 255, .25);
+        }
+
+        .find-panel .count {
+            font-size: 11px;
+            opacity: .7;
         }
 
         .ppt-workspace {
             display: flex;
-            gap: 16px;
-            padding: 16px;
-            min-height: 500px;
+            gap: 14px;
+            padding: 14px;
+            min-height: 480px;
         }
 
-        /* Slide panel */
         .slide-panel {
-            width: 160px;
+            width: 150px;
             flex-shrink: 0;
             overflow-y: auto;
             max-height: 520px;
         }
 
         .slide-thumb {
-            width: 140px;
-            height: 80px;
+            width: 130px;
+            height: 74px;
             border-radius: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: all 0.2s;
+            transition: .2s;
             position: relative;
             overflow: hidden;
             background: #fff;
         }
 
         .slide-thumb.active {
-            border-color: var(--ppt-orange-light);
-            box-shadow: 0 0 12px rgba(255, 111, 67, 0.4);
+            border-color: var(--pol);
+            box-shadow: 0 0 10px rgba(255, 111, 67, .4);
         }
 
         .slide-thumb canvas {
@@ -137,53 +185,52 @@
         .slide-thumb .num {
             position: absolute;
             bottom: 2px;
-            right: 6px;
-            font-size: 10px;
-            background: rgba(0, 0, 0, 0.5);
+            right: 5px;
+            font-size: 9px;
+            background: rgba(0, 0, 0, .5);
             color: #fff;
-            padding: 1px 5px;
-            border-radius: 4px;
+            padding: 1px 4px;
+            border-radius: 3px;
         }
 
-        .slide-thumb .delete-slide {
+        .slide-thumb .del-slide {
             position: absolute;
             top: 2px;
-            right: 4px;
-            background: rgba(255, 0, 0, 0.7);
+            right: 3px;
+            background: rgba(255, 0, 0, .7);
             color: #fff;
             border: none;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 9px;
             display: none;
             align-items: center;
             justify-content: center;
         }
 
-        .slide-thumb:hover .delete-slide {
+        .slide-thumb:hover .del-slide {
             display: flex;
         }
 
         .add-slide-btn {
-            width: 140px;
-            height: 40px;
-            border-radius: 8px;
-            border: 2px dashed rgba(255, 255, 255, 0.2);
+            width: 130px;
+            height: 36px;
+            border-radius: 7px;
+            border: 2px dashed rgba(255, 255, 255, .2);
             background: none;
             color: inherit;
             cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
+            font-size: 12px;
+            transition: .2s;
         }
 
         .add-slide-btn:hover {
-            border-color: var(--ppt-orange-light);
-            color: var(--ppt-orange-light);
+            border-color: var(--pol);
+            color: var(--pol);
         }
 
-        /* Main canvas */
         .slide-editor {
             flex: 1;
             background: #fff;
@@ -191,7 +238,7 @@
             aspect-ratio: 16/9;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .2);
             cursor: crosshair;
         }
 
@@ -199,24 +246,24 @@
             position: absolute;
             cursor: move;
             user-select: none;
-            min-width: 40px;
-            min-height: 30px;
+            min-width: 30px;
+            min-height: 20px;
         }
 
         .slide-element.selected {
-            outline: 2px solid var(--ppt-orange-light);
+            outline: 2px solid var(--pol);
             outline-offset: 2px;
         }
 
         .slide-element.text-el {
-            padding: 8px 12px;
+            padding: 6px 10px;
             font-size: 18px;
             color: #1a1a2e;
         }
 
         .slide-element.text-el[contenteditable="true"] {
             cursor: text;
-            outline: 2px dashed var(--ppt-orange-light);
+            outline: 2px dashed var(--pol);
         }
 
         .slide-element.shape-el {
@@ -227,7 +274,7 @@
             position: absolute;
             width: 10px;
             height: 10px;
-            background: var(--ppt-orange-light);
+            background: var(--pol);
             border-radius: 50%;
             bottom: -5px;
             right: -5px;
@@ -239,75 +286,82 @@
             display: block;
         }
 
-        /* Properties panel */
         .props-panel {
-            width: 200px;
+            width: 190px;
             flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            padding: 12px;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 10px;
+            padding: 10px;
             overflow-y: auto;
             max-height: 520px;
         }
 
         .props-panel h4 {
-            font-size: 12px;
-            opacity: 0.6;
-            margin-bottom: 8px;
+            font-size: 11px;
+            opacity: .6;
+            margin-bottom: 6px;
             text-transform: uppercase;
         }
 
         .prop-row {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .prop-row label {
-            font-size: 12px;
-            opacity: 0.7;
+            font-size: 11px;
+            opacity: .7;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .prop-row input,
-        .prop-row select {
+        .prop-row select,
+        .prop-row textarea {
             width: 100%;
-            padding: 6px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.06);
+            padding: 5px 7px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: rgba(255, 255, 255, .06);
             color: inherit;
-            font-size: 13px;
+            font-size: 12px;
         }
 
-        .prop-row input:focus {
-            border-color: var(--ppt-orange-light);
+        .prop-row input:focus,
+        .prop-row textarea:focus {
+            border-color: var(--pol);
             outline: none;
         }
 
+        .prop-row textarea {
+            resize: vertical;
+            min-height: 50px;
+            font-family: inherit;
+        }
+
         .export-panel {
-            padding: 16px;
+            padding: 12px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             justify-content: flex-end;
             flex-wrap: wrap;
         }
 
         .export-btn {
-            padding: 10px 20px;
+            padding: 9px 16px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
+            font-size: 13px;
+            transition: .2s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: #fff;
         }
 
         .export-btn.pptx {
-            background: var(--ppt-orange);
+            background: var(--po);
         }
 
         .export-btn.present {
@@ -316,11 +370,124 @@
 
         .export-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
         }
 
-        /* Presentation mode */
-        .presentation-overlay {
+        /* Speaker Notes */
+        .notes-bar {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, .03);
+            border-top: 1px solid rgba(255, 255, 255, .06);
+        }
+
+        .notes-bar textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .08);
+            color: inherit;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            min-height: 50px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .notes-bar textarea:focus {
+            border-color: var(--pol);
+            outline: none;
+        }
+
+        .notes-bar label {
+            font-size: 11px;
+            opacity: .5;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* Theme Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, .7);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-bg, #1e1e2e);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, .5);
+            position: relative;
+        }
+
+        .modal h2 {
+            margin-bottom: 14px;
+            font-size: 1.2em;
+        }
+
+        .modal .close-modal {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .theme-card {
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: .2s;
+            text-align: center;
+        }
+
+        .theme-card:hover {
+            border-color: var(--pol);
+            transform: translateY(-2px);
+        }
+
+        .theme-card .preview {
+            height: 60px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .theme-card h4 {
+            font-size: 12px;
+        }
+
+        /* Presentation overlay */
+        .present-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -332,41 +499,56 @@
             cursor: none;
         }
 
-        .presentation-overlay.active {
+        .present-overlay.active {
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .presentation-overlay canvas {
+        .present-overlay canvas {
             max-width: 100%;
             max-height: 100%;
         }
 
-        .presentation-overlay .controls {
+        .present-overlay .controls {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 12px;
+            gap: 10px;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: .3s;
         }
 
-        .presentation-overlay:hover .controls {
+        .present-overlay:hover .controls {
             opacity: 1;
             cursor: default;
         }
 
-        .presentation-overlay .controls button {
-            background: rgba(255, 255, 255, 0.15);
+        .present-overlay .controls button {
+            background: rgba(255, 255, 255, .15);
             border: none;
             color: #fff;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
+        }
+
+        /* Transitions */
+        .slide-editor.trans-fade {
+            animation: fadeIn .5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
         }
 
         @media(max-width:768px) {
@@ -378,8 +560,8 @@
                 width: 100%;
                 display: flex;
                 overflow-x: auto;
-                gap: 8px;
-                max-height: 100px;
+                gap: 6px;
+                max-height: 90px;
             }
 
             .slide-thumb {
@@ -395,8 +577,7 @@
 
 <body>
     <header>
-        <div class="container">
-            <a href="../../index.html" class="logo">Vibox</a>
+        <div class="container"><a href="../../index.html" class="logo">Vibox</a>
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
@@ -411,33 +592,60 @@
         <div class="container tool-container" style="padding-top:20px;max-width:1200px;">
             <div class="ppt-app">
                 <div class="ppt-toolbar">
-                    <div class="tool-group">
-                        <button onclick="addTextBox()" title="Add Text"><i class="fas fa-font"></i> Text</button>
-                        <button onclick="addShape('rect')" title="Rectangle"><i class="fas fa-square"></i></button>
+                    <div class="tg">
+                        <button onclick="addTextBox()" title="Text"><i class="fas fa-font"></i> Text</button>
+                        <button onclick="addShape('rect')" title="Rect"><i class="fas fa-square"></i></button>
                         <button onclick="addShape('circle')" title="Circle"><i class="fas fa-circle"></i></button>
+                        <button onclick="addShape('triangle')" title="Triangle"><i
+                                class="fas fa-play fa-rotate-270"></i></button>
+                        <button onclick="addShape('line')" title="Line"><i class="fas fa-minus"></i></button>
+                        <button onclick="addShape('arrow')" title="Arrow"><i class="fas fa-arrow-right"></i></button>
+                        <button onclick="addShape('star')" title="Star"><i class="fas fa-star"></i></button>
                         <button onclick="addImage()" title="Image"><i class="fas fa-image"></i></button>
                     </div>
-                    <div class="tool-group">
+                    <div class="tg">
                         <select id="slideLayout" onchange="applyLayout(this.value)">
                             <option value="">Layout...</option>
-                            <option value="title">Title Slide</option>
-                            <option value="titleContent">Title + Content</option>
+                            <option value="title">Title</option>
+                            <option value="titleContent">Title+Content</option>
                             <option value="twoCol">Two Columns</option>
+                            <option value="sectionHeader">Section Header</option>
+                            <option value="imageCaption">Image+Caption</option>
+                            <option value="quote">Quote</option>
+                            <option value="comparison">Comparison</option>
                             <option value="blank">Blank</option>
                         </select>
-                        <input type="color" id="slideBg" value="#ffffff" title="Slide Background"
-                            onchange="changeSlideBackground(this.value)"
-                            style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;">
+                        <input type="color" id="slideBg" value="#ffffff" title="Slide BG"
+                            onchange="changeSlideBg(this.value)"
+                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
                     </div>
-                    <div class="tool-group">
-                        <button onclick="deleteSelected()" title="Delete Selected"><i class="fas fa-trash"></i></button>
-                        <button onclick="bringForward()" title="Bring Forward"><i
-                                class="fas fa-layer-group"></i></button>
+                    <div class="tg">
+                        <button onclick="deleteSelected()" title="Delete"><i class="fas fa-trash"></i></button>
+                        <button onclick="bringForward()" title="Forward"><i class="fas fa-layer-group"></i></button>
+                        <button onclick="duplicateSlide()" title="Duplicate Slide"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <div class="tg">
+                        <button onclick="openThemeModal()" title="Themes"><i class="fas fa-palette"></i> Theme</button>
+                        <select id="transition" title="Transition">
+                            <option value="none">No Transition</option>
+                            <option value="fade">Fade</option>
+                            <option value="slide">Slide</option>
+                        </select>
+                        <button id="btnFindPPT" title="Find (Ctrl+F)"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
 
+                <!-- Find Panel -->
+                <div class="find-panel" id="findPanel">
+                    <input type="text" id="findInput" placeholder="Find text across slides...">
+                    <button onclick="findInSlides()">Find</button>
+                    <span class="count" id="findCount"></span>
+                    <button onclick="document.getElementById('findPanel').classList.remove('open')"
+                        style="margin-left:auto;">✕</button>
+                </div>
+
                 <div class="doc-title-bar">
-                    <i class="fas fa-file-powerpoint" style="color:var(--ppt-orange-light);"></i>
+                    <i class="fas fa-file-powerpoint" style="color:var(--pol);"></i>
                     <input type="text" id="docTitle" value="Untitled Presentation" placeholder="Presentation title...">
                 </div>
 
@@ -447,29 +655,44 @@
                     <div class="props-panel" id="propsPanel">
                         <h4>Properties</h4>
                         <div id="propContents">
-                            <p style="font-size:13px;opacity:0.5;">Select an element to edit its properties.</p>
+                            <p style="font-size:12px;opacity:.5;">Select an element to edit.</p>
                         </div>
                     </div>
                 </div>
 
+                <!-- Speaker Notes -->
+                <div class="notes-bar">
+                    <label>📝 Speaker Notes</label>
+                    <textarea id="speakerNotes" placeholder="Add speaker notes for this slide..."
+                        onchange="saveSpeakerNotes()"></textarea>
+                </div>
+
                 <div class="export-panel">
-                    <button class="export-btn present" onclick="startPresentation()">
-                        <i class="fas fa-play"></i> Present
-                    </button>
-                    <button class="export-btn pptx" onclick="exportPPTX()">
-                        <i class="fas fa-file-powerpoint"></i> Export PPTX
-                    </button>
+                    <button class="export-btn present" onclick="startPresentation()"><i class="fas fa-play"></i>
+                        Present</button>
+                    <button class="export-btn pptx" onclick="exportPPTX()"><i class="fas fa-file-powerpoint"></i>
+                        PPTX</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <div class="presentation-overlay" id="presentOverlay">
+    <!-- Theme Modal -->
+    <div class="modal-overlay" id="themeModal">
+        <div class="modal">
+            <button class="close-modal" onclick="closeThemeModal()">✕</button>
+            <h2>🎨 Theme Presets</h2>
+            <div class="theme-grid" id="themeGrid"></div>
+        </div>
+    </div>
+
+    <!-- Presentation Overlay -->
+    <div class="present-overlay" id="presentOverlay">
         <canvas id="presentCanvas"></canvas>
         <div class="controls">
-            <button onclick="prevSlidePresent()"><i class="fas fa-chevron-left"></i> Prev</button>
-            <span id="presentSlideNum" style="color:#fff;padding:10px;">1 / 1</span>
-            <button onclick="nextSlidePresent()">Next <i class="fas fa-chevron-right"></i></button>
+            <button onclick="prevSlideP()"><i class="fas fa-chevron-left"></i> Prev</button>
+            <span id="presentNum" style="color:#fff;padding:8px;">1/1</span>
+            <button onclick="nextSlideP()">Next <i class="fas fa-chevron-right"></i></button>
             <button onclick="exitPresentation()"><i class="fas fa-times"></i> Exit</button>
         </div>
     </div>
@@ -482,563 +705,444 @@
 
     <script src="../../js/vendor/pptxgen.bundle.min.js"></script>
     <script>
-        // Presentation data
-        let slides = [];
-        let currentSlide = 0;
-        let selectedElement = null;
-        let elementIdCounter = 0;
+        const _$ = id => document.getElementById(id);
+        let slides = [], curSlide = 0, selEl = null;
 
-        // Initialize with one slide
-        function init() {
-            addSlide();
+        // ── THEMES ──
+        const themes = [
+            { name: 'Default', bg: '#ffffff', title: '#1a1a2e', text: '#333333', accent: '#4a90d9' },
+            { name: 'Dark', bg: '#1a1a2e', title: '#ffffff', text: '#cccccc', accent: '#ff6f43' },
+            { name: 'Corporate', bg: '#f8f9fa', title: '#2c3e50', text: '#34495e', accent: '#3498db' },
+            { name: 'Creative', bg: '#fff3e0', title: '#e65100', text: '#4e342e', accent: '#ff9800' },
+            { name: 'Nature', bg: '#e8f5e9', title: '#1b5e20', text: '#2e7d32', accent: '#4caf50' },
+            { name: 'Ocean', bg: '#e3f2fd', title: '#0d47a1', text: '#1565c0', accent: '#2196f3' },
+            { name: 'Midnight', bg: '#0d1117', title: '#58a6ff', text: '#c9d1d9', accent: '#f78166' },
+            { name: 'Sunset', bg: '#1a0a2e', title: '#ff6b6b', text: '#dda0dd', accent: '#ffd93d' },
+            { name: 'Minimal', bg: '#fafafa', title: '#212121', text: '#616161', accent: '#9e9e9e' },
+        ];
+        let activeTheme = themes[0];
+
+        function openThemeModal() { _$('themeModal').classList.add('open'); }
+        function closeThemeModal() { _$('themeModal').classList.remove('open'); }
+        _$('themeModal').onclick = e => { if (e.target === _$('themeModal')) closeThemeModal(); };
+
+        (function renderThemes() {
+            const g = _$('themeGrid');
+            themes.forEach(t => {
+                const c = document.createElement('div');
+                c.className = 'theme-card';
+                c.innerHTML = `<div class="preview" style="background:${t.bg};color:${t.title};">${t.name}</div><h4>${t.name}</h4>`;
+                c.onclick = () => { applyTheme(t); closeThemeModal(); };
+                g.appendChild(c);
+            });
+        })();
+
+        function applyTheme(t) {
+            activeTheme = t;
+            slides.forEach(s => {
+                s.background = t.bg;
+                s.elements.forEach(el => {
+                    if (el.type === 'text') {
+                        if (el.isTitle) el.color = t.title;
+                        else el.color = t.text;
+                    }
+                    if (el.type === 'rect' || el.type === 'circle' || el.type === 'star' || el.type === 'triangle' || el.type === 'arrow' || el.type === 'line') el.fill = t.accent;
+                });
+            });
+            renderSlidePanel(); renderSlide();
         }
 
-        function createSlideData() {
-            return {
-                background: '#ffffff',
-                elements: []
-            };
+        // ── SLIDE DATA ──
+        function mkSlide() { return { background: activeTheme.bg, elements: [], notes: '' }; }
+
+        function init() {
+            const saved = loadFromStorage();
+            if (!saved) addSlide();
         }
 
         function addSlide() {
-            slides.push(createSlideData());
-            currentSlide = slides.length - 1;
-            renderSlidePanel();
-            renderSlide();
-        }
-
-        function selectSlide(idx) {
             saveCurrentSlide();
-            currentSlide = idx;
-            selectedElement = null;
-            renderSlidePanel();
-            renderSlide();
-            updateProps();
+            slides.push(mkSlide());
+            curSlide = slides.length - 1;
+            renderSlidePanel(); renderSlide(); updateNotes();
         }
 
-        function deleteSlide(idx) {
+        function duplicateSlide() {
+            const dup = JSON.parse(JSON.stringify(slides[curSlide]));
+            slides.splice(curSlide + 1, 0, dup);
+            curSlide++;
+            renderSlidePanel(); renderSlide(); updateNotes(); saveToStorage();
+        }
+
+        function selectSlide(i) {
+            saveCurrentSlide();
+            curSlide = i; selEl = null;
+            renderSlidePanel(); renderSlide(); updateProps(); updateNotes();
+        }
+
+        function deleteSlide(i) {
             if (slides.length <= 1) return;
-            slides.splice(idx, 1);
-            if (currentSlide >= slides.length) currentSlide = slides.length - 1;
-            renderSlidePanel();
-            renderSlide();
+            slides.splice(i, 1);
+            if (curSlide >= slides.length) curSlide = slides.length - 1;
+            renderSlidePanel(); renderSlide(); updateNotes();
         }
 
+        function saveCurrentSlide() { /* elements are mutated in-place */ }
+
+        // ── SPEAKER NOTES ──
+        function updateNotes() { _$('speakerNotes').value = slides[curSlide].notes || ''; }
+        function saveSpeakerNotes() { slides[curSlide].notes = _$('speakerNotes').value; saveToStorage(); }
+
+        // ── FIND ──
+        _$('btnFindPPT').onclick = () => { _$('findPanel').classList.toggle('open'); _$('findInput').focus(); };
+        document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); _$('btnFindPPT').click(); } });
+
+        function findInSlides() {
+            const q = _$('findInput').value.toLowerCase(); if (!q) return;
+            let results = [];
+            slides.forEach((s, si) => s.elements.forEach((el, ei) => {
+                if (el.type === 'text' && (el.text || '').toLowerCase().includes(q)) results.push({ si, ei });
+            }));
+            _$('findCount').textContent = results.length + ' found';
+            if (results.length > 0) { selectSlide(results[0].si); }
+        }
+
+        // ── SLIDE PANEL ──
         function renderSlidePanel() {
-            const panel = document.getElementById('slidePanel');
-            panel.innerHTML = '';
+            const p = _$('slidePanel'); p.innerHTML = '';
             slides.forEach((s, i) => {
-                const thumb = document.createElement('div');
-                thumb.className = 'slide-thumb' + (i === currentSlide ? ' active' : '');
-                thumb.onclick = (e) => { if (!e.target.classList.contains('delete-slide')) selectSlide(i); };
-                thumb.style.background = s.background;
-                // Mini preview text
-                const preview = document.createElement('div');
-                preview.style.cssText = 'width:100%;height:100%;position:relative;overflow:hidden;';
+                const t = document.createElement('div');
+                t.className = 'slide-thumb' + (i === curSlide ? ' active' : '');
+                t.onclick = e => { if (!e.target.classList.contains('del-slide')) selectSlide(i); };
+                t.style.background = s.background;
+                const prev = document.createElement('div');
+                prev.style.cssText = 'width:100%;height:100%;position:relative;overflow:hidden;';
                 s.elements.forEach(el => {
-                    const mini = document.createElement('div');
-                    mini.style.cssText = `position:absolute;left:${el.x / 7}px;top:${el.y / 5.5}px;font-size:5px;color:${el.color || '#333'};`;
-                    if (el.type === 'text') mini.textContent = el.text ? el.text.substring(0, 15) : '';
-                    else if (el.type === 'rect') { mini.style.background = el.fill || '#4a90d9'; mini.style.width = (el.w / 7) + 'px'; mini.style.height = (el.h / 5.5) + 'px'; }
-                    else if (el.type === 'circle') { mini.style.background = el.fill || '#4a90d9'; mini.style.width = (el.w / 7) + 'px'; mini.style.height = (el.h / 5.5) + 'px'; mini.style.borderRadius = '50%'; }
-                    preview.appendChild(mini);
+                    const m = document.createElement('div');
+                    m.style.cssText = `position:absolute;left:${el.x / 7}px;top:${el.y / 5.5}px;font-size:5px;`;
+                    if (el.type === 'text') { m.textContent = (el.text || '').substring(0, 12); m.style.color = el.color || '#333'; }
+                    else { m.style.background = el.fill || '#4a90d9'; m.style.width = (el.w / 7) + 'px'; m.style.height = (el.h / 5.5) + 'px'; if (el.type === 'circle') m.style.borderRadius = '50%'; }
+                    prev.appendChild(m);
                 });
-                thumb.appendChild(preview);
-
-                const num = document.createElement('span');
-                num.className = 'num';
-                num.textContent = i + 1;
-                thumb.appendChild(num);
-
-                const del = document.createElement('button');
-                del.className = 'delete-slide';
-                del.innerHTML = '×';
-                del.onclick = (e) => { e.stopPropagation(); deleteSlide(i); };
-                thumb.appendChild(del);
-
-                panel.appendChild(thumb);
+                t.appendChild(prev);
+                const num = document.createElement('span'); num.className = 'num'; num.textContent = i + 1; t.appendChild(num);
+                const del = document.createElement('button'); del.className = 'del-slide'; del.innerHTML = '×'; del.onclick = e => { e.stopPropagation(); deleteSlide(i); }; t.appendChild(del);
+                p.appendChild(t);
             });
-
-            const addBtn = document.createElement('button');
-            addBtn.className = 'add-slide-btn';
-            addBtn.innerHTML = '<i class="fas fa-plus"></i> New Slide';
-            addBtn.onclick = addSlide;
-            panel.appendChild(addBtn);
+            const ab = document.createElement('button'); ab.className = 'add-slide-btn'; ab.innerHTML = '<i class="fas fa-plus"></i> New'; ab.onclick = addSlide; p.appendChild(ab);
         }
 
+        // ── RENDER SLIDE ──
         function renderSlide() {
-            const editor = document.getElementById('slideEditor');
-            editor.innerHTML = '';
-            const slide = slides[currentSlide];
-            editor.style.background = slide.background;
-            document.getElementById('slideBg').value = slide.background;
-
-            slide.elements.forEach((el, idx) => {
-                const dom = createElementDOM(el, idx);
-                editor.appendChild(dom);
-            });
+            const ed = _$('slideEditor'); ed.innerHTML = '';
+            const s = slides[curSlide];
+            ed.style.background = s.background;
+            _$('slideBg').value = s.background;
+            s.elements.forEach((el, i) => ed.appendChild(createElDOM(el, i)));
+            // Apply transition
+            const trans = _$('transition').value;
+            if (trans === 'fade') { ed.classList.add('trans-fade'); setTimeout(() => ed.classList.remove('trans-fade'), 500); }
         }
 
-        function createElementDOM(el, idx) {
-            const dom = document.createElement('div');
-            dom.className = 'slide-element' + (el.type === 'text' ? ' text-el' : ' shape-el');
-            dom.dataset.idx = idx;
-            dom.style.left = el.x + 'px';
-            dom.style.top = el.y + 'px';
-            dom.style.width = el.w + 'px';
-            dom.style.height = el.type === 'text' ? 'auto' : el.h + 'px';
-            dom.style.minHeight = el.h + 'px';
+        function createElDOM(el, idx) {
+            const d = document.createElement('div');
+            d.className = 'slide-element' + (el.type === 'text' ? ' text-el' : ' shape-el');
+            d.dataset.idx = idx;
+            d.style.left = el.x + 'px'; d.style.top = el.y + 'px'; d.style.width = el.w + 'px';
+            d.style.height = el.type === 'text' ? 'auto' : el.h + 'px';
+            d.style.minHeight = el.h + 'px';
 
             if (el.type === 'text') {
-                dom.textContent = el.text || 'Double-click to edit';
-                dom.style.fontSize = (el.fontSize || 18) + 'px';
-                dom.style.fontWeight = el.bold ? 'bold' : 'normal';
-                dom.style.color = el.color || '#1a1a2e';
-                dom.style.fontFamily = el.fontFamily || 'Arial';
-                dom.ondblclick = () => {
-                    dom.contentEditable = 'true';
-                    dom.focus();
-                    dom.style.cursor = 'text';
-                };
-                dom.onblur = () => {
-                    dom.contentEditable = 'false';
-                    dom.style.cursor = 'move';
-                    slides[currentSlide].elements[idx].text = dom.textContent;
-                    saveToStorage();
-                };
+                d.textContent = el.text || 'Double-click to edit';
+                d.style.fontSize = (el.fontSize || 18) + 'px';
+                d.style.fontWeight = el.bold ? 'bold' : 'normal';
+                d.style.fontStyle = el.italic ? 'italic' : 'normal';
+                d.style.color = el.color || activeTheme.text;
+                d.style.fontFamily = el.fontFamily || 'Arial';
+                d.style.textAlign = el.align || 'left';
+                d.ondblclick = () => { d.contentEditable = 'true'; d.focus(); d.style.cursor = 'text'; };
+                d.onblur = () => { d.contentEditable = 'false'; d.style.cursor = 'move'; slides[curSlide].elements[idx].text = d.textContent; saveToStorage(); };
             } else if (el.type === 'rect') {
-                dom.style.background = el.fill || '#4a90d9';
-                dom.style.borderRadius = (el.radius || 0) + 'px';
+                d.style.background = el.fill || activeTheme.accent;
+                d.style.borderRadius = (el.radius || 0) + 'px';
             } else if (el.type === 'circle') {
-                dom.style.background = el.fill || '#4a90d9';
-                dom.style.borderRadius = '50%';
+                d.style.background = el.fill || activeTheme.accent;
+                d.style.borderRadius = '50%';
+            } else if (el.type === 'triangle') {
+                d.style.width = '0'; d.style.height = '0';
+                d.style.borderLeft = (el.w / 2) + 'px solid transparent';
+                d.style.borderRight = (el.w / 2) + 'px solid transparent';
+                d.style.borderBottom = el.h + 'px solid ' + (el.fill || activeTheme.accent);
+                d.style.background = 'transparent';
+            } else if (el.type === 'line') {
+                d.style.height = '3px'; d.style.background = el.fill || activeTheme.accent;
+                d.style.borderRadius = '2px';
+            } else if (el.type === 'arrow') {
+                d.innerHTML = `<svg viewBox="0 0 100 30" style="width:100%;height:100%;"><polygon points="0,10 70,10 70,0 100,15 70,30 70,20 0,20" fill="${el.fill || activeTheme.accent}"/></svg>`;
+                d.style.background = 'transparent';
+            } else if (el.type === 'star') {
+                d.innerHTML = `<svg viewBox="0 0 100 100" style="width:100%;height:100%;"><polygon points="50,5 63,35 95,35 70,57 80,90 50,70 20,90 30,57 5,35 37,35" fill="${el.fill || activeTheme.accent}"/></svg>`;
+                d.style.background = 'transparent';
             } else if (el.type === 'image') {
                 const img = document.createElement('img');
-                img.src = el.src;
-                img.style.cssText = 'width:100%;height:100%;object-fit:contain;pointer-events:none;';
-                dom.appendChild(img);
+                img.src = el.src; img.style.cssText = 'width:100%;height:100%;object-fit:contain;pointer-events:none;';
+                d.appendChild(img);
             }
 
-            // Resize handle
-            const handle = document.createElement('div');
-            handle.className = 'resize-handle';
-            dom.appendChild(handle);
-
-            // Click to select
-            dom.onmousedown = (e) => {
-                if (e.target === handle) {
-                    startResize(e, dom, idx);
-                    return;
-                }
-                selectElement(dom, idx);
-                if (dom.contentEditable !== 'true') startDrag(e, dom, idx);
+            const handle = document.createElement('div'); handle.className = 'resize-handle'; d.appendChild(handle);
+            d.onmousedown = e => {
+                if (e.target === handle) { startResize(e, d, idx); return; }
+                selectEl(d, idx);
+                if (d.contentEditable !== 'true') startDrag(e, d, idx);
             };
-
-            return dom;
+            return d;
         }
 
-        function selectElement(dom, idx) {
-            document.querySelectorAll('.slide-element.selected').forEach(el => el.classList.remove('selected'));
-            dom.classList.add('selected');
-            selectedElement = idx;
-            updateProps();
+        function selectEl(d, idx) {
+            document.querySelectorAll('.slide-element.selected').forEach(e => e.classList.remove('selected'));
+            d.classList.add('selected'); selEl = idx; updateProps();
         }
+        function editorClick(e) { if (e.target.id === 'slideEditor') { selEl = null; document.querySelectorAll('.slide-element.selected').forEach(e => e.classList.remove('selected')); updateProps(); } }
 
-        function editorClick(e) {
-            if (e.target.id === 'slideEditor') {
-                selectedElement = null;
-                document.querySelectorAll('.slide-element.selected').forEach(el => el.classList.remove('selected'));
-                updateProps();
-            }
-        }
-
+        // ── PROPERTIES ──
         function updateProps() {
-            const cont = document.getElementById('propContents');
-            if (selectedElement === null || !slides[currentSlide].elements[selectedElement]) {
-                cont.innerHTML = '<p style="font-size:13px;opacity:0.5;">Select an element to edit its properties.</p>';
-                return;
-            }
-            const el = slides[currentSlide].elements[selectedElement];
-            let html = '';
-
+            const c = _$('propContents');
+            if (selEl === null || !slides[curSlide].elements[selEl]) { c.innerHTML = '<p style="font-size:12px;opacity:.5;">Select an element to edit.</p>'; return; }
+            const el = slides[curSlide].elements[selEl];
+            let h = '';
             if (el.type === 'text') {
-                html += `
-                    <div class="prop-row"><label>Font Size</label><input type="number" value="${el.fontSize || 18}" onchange="updateProp('fontSize', +this.value)"></div>
-                    <div class="prop-row"><label>Font</label>
-                        <select onchange="updateProp('fontFamily', this.value)">
-                            <option ${el.fontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
-                            <option ${el.fontFamily === 'Georgia' ? 'selected' : ''}>Georgia</option>
-                            <option ${el.fontFamily === 'Times New Roman' ? 'selected' : ''}>Times New Roman</option>
-                            <option ${el.fontFamily === 'Courier New' ? 'selected' : ''}>Courier New</option>
-                            <option ${el.fontFamily === 'Verdana' ? 'selected' : ''}>Verdana</option>
-                        </select>
-                    </div>
-                    <div class="prop-row"><label>Color</label><input type="color" value="${el.color || '#1a1a2e'}" onchange="updateProp('color', this.value)"></div>
-                    <div class="prop-row"><label>Bold</label><input type="checkbox" ${el.bold ? 'checked' : ''} onchange="updateProp('bold', this.checked)"></div>
-                `;
-            } else if (el.type === 'rect' || el.type === 'circle') {
-                html += `
-                    <div class="prop-row"><label>Fill Color</label><input type="color" value="${el.fill || '#4a90d9'}" onchange="updateProp('fill', this.value)"></div>
-                    <div class="prop-row"><label>Width</label><input type="number" value="${el.w}" onchange="updateProp('w', +this.value)"></div>
-                    <div class="prop-row"><label>Height</label><input type="number" value="${el.h}" onchange="updateProp('h', +this.value)"></div>
-                `;
-                if (el.type === 'rect') {
-                    html += `<div class="prop-row"><label>Border Radius</label><input type="number" value="${el.radius || 0}" onchange="updateProp('radius', +this.value)"></div>`;
-                }
+                h += `<div class="prop-row"><label>Font Size</label><input type="number" value="${el.fontSize || 18}" onchange="uProp('fontSize',+this.value)"></div>`;
+                h += `<div class="prop-row"><label>Font</label><select onchange="uProp('fontFamily',this.value)">`;
+                ['Arial', 'Georgia', 'Times New Roman', 'Courier New', 'Verdana', 'Impact', 'Comic Sans MS'].forEach(f => {
+                    h += `<option ${el.fontFamily === f ? 'selected' : ''}>${f}</option>`;
+                });
+                h += `</select></div>`;
+                h += `<div class="prop-row"><label>Color</label><input type="color" value="${el.color || '#1a1a2e'}" onchange="uProp('color',this.value)"></div>`;
+                h += `<div class="prop-row"><label>Align</label><select onchange="uProp('align',this.value)"><option ${el.align === 'left' ? 'selected' : ''}>left</option><option ${el.align === 'center' ? 'selected' : ''}>center</option><option ${el.align === 'right' ? 'selected' : ''}>right</option></select></div>`;
+                h += `<div class="prop-row"><label><input type="checkbox" ${el.bold ? 'checked' : ''} onchange="uProp('bold',this.checked)"> Bold</label></div>`;
+                h += `<div class="prop-row"><label><input type="checkbox" ${el.italic ? 'checked' : ''} onchange="uProp('italic',this.checked)"> Italic</label></div>`;
+            } else if (['rect', 'circle', 'triangle', 'star', 'arrow', 'line'].includes(el.type)) {
+                h += `<div class="prop-row"><label>Fill</label><input type="color" value="${el.fill || '#4a90d9'}" onchange="uProp('fill',this.value)"></div>`;
+                h += `<div class="prop-row"><label>Width</label><input type="number" value="${el.w}" onchange="uProp('w',+this.value)"></div>`;
+                h += `<div class="prop-row"><label>Height</label><input type="number" value="${el.h}" onchange="uProp('h',+this.value)"></div>`;
+                if (el.type === 'rect') h += `<div class="prop-row"><label>Radius</label><input type="number" value="${el.radius || 0}" onchange="uProp('radius',+this.value)"></div>`;
             } else if (el.type === 'image') {
-                html += `
-                    <div class="prop-row"><label>Width</label><input type="number" value="${el.w}" onchange="updateProp('w', +this.value)"></div>
-                    <div class="prop-row"><label>Height</label><input type="number" value="${el.h}" onchange="updateProp('h', +this.value)"></div>
-                `;
+                h += `<div class="prop-row"><label>Width</label><input type="number" value="${el.w}" onchange="uProp('w',+this.value)"></div>`;
+                h += `<div class="prop-row"><label>Height</label><input type="number" value="${el.h}" onchange="uProp('h',+this.value)"></div>`;
             }
-
-            html += `
-                <div class="prop-row"><label>X</label><input type="number" value="${Math.round(el.x)}" onchange="updateProp('x', +this.value)"></div>
-                <div class="prop-row"><label>Y</label><input type="number" value="${Math.round(el.y)}" onchange="updateProp('y', +this.value)"></div>
-            `;
-            cont.innerHTML = html;
+            h += `<div class="prop-row"><label>X</label><input type="number" value="${Math.round(el.x)}" onchange="uProp('x',+this.value)"></div>`;
+            h += `<div class="prop-row"><label>Y</label><input type="number" value="${Math.round(el.y)}" onchange="uProp('y',+this.value)"></div>`;
+            c.innerHTML = h;
         }
 
-        function updateProp(key, val) {
-            if (selectedElement !== null && slides[currentSlide].elements[selectedElement]) {
-                slides[currentSlide].elements[selectedElement][key] = val;
+        function uProp(k, v) {
+            if (selEl !== null && slides[curSlide].elements[selEl]) {
+                slides[curSlide].elements[selEl][k] = v;
                 renderSlide();
-                // reselect
-                const dom = document.querySelector(`.slide-element[data-idx="${selectedElement}"]`);
-                if (dom) selectElement(dom, selectedElement);
+                const d = document.querySelector(`.slide-element[data-idx="${selEl}"]`);
+                if (d) selectEl(d, selEl);
                 saveToStorage();
             }
         }
 
-        // Drag
+        // ── DRAG & RESIZE ──
         function startDrag(e, dom, idx) {
             e.preventDefault();
-            const editor = document.getElementById('slideEditor');
-            const rect = editor.getBoundingClientRect();
-            const startX = e.clientX;
-            const startY = e.clientY;
-            const origX = slides[currentSlide].elements[idx].x;
-            const origY = slides[currentSlide].elements[idx].y;
-
-            function onMove(ev) {
-                const dx = ev.clientX - startX;
-                const dy = ev.clientY - startY;
-                slides[currentSlide].elements[idx].x = Math.max(0, origX + dx);
-                slides[currentSlide].elements[idx].y = Math.max(0, origY + dy);
-                dom.style.left = slides[currentSlide].elements[idx].x + 'px';
-                dom.style.top = slides[currentSlide].elements[idx].y + 'px';
-            }
-            function onUp() {
-                document.removeEventListener('mousemove', onMove);
-                document.removeEventListener('mouseup', onUp);
-                saveToStorage();
-                renderSlidePanel();
-            }
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('mouseup', onUp);
+            const sx = e.clientX, sy = e.clientY, ox = slides[curSlide].elements[idx].x, oy = slides[curSlide].elements[idx].y;
+            function mv(ev) { const el = slides[curSlide].elements[idx]; el.x = Math.max(0, ox + (ev.clientX - sx)); el.y = Math.max(0, oy + (ev.clientY - sy)); dom.style.left = el.x + 'px'; dom.style.top = el.y + 'px'; }
+            function up() { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); saveToStorage(); renderSlidePanel(); }
+            document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
         }
-
-        // Resize
         function startResize(e, dom, idx) {
-            e.preventDefault();
-            e.stopPropagation();
-            const startX = e.clientX;
-            const startY = e.clientY;
-            const el = slides[currentSlide].elements[idx];
-            const origW = el.w;
-            const origH = el.h;
-
-            function onMove(ev) {
-                el.w = Math.max(30, origW + (ev.clientX - startX));
-                el.h = Math.max(20, origH + (ev.clientY - startY));
-                dom.style.width = el.w + 'px';
-                dom.style.height = el.h + 'px';
-            }
-            function onUp() {
-                document.removeEventListener('mousemove', onMove);
-                document.removeEventListener('mouseup', onUp);
-                updateProps();
-                saveToStorage();
-            }
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('mouseup', onUp);
+            e.preventDefault(); e.stopPropagation();
+            const sx = e.clientX, sy = e.clientY, el = slides[curSlide].elements[idx], ow = el.w, oh = el.h;
+            function mv(ev) { el.w = Math.max(30, ow + (ev.clientX - sx)); el.h = Math.max(20, oh + (ev.clientY - sy)); dom.style.width = el.w + 'px'; dom.style.height = el.h + 'px'; }
+            function up() { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); updateProps(); saveToStorage(); }
+            document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
         }
 
-        // Add elements
-        function addTextBox() {
-            slides[currentSlide].elements.push({
-                type: 'text', text: 'Click to edit', x: 50, y: 50, w: 300, h: 40,
-                fontSize: 24, fontFamily: 'Arial', color: '#1a1a2e', bold: false
-            });
-            renderSlide();
-            renderSlidePanel();
+        // ── ADD ELEMENTS ──
+        function addTextBox(isTitle) {
+            slides[curSlide].elements.push({ type: 'text', text: isTitle ? 'Title' : 'Click to edit', x: 50, y: isTitle ? 40 : 120, w: 500, h: 40, fontSize: isTitle ? 36 : 20, fontFamily: 'Arial', color: isTitle ? activeTheme.title : activeTheme.text, bold: !!isTitle, italic: false, align: isTitle ? 'center' : 'left', isTitle: !!isTitle });
+            renderSlide(); renderSlidePanel();
         }
-
         function addShape(type) {
-            slides[currentSlide].elements.push({
-                type: type, x: 100, y: 100, w: 150, h: 100,
-                fill: '#4a90d9', radius: type === 'rect' ? 0 : 0
-            });
-            renderSlide();
-            renderSlidePanel();
+            const defaults = { rect: { w: 150, h: 100 }, circle: { w: 120, h: 120 }, triangle: { w: 120, h: 100 }, line: { w: 200, h: 4 }, arrow: { w: 150, h: 40 }, star: { w: 100, h: 100 } };
+            const d = defaults[type] || { w: 100, h: 100 };
+            slides[curSlide].elements.push({ type, x: 100, y: 100, w: d.w, h: d.h, fill: activeTheme.accent, radius: 0 });
+            renderSlide(); renderSlidePanel();
         }
-
         function addImage() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = () => {
-                const file = input.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    slides[currentSlide].elements.push({
-                        type: 'image', src: e.target.result, x: 80, y: 80, w: 200, h: 150
-                    });
-                    renderSlide();
-                    renderSlidePanel();
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
+            const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+            inp.onchange = () => { const f = inp.files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { slides[curSlide].elements.push({ type: 'image', src: e.target.result, x: 80, y: 80, w: 200, h: 150 }); renderSlide(); renderSlidePanel(); }; r.readAsDataURL(f); };
+            inp.click();
         }
-
         function deleteSelected() {
-            if (selectedElement !== null) {
-                slides[currentSlide].elements.splice(selectedElement, 1);
-                selectedElement = null;
-                renderSlide();
-                renderSlidePanel();
-                updateProps();
-            }
+            if (selEl === null) return;
+            slides[curSlide].elements.splice(selEl, 1); selEl = null;
+            renderSlide(); updateProps(); renderSlidePanel(); saveToStorage();
         }
-
         function bringForward() {
-            if (selectedElement !== null && selectedElement < slides[currentSlide].elements.length - 1) {
-                const els = slides[currentSlide].elements;
-                [els[selectedElement], els[selectedElement + 1]] = [els[selectedElement + 1], els[selectedElement]];
-                selectedElement++;
-                renderSlide();
-            }
+            if (selEl === null || selEl >= slides[curSlide].elements.length - 1) return;
+            const els = slides[curSlide].elements;[els[selEl], els[selEl + 1]] = [els[selEl + 1], els[selEl]]; selEl++;
+            renderSlide(); const d = document.querySelector(`.slide-element[data-idx="${selEl}"]`); if (d) selectEl(d, selEl);
         }
+        function changeSlideBg(v) { slides[curSlide].background = v; _$('slideEditor').style.background = v; renderSlidePanel(); saveToStorage(); }
 
-        function changeSlideBackground(color) {
-            slides[currentSlide].background = color;
-            document.getElementById('slideEditor').style.background = color;
-            renderSlidePanel();
-            saveToStorage();
-        }
-
-        // Layouts
+        // ── LAYOUTS ──
         function applyLayout(layout) {
-            const els = slides[currentSlide].elements;
-            els.length = 0; // Clear
-            const editor = document.getElementById('slideEditor');
-            const W = editor.offsetWidth || 800;
-            const H = editor.offsetHeight || 450;
-
-            switch (layout) {
-                case 'title':
-                    els.push({ type: 'text', text: 'Presentation Title', x: W * 0.1, y: H * 0.3, w: W * 0.8, h: 60, fontSize: 42, fontFamily: 'Arial', color: '#1a1a2e', bold: true });
-                    els.push({ type: 'text', text: 'Subtitle goes here', x: W * 0.2, y: H * 0.55, w: W * 0.6, h: 30, fontSize: 20, fontFamily: 'Arial', color: '#666', bold: false });
-                    break;
-                case 'titleContent':
-                    els.push({ type: 'text', text: 'Slide Title', x: 30, y: 20, w: W * 0.9, h: 50, fontSize: 32, fontFamily: 'Arial', color: '#1a1a2e', bold: true });
-                    els.push({ type: 'rect', x: 30, y: 75, w: W * 0.9, h: 2, fill: '#4a90d9', radius: 0 });
-                    els.push({ type: 'text', text: '• Point 1\n• Point 2\n• Point 3', x: 50, y: 100, w: W * 0.8, h: 200, fontSize: 18, fontFamily: 'Arial', color: '#333', bold: false });
-                    break;
-                case 'twoCol':
-                    els.push({ type: 'text', text: 'Title', x: 30, y: 20, w: W * 0.9, h: 40, fontSize: 28, fontFamily: 'Arial', color: '#1a1a2e', bold: true });
-                    els.push({ type: 'text', text: 'Left column content', x: 30, y: 80, w: W * 0.43, h: 200, fontSize: 16, fontFamily: 'Arial', color: '#333', bold: false });
-                    els.push({ type: 'text', text: 'Right column content', x: W * 0.52, y: 80, w: W * 0.43, h: 200, fontSize: 16, fontFamily: 'Arial', color: '#333', bold: false });
-                    break;
-                case 'blank':
-                default:
-                    break;
+            if (!layout) return;
+            const s = slides[curSlide]; s.elements = [];
+            const c = activeTheme;
+            if (layout === 'title') {
+                s.elements.push({ type: 'text', text: 'Presentation Title', x: 60, y: 120, w: 500, h: 50, fontSize: 40, fontFamily: 'Arial', color: c.title, bold: true, align: 'center', isTitle: true });
+                s.elements.push({ type: 'text', text: 'Subtitle text here', x: 100, y: 200, w: 420, h: 30, fontSize: 20, fontFamily: 'Arial', color: c.text, bold: false, align: 'center' });
+            } else if (layout === 'titleContent') {
+                s.elements.push({ type: 'text', text: 'Slide Title', x: 30, y: 20, w: 560, h: 40, fontSize: 30, fontFamily: 'Arial', color: c.title, bold: true, align: 'left', isTitle: true });
+                s.elements.push({ type: 'text', text: '• Content point 1\n• Content point 2\n• Content point 3', x: 30, y: 80, w: 560, h: 200, fontSize: 18, fontFamily: 'Arial', color: c.text, bold: false, align: 'left' });
+            } else if (layout === 'twoCol') {
+                s.elements.push({ type: 'text', text: 'Title', x: 30, y: 20, w: 560, h: 35, fontSize: 28, fontFamily: 'Arial', color: c.title, bold: true, align: 'center', isTitle: true });
+                s.elements.push({ type: 'text', text: 'Left column content...', x: 20, y: 70, w: 275, h: 200, fontSize: 16, fontFamily: 'Arial', color: c.text, bold: false, align: 'left' });
+                s.elements.push({ type: 'text', text: 'Right column content...', x: 315, y: 70, w: 275, h: 200, fontSize: 16, fontFamily: 'Arial', color: c.text, bold: false, align: 'left' });
+            } else if (layout === 'sectionHeader') {
+                s.elements.push({ type: 'rect', x: 0, y: 100, w: 620, h: 120, fill: c.accent, radius: 0 });
+                s.elements.push({ type: 'text', text: 'Section Title', x: 40, y: 120, w: 540, h: 50, fontSize: 36, fontFamily: 'Arial', color: '#ffffff', bold: true, align: 'center', isTitle: true });
+            } else if (layout === 'imageCaption') {
+                s.elements.push({ type: 'rect', x: 30, y: 25, w: 350, h: 260, fill: '#e0e0e0', radius: 8 });
+                s.elements.push({ type: 'text', text: '[Image Placeholder]', x: 100, y: 130, w: 200, h: 30, fontSize: 14, fontFamily: 'Arial', color: '#999', bold: false, align: 'center' });
+                s.elements.push({ type: 'text', text: 'Caption Title', x: 400, y: 60, w: 200, h: 30, fontSize: 22, fontFamily: 'Arial', color: c.title, bold: true, align: 'left', isTitle: true });
+                s.elements.push({ type: 'text', text: 'Description text here...', x: 400, y: 100, w: 200, h: 150, fontSize: 14, fontFamily: 'Arial', color: c.text, bold: false, align: 'left' });
+            } else if (layout === 'quote') {
+                s.elements.push({ type: 'text', text: '"', x: 50, y: 40, w: 60, h: 80, fontSize: 80, fontFamily: 'Georgia', color: c.accent, bold: true, align: 'center' });
+                s.elements.push({ type: 'text', text: 'Your inspiring quote goes here.', x: 60, y: 110, w: 500, h: 80, fontSize: 24, fontFamily: 'Georgia', color: c.title, bold: false, italic: true, align: 'center' });
+                s.elements.push({ type: 'text', text: '— Author Name', x: 200, y: 210, w: 220, h: 25, fontSize: 16, fontFamily: 'Arial', color: c.text, bold: false, align: 'center' });
+            } else if (layout === 'comparison') {
+                s.elements.push({ type: 'text', text: 'Comparison', x: 30, y: 15, w: 560, h: 30, fontSize: 26, fontFamily: 'Arial', color: c.title, bold: true, align: 'center', isTitle: true });
+                s.elements.push({ type: 'rect', x: 20, y: 55, w: 280, h: 230, fill: c.accent + '22', radius: 8 });
+                s.elements.push({ type: 'text', text: 'Option A', x: 80, y: 65, w: 160, h: 25, fontSize: 18, fontFamily: 'Arial', color: c.accent, bold: true, align: 'center' });
+                s.elements.push({ type: 'text', text: 'Details...', x: 40, y: 100, w: 240, h: 170, fontSize: 14, fontFamily: 'Arial', color: c.text, bold: false, align: 'left' });
+                s.elements.push({ type: 'rect', x: 320, y: 55, w: 280, h: 230, fill: c.accent + '22', radius: 8 });
+                s.elements.push({ type: 'text', text: 'Option B', x: 380, y: 65, w: 160, h: 25, fontSize: 18, fontFamily: 'Arial', color: c.accent, bold: true, align: 'center' });
+                s.elements.push({ type: 'text', text: 'Details...', x: 340, y: 100, w: 240, h: 170, fontSize: 14, fontFamily: 'Arial', color: c.text, bold: false, align: 'left' });
             }
-            renderSlide();
-            renderSlidePanel();
-            document.getElementById('slideLayout').value = '';
+            _$('slideLayout').value = '';
+            renderSlide(); renderSlidePanel(); saveToStorage();
         }
 
-        function saveCurrentSlide() {
-            // Elements are already saved in the slides array via direct mutation
-        }
-
-        // Export PPTX
-        function exportPPTX() {
-            const pptx = new PptxGenJS();
-            const title = document.getElementById('docTitle').value || 'Presentation';
-            pptx.title = title;
-            pptx.author = 'Vibox';
-
-            const editor = document.getElementById('slideEditor');
-            const eW = editor.offsetWidth || 800;
-            const eH = editor.offsetHeight || 450;
-
-            slides.forEach(slideData => {
-                const slide = pptx.addSlide();
-                slide.background = { color: slideData.background.replace('#', '') };
-
-                slideData.elements.forEach(el => {
-                    const xInch = (el.x / eW) * 10;
-                    const yInch = (el.y / eH) * 5.625;
-                    const wInch = (el.w / eW) * 10;
-                    const hInch = ((el.h || 40) / eH) * 5.625;
-
-                    if (el.type === 'text') {
-                        slide.addText(el.text || '', {
-                            x: xInch, y: yInch, w: wInch, h: hInch,
-                            fontSize: el.fontSize ? el.fontSize * 0.75 : 14,
-                            fontFace: el.fontFamily || 'Arial',
-                            color: (el.color || '#1a1a2e').replace('#', ''),
-                            bold: el.bold || false,
-                            valign: 'top',
-                            wrap: true
-                        });
-                    } else if (el.type === 'rect') {
-                        slide.addShape(pptx.ShapeType ? pptx.ShapeType.rect : 'rect', {
-                            x: xInch, y: yInch, w: wInch, h: hInch,
-                            fill: { color: (el.fill || '#4a90d9').replace('#', '') },
-                            rectRadius: el.radius ? el.radius * 0.01 : 0
-                        });
-                    } else if (el.type === 'circle') {
-                        slide.addShape(pptx.ShapeType ? pptx.ShapeType.ellipse : 'ellipse', {
-                            x: xInch, y: yInch, w: wInch, h: hInch,
-                            fill: { color: (el.fill || '#4a90d9').replace('#', '') }
-                        });
-                    } else if (el.type === 'image') {
-                        try {
-                            slide.addImage({
-                                data: el.src, x: xInch, y: yInch, w: wInch, h: hInch
-                            });
-                        } catch (e) { }
-                    }
-                });
-            });
-
-            pptx.writeFile({ fileName: title + '.pptx' });
-        }
-
-        // Presentation mode
+        // ── PRESENTATION MODE ──
         let presentIdx = 0;
-
         function startPresentation() {
-            presentIdx = 0;
-            const overlay = document.getElementById('presentOverlay');
-            overlay.classList.add('active');
+            presentIdx = 0; _$('presentOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
             renderPresentSlide();
-            document.addEventListener('keydown', presentKeyHandler);
+            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => { });
         }
-
         function exitPresentation() {
-            document.getElementById('presentOverlay').classList.remove('active');
-            document.removeEventListener('keydown', presentKeyHandler);
+            _$('presentOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+            if (document.exitFullscreen) document.exitFullscreen().catch(() => { });
         }
-
-        function presentKeyHandler(e) {
-            if (e.key === 'ArrowRight' || e.key === ' ') nextSlidePresent();
-            else if (e.key === 'ArrowLeft') prevSlidePresent();
-            else if (e.key === 'Escape') exitPresentation();
-        }
-
-        function nextSlidePresent() {
-            if (presentIdx < slides.length - 1) { presentIdx++; renderPresentSlide(); }
-        }
-
-        function prevSlidePresent() {
-            if (presentIdx > 0) { presentIdx--; renderPresentSlide(); }
-        }
+        function nextSlideP() { if (presentIdx < slides.length - 1) { presentIdx++; renderPresentSlide(); } }
+        function prevSlideP() { if (presentIdx > 0) { presentIdx--; renderPresentSlide(); } }
 
         function renderPresentSlide() {
-            const canvas = document.getElementById('presentCanvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 1280;
-            canvas.height = 720;
-            const slide = slides[presentIdx];
-
-            // Background
-            ctx.fillStyle = slide.background;
-            ctx.fillRect(0, 0, 1280, 720);
-
-            const editor = document.getElementById('slideEditor');
-            const eW = editor.offsetWidth || 800;
-            const eH = editor.offsetHeight || 450;
-            const scaleX = 1280 / eW;
-            const scaleY = 720 / eH;
-
-            slide.elements.forEach(el => {
-                const x = el.x * scaleX;
-                const y = el.y * scaleY;
-                const w = el.w * scaleX;
-                const h = (el.h || 40) * scaleY;
-
+            const c = _$('presentCanvas'); const ctx = c.getContext('2d');
+            c.width = 1280; c.height = 720;
+            const s = slides[presentIdx];
+            ctx.fillStyle = s.background; ctx.fillRect(0, 0, 1280, 720);
+            s.elements.forEach(el => {
+                const sx = 1280 / 620, sy = 720 / 350; // scale from editor to canvas
+                const x = el.x * sx, y = el.y * sy, w = el.w * sx, h = el.h * sy;
                 if (el.type === 'text') {
-                    ctx.fillStyle = el.color || '#1a1a2e';
-                    ctx.font = (el.bold ? 'bold ' : '') + (el.fontSize || 18) * scaleX * 0.8 + 'px ' + (el.fontFamily || 'Arial');
-                    const lines = (el.text || '').split('\n');
-                    const lineH = (el.fontSize || 18) * scaleX * 1.0;
-                    lines.forEach((line, i) => {
-                        ctx.fillText(line, x, y + lineH + i * lineH);
+                    ctx.fillStyle = el.color || '#333';
+                    ctx.font = `${el.bold ? 'bold ' : ''} ${el.italic ? 'italic ' : ''}${(el.fontSize || 18) * sx}px ${el.fontFamily || 'Arial'}`;
+                    ctx.textAlign = el.align || 'left';
+                    const tx = el.align === 'center' ? x + w / 2 : el.align === 'right' ? x + w : x;
+                    const words = (el.text || '').split(' ');
+                    let line = '', ly = y + (el.fontSize || 18) * sy;
+                    words.forEach(word => {
+                        const test = line + word + ' ';
+                        if (ctx.measureText(test).width > w && line !== '') { ctx.fillText(line.trim(), tx, ly); ly += (el.fontSize || 18) * sy * 1.3; line = word + ' '; }
+                        else line = test;
                     });
+                    ctx.fillText(line.trim(), tx, ly);
                 } else if (el.type === 'rect') {
                     ctx.fillStyle = el.fill || '#4a90d9';
-                    const r = (el.radius || 0) * scaleX;
-                    if (r > 0) {
-                        ctx.beginPath();
-                        ctx.roundRect(x, y, w, h, r);
-                        ctx.fill();
-                    } else {
-                        ctx.fillRect(x, y, w, h);
-                    }
+                    const r = (el.radius || 0) * sx;
+                    ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill();
                 } else if (el.type === 'circle') {
                     ctx.fillStyle = el.fill || '#4a90d9';
-                    ctx.beginPath();
-                    ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                } else if (el.type === 'image') {
-                    const img = new Image();
-                    img.src = el.src;
-                    try { ctx.drawImage(img, x, y, w, h); } catch (e) { }
+                    ctx.beginPath(); ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2); ctx.fill();
+                } else if (el.type === 'image' && el.src) {
+                    try { const img = new Image(); img.src = el.src; ctx.drawImage(img, x, y, w, h); } catch (e) { }
+                } else if (el.type === 'line') {
+                    ctx.strokeStyle = el.fill || '#4a90d9'; ctx.lineWidth = 3 * sx; ctx.beginPath(); ctx.moveTo(x, y + h / 2); ctx.lineTo(x + w, y + h / 2); ctx.stroke();
+                } else if (el.type === 'star') {
+                    ctx.fillStyle = el.fill || '#4a90d9';
+                    drawStar(ctx, x + w / 2, y + h / 2, 5, w / 2, w / 4); ctx.fill();
+                } else if (el.type === 'triangle') {
+                    ctx.fillStyle = el.fill || '#4a90d9';
+                    ctx.beginPath(); ctx.moveTo(x + w / 2, y); ctx.lineTo(x + w, y + h); ctx.lineTo(x, y + h); ctx.closePath(); ctx.fill();
+                } else if (el.type === 'arrow') {
+                    ctx.fillStyle = el.fill || '#4a90d9';
+                    ctx.beginPath(); ctx.moveTo(x, y + h * 0.33); ctx.lineTo(x + w * 0.7, y + h * 0.33); ctx.lineTo(x + w * 0.7, y); ctx.lineTo(x + w, y + h / 2); ctx.lineTo(x + w * 0.7, y + h); ctx.lineTo(x + w * 0.7, y + h * 0.67); ctx.lineTo(x, y + h * 0.67); ctx.closePath(); ctx.fill();
                 }
             });
-
-            document.getElementById('presentSlideNum').textContent = (presentIdx + 1) + ' / ' + slides.length;
+            _$('presentNum').textContent = `${presentIdx + 1} / ${slides.length}`;
         }
 
-        // Auto-save
-        function saveToStorage() {
-            try {
-                localStorage.setItem('vibox-ppt-doc', JSON.stringify({
-                    slides: slides,
-                    title: document.getElementById('docTitle').value
-                }));
-            } catch (e) { }
+        function drawStar(ctx, cx, cy, spikes, outerR, innerR) {
+            let rot = Math.PI / 2 * 3, x = cx, y = cy, step = Math.PI / spikes;
+            ctx.beginPath(); ctx.moveTo(cx, cy - outerR);
+            for (let i = 0; i < spikes; i++) { x = cx + Math.cos(rot) * outerR; y = cy + Math.sin(rot) * outerR; ctx.lineTo(x, y); rot += step; x = cx + Math.cos(rot) * innerR; y = cy + Math.sin(rot) * innerR; ctx.lineTo(x, y); rot += step; }
+            ctx.closePath();
         }
 
-        // Restore
-        try {
-            const saved = JSON.parse(localStorage.getItem('vibox-ppt-doc'));
-            if (saved && saved.slides && saved.slides.length > 0) {
-                slides = saved.slides;
-                currentSlide = 0;
-                if (saved.title) document.getElementById('docTitle').value = saved.title;
-                renderSlidePanel();
-                renderSlide();
-            } else {
-                init();
-            }
-        } catch (e) {
-            init();
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (document.getElementById('presentOverlay').classList.contains('active')) return;
-            if (e.key === 'Delete' && selectedElement !== null && document.activeElement.tagName !== 'INPUT') {
-                deleteSelected();
-            }
+        document.addEventListener('keydown', e => {
+            if (!_$('presentOverlay').classList.contains('active')) return;
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlideP();
+            else if (e.key === 'ArrowLeft') prevSlideP();
+            else if (e.key === 'Escape') exitPresentation();
         });
+
+        // ── EXPORT PPTX ──
+        function exportPPTX() {
+            const pptx = new PptxGenJS();
+            pptx.title = _$('docTitle').value || 'Presentation';
+            slides.forEach(s => {
+                const sl = pptx.addSlide();
+                sl.background = { fill: s.background.replace('#', '') };
+                s.elements.forEach(el => {
+                    const xIn = el.x / 96, yIn = el.y / 96, wIn = el.w / 96, hIn = el.h / 96;
+                    if (el.type === 'text') {
+                        sl.addText(el.text || '', { x: xIn, y: yIn, w: wIn, h: hIn, fontSize: (el.fontSize || 18) * 0.75, fontFace: el.fontFamily || 'Arial', color: el.color ? el.color.replace('#', '') : '333333', bold: !!el.bold, italic: !!el.italic, align: el.align || 'left' });
+                    } else if (el.type === 'rect') {
+                        sl.addShape(pptx.ShapeType.rect, { x: xIn, y: yIn, w: wIn, h: hIn, fill: { color: (el.fill || '#4a90d9').replace('#', '') }, rectRadius: el.radius ? el.radius / 96 : 0 });
+                    } else if (el.type === 'circle') {
+                        sl.addShape(pptx.ShapeType.ellipse, { x: xIn, y: yIn, w: wIn, h: hIn, fill: { color: (el.fill || '#4a90d9').replace('#', '') } });
+                    } else if (el.type === 'image' && el.src) {
+                        try { sl.addImage({ data: el.src, x: xIn, y: yIn, w: wIn, h: hIn }); } catch (e) { }
+                    } else if (el.type === 'line') {
+                        sl.addShape(pptx.ShapeType.line, { x: xIn, y: yIn, w: wIn, h: 0, line: { color: (el.fill || '#4a90d9').replace('#', ''), width: 2 } });
+                    } else if (el.type === 'triangle') {
+                        sl.addShape(pptx.ShapeType.triangle, { x: xIn, y: yIn, w: wIn, h: hIn, fill: { color: (el.fill || '#4a90d9').replace('#', '') } });
+                    }
+                });
+                if (s.notes) sl.addNotes(s.notes);
+            });
+            pptx.writeFile({ fileName: (_$('docTitle').value || 'presentation') + '.pptx' });
+        }
+
+        // ── DELETE KEY ──
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Delete' && selEl !== null && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.contentEditable !== 'true') deleteSelected();
+        });
+
+        // ── AUTO-SAVE ──
+        function saveToStorage() { try { localStorage.setItem('vibox-ppt-doc', JSON.stringify({ s: slides, t: _$('docTitle').value })); } catch (e) { } }
+        function loadFromStorage() { try { const d = JSON.parse(localStorage.getItem('vibox-ppt-doc')); if (d && d.s && d.s.length) { slides = d.s; curSlide = 0; if (d.t) _$('docTitle').value = d.t; renderSlidePanel(); renderSlide(); updateNotes(); return true; } } catch (e) { } return false; }
+
+        init();
     </script>
     <script src="../../js/utils/common.js" type="module"></script>
 </body>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Free Online Word Processor - Create documents with rich text, images, tables. Export to DOCX & PDF. Works offline.">
+        content="Free Online Word Processor - Rich text editor with templates, DOCX import/export, Find & Replace, Focus Mode. Works offline.">
     <title>Word Processor - Vibox</title>
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../../css/style.css">
@@ -23,59 +23,59 @@
             background: var(--card-bg, #1e1e2e);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .3);
         }
 
         .word-toolbar {
             background: linear-gradient(135deg, var(--word-blue), var(--word-blue-light));
-            padding: 12px 16px;
+            padding: 10px 14px;
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
 
-        .word-toolbar .tool-group {
+        .word-toolbar .tg {
             display: flex;
-            gap: 4px;
-            padding-right: 12px;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            gap: 3px;
+            padding-right: 10px;
+            border-right: 1px solid rgba(255, 255, 255, .2);
         }
 
-        .word-toolbar .tool-group:last-child {
+        .word-toolbar .tg:last-child {
             border-right: none;
         }
 
         .word-toolbar button {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, .12);
             border: none;
             color: #fff;
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            border-radius: 7px;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
+            font-size: 13px;
+            transition: .2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .word-toolbar button:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, .25);
         }
 
         .word-toolbar button.active {
-            background: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, .35);
         }
 
         .word-toolbar select {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, .12);
             border: none;
             color: #fff;
-            padding: 6px 8px;
-            border-radius: 8px;
-            font-size: 13px;
+            padding: 5px 6px;
+            border-radius: 7px;
+            font-size: 12px;
             cursor: pointer;
         }
 
@@ -85,12 +85,12 @@
         }
 
         .doc-title-bar {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 8px 16px;
+            background: rgba(255, 255, 255, .04);
+            padding: 6px 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
         }
 
         .doc-title-bar input {
@@ -111,9 +111,10 @@
         .editor-container {
             min-height: 500px;
             background: #fff;
-            margin: 20px;
+            margin: 16px;
             border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .15);
+            position: relative;
         }
 
         .ql-editor {
@@ -144,33 +145,34 @@
         }
 
         .status-bar {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, .04);
             padding: 6px 16px;
             font-size: 12px;
-            opacity: 0.6;
+            opacity: .6;
             display: flex;
-            gap: 20px;
+            gap: 16px;
+            flex-wrap: wrap;
         }
 
         .export-panel {
-            padding: 16px;
+            padding: 14px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             justify-content: flex-end;
             flex-wrap: wrap;
         }
 
         .export-btn {
-            padding: 10px 20px;
+            padding: 9px 16px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
+            font-size: 13px;
+            transition: .2s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .export-btn.docx {
@@ -189,13 +191,200 @@
         }
 
         .export-btn.import {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, .1);
             color: inherit;
         }
 
         .export-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
+        }
+
+        /* Find & Replace */
+        .find-panel {
+            display: none;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, .06);
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .find-panel.open {
+            display: flex;
+        }
+
+        .find-panel input {
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .1);
+            color: inherit;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            width: 180px;
+        }
+
+        .find-panel input:focus {
+            border-color: var(--word-blue-light);
+            outline: none;
+        }
+
+        .find-panel button {
+            background: rgba(255, 255, 255, .12);
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .find-panel button:hover {
+            background: rgba(255, 255, 255, .25);
+        }
+
+        .find-panel .count {
+            font-size: 12px;
+            opacity: .7;
+            min-width: 60px;
+        }
+
+        /* Templates Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, .7);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-bg, #1e1e2e);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, .5);
+        }
+
+        .modal h2 {
+            margin-bottom: 16px;
+            font-size: 1.3em;
+        }
+
+        .modal .tpl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .modal .tpl-card {
+            background: rgba(255, 255, 255, .06);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: .2s;
+        }
+
+        .modal .tpl-card:hover {
+            border-color: var(--word-blue-light);
+            transform: translateY(-3px);
+        }
+
+        .modal .tpl-card i {
+            font-size: 28px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .modal .tpl-card h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .modal .tpl-card p {
+            font-size: 11px;
+            opacity: .6;
+        }
+
+        .modal .close-modal {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Focus Mode */
+        .focus-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fafafa;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .focus-overlay.open {
+            display: block;
+        }
+
+        .focus-overlay .focus-editor {
+            max-width: 700px;
+            margin: 60px auto;
+            padding: 40px;
+            min-height: 80vh;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            line-height: 2;
+            color: #1a1a2e;
+            outline: none;
+        }
+
+        .focus-overlay .focus-exit {
+            position: fixed;
+            top: 16px;
+            right: 20px;
+            background: rgba(0, 0, 0, .1);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            z-index: 1001;
+        }
+
+        .focus-overlay .focus-exit:hover {
+            background: rgba(0, 0, 0, .2);
+        }
+
+        /* Dark editor toggle */
+        .editor-container.dark-mode {
+            background: #1a1a2e;
+        }
+
+        .editor-container.dark-mode .ql-editor {
+            color: #e0e0e0;
         }
 
         @media(max-width:600px) {
@@ -204,7 +393,13 @@
             }
 
             .editor-container {
-                margin: 10px;
+                margin: 8px;
+            }
+
+            .word-toolbar button {
+                width: 30px;
+                height: 30px;
+                font-size: 11px;
             }
         }
     </style>
@@ -212,8 +407,7 @@
 
 <body>
     <header>
-        <div class="container">
-            <a href="../../index.html" class="logo">Vibox</a>
+        <div class="container"><a href="../../index.html" class="logo">Vibox</a>
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
@@ -228,16 +422,18 @@
         <div class="container tool-container" style="padding-top:20px;">
             <div class="word-app">
                 <div class="word-toolbar" id="customToolbar">
-                    <div class="tool-group">
-                        <select id="fontFamily" title="Font Family">
+                    <div class="tg">
+                        <select id="fontFamily" title="Font">
                             <option value="Georgia">Georgia</option>
                             <option value="Arial">Arial</option>
                             <option value="Times New Roman">Times New Roman</option>
                             <option value="Courier New">Courier New</option>
                             <option value="Verdana">Verdana</option>
                             <option value="Trebuchet MS">Trebuchet MS</option>
+                            <option value="Calibri">Calibri</option>
                         </select>
-                        <select id="fontSize" title="Font Size">
+                        <select id="fontSize" title="Size">
+                            <option value="10px">10</option>
                             <option value="12px">12</option>
                             <option value="14px" selected>14</option>
                             <option value="16px">16</option>
@@ -246,15 +442,16 @@
                             <option value="24px">24</option>
                             <option value="30px">30</option>
                             <option value="36px">36</option>
+                            <option value="48px">48</option>
                         </select>
                     </div>
-                    <div class="tool-group">
-                        <button id="btnBold" title="Bold"><i class="fas fa-bold"></i></button>
-                        <button id="btnItalic" title="Italic"><i class="fas fa-italic"></i></button>
-                        <button id="btnUnderline" title="Underline"><i class="fas fa-underline"></i></button>
+                    <div class="tg">
+                        <button id="btnBold" title="Bold (Ctrl+B)"><i class="fas fa-bold"></i></button>
+                        <button id="btnItalic" title="Italic (Ctrl+I)"><i class="fas fa-italic"></i></button>
+                        <button id="btnUnderline" title="Underline (Ctrl+U)"><i class="fas fa-underline"></i></button>
                         <button id="btnStrike" title="Strikethrough"><i class="fas fa-strikethrough"></i></button>
                     </div>
-                    <div class="tool-group">
+                    <div class="tg">
                         <select id="heading" title="Heading">
                             <option value="">Normal</option>
                             <option value="1">H1</option>
@@ -262,32 +459,52 @@
                             <option value="3">H3</option>
                         </select>
                         <input type="color" id="textColor" value="#1a1a2e" title="Text Color"
-                            style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;">
+                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
                         <input type="color" id="bgColor" value="#ffffff" title="Highlight"
-                            style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;">
+                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
                     </div>
-                    <div class="tool-group">
-                        <button id="btnAlignL" title="Align Left"><i class="fas fa-align-left"></i></button>
+                    <div class="tg">
+                        <button id="btnAlignL" title="Left"><i class="fas fa-align-left"></i></button>
                         <button id="btnAlignC" title="Center"><i class="fas fa-align-center"></i></button>
-                        <button id="btnAlignR" title="Align Right"><i class="fas fa-align-right"></i></button>
+                        <button id="btnAlignR" title="Right"><i class="fas fa-align-right"></i></button>
                         <button id="btnAlignJ" title="Justify"><i class="fas fa-align-justify"></i></button>
                     </div>
-                    <div class="tool-group">
-                        <button id="btnBullet" title="Bullet List"><i class="fas fa-list-ul"></i></button>
-                        <button id="btnOrdered" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+                    <div class="tg">
+                        <button id="btnBullet" title="Bullets"><i class="fas fa-list-ul"></i></button>
+                        <button id="btnOrdered" title="Numbers"><i class="fas fa-list-ol"></i></button>
                         <button id="btnBlockquote" title="Quote"><i class="fas fa-quote-right"></i></button>
-                        <button id="btnCode" title="Code Block"><i class="fas fa-code"></i></button>
+                        <button id="btnCode" title="Code"><i class="fas fa-code"></i></button>
                     </div>
-                    <div class="tool-group">
-                        <button id="btnImage" title="Insert Image"><i class="fas fa-image"></i></button>
-                        <button id="btnLink" title="Insert Link"><i class="fas fa-link"></i></button>
+                    <div class="tg">
+                        <button id="btnImage" title="Image"><i class="fas fa-image"></i></button>
+                        <button id="btnLink" title="Link"><i class="fas fa-link"></i></button>
+                        <button id="btnTable" title="Insert Table"><i class="fas fa-table"></i></button>
                         <button id="btnDivider" title="Divider"><i class="fas fa-minus"></i></button>
                     </div>
-                    <div class="tool-group">
+                    <div class="tg">
                         <button id="btnUndo" title="Undo"><i class="fas fa-undo"></i></button>
                         <button id="btnRedo" title="Redo"><i class="fas fa-redo"></i></button>
-                        <button id="btnClean" title="Clear Formatting"><i class="fas fa-eraser"></i></button>
+                        <button id="btnClean" title="Clear Format"><i class="fas fa-eraser"></i></button>
                     </div>
+                    <div class="tg">
+                        <button id="btnFind" title="Find & Replace (Ctrl+F)"><i class="fas fa-search"></i></button>
+                        <button id="btnTemplate" title="Templates"><i class="fas fa-file-alt"></i></button>
+                        <button id="btnFocus" title="Focus Mode"><i class="fas fa-expand"></i></button>
+                        <button id="btnDarkEditor" title="Dark/Light Editor"><i class="fas fa-moon"></i></button>
+                        <button id="btnPrint" title="Print"><i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+                <!-- Find & Replace -->
+                <div class="find-panel" id="findPanel">
+                    <input type="text" id="findInput" placeholder="Find...">
+                    <input type="text" id="replaceInput" placeholder="Replace with...">
+                    <button onclick="findNext()">Next</button>
+                    <button onclick="findPrev()">Prev</button>
+                    <button onclick="replaceOne()">Replace</button>
+                    <button onclick="replaceAll()">All</button>
+                    <span class="count" id="findCount"></span>
+                    <button onclick="closeFind()" style="margin-left:auto;">✕</button>
                 </div>
 
                 <div class="doc-title-bar">
@@ -295,242 +512,272 @@
                     <input type="text" id="docTitle" value="Untitled Document" placeholder="Document title...">
                 </div>
 
-                <div class="editor-container">
+                <div class="editor-container" id="editorWrap">
                     <div id="editor"></div>
                 </div>
 
                 <div class="status-bar">
                     <span id="wordCount">Words: 0</span>
-                    <span id="charCount">Characters: 0</span>
+                    <span id="charCount">Chars: 0</span>
                     <span id="lineCount">Lines: 0</span>
+                    <span id="pageEst">~0 pages</span>
                 </div>
 
                 <div class="export-panel">
-                    <button class="export-btn import" onclick="importFile()">
-                        <i class="fas fa-file-import"></i> Import .txt
-                    </button>
-                    <button class="export-btn txt" onclick="exportTxt()">
-                        <i class="fas fa-file-alt"></i> Export .txt
-                    </button>
-                    <button class="export-btn docx" onclick="exportDocx()">
-                        <i class="fas fa-file-word"></i> Export .docx
-                    </button>
-                    <button class="export-btn pdf" onclick="exportPdf()">
-                        <i class="fas fa-file-pdf"></i> Export PDF
-                    </button>
+                    <button class="export-btn import" onclick="importFile()"><i class="fas fa-file-import"></i>
+                        Import</button>
+                    <button class="export-btn txt" onclick="exportTxt()"><i class="fas fa-file-alt"></i> .txt</button>
+                    <button class="export-btn docx" onclick="exportDocx()"><i class="fas fa-file-word"></i>
+                        .doc</button>
+                    <button class="export-btn pdf" onclick="exportPdf()"><i class="fas fa-file-pdf"></i> PDF</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
+    <!-- Templates Modal -->
+    <div class="modal-overlay" id="templateModal">
+        <div class="modal" style="position:relative;">
+            <button class="close-modal" onclick="closeTemplateModal()">✕</button>
+            <h2>📄 Document Templates</h2>
+            <div class="tpl-grid" id="tplGrid"></div>
         </div>
-    </footer>
+    </div>
 
-    <input type="file" id="fileInput" accept=".txt" style="display:none;">
+    <!-- Focus Mode -->
+    <div class="focus-overlay" id="focusOverlay">
+        <button class="focus-exit" onclick="exitFocus()">✕ Exit Focus</button>
+        <div class="focus-editor" id="focusEditor" contenteditable="true"></div>
+    </div>
+
+    <input type="file" id="fileInput" accept=".txt,.docx,.doc" style="display:none;">
 
     <script src="../../js/vendor/quill.min.js"></script>
     <script src="../../js/vendor/html2pdf.bundle.min.js"></script>
+    <script src="../../js/vendor/mammoth.browser.min.js"></script>
     <script>
-        // Initialize Quill
+        // ── QUILL INIT ──
         const quill = new Quill('#editor', {
-            theme: 'snow',
-            modules: {
-                toolbar: false,
-                history: { maxStack: 100 }
-            },
-            placeholder: 'Start typing your document here...'
+            theme: 'snow', modules: { toolbar: false, history: { maxStack: 100 } },
+            placeholder: 'Start typing or pick a template...'
         });
 
-        // Toolbar bindings
-        document.getElementById('btnBold').onclick = () => toggleFormat('bold');
-        document.getElementById('btnItalic').onclick = () => toggleFormat('italic');
-        document.getElementById('btnUnderline').onclick = () => toggleFormat('underline');
-        document.getElementById('btnStrike').onclick = () => toggleFormat('strike');
+        // ── TOOLBAR BINDINGS ──
+        const $ = id => document.getElementById(id);
+        $('btnBold').onclick = () => toggleFmt('bold');
+        $('btnItalic').onclick = () => toggleFmt('italic');
+        $('btnUnderline').onclick = () => toggleFmt('underline');
+        $('btnStrike').onclick = () => toggleFmt('strike');
+        $('btnAlignL').onclick = () => quill.format('align', false);
+        $('btnAlignC').onclick = () => quill.format('align', 'center');
+        $('btnAlignR').onclick = () => quill.format('align', 'right');
+        $('btnAlignJ').onclick = () => quill.format('align', 'justify');
+        $('btnBullet').onclick = () => toggleFmt('list', 'bullet');
+        $('btnOrdered').onclick = () => toggleFmt('list', 'ordered');
+        $('btnBlockquote').onclick = () => toggleFmt('blockquote');
+        $('btnCode').onclick = () => toggleFmt('code-block');
+        $('btnUndo').onclick = () => quill.history.undo();
+        $('btnRedo').onclick = () => quill.history.redo();
+        $('btnClean').onclick = () => { const r = quill.getSelection(); if (r) quill.removeFormat(r.index, r.length); };
+        $('btnImage').onclick = () => { const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.onchange = () => { const f = i.files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { const s = quill.getSelection(true); quill.insertEmbed(s.index, 'image', e.target.result); }; r.readAsDataURL(f); }; i.click(); };
+        $('btnLink').onclick = () => { const u = prompt('Enter URL:'); if (u) { const r = quill.getSelection(true); r.length > 0 ? quill.format('link', u) : quill.insertText(r.index, u, 'link', u); } };
+        $('btnDivider').onclick = () => { const r = quill.getSelection(true); quill.insertText(r.index, '\n'); quill.insertEmbed(r.index + 1, 'divider', true); quill.setSelection(r.index + 2); };
+        $('fontFamily').onchange = function () { quill.format('font', this.value); };
+        $('fontSize').onchange = function () { quill.format('size', this.value); };
+        $('heading').onchange = function () { quill.format('header', this.value ? parseInt(this.value) : false); };
+        $('textColor').oninput = function () { quill.format('color', this.value); };
+        $('bgColor').oninput = function () { quill.format('background', this.value); };
 
-        document.getElementById('btnAlignL').onclick = () => quill.format('align', false);
-        document.getElementById('btnAlignC').onclick = () => quill.format('align', 'center');
-        document.getElementById('btnAlignR').onclick = () => quill.format('align', 'right');
-        document.getElementById('btnAlignJ').onclick = () => quill.format('align', 'justify');
-
-        document.getElementById('btnBullet').onclick = () => toggleFormat('list', 'bullet');
-        document.getElementById('btnOrdered').onclick = () => toggleFormat('list', 'ordered');
-        document.getElementById('btnBlockquote').onclick = () => toggleFormat('blockquote');
-        document.getElementById('btnCode').onclick = () => toggleFormat('code-block');
-
-        document.getElementById('btnUndo').onclick = () => quill.history.undo();
-        document.getElementById('btnRedo').onclick = () => quill.history.redo();
-        document.getElementById('btnClean').onclick = () => {
-            const range = quill.getSelection();
-            if (range) quill.removeFormat(range.index, range.length);
-        };
-
-        document.getElementById('btnImage').onclick = () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = () => {
-                const file = input.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const range = quill.getSelection(true);
-                    quill.insertEmbed(range.index, 'image', e.target.result);
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
-        };
-
-        document.getElementById('btnLink').onclick = () => {
-            const url = prompt('Enter URL:');
-            if (url) {
-                const range = quill.getSelection(true);
-                if (range.length > 0) {
-                    quill.format('link', url);
-                } else {
-                    quill.insertText(range.index, url, 'link', url);
-                }
+        // ── TABLE INSERT ──
+        $('btnTable').onclick = () => {
+            const rows = parseInt(prompt('Rows:', '3')) || 3;
+            const cols = parseInt(prompt('Columns:', '3')) || 3;
+            const r = quill.getSelection(true);
+            let html = '<table style="border-collapse:collapse;width:100%;margin:12px 0;"><tbody>';
+            for (let i = 0; i < rows; i++) {
+                html += '<tr>';
+                for (let j = 0; j < cols; j++) html += '<td style="border:1px solid #ccc;padding:8px;min-width:60px;">&nbsp;</td>';
+                html += '</tr>';
             }
+            html += '</tbody></table>';
+            quill.clipboard.dangerouslyPasteHTML(r.index, html);
         };
 
-        document.getElementById('btnDivider').onclick = () => {
-            const range = quill.getSelection(true);
-            quill.insertText(range.index, '\n');
-            quill.insertEmbed(range.index + 1, 'divider', true);
-            quill.setSelection(range.index + 2);
-        };
+        function toggleFmt(n, v) { const c = quill.getFormat(); v ? quill.format(n, c[n] === v ? false : v) : quill.format(n, !c[n]); }
 
-        document.getElementById('fontFamily').onchange = function () {
-            quill.format('font', this.value);
-        };
-        document.getElementById('fontSize').onchange = function () {
-            quill.format('size', this.value);
-        };
-        document.getElementById('heading').onchange = function () {
-            quill.format('header', this.value ? parseInt(this.value) : false);
-        };
-        document.getElementById('textColor').oninput = function () {
-            quill.format('color', this.value);
-        };
-        document.getElementById('bgColor').oninput = function () {
-            quill.format('background', this.value);
-        };
-
-        function toggleFormat(name, value) {
-            const current = quill.getFormat();
-            if (value) {
-                quill.format(name, current[name] === value ? false : value);
-            } else {
-                quill.format(name, !current[name]);
-            }
-        }
-
-        // Word count
+        // ── WORD COUNT ──
         quill.on('text-change', () => {
-            const text = quill.getText().trim();
-            const words = text ? text.split(/\s+/).length : 0;
-            const chars = text.length;
-            const lines = text.split('\n').length;
-            document.getElementById('wordCount').textContent = `Words: ${words}`;
-            document.getElementById('charCount').textContent = `Characters: ${chars}`;
-            document.getElementById('lineCount').textContent = `Lines: ${lines}`;
+            const t = quill.getText().trim();
+            const w = t ? t.split(/\s+/).length : 0;
+            $('wordCount').textContent = `Words: ${w}`;
+            $('charCount').textContent = `Chars: ${t.length}`;
+            $('lineCount').textContent = `Lines: ${t.split('\n').length}`;
+            $('pageEst').textContent = `~${Math.max(1, Math.ceil(w / 250))} pages`;
         });
 
-        // Export as TXT
-        function exportTxt() {
+        // ── FIND & REPLACE ──
+        let findMatches = [], findIdx = -1;
+        $('btnFind').onclick = () => { $('findPanel').classList.toggle('open'); $('findInput').focus(); };
+        function closeFind() { $('findPanel').classList.remove('open'); clearHighlights(); }
+        $('findInput').oninput = () => doFind();
+
+        function doFind() {
+            clearHighlights();
+            const q = $('findInput').value;
+            if (!q) { $('findCount').textContent = ''; findMatches = []; return; }
             const text = quill.getText();
-            const title = document.getElementById('docTitle').value || 'document';
-            const blob = new Blob([text], { type: 'text/plain' });
-            downloadBlob(blob, title + '.txt');
+            findMatches = []; let idx = 0;
+            while ((idx = text.toLowerCase().indexOf(q.toLowerCase(), idx)) !== -1) {
+                findMatches.push(idx); idx += q.length;
+            }
+            $('findCount').textContent = findMatches.length + ' found';
+            findMatches.forEach(i => quill.formatText(i, q.length, { background: '#ffeb3b' }, 'silent'));
+            findIdx = findMatches.length > 0 ? 0 : -1;
+            if (findIdx >= 0) quill.setSelection(findMatches[0], q.length);
+        }
+        function clearHighlights() { quill.formatText(0, quill.getLength(), { background: false }, 'silent'); }
+        function findNext() { if (findMatches.length === 0) return; findIdx = (findIdx + 1) % findMatches.length; quill.setSelection(findMatches[findIdx], $('findInput').value.length); }
+        function findPrev() { if (findMatches.length === 0) return; findIdx = (findIdx - 1 + findMatches.length) % findMatches.length; quill.setSelection(findMatches[findIdx], $('findInput').value.length); }
+        function replaceOne() {
+            if (findIdx < 0) return;
+            const q = $('findInput').value, r = $('replaceInput').value;
+            quill.deleteText(findMatches[findIdx], q.length);
+            quill.insertText(findMatches[findIdx], r);
+            doFind();
+        }
+        function replaceAll() {
+            const q = $('findInput').value, r = $('replaceInput').value;
+            if (!q) return; clearHighlights();
+            let text = quill.getText(), offset = 0;
+            findMatches.forEach(pos => {
+                const adj = pos + offset;
+                quill.deleteText(adj, q.length);
+                quill.insertText(adj, r);
+                offset += r.length - q.length;
+            });
+            doFind();
         }
 
-        // Export as DOCX
-        function exportDocx() {
-            const html = quill.root.innerHTML;
-            const title = document.getElementById('docTitle').value || 'document';
-            const fullHtml = `
-                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-                <head><meta charset="utf-8"><title>${title}</title>
-                <style>
-                    body { font-family: 'Calibri', sans-serif; font-size: 12pt; line-height: 1.6; color: #1a1a2e; margin: 1in; }
-                    h1 { font-size: 24pt; color: #2b5797; }
-                    h2 { font-size: 18pt; color: #2b5797; }
-                    h3 { font-size: 14pt; color: #2b5797; }
-                    img { max-width: 100%; }
-                    blockquote { border-left: 4px solid #2b5797; padding-left: 12px; color: #555; }
-                    pre { background: #f5f5f5; padding: 12px; border-radius: 6px; font-family: 'Courier New', monospace; }
-                </style></head>
-                <body>${html}</body></html>
-            `;
-            const blob = new Blob(['\ufeff', fullHtml], { type: 'application/msword' });
-            downloadBlob(blob, title + '.doc');
-        }
+        // Ctrl+F shortcut
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); $('btnFind').click(); }
+        });
 
-        // Export as PDF
-        function exportPdf() {
-            const element = quill.root.cloneNode(true);
-            element.style.padding = '30px';
-            element.style.background = '#fff';
-            element.style.color = '#1a1a2e';
-            element.style.fontFamily = 'Georgia, serif';
-            const title = document.getElementById('docTitle').value || 'document';
-            html2pdf().set({
-                margin: [15, 15, 15, 15],
-                filename: title + '.pdf',
-                image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).from(element).save();
-        }
+        // ── TEMPLATES ──
+        const templates = [
+            {
+                name: 'Resume', icon: 'fas fa-user-tie', desc: 'Professional CV template',
+                content: `<h1 style="text-align:center;">Your Name</h1><p style="text-align:center;">📧 email@example.com | 📱 +91-9876543210 | 📍 City, India</p><hr><h2>Summary</h2><p>Experienced professional with expertise in...</p><h2>Experience</h2><h3>Job Title — Company Name</h3><p><em>Jan 2023 – Present</em></p><ul><li>Led a team of 5 engineers...</li><li>Increased revenue by 25%...</li></ul><h3>Previous Role — Company</h3><p><em>Jun 2020 – Dec 2022</em></p><ul><li>Developed key features...</li></ul><h2>Education</h2><h3>B.Tech Computer Science</h3><p><em>University Name, 2020</em></p><h2>Skills</h2><p>JavaScript, Python, React, Node.js, SQL, Git</p>`
+            },
+            {
+                name: 'Cover Letter', icon: 'fas fa-envelope', desc: 'Formal letter template',
+                content: `<p style="text-align:right;">Date: ${new Date().toLocaleDateString()}</p><p><strong>Hiring Manager</strong><br>Company Name<br>Address Line</p><p>Dear Hiring Manager,</p><p>I am writing to express my interest in the <strong>[Position Title]</strong> position at <strong>[Company Name]</strong>. With my background in...</p><p>In my previous role at [Previous Company], I successfully...</p><p>I am particularly drawn to this opportunity because...</p><p>Thank you for considering my application. I look forward to the opportunity to discuss how my skills and experience align with the needs of your team.</p><p>Sincerely,<br><strong>Your Name</strong></p>`
+            },
+            {
+                name: 'Report', icon: 'fas fa-chart-bar', desc: 'Business report layout',
+                content: `<h1 style="text-align:center;">Project Report</h1><p style="text-align:center;"><em>Prepared by: Your Name | Date: ${new Date().toLocaleDateString()}</em></p><hr><h2>1. Executive Summary</h2><p>This report presents the findings of...</p><h2>2. Introduction</h2><p>The purpose of this report is to...</p><h2>3. Methodology</h2><p>Data was collected through...</p><h2>4. Findings</h2><ul><li>Finding 1: ...</li><li>Finding 2: ...</li><li>Finding 3: ...</li></ul><h2>5. Recommendations</h2><ol><li>Recommendation 1</li><li>Recommendation 2</li></ol><h2>6. Conclusion</h2><p>In summary, the key takeaways are...</p>`
+            },
+            {
+                name: 'Meeting Notes', icon: 'fas fa-clipboard', desc: 'Quick meeting template',
+                content: `<h1>Meeting Notes</h1><p><strong>Date:</strong> ${new Date().toLocaleDateString()}<br><strong>Attendees:</strong> Name1, Name2, Name3<br><strong>Location:</strong> Conference Room / Zoom</p><hr><h2>Agenda</h2><ol><li>Topic 1</li><li>Topic 2</li><li>Topic 3</li></ol><h2>Discussion</h2><p><strong>Topic 1:</strong> Key points discussed...</p><p><strong>Topic 2:</strong> Decision made to...</p><h2>Action Items</h2><ul><li>[ ] Task 1 — Owner — Due Date</li><li>[ ] Task 2 — Owner — Due Date</li></ul><h2>Next Meeting</h2><p>Scheduled for...</p>`
+            },
+            {
+                name: 'Essay', icon: 'fas fa-pen-fancy', desc: 'Academic essay structure',
+                content: `<h1 style="text-align:center;">Essay Title</h1><p style="text-align:center;"><em>Author Name | Course | Date</em></p><hr><h2>Introduction</h2><p>Begin with a hook to grab the reader's attention. Provide background context and end with your thesis statement...</p><h2>Body Paragraph 1</h2><p>Topic sentence supporting the thesis. Provide evidence, examples, and analysis...</p><h2>Body Paragraph 2</h2><p>Second supporting argument with evidence and explanation...</p><h2>Body Paragraph 3</h2><p>Third supporting argument or counter-argument rebuttal...</p><h2>Conclusion</h2><p>Restate your thesis in new words, summarize key points, and end with a closing thought or call to action...</p><h2>References</h2><ol><li>Author, Title, Journal/Publisher, Year</li></ol>`
+            },
+            {
+                name: 'Blank', icon: 'fas fa-file', desc: 'Start fresh',
+                content: ``
+            }
+        ];
 
-        // Import TXT
-        function importFile() {
-            document.getElementById('fileInput').click();
-        }
-        document.getElementById('fileInput').onchange = function () {
-            const file = this.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                quill.setText(e.target.result);
-                document.getElementById('docTitle').value = file.name.replace(/\.[^.]+$/, '');
-            };
-            reader.readAsText(file);
+        $('btnTemplate').onclick = () => $('templateModal').classList.add('open');
+        function closeTemplateModal() { $('templateModal').classList.remove('open'); }
+
+        (function renderTemplates() {
+            const grid = $('tplGrid');
+            templates.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'tpl-card';
+                card.innerHTML = `<i class="${t.icon}"></i><h4>${t.name}</h4><p>${t.desc}</p>`;
+                card.onclick = () => {
+                    if (t.content) quill.clipboard.dangerouslyPasteHTML(0, t.content);
+                    else quill.setText('');
+                    $('docTitle').value = t.name === 'Blank' ? 'Untitled Document' : t.name;
+                    closeTemplateModal();
+                };
+                grid.appendChild(card);
+            });
+        })();
+
+        $('templateModal').onclick = e => { if (e.target === $('templateModal')) closeTemplateModal(); };
+
+        // ── IMPORT (TXT + DOCX) ──
+        function importFile() { $('fileInput').click(); }
+        $('fileInput').onchange = function () {
+            const file = this.files[0]; if (!file) return;
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (ext === 'docx' || ext === 'doc') {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    mammoth.convertToHtml({ arrayBuffer: e.target.result })
+                        .then(result => {
+                            quill.clipboard.dangerouslyPasteHTML(0, result.value);
+                            $('docTitle').value = file.name.replace(/\.[^.]+$/, '');
+                        }).catch(err => alert('DOCX import error: ' + err.message));
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = e => { quill.setText(e.target.result); $('docTitle').value = file.name.replace(/\.[^.]+$/, ''); };
+                reader.readAsText(file);
+            }
+            this.value = '';
         };
 
-        function downloadBlob(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
+        // ── FOCUS MODE ──
+        $('btnFocus').onclick = () => {
+            $('focusEditor').innerHTML = quill.root.innerHTML;
+            $('focusOverlay').classList.add('open');
+            $('focusEditor').focus();
+        };
+        function exitFocus() {
+            quill.clipboard.dangerouslyPasteHTML(0, $('focusEditor').innerHTML);
+            $('focusOverlay').classList.remove('open');
         }
 
-        // Auto-save to localStorage
-        const STORAGE_KEY = 'vibox-word-doc';
-        quill.on('text-change', debounce(() => {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                content: quill.getContents(),
-                title: document.getElementById('docTitle').value
-            }));
-        }, 1000));
+        // ── DARK EDITOR ──
+        $('btnDarkEditor').onclick = () => {
+            $('editorWrap').classList.toggle('dark-mode');
+            const icon = $('btnDarkEditor').querySelector('i');
+            icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
+        };
 
-        // Restore
-        try {
-            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-            if (saved && saved.content) {
-                quill.setContents(saved.content);
-                if (saved.title) document.getElementById('docTitle').value = saved.title;
-            }
-        } catch (e) { }
+        // ── PRINT ──
+        $('btnPrint').onclick = () => {
+            const w = window.open('', '', 'width=800,height=600');
+            w.document.write(`<html><head><title>${$('docTitle').value}</title><style>body{font-family:Georgia,serif;padding:40px;line-height:1.8;color:#1a1a2e;}h1{color:#2b5797;}h2{color:#2b5797;}img{max-width:100%;}blockquote{border-left:4px solid #2b5797;padding-left:12px;color:#555;}</style></head><body>${quill.root.innerHTML}</body></html>`);
+            w.document.close(); w.print();
+        };
 
-        function debounce(fn, ms) {
-            let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+        // ── EXPORTS ──
+        function exportTxt() { dlBlob(new Blob([quill.getText()], { type: 'text/plain' }), ($('docTitle').value || 'doc') + '.txt'); }
+        function exportDocx() {
+            const html = quill.root.innerHTML, title = $('docTitle').value || 'document';
+            const full = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${title}</title><style>body{font-family:'Calibri',sans-serif;font-size:12pt;line-height:1.6;color:#1a1a2e;margin:1in;}h1{font-size:24pt;color:#2b5797;}h2{font-size:18pt;color:#2b5797;}h3{font-size:14pt;color:#2b5797;}img{max-width:100%;}blockquote{border-left:4px solid #2b5797;padding-left:12px;color:#555;}table{border-collapse:collapse;width:100%;}td,th{border:1px solid #ccc;padding:8px;}</style></head><body>${html}</body></html>`;
+            dlBlob(new Blob(['\ufeff', full], { type: 'application/msword' }), title + '.doc');
         }
+        function exportPdf() {
+            const el = quill.root.cloneNode(true); el.style.padding = '30px'; el.style.background = '#fff'; el.style.color = '#1a1a2e'; el.style.fontFamily = 'Georgia,serif';
+            html2pdf().set({ margin: [15, 15, 15, 15], filename: ($('docTitle').value || 'doc') + '.pdf', image: { type: 'jpeg', quality: .95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(el).save();
+        }
+        function dlBlob(b, n) { const u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = n; a.click(); URL.revokeObjectURL(u); }
+
+        // ── AUTO-SAVE ──
+        const SK = 'vibox-word-doc';
+        quill.on('text-change', debounce(() => { try { localStorage.setItem(SK, JSON.stringify({ c: quill.getContents(), t: $('docTitle').value })); } catch (e) { } }, 1000));
+        try { const s = JSON.parse(localStorage.getItem(SK)); if (s && s.c) { quill.setContents(s.c); if (s.t) $('docTitle').value = s.t; } } catch (e) { }
+        function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
     </script>
     <script src="../../js/utils/common.js" type="module"></script>
 </body>
