@@ -176,12 +176,15 @@ export const Utils = {
         });
 
         // Initialize 3D Tilt
+        // Initialize 3D Tilt (Disabled per user request)
+        /*
         const cards = document.querySelectorAll('.tool-card');
         cards.forEach(card => {
             try {
                 new Tilt(card, { max: 10, speed: 400, glare: true });
             } catch (e) { console.warn('Tilt init failed', e); }
         });
+        */
 
         // Initialize 3D Cube Rotation
         const cube = document.querySelector('.cube');
