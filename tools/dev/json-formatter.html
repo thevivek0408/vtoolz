@@ -4,24 +4,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon - Vibox</title>
+    <title>JSON Formatter & Validator - Vibox</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../../css/style.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+        }
+
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 600px;
+            margin-top: 20px;
+        }
+
+        .editor-pane {
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .pane-header {
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pane-title {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .editor-content {
+            flex: 1;
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            resize: none;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            outline: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .status-bar {
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-error {
+            color: #ff4757;
+        }
+
+        .status-success {
+            color: #2ecc71;
+        }
+
+        @media (max-width: 768px) {
+            .editor-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .editor-pane {
+                height: 400px;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <header>
         <div class="container">
-            <a href="../../../index.html" class="logo">Vibox</a>
+            <a href="../../../index.html" class="logo">
+                <i class="fas fa-cube"></i> Vibox
+            </a>
+            <nav>
+                <a href="../../../index.html#tools">Tools</a>
+                <a href="../../../index.html#features">Features</a>
+            </nav>
         </div>
     </header>
 
-    <main class="container" style="text-align: center; padding: 100px 20px;">
-        <i class="fas fa-hard-hat" style="font-size: 4rem; color: var(--primary-color);"></i>
-        <h1 style="margin: 20px 0;">Under Construction</h1>
-        <p style="font-size: 1.2rem; color: var(--text-muted);">This tool is currently being built. Check back soon!</p>
-        <a href="../../../index.html" class="btn btn-primary" style="margin-top: 30px;">Back to Home</a>
+    <main class="container feature-section">
+        <div class="tool-header">
+            <div class="tool-icon-large" style="background: rgba(243, 156, 18, 0.2); color: #f39c12;">
+                <i class="fas fa-code"></i>
+            </div>
+            <h1>JSON Formatter</h1>
+            <p>Validate, beautify, and minify your JSON data instantly.</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="btn-format">
+                <i class="fas fa-indent"></i> Beautify
+            </button>
+            <button class="btn btn-secondary" id="btn-minify">
+                <i class="fas fa-compress-arrows-alt"></i> Minify
+            </button>
+            <button class="btn btn-secondary" id="btn-clear">
+                <i class="fas fa-trash-alt"></i> Clear
+            </button>
+            <button class="btn btn-secondary" id="btn-sample">
+                <i class="fas fa-flask"></i> Sample
+            </button>
+        </div>
+
+        <div class="editor-grid">
+            <!-- Input Pane -->
+            <div class="editor-pane">
+                <div class="pane-header">
+                    <span class="pane-title">Input JSON</span>
+                    <button class="btn-icon" id="btn-paste" title="Paste">
+                        <i class="fas fa-paste"></i>
+                    </button>
+                </div>
+                <textarea id="json-input" class="editor-content" placeholder="Paste your JSON here..."></textarea>
+                <div class="status-bar" id="input-status">Lines: 0 | Length: 0</div>
+            </div>
+
+            <!-- Output Pane -->
+            <div class="editor-pane">
+                <div class="pane-header">
+                    <span class="pane-title">Output</span>
+                    <button class="btn-icon" id="btn-copy" title="Copy">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <textarea id="json-output" class="editor-content" readonly
+                    placeholder="Result will appear here..."></textarea>
+                <div class="status-bar" id="output-status">Ready</div>
+            </div>
+        </div>
     </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Vibox. Privacy First.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { showToast } from '../../../js/utils/common.js';
+
+        const inputEl = document.getElementById('json-input');
+        const outputEl = document.getElementById('json-output');
+        const inputStatus = document.getElementById('input-status');
+        const outputStatus = document.getElementById('output-status');
+
+        // Buttons
+        document.getElementById('btn-format').addEventListener('click', () => processJSON(true));
+        document.getElementById('btn-minify').addEventListener('click', () => processJSON(false));
+        document.getElementById('btn-clear').addEventListener('click', () => {
+            inputEl.value = '';
+            outputEl.value = '';
+            updateStats();
+        });
+        document.getElementById('btn-copy').addEventListener('click', () => {
+            if (!outputEl.value) return;
+            navigator.clipboard.writeText(outputEl.value);
+            showToast('Copied to clipboard');
+        });
+        document.getElementById('btn-paste').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                inputEl.value = text;
+                updateStats();
+            } catch (err) {
+                showToast('Failed to read clipboard', 'error');
+            }
+        });
+        document.getElementById('btn-sample').addEventListener('click', () => {
+            inputEl.value = '{"id":1,"name":"Vibox","features":["Privacy","Speed","Offline"],"meta":{"version":2.0,"active":true}}';
+            updateStats();
+            processJSON(true);
+        });
+
+        // Live stats update
+        inputEl.addEventListener('input', updateStats);
+
+        function updateStats() {
+            const lines = inputEl.value.split('\n').length;
+            const length = inputEl.value.length;
+            inputStatus.textContent = `Lines: ${lines} | Length: ${length}`;
+        }
+
+        function processJSON(beautify = true) {
+            const raw = inputEl.value.trim();
+            if (!raw) {
+                outputEl.value = '';
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(raw);
+                if (beautify) {
+                    outputEl.value = JSON.stringify(parsed, null, 4); // 4 spaces indentation
+                } else {
+                    outputEl.value = JSON.stringify(parsed);
+                }
+                outputStatus.className = 'status-bar status-success';
+                outputStatus.textContent = 'Valid JSON';
+            } catch (e) {
+                outputStatus.className = 'status-bar status-error';
+                outputStatus.textContent = `Invalid JSON: ${e.message}`;
+            }
+        }
+    </script>
 </body>
 
 </html>

@@ -4,9 +4,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon - Vibox</title>
+    <title>Hash Generator - Vibox</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../../css/style.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hash-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .main-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .main-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .hash-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .hash-label {
+            width: 80px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .hash-value {
+            flex: 1;
+            font-family: monospace;
+            word-break: break-all;
+            color: var(--text-color);
+            user-select: all;
+        }
+
+        .btn-copy {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.3s;
+        }
+
+        .btn-copy:hover {
+            color: var(--text-color);
+        }
+    </style>
 </head>
 
 <body>
@@ -16,12 +95,80 @@
         </div>
     </header>
 
-    <main class="container" style="text-align: center; padding: 100px 20px;">
-        <i class="fas fa-hard-hat" style="font-size: 4rem; color: var(--primary-color);"></i>
-        <h1 style="margin: 20px 0;">Under Construction</h1>
-        <p style="font-size: 1.2rem; color: var(--text-muted);">This tool is currently being built. Check back soon!</p>
-        <a href="../../../index.html" class="btn btn-primary" style="margin-top: 30px;">Back to Home</a>
+    <main class="container feature-section">
+        <div class="tool-header">
+            <div class="tool-icon-large" style="background: rgba(155, 89, 182, 0.2); color: #9b59b6;">
+                <i class="fas fa-fingerprint"></i>
+            </div>
+            <h1>Hash Generator</h1>
+            <p>Generate SHA-1, SHA-256, and SHA-512 hashes instantly.</p>
+        </div>
+
+        <div class="hash-card tool-container">
+            <div class="input-group">
+                <label>Enter text to hash:</label>
+                <input type="text" id="text-input" class="main-input" placeholder="Type something..."
+                    autocomplete="off">
+            </div>
+
+            <div id="hash-results">
+                <!-- SHA-1 -->
+                <div class="hash-row">
+                    <span class="hash-label">SHA-1</span>
+                    <span class="hash-value" id="res-sha1">...</span>
+                    <button class="btn-copy" onclick="copyHash('res-sha1')"><i class="fas fa-copy"></i></button>
+                </div>
+                <!-- SHA-256 -->
+                <div class="hash-row">
+                    <span class="hash-label">SHA-256</span>
+                    <span class="hash-value" id="res-sha256">...</span>
+                    <button class="btn-copy" onclick="copyHash('res-sha256')"><i class="fas fa-copy"></i></button>
+                </div>
+                <!-- SHA-512 -->
+                <div class="hash-row">
+                    <span class="hash-label">SHA-512</span>
+                    <span class="hash-value" id="res-sha512">...</span>
+                    <button class="btn-copy" onclick="copyHash('res-sha512')"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+        </div>
     </main>
+
+    <script type="module">
+        import { showToast } from '../../../js/utils/common.js';
+
+        window.copyHash = (id) => {
+            const text = document.getElementById(id).textContent;
+            if (text === '...') return;
+            navigator.clipboard.writeText(text);
+            showToast('Hash copied to clipboard');
+        };
+
+        const input = document.getElementById('text-input');
+
+        input.addEventListener('input', updateHashes);
+
+        async function updateHashes() {
+            const text = input.value;
+            if (!text) {
+                ['sha1', 'sha256', 'sha512'].forEach(algo => {
+                    document.getElementById(`res-${algo}`).textContent = '...';
+                });
+                return;
+            }
+
+            document.getElementById('res-sha1').textContent = await sha(text, 'SHA-1');
+            document.getElementById('res-sha256').textContent = await sha(text, 'SHA-256');
+            document.getElementById('res-sha512').textContent = await sha(text, 'SHA-512');
+        }
+
+        async function sha(text, algo) {
+            const msgBuffer = new TextEncoder().encode(text);
+            const hashBuffer = await crypto.subtle.digest(algo, msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+    </script>
 </body>
 
 </html>

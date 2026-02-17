@@ -4,9 +4,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon - Vibox</title>
+    <title>Passport Photo Tool - Vibox</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../../css/style.css">
+    <style>
+        .tool-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .workspace {
+            display: none;
+            /* Hidden until upload */
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #000;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .guide-overlay {
+            width: 350px;
+            height: 450px;
+            border: 2px solid rgba(46, 204, 113, 0.8);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+        }
+
+        .guide-head {
+            width: 180px;
+            height: 240px;
+            border: 2px dashed rgba(46, 204, 113, 0.5);
+            border-radius: 50% 50% 45% 45%;
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .editor-stage {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+
+        .crop-controls {
+            margin-top: 15px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -16,12 +98,183 @@
         </div>
     </header>
 
-    <main class="container" style="text-align: center; padding: 100px 20px;">
-        <i class="fas fa-hard-hat" style="font-size: 4rem; color: var(--primary-color);"></i>
-        <h1 style="margin: 20px 0;">Under Construction</h1>
-        <p style="font-size: 1.2rem; color: var(--text-muted);">This tool is currently being built. Check back soon!</p>
-        <a href="../../../index.html" class="btn btn-primary" style="margin-top: 30px;">Back to Home</a>
+    <main class="container feature-section">
+        <div class="tool-header">
+            <div class="tool-icon-large" style="background: rgba(52, 152, 219, 0.2); color: #3498db;">
+                <i class="fas fa-id-card"></i>
+            </div>
+            <h1>Passport Photo Maker</h1>
+            <p>Create standard passport photos securely in your browser.</p>
+        </div>
+
+        <div class="tool-container">
+            <!-- Upload -->
+            <div class="upload-area" id="drop-zone">
+                <i class="fas fa-cloud-upload-alt"
+                    style="font-size: 3rem; margin-bottom: 15px; color: var(--text-muted)"></i>
+                <h3>Drag & Drop or Click to Upload</h3>
+                <p>Supports JPG, PNG, WEBP</p>
+                <input type="file" id="file-input" accept="image/*" hidden>
+            </div>
+
+            <!-- Workspace -->
+            <div class="workspace" id="workspace">
+                <div class="editor-stage" id="stage">
+                    <canvas id="canvas"></canvas>
+                    <div class="guide-overlay">
+                        <div class="guide-head"></div>
+                    </div>
+                </div>
+
+                <div class="crop-controls">
+                    <p><i class="fas fa-arrows-alt"></i> Drag image to position &nbsp;|&nbsp; <i
+                            class="fas fa-search"></i> Use sliders to zoom</p>
+                </div>
+
+                <div class="controls">
+                    <label style="display:flex; align-items:center; gap:10px;">
+                        <i class="fas fa-minus"></i>
+                        <input type="range" id="zoom-slider" min="0.5" max="3" step="0.01" value="1">
+                        <i class="fas fa-plus"></i>
+                    </label>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" id="btn-save">
+                        <i class="fas fa-download"></i> Save Photo
+                    </button>
+                    <button class="btn btn-secondary" id="btn-reset">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
     </main>
+
+    <script type="module">
+        import { showToast } from '../../../js/utils/common.js';
+
+        const fileInput = document.getElementById('file-input');
+        const dropZone = document.getElementById('drop-zone');
+        const workspace = document.getElementById('workspace');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const zoomSlider = document.getElementById('zoom-slider');
+        const stage = document.getElementById('stage');
+
+        let img = new Image();
+        let scale = 1;
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let startX, startY;
+
+        // Standard Passport Size (35mm x 45mm @ 300 DPI approx 413x531 px)
+        // We will use a larger canvas for quality: 826x1062 (2x)
+        const CANVAS_WIDTH = 826;
+        const CANVAS_HEIGHT = 1062;
+
+        // Init
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFile);
+
+        // Drag Handling
+        stage.addEventListener('mousedown', e => {
+            isDragging = true;
+            startX = e.clientX - offsetX;
+            startY = e.clientY - offsetY;
+            stage.style.cursor = 'grabbing';
+        });
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            stage.style.cursor = 'default';
+        });
+        window.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            e.preventDefault();
+            offsetX = e.clientX - startX;
+            offsetY = e.clientY - startY;
+            draw();
+        });
+
+        // Zoom
+        zoomSlider.addEventListener('input', e => {
+            scale = parseFloat(e.target.value);
+            draw();
+        });
+
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            scale = 1;
+            offsetX = 0;
+            offsetY = 0;
+            zoomSlider.value = 1;
+            draw();
+        });
+
+        document.getElementById('btn-save').addEventListener('click', () => {
+            // Create a temp canvas to crop exactly what's visible in the guide overlay
+            // The overlay is essentially the whole canvas view in this simple implementation
+            // because we fixed the canvas size to the output size.
+            // So we just save the canvas.
+
+            const link = document.createElement('a');
+            link.download = 'passport-photo.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+            showToast('Photo downloaded!');
+        });
+
+        function handleFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                img.onload = () => {
+                    initEditor();
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function initEditor() {
+            dropZone.style.display = 'none';
+            workspace.style.display = 'block';
+
+            // Set canvas size
+            canvas.width = CANVAS_WIDTH;
+            canvas.height = CANVAS_HEIGHT;
+
+            // Fit lines styles
+            canvas.style.width = '350px'; // Visual size matches overlay
+            canvas.style.height = '450px';
+
+            // Initial auto-fit
+            const ratio = Math.max(CANVAS_WIDTH / img.width, CANVAS_HEIGHT / img.height);
+            scale = ratio;
+            zoomSlider.value = scale;
+
+            // Center
+            offsetX = (CANVAS_WIDTH - img.width * scale) / 2;
+            offsetY = (CANVAS_HEIGHT - img.height * scale) / 2;
+
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            ctx.fillStyle = '#eee'; // Light bg to see boundaries
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // Draw image with transform
+            ctx.save();
+            ctx.translate(offsetX, offsetY);
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, 0, 0);
+            ctx.restore();
+        }
+    </script>
 </body>
 
 </html>
