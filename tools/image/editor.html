@@ -70,6 +70,7 @@
             <div class="dropdown-content" id="view-dd">
                 <div class="dropdown-item" onclick="state.zoom += 0.1; updateZoom();">Zoom In</div>
                 <div class="dropdown-item" onclick="state.zoom -= 0.1; updateZoom();">Zoom Out</div>
+                <div class="dropdown-item" onclick="openCompareModal()">Compare (Before/After)</div>
             </div>
         </div>
         <div class="menu-item" onclick="toggleDropdown('window-dd')">Window
@@ -366,6 +367,11 @@
                 <button class="btn btn-secondary"
                     onclick="document.getElementById('export-modal').style.display='none'">Cancel</button>
                 <button class="btn btn-primary" id="btn-do-export">Download</button>
+                <button class="btn" id="btn-share-export"
+                    style="display:none; background:var(--accent-color); color:white;"><i
+                        class="fas fa-share-alt"></i></button>
+                <button class="btn" id="btn-save-as-export" style="display:none; background:#9b59b6; color:white;"><i
+                        class="fas fa-save"></i></button>
             </div>
         </div>
     </div>
@@ -386,6 +392,25 @@
                     onclick="document.getElementById('huesat-modal').style.display='none'">Cancel</button>
                 <button class="btn btn-primary" id="btn-apply-huesat">Apply</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Compare Modal -->
+    <div class="modal-overlay" id="compare-modal" style="display:none; align-items:center; justify-content:center;">
+        <div class="compare-container">
+            <div class="compare-header">
+                <h3>Compare (Before / After)</h3>
+                <button class="icon-btn" onclick="document.getElementById('compare-modal').style.display='none'"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div class="compare-view" id="compare-view">
+                <img id="compare-before" class="compare-img">
+                <img id="compare-after" class="compare-img">
+                <div class="compare-slider">
+                    <div class="compare-handle"><i class="fas fa-arrows-alt-h"></i></div>
+                </div>
+            </div>
+            <p style="text-align:center; color:#aaa; margin-top:10px; font-size:0.9rem;">Drag slider to compare</p>
         </div>
     </div>
 

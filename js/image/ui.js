@@ -92,6 +92,10 @@ export function initUI() {
         saveHistory("New Project");
         updateLayerList();
         requestRender();
+        // Save original for Compare
+        setTimeout(() => {
+            state.originalImage = canvas.toDataURL();
+        }, 100);
     });
 
     window.closeProject = () => {
@@ -291,6 +295,61 @@ export function initUI() {
             updateLayerList();
         });
     }
+
+    // --- Compare Modal Logic ---
+    window.openCompareModal = () => {
+        const modal = document.getElementById('compare-modal');
+        const beforeImg = document.getElementById('compare-before');
+        const afterImg = document.getElementById('compare-after');
+        const slider = document.querySelector('.compare-slider');
+
+        if (!state.originalImage) {
+            // Fallback if no original saved (e.g. drawn from blank)
+            // Just use white/transparent? Or use history[0]?
+            // Let's use history[0] if available, else blank.
+            // For now, alert or fallback
+            if (state.history.length > 0) {
+                // Try to reconstruct? Hard. 
+                // Just show current vs current (pointless) or alert.
+                // Ideally we saved original on load/create.
+            }
+        }
+
+        beforeImg.src = state.originalImage || '';
+        afterImg.src = canvas.toDataURL();
+
+        modal.display = 'flex'; // Wait, modal is the element
+        modal.style.display = 'flex';
+
+        // Slider Logic
+        let isDragging = false;
+        const compareView = document.getElementById('compare-view');
+
+        // Reset slider
+        slider.style.left = '50%';
+        afterImg.style.clipPath = 'inset(0 0 0 50%)';
+
+        const updateSlider = (x) => {
+            const rect = compareView.getBoundingClientRect();
+            let pos = ((x - rect.left) / rect.width) * 100;
+            pos = Math.max(0, Math.min(100, pos));
+
+            slider.style.left = `${pos}%`;
+            afterImg.style.clipPath = `inset(0 0 0 ${pos}%)`;
+        };
+
+        slider.onmousedown = (e) => { isDragging = true; };
+        window.onmouseup = () => { isDragging = false; };
+        window.onmousemove = (e) => {
+            if (!isDragging) return;
+            updateSlider(e.clientX);
+        };
+
+        // Click to jump
+        compareView.onclick = (e) => {
+            updateSlider(e.clientX);
+        };
+    };
 }
 
 // Global UI Functions
@@ -608,5 +667,95 @@ export function updateOptionsBar() {
     } else if (state.tool === 'fill' || state.tool === 'magic-wand') {
         createSep();
         createSlider(0, 100, state.toolSettings.tolerance, 'Tolerance', (v) => state.toolSettings.tolerance = v);
+    }
+
+    // --- Smart Export Actions ---
+    const btnExport = document.getElementById('btn-do-export');
+    const btnShare = document.getElementById('btn-share-export');
+    const btnSaveAs = document.getElementById('btn-save-as-export');
+    const formatSelect = document.getElementById('export-format');
+
+    // Helper: Get Blob
+    const getExportBlob = async () => {
+        const format = formatSelect.value;
+        const dataUrl = canvas.toDataURL(format);
+        const res = await fetch(dataUrl);
+        return await res.blob();
+    };
+
+    // 1. Download (Standard)
+    if (btnExport) {
+        btnExport.onclick = async () => {
+            const format = formatSelect.value;
+            const ext = format.split('/')[1];
+            const link = document.createElement('a');
+            link.download = `export.${ext}`;
+            link.href = canvas.toDataURL(format);
+
+            // Stats
+            const blob = await getExportBlob();
+            if (window.Utils && window.Utils.trackStat) {
+                window.Utils.trackStat('files_processed', 1);
+                window.Utils.trackStat('bytes_saved', blob.size);
+            }
+
+            link.click();
+            document.getElementById('export-modal').style.display = 'none';
+        };
+    }
+
+    // 2. Share (Navigator API)
+    if (btnShare && navigator.canShare) {
+        btnShare.style.display = 'inline-block';
+        btnShare.onclick = async () => {
+            try {
+                const blob = await getExportBlob();
+                const format = formatSelect.value;
+                const ext = format.split('/')[1];
+                const file = new File([blob], `share.${ext}`, { type: format });
+
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Edited Image',
+                        text: 'Check out this image I edited with VtoolZ!'
+                    });
+                    if (window.Utils) window.Utils.trackStat('files_processed', 1);
+                } else {
+                    alert("Sharing not supported for this file type.");
+                }
+            } catch (err) {
+                console.error("Share failed:", err);
+            }
+        };
+    }
+
+    // 3. Save As (File System Access API)
+    if (btnSaveAs && window.showSaveFilePicker) {
+        btnSaveAs.style.display = 'inline-block';
+        btnSaveAs.onclick = async () => {
+            try {
+                const format = formatSelect.value;
+                const ext = format.split('/')[1];
+
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: `image.${ext}`,
+                    types: [{
+                        description: 'Image File',
+                        accept: { [format]: [`.${ext}`] },
+                    }],
+                });
+
+                const blob = await getExportBlob();
+                const writable = await handle.createWritable();
+                await writable.write(blob);
+                await writable.close();
+
+                if (window.Utils) window.Utils.trackStat('files_processed', 1);
+                document.getElementById('export-modal').style.display = 'none';
+            } catch (err) {
+                if (err.name !== 'AbortError') console.error("Save As failed:", err);
+            }
+        };
     }
 }

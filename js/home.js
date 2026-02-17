@@ -35,7 +35,7 @@ function renderTools(toolsToRender) {
     toolsToRender.forEach(tool => {
         const card = document.createElement('a');
         card.href = tool.url;
-        card.className = 'tool-card zoom-in';
+        card.className = 'tool-card zoom-in spotlight-card';
         card.innerHTML = `
             <div class="tool-thumb" style="color: ${tool.color}">
                 <i class="${tool.icon}"></i>
@@ -50,6 +50,18 @@ function renderTools(toolsToRender) {
         `;
         toolsGrid.appendChild(card);
     });
+
+    // Spotlight Effect Listener (Global for Grid)
+    // Updates ALL cards to create a seamless "flashlight" effect
+    toolsGrid.onmousemove = e => {
+        for (const card of document.getElementsByClassName('spotlight-card')) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        }
+    };
 }
 
 // Filter Logic (Enhanced Fuzzy Search + Strict Category)

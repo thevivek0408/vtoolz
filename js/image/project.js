@@ -85,6 +85,11 @@ function loadProjectData(project) {
             if (loadedCount === project.layers.length) {
                 requestRender();
                 updateLayerList();
+                // Save original state for Compare
+                setTimeout(() => {
+                    const canvas = document.getElementById('canvas-stage');
+                    state.originalImage = canvas.toDataURL();
+                }, 100);
             }
         };
         img.src = lData.data;

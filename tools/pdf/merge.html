@@ -154,6 +154,13 @@
 
                 // Download
                 window.Utils.downloadBlob(blob, 'merged-document.pdf');
+
+                // Track Usage Stats
+                if (window.Utils && window.Utils.trackStat) {
+                    window.Utils.trackStat('files_processed', filesToMerge.length);
+                    window.Utils.trackStat('bytes_saved', blob.size);
+                }
+
                 window.Utils.showToast('Merge complete!', 'success');
 
                 // Reset?

@@ -59,14 +59,9 @@ import { saveProject, loadProject } from './project.js';
 window.saveProject = saveProject;
 window.handleFileLoad = loadProject;
 window.exportImage = () => {
-    // Basic export
-    const link = document.createElement('a');
-    link.download = 'export.png';
-    link.href = document.querySelector('canvas').toDataURL(); // We need to merge layers first!
-    // Merging is done in core.js render loop to the main canvas? No, main canvas IS the preview.
-    // The main 'canvas' exported from core.js IS where we draw everything.
-    // So toDataURL() on it should work IF we just called requestRender().
-    link.click();
+    // Open Modal instead of direct download
+    const modal = document.getElementById('export-modal');
+    if (modal) modal.style.display = 'flex';
 };
 
 // Global Error Handler

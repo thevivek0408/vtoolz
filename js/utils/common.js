@@ -319,12 +319,59 @@ export const Utils = {
             }
         }
 
+    },
+
+    // --- Gamified Privacy Stats (Phase 18) ---
+    trackStat: (key, value) => {
+        const current = Number(sessionStorage.getItem(key) || 0);
+        sessionStorage.setItem(key, current + value);
+
+        // Trigger generic event for UI updates
+        window.dispatchEvent(new CustomEvent('stat-updated'));
+    },
+
+    getStats: () => {
+        return {
+            saved: Number(sessionStorage.getItem('bytes_saved') || 0),
+            files: Number(sessionStorage.getItem('files_processed') || 0)
+        };
+    },
+
+    initStatsWidget: () => {
+        const footer = document.querySelector('footer');
+        if (!footer) return;
+
+        // Create Widget if missing
+        let widget = document.getElementById('stats-widget');
+        if (!widget) {
+            widget = document.createElement('div');
+            widget.id = 'stats-widget';
+            widget.style.cssText = 'margin-top: 15px; font-size: 0.9rem; color: var(--accent-color); font-weight: bold; opacity: 0; transition: opacity 0.5s;';
+            footer.insertBefore(widget, footer.firstChild);
+        }
+
+        const updateUI = () => {
+            const stats = Utils.getStats();
+            if (stats.files > 0 || stats.saved > 0) {
+                const savedStr = Utils.formatBytes(stats.saved);
+                widget.innerHTML = `<i class="fas fa-shield-alt"></i> Session Privacy Stats: <span style="color:var(--text-color)">${stats.files} Files Processed</span> | <span style="color:var(--text-color)">${savedStr} Data Saved Locally</span>`;
+                widget.style.opacity = '1';
+            }
+        };
+
+        // Listen for updates
+        window.addEventListener('stat-updated', updateUI);
+
+        // Initial check
+        updateUI();
     }
 };
 
-// Initialize Theme & SW
+// Initialize Theme & SW & Stats
 window.addEventListener('DOMContentLoaded', () => {
     window.Utils.initTheme();
+    window.Utils.initStatsWidget();
+
 
     // Responsive PWA Registration
     if ('serviceWorker' in navigator) {

@@ -56,6 +56,9 @@ export const state = {
     clipboard: null,
     transformHandle: null,
 
+    // Data
+    originalImage: null,
+
     // Mouse Start Pos
     start: { x: 0, y: 0 },
     lastMouse: { x: 0, y: 0 }
