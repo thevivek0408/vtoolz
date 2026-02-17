@@ -11,7 +11,26 @@ export function initTools() {
     canvas.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('dblclick', onDoubleClick); // Add double click
+    window.addEventListener('dblclick', onDoubleClick);
+
+    // Bind Tool Buttons
+    document.querySelectorAll('.tool').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Remove active class from all
+            document.querySelectorAll('.tool').forEach(t => t.classList.remove('active'));
+            // Add to clicked
+            const target = e.currentTarget;
+            target.classList.add('active');
+            // Set state
+            state.tool = target.dataset.tool;
+            console.log("Tool selected:", state.tool);
+
+            // Optional: Update cursor
+            canvas.style.cursor = 'crosshair';
+            if (state.tool === 'move') canvas.style.cursor = 'move';
+            if (state.tool === 'text') canvas.style.cursor = 'text';
+        });
+    });
 
     // Bind Handles
     document.querySelectorAll('.handle').forEach(h => {
