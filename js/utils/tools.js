@@ -60,7 +60,7 @@ export const tools = [
 
     // Fun & Games
     { id: 'game-hub', name: 'Game Arcade', category: 'fun', url: 'games/index.html', description: 'Play offline games.', icon: 'fas fa-gamepad', color: '#ffeb3b', keywords: 'play fun 2048' },
-    { id: 'fun-decision', name: 'Decision Wheel', category: 'fun', url: 'tools/fun/decision-maker.html', description: 'Spin the wheel.', icon: 'fas fa-dharmachakra', color: '#ffeb3b', keywords: 'random choice' },
+    { id: 'fun-decision', name: 'Decision Wheel', category: 'fun', url: 'tools/fun/wheel.html', description: 'Spin the wheel.', icon: 'fas fa-dharmachakra', color: '#ffeb3b', keywords: 'random choice' },
     { id: 'fun-paint', name: 'Paint', category: 'fun', url: 'tools/fun/paint.html', description: 'Draw and sketch.', icon: 'fas fa-paint-brush', color: '#ffeb3b', keywords: 'draw art canvas' },
     { id: 'fun-dice', name: 'Dice Roller', category: 'fun', url: 'tools/fun/dice.html', description: 'Roll 3D dice.', icon: 'fas fa-dice', color: '#ffeb3b', keywords: 'dnd random rng' },
     { id: 'fun-coin', name: 'Coin Flip', category: 'fun', url: 'tools/fun/coin.html', description: 'Flip a coin.', icon: 'fas fa-coins', color: '#ffeb3b', keywords: 'heads tails random' },
