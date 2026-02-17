@@ -401,23 +401,89 @@
             audioChunks: [],
             destNode: null,
             timerInterval: null,
-            startTime: 0
+            startTime: 0,
+            masterGain: null, // Added for master output control and visualization
+            analyser: null // Added for audio visualization
         };
 
         // --- AUDIO ENGINE START ---
+
+        // REDEFINING getAudioContext to include Master Gain and Analyser
+        state.audioCtx = null; // Reset to force init
 
         function getAudioContext() {
             if (!state.audioCtx) {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 state.audioCtx = new AudioContext();
 
-                // Create Destination Node for Recording
+                // Master Gain (Persistent)
+                state.masterGain = state.audioCtx.createGain();
+                state.masterGain.connect(state.audioCtx.destination);
+
+                // Visualizer Analyser
+                const analyser = state.audioCtx.createAnalyser();
+                analyser.fftSize = 256;
+                state.masterGain.connect(analyser); // Connect master to analyser
+                state.analyser = analyser;
+
+                // Recording Dest
                 state.destNode = state.audioCtx.createMediaStreamDestination();
+                state.masterGain.connect(state.destNode); // Output master to recorder too
+
+                // Start Visualizer Loop
+                startVisualizerLoop(analyser);
             }
             if (state.audioCtx.state === 'suspended') {
                 state.audioCtx.resume();
             }
             return state.audioCtx;
+        }
+
+        function startVisualizerLoop(analyser) {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '0';
+            canvas.style.opacity = '0.4';
+            els.stage.insertBefore(canvas, els.stage.firstChild);
+
+            const ctx = canvas.getContext('2d');
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            function draw() {
+                requestAnimationFrame(draw);
+                if (canvas.width !== canvas.offsetWidth) {
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                }
+
+                analyser.getByteFrequencyData(dataArray);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const width = canvas.width;
+                const height = canvas.height;
+                const barWidth = (width / bufferLength) * 2.5;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    let barHeight = dataArray[i];
+
+                    // Gradient Color
+                    const hue = i * 2 + (Date.now() * 0.05) % 360;
+                    ctx.fillStyle = `hsla(${hue}, 80%, 60%, 0.8)`;
+
+                    // Simple bars
+                    ctx.fillRect(x, height - barHeight, barWidth, barHeight);
+
+                    x += barWidth + 2;
+                }
+            }
+            draw();
         }
 
         // --- EFFECTS ---
@@ -445,25 +511,15 @@
 
         let reverbNode = null;
 
-        function getMainOutput(ctx) {
-            // Chain: Source -> Gain -> [Reverb/Effects] -> Destination AND Recorder
-            return {
-                destination: ctx.destination,
-                recordDest: state.destNode.stream ? state.destNode : null
-            };
-        }
-
         // --- SYNTHESIZER ---
 
         function playNote(freq) {
             const ctx = getAudioContext();
             const t = ctx.currentTime;
-            const masterGain = ctx.createGain();
+            const noteGain = ctx.createGain(); // Individual note gain
 
-            // Connect to real output
-            masterGain.connect(ctx.destination);
-            // Connect to recorder
-            if (state.destNode) masterGain.connect(state.destNode);
+            // Connect to MASTER GAIN instead of destination
+            noteGain.connect(state.masterGain);
 
             // Preset Logic
             const type = state.preset;
@@ -475,12 +531,12 @@
                 osc.frequency.setValueAtTime(freq, t);
 
                 // Envelope (ADSR)
-                masterGain.gain.setValueAtTime(0, t);
-                masterGain.gain.linearRampToValueAtTime(state.volume, t + 0.01);
-                masterGain.gain.exponentialRampToValueAtTime(state.volume * 0.7, t + 0.1); // Decay
-                masterGain.gain.setTargetAtTime(0, t + 0.2, 0.5); // Release (approx)
+                noteGain.gain.setValueAtTime(0, t);
+                noteGain.gain.linearRampToValueAtTime(state.volume, t + 0.01);
+                noteGain.gain.exponentialRampToValueAtTime(state.volume * 0.7, t + 0.1); // Decay
+                noteGain.gain.setTargetAtTime(0, t + 0.2, 0.5); // Release (approx)
 
-                osc.connect(masterGain);
+                osc.connect(noteGain);
                 osc.start(t);
                 osc.stop(t + 2.0);
             } else if (type === 'synth') {
@@ -500,13 +556,13 @@
                 filter.Q.value = 1;
 
                 // Envelope
-                masterGain.gain.setValueAtTime(0, t);
-                masterGain.gain.linearRampToValueAtTime(state.volume * 0.6, t + 0.05);
-                masterGain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+                noteGain.gain.setValueAtTime(0, t);
+                noteGain.gain.linearRampToValueAtTime(state.volume * 0.6, t + 0.05);
+                noteGain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
 
                 osc1.connect(filter);
                 osc2.connect(filter);
-                filter.connect(masterGain);
+                filter.connect(noteGain);
 
                 osc1.start(t);
                 osc2.start(t);
@@ -518,11 +574,11 @@
                 osc.type = 'square';
                 osc.frequency.setValueAtTime(freq, t);
 
-                masterGain.gain.setValueAtTime(0, t);
-                masterGain.gain.linearRampToValueAtTime(state.volume * 0.5, t + 0.02);
-                masterGain.gain.setTargetAtTime(0, t + 0.1, 0.3);
+                noteGain.gain.setValueAtTime(0, t);
+                noteGain.gain.linearRampToValueAtTime(state.volume * 0.5, t + 0.02);
+                noteGain.gain.setTargetAtTime(0, t + 0.1, 0.3);
 
-                osc.connect(masterGain);
+                osc.connect(noteGain);
                 osc.start(t);
                 osc.stop(t + 1.0);
             } else if (type === 'bass') {
@@ -531,11 +587,11 @@
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(freq * 0.5, t); // Octave down
 
-                masterGain.gain.setValueAtTime(0, t);
-                masterGain.gain.linearRampToValueAtTime(state.volume, t + 0.05);
-                masterGain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+                noteGain.gain.setValueAtTime(0, t);
+                noteGain.gain.linearRampToValueAtTime(state.volume, t + 0.05);
+                noteGain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
 
-                osc.connect(masterGain);
+                osc.connect(noteGain);
                 osc.start(t);
                 osc.stop(t + 1.0);
             }
@@ -545,80 +601,68 @@
         function playDrum(type) {
             const ctx = getAudioContext();
             const t = ctx.currentTime;
+            const drumGain = ctx.createGain();
 
-            // Output node (Gain)
-            const masterGain = ctx.createGain();
-            masterGain.gain.value = 1.0;
-            masterGain.connect(ctx.destination);
-            if (state.destNode) masterGain.connect(state.destNode);
+            // Connect to MASTER GAIN
+            drumGain.connect(state.masterGain);
+
+            // Note: drum logic below connects to 'drumGain' or uses it as output
+            // I need to update the drum logic to use 'drumGain' instead of 'masterGain' (local var conflict)
+            // Actually, the previous code created a local `masterGain`. I will rename it to `localGain`.
+
+            const localGain = drumGain;
+            localGain.gain.value = 1.0;
 
             if (type === 'kick') {
-                // Punchy Kick
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(150, t);
                 osc.frequency.exponentialRampToValueAtTime(0.01, t + 0.5);
-
                 gain.gain.setValueAtTime(state.volume, t);
                 gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-
                 osc.connect(gain);
-                gain.connect(masterGain);
-
+                gain.connect(localGain);
                 osc.start(t);
                 osc.stop(t + 0.5);
-
-                // Click (Attack)
                 const clickOsc = ctx.createOscillator();
                 const clickGain = ctx.createGain();
                 clickOsc.type = 'square';
                 clickOsc.frequency.setValueAtTime(1000, t);
                 clickGain.gain.setValueAtTime(state.volume * 0.3, t);
                 clickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
-
                 clickOsc.connect(clickGain);
-                clickGain.connect(masterGain);
+                clickGain.connect(localGain);
                 clickOsc.start(t);
                 clickOsc.stop(t + 0.02);
             } else if (type === 'snare') {
-                // White Noise Burst
                 const bufferSize = ctx.sampleRate * 0.2;
                 const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
                 const data = buffer.getChannelData(0);
                 for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
                 const noise = ctx.createBufferSource();
                 noise.buffer = buffer;
-
                 const filter = ctx.createBiquadFilter();
                 filter.type = 'highpass';
                 filter.frequency.value = 1000;
-
                 const noiseEnv = ctx.createGain();
                 noiseEnv.gain.setValueAtTime(state.volume, t);
                 noiseEnv.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
-
                 noise.connect(filter);
                 filter.connect(noiseEnv);
-                noiseEnv.connect(masterGain);
+                noiseEnv.connect(localGain);
                 noise.start(t);
-
-                // Tonal Snap (Body)
                 const osc = ctx.createOscillator();
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(200, t);
                 const oscEnv = ctx.createGain();
                 oscEnv.gain.setValueAtTime(state.volume * 0.4, t);
                 oscEnv.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
-
                 osc.connect(oscEnv);
-                oscEnv.connect(masterGain);
+                oscEnv.connect(localGain);
                 osc.start(t);
                 osc.stop(t + 0.1);
             } else if (type === 'hihat') {
-                // High frequency metallic noise
                 const bufferSize = ctx.sampleRate * 0.05;
                 const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
                 const data = buffer.getChannelData(0);
@@ -626,21 +670,17 @@
                     if (Math.random() > 0.5) data[i] = 1;
                     else data[i] = -1;
                 }
-
                 const noise = ctx.createBufferSource();
                 noise.buffer = buffer;
-
                 const filter = ctx.createBiquadFilter();
                 filter.type = 'highpass';
                 filter.frequency.value = 8000;
-
                 const env = ctx.createGain();
                 env.gain.setValueAtTime(state.volume * 0.6, t);
                 env.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
-
                 noise.connect(filter);
                 filter.connect(env);
-                env.connect(masterGain);
+                env.connect(localGain);
                 noise.start(t);
             } else if (type === 'tom') {
                 const osc = ctx.createOscillator();
@@ -648,12 +688,10 @@
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(200, t);
                 osc.frequency.exponentialRampToValueAtTime(50, t + 0.3);
-
                 gain.gain.setValueAtTime(state.volume * 0.8, t);
                 gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
-
                 osc.connect(gain);
-                gain.connect(masterGain);
+                gain.connect(localGain);
                 osc.start(t);
                 osc.stop(t + 0.3);
             }
