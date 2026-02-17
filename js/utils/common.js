@@ -7,6 +7,7 @@
 import './seo.js';
 import { Tilt } from './tilt.js';
 import { CubeRotator } from './cube.js';
+import { CommandPalette } from './command-palette.js';
 
 // ... existing code ...
 export const Utils = {
@@ -371,6 +372,7 @@ export const Utils = {
 window.addEventListener('DOMContentLoaded', () => {
     window.Utils.initTheme();
     window.Utils.initStatsWidget();
+    new CommandPalette();
 
 
     // Responsive PWA Registration

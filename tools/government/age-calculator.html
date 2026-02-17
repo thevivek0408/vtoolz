@@ -47,39 +47,40 @@
             <a href="../../index.html" class="logo">Vibox</a>
             <nav>
                 <ul>
-                    <li><a href="index.html">Gov Tools</a></li>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Government</a></li>
                     <li><a href="#" class="active">Age Calc</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <main>
+    <main class="fade-in-up">
         <div class="container tool-container">
             <div style="text-align: center; margin-bottom: 2rem;">
                 <h1>Age Calculator</h1>
                 <p class="text-muted">Calculate your exact age for Government Exam Eligibility (SSC, UPSC, Banking).</p>
             </div>
 
-            <div class="tool-card" style="max-width: 500px; margin: 0 auto;">
+            <div class="tool-card" style="max-width: 500px; margin: 0 auto; background: rgba(255,255,255,0.02);">
                 <div class="form-group">
                     <label>Date of Birth</label>
-                    <input type="date" id="dob" class="form-control" require>
+                    <input type="date" id="dob" class="form-control" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="margin-top: 15px;">
                     <label>Age at the Date of</label>
                     <input type="date" id="ref-date" class="form-control">
-                    <small class="text-muted">Default is today. Change to check eligibility for a future date.</small>
+                    <small class="text-muted">Default is today.</small>
                 </div>
 
-                <div class="action-bar" style="margin-top: 20px;">
+                <div class="action-bar" style="margin-top: 25px;">
                     <button id="btn-calc" class="btn btn-primary btn-block">Calculate Age</button>
                     <button id="btn-reset" class="btn btn-secondary btn-block" style="margin-top: 10px;">Reset</button>
                 </div>
             </div>
 
-            <div id="result" class="result-card">
+            <div id="result" class="result-card fade-in-up">
                 <div class="age-big">
                     <span id="res-years">0</span><span style="font-size:1rem;"> Years</span>
                 </div>
@@ -98,6 +99,15 @@
 
         </div>
     </main>
+
+    <footer>
+        <div class="container">
+            <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">
+                &copy; 2024 VtoolZ. Privacy First.
+                <div id="stats-widget" style="margin-top: 10px; font-size: 0.8rem;"></div>
+            </div>
+        </div>
+    </footer>
 
     <script src="../../js/utils/common.js" type="module"></script>
     <script src="../../js/government/age-calculator.js" type="module"></script>

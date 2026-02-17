@@ -677,6 +677,39 @@ textarea {
     border-color: var(--danger-color);
 }
 
+/* Standard Fade In Up Animation */
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Glass Form Controls */
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
 /* Scroll Animation Classes */
 .fade-in-section {
     opacity: 0;
@@ -1135,4 +1168,146 @@ body.neon-mode h3 {
         right: auto;
         padding-right: 15px;
     }
+}
+
+/* --- UI Power Features (Phase 20) --- */
+
+/* Zen Mode */
+.zen-mode header,
+.zen-mode footer,
+.zen-mode .sidebar,
+.zen-mode .hero-scene,
+.zen-mode .ambient-light {
+    display: none !important;
+}
+
+.zen-mode .tool-container {
+    max-width: 1000px;
+    /* Wider in Zen Mode */
+    margin-top: 40px;
+}
+
+/* Command Palette */
+.palette-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 10000;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 15vh;
+}
+
+.palette-overlay.active {
+    display: flex;
+}
+
+.palette-container {
+    width: 600px;
+    max-width: 90%;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.palette-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.palette-header i {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    margin-right: 15px;
+}
+
+.palette-header input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    outline: none;
+}
+
+.palette-results {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.palette-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: background 0.1s;
+}
+
+.palette-item:hover,
+.palette-item.active {
+    background: rgba(255, 255, 255, 0.05);
+    border-left-color: var(--primary-color);
+}
+
+.palette-icon {
+    width: 30px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-right: 15px;
+}
+
+.palette-item.active .palette-icon {
+    color: var(--primary-color);
+}
+
+.palette-info {
+    flex: 1;
+}
+
+.palette-name {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.palette-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.palette-tag {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+}
+
+.palette-footer {
+    display: flex;
+    gap: 15px;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+}
+
+.palette-footer kbd {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: inherit;
 }
