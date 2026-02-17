@@ -197,6 +197,10 @@ function initDragAndDrop() {
     let dragCounter = 0;
 
     window.addEventListener('dragenter', (e) => {
+        // Only trigger if users are dragging files (prevents internal link dragging issues)
+        if (e.dataTransfer.types && !Array.from(e.dataTransfer.types).includes('Files')) {
+            return;
+        }
         e.preventDefault();
         dragCounter++;
         overlay.classList.add('active');
