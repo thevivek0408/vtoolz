@@ -60,6 +60,13 @@ export const tools = [
     { id: 'util-converter', name: 'Unit Converter', category: 'utility', url: 'tools/dev/unit-converter.html', description: 'Convert length, weight, currency.', icon: 'fas fa-exchange-alt', color: '#8e44ad', keywords: 'calc measure' },
     { id: 'util-timer', name: 'Stopwatch & Timer', category: 'utility', url: 'tools/dev/timer.html', description: 'Track time accurately.', icon: 'fas fa-stopwatch', color: '#e74c3c', keywords: 'clock alarm' },
 
+    // Hardware Testing
+    { id: 'hw-keyboard', name: 'Keyboard Tester', category: 'hardware', url: 'tools/hardware/keyboard.html', description: 'Test key presses.', icon: 'fas fa-keyboard', color: '#607d8b', keywords: 'typing ghosting n-key' },
+    { id: 'hw-gamepad', name: 'Gamepad Tester', category: 'hardware', url: 'tools/hardware/gamepad.html', description: 'Check controller inputs.', icon: 'fas fa-gamepad', color: '#607d8b', keywords: 'joystick xbox ps' },
+    { id: 'hw-screen', name: 'Screen Tester', category: 'hardware', url: 'tools/hardware/screen.html', description: 'Find dead pixels.', icon: 'fas fa-desktop', color: '#607d8b', keywords: 'monitor display color' },
+    { id: 'hw-audio', name: 'Audio Tester', category: 'hardware', url: 'tools/hardware/audio.html', description: 'Test speakers/Hz.', icon: 'fas fa-wave-square', color: '#607d8b', keywords: 'sound frequency stereo' },
+    { id: 'hw-hub', name: 'Hardware Suite', category: 'hardware', url: 'tools/hardware/index.html', description: 'All hardware tools.', icon: 'fas fa-microchip', color: '#607d8b', keywords: 'test verify' },
+
     // Fun & Games
     { id: 'game-hub', name: 'Game Arcade', category: 'fun', url: 'games/index.html', description: 'Play offline games.', icon: 'fas fa-gamepad', color: '#ffeb3b', keywords: 'play fun 2048' },
     { id: 'fun-decision', name: 'Decision Wheel', category: 'fun', url: 'tools/fun/wheel.html', description: 'Spin the wheel.', icon: 'fas fa-dharmachakra', color: '#ffeb3b', keywords: 'random choice' },

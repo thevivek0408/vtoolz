@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Tester - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .test-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10000;
+            display: none;
+            cursor: none;
+        }
+
+        .test-overlay.active {
+            display: block;
+        }
+
+        .instruction-box {
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+            background: var(--surface-color);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .color-list {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .color-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-cube"></i> Vibox
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html">Home</a>
+                <a href="index.html">Hardware</a>
+                <a href="#" class="active">Screen</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container page-content">
+        <div class="page-header">
+            <h1>Screen Tester</h1>
+            <p>Check for dead pixels and color accuracy.</p>
+        </div>
+
+        <div class="instruction-box">
+            <i class="fas fa-desktop fa-4x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+            <h2>Dead Pixel Check</h2>
+            <p>This test cycles through full-screen solid colors.</p>
+            <div class="color-list">
+                <div class="color-dot" style="background: black;"></div>
+                <div class="color-dot" style="background: white;"></div>
+                <div class="color-dot" style="background: red;"></div>
+                <div class="color-dot" style="background: green;"></div>
+                <div class="color-dot" style="background: blue;"></div>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Instructions:<br>
+                1. Click "Start Test" below.<br>
+                2. Click anywhere or press Space/Arrow keys to cycle colors.<br>
+                3. Press <strong>Esc</strong> to exit.
+            </p>
+            <button class="btn btn-primary" id="btnStart" style="margin-top: 20px;">
+                <i class="fas fa-play"></i> Start Test
+            </button>
+        </div>
+
+        <div id="overlay" class="test-overlay"></div>
+    </main>
+
+    <script src="../../js/utils/common.js" type="module"></script>
+    <script>
+        const colors = ['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF'];
+        let currentIndex = 0;
+        const overlay = document.getElementById('overlay');
+        const btnStart = document.getElementById('btnStart');
+
+        function updateColor() {
+            overlay.style.backgroundColor = colors[currentIndex];
+        }
+
+        function nextColor() {
+            currentIndex = (currentIndex + 1) % colors.length;
+            updateColor();
+        }
+
+        function prevColor() {
+            currentIndex = (currentIndex - 1 + colors.length) % colors.length;
+            updateColor();
+        }
+
+        function startTest() {
+            currentIndex = 0;
+            updateColor();
+            overlay.classList.add('active');
+
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+        }
+
+        function stopTest() {
+            overlay.classList.remove('active');
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+        }
+
+        btnStart.addEventListener('click', startTest);
+
+        // Overlay Navigation
+        overlay.addEventListener('click', nextColor);
+
+        window.addEventListener('keydown', (e) => {
+            if (!overlay.classList.contains('active')) return;
+
+            if (e.key === 'Escape') {
+                stopTest();
+            } else if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+                nextColor();
+            } else if (e.key === 'ArrowLeft') {
+                prevColor();
+            }
+        });
+
+        // Exit handler
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                overlay.classList.remove('active');
+            }
+        });
+
+    </script>
+</body>
+
+</html>

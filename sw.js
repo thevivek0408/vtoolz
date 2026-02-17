@@ -1,22 +1,28 @@
-const CACHE_NAME = 'vtoolz-v24-pwa-fix-3';
+const CACHE_NAME = 'vtoolz-v24-pwa-fix-5';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './css/style.css',
-    './css/highlight.min.css', // Phase 2
+    './js/app.js',
     './js/utils/common.js',
-    './js/utils/seo.js',
-    './js/utils/tilt.js',
-    './js/utils/cube.js',
+    './js/utils/tools.js',
+    './manifest.json',
+    './favicon.svg',
+    './games/index.html',
+    './tools/fun/music.html',
+    './tools/hardware/index.html',
+    './tools/hardware/keyboard.html',
+    './tools/hardware/gamepad.html',
+    './tools/hardware/screen.html',
+    './tools/hardware/audio.html',
 
     // Core Vendors
-    './js/vendor/pdf-lib.min.js',
-    './js/vendor/pdf.min.js',
-    './js/vendor/pdf.worker.min.js',
-    './js/vendor/cropper.min.js', // Ensure this was downloaded
+    '/js/vendor/pdf-lib.min.js',
+    '/js/vendor/pdf.min.js',
+    '/js/vendor/pdf.worker.min.js',
+    '/js/vendor/cropper.min.js', // Ensure this was downloaded
 
     // Phase 2 Vendors
-    './js/vendor/qrcode.min.js',
     './js/vendor/html5-qrcode.min.js',
     './js/vendor/JsBarcode.all.min.js',
     './js/vendor/marked.min.js',

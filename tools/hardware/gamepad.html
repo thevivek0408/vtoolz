@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamepad Tester - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .tester-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status-badge.connected {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border-color: #2ecc71;
+        }
+
+        .controller-visual {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 40px;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Generic Controller Shape Logic */
+        .stick {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+        }
+
+        .stick-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s;
+        }
+
+        .stick.left {
+            bottom: 80px;
+            left: 100px;
+        }
+
+        .stick.right {
+            bottom: 80px;
+            right: 100px;
+        }
+
+        .btn-group {
+            position: absolute;
+            display: grid;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn.pressed {
+            background: var(--accent-color);
+            color: #fff;
+            transform: scale(0.95);
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        /* Face Buttons (ABXY) */
+        .face-buttons {
+            top: 80px;
+            right: 80px;
+            grid-template-areas:
+                ". Y ."
+                "X . B"
+                ". A .";
+        }
+
+        .btn-a {
+            grid-area: A;
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .btn-b {
+            grid-area: B;
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .btn-x {
+            grid-area: X;
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        .btn-y {
+            grid-area: Y;
+            background: rgba(241, 196, 15, 0.1);
+            color: #f1c40f;
+        }
+
+        /* D-Pad */
+        .dpad {
+            top: 100px;
+            left: 80px;
+            grid-template-areas:
+                ". U ."
+                "L . R"
+                ". D .";
+        }
+
+        .dpad .btn {
+            border-radius: 5px;
+        }
+
+        /* Triggers/Bumpers */
+        .shoulder {
+            position: absolute;
+            top: -20px;
+            width: 100px;
+            height: 30px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+        }
+
+        .shoulder.l {
+            left: 80px;
+        }
+
+        .shoulder.r {
+            right: 80px;
+        }
+
+        .trigger {
+            position: absolute;
+            top: -50px;
+            width: 40px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .trigger.l {
+            left: 110px;
+        }
+
+        .trigger.r {
+            right: 110px;
+        }
+
+        .trigger-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: var(--primary-color);
+            border-radius: 10px;
+            transition: height 0.05s;
+        }
+
+        /* Start/Select */
+        .center-btns {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-cube"></i> Vibox
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html">Home</a>
+                <a href="index.html">Hardware</a>
+                <a href="#" class="active">Gamepad</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container page-content">
+        <div class="page-header">
+            <h1>Gamepad Tester</h1>
+            <p>Connect a controller and press any button.</p>
+        </div>
+
+        <div class="tester-container">
+            <div id="status" class="status-badge">Waiting for connection...</div>
+
+            <div class="controller-visual" id="controller">
+                <!-- Triggers -->
+                <div class="trigger l">
+                    <div class="trigger-fill" id="l2-fill"></div>
+                </div>
+                <div class="trigger r">
+                    <div class="trigger-fill" id="r2-fill"></div>
+                </div>
+
+                <!-- Shoulders -->
+                <div class="shoulder l btn" id="btn-4">L1</div>
+                <div class="shoulder r btn" id="btn-5">R1</div>
+
+                <!-- D-Pad -->
+                <div class="btn-group dpad">
+                    <div class="btn" id="btn-12" style="grid-area: U">↑</div>
+                    <div class="btn" id="btn-14" style="grid-area: L">←</div>
+                    <div class="btn" id="btn-15" style="grid-area: R">→</div>
+                    <div class="btn" id="btn-13" style="grid-area: D">↓</div>
+                </div>
+
+                <!-- Face Buttons -->
+                <div class="btn-group face-buttons">
+                    <div class="btn btn-y" id="btn-3" style="grid-area: Y">Y</div>
+                    <div class="btn btn-x" id="btn-2" style="grid-area: X">X</div>
+                    <div class="btn btn-b" id="btn-1" style="grid-area: B">B</div>
+                    <div class="btn btn-a" id="btn-0" style="grid-area: A">A</div>
+                </div>
+
+                <!-- Joysticks -->
+                <div class="stick left">
+                    <div class="stick-dot" id="stick-l"></div>
+                    <div class="btn" id="btn-10" style="position:absolute; top:20px; left:20px; opacity:0; width:40px;">
+                        L3</div>
+                </div>
+                <div class="stick right">
+                    <div class="stick-dot" id="stick-r"></div>
+                    <div class="btn" id="btn-11" style="position:absolute; top:20px; left:20px; opacity:0; width:40px;">
+                        R3</div>
+                </div>
+
+                <!-- Center -->
+                <div class="center-btns">
+                    <div class="btn" id="btn-8">Sel</div>
+                    <div class="btn" id="btn-9">Start</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <button class="btn btn-primary" id="btnVibrate">
+                    <i class="fas fa-wave-square"></i> Test Vibration
+                </button>
+            </div>
+
+            <div id="debug" style="margin-top: 20px; font-family: monospace; color: var(--text-muted);"></div>
+        </div>
+    </main>
+
+    <script src="../../js/utils/common.js" type="module"></script>
+    <script>
+        const els = {
+            status: document.getElementById('status'),
+            vibrate: document.getElementById('btnVibrate'),
+            debug: document.getElementById('debug'),
+            stickL: document.getElementById('stick-l'),
+            stickR: document.getElementById('stick-r'),
+            l2: document.getElementById('l2-fill'),
+            r2: document.getElementById('r2-fill')
+        };
+
+        let activePadIndex = null;
+        let animationFrame = null;
+
+        window.addEventListener("gamepadconnected", (e) => {
+            console.log("Gamepad connected:", e.gamepad);
+            activePadIndex = e.gamepad.index;
+            els.status.textContent = `Connected: ${e.gamepad.id} (${e.gamepad.mapping || 'Unknown Mapping'})`;
+            els.status.classList.add('connected');
+            startLoop();
+        });
+
+        window.addEventListener("gamepaddisconnected", (e) => {
+            console.log("Gamepad disconnected");
+            activePadIndex = null;
+            els.status.textContent = "Waiting for connection...";
+            els.status.classList.remove('connected');
+            cancelAnimationFrame(animationFrame);
+        });
+
+        function updateStatus() {
+            if (activePadIndex === null) return;
+
+            const gp = navigator.getGamepads()[activePadIndex];
+            if (!gp) return;
+
+            // Buttons
+            gp.buttons.forEach((b, i) => {
+                const btnEl = document.getElementById(`btn-${i}`);
+                if (btnEl) {
+                    if (b.pressed) btnEl.classList.add('pressed');
+                    else btnEl.classList.remove('pressed');
+                }
+
+                // Triggers (Analog) - buttons 6 and 7
+                if (i === 6) { // L2
+                    els.l2.style.height = `${b.value * 100}%`;
+                }
+                if (i === 7) { // R2
+                    els.r2.style.height = `${b.value * 100}%`;
+                }
+            });
+
+            // Axes
+            // 0: Left Stick X, 1: Left Stick Y
+            const lx = gp.axes[0] || 0;
+            const ly = gp.axes[1] || 0;
+            const rx = gp.axes[2] || 0;
+            const ry = gp.axes[3] || 0;
+
+            // Move Sticks (Limit movement to within circle)
+            // 20px range (40px stick in 80px container)
+            els.stickL.style.transform = `translate(calc(-50% + ${lx * 20}px), calc(-50% + ${ly * 20}px))`;
+            els.stickR.style.transform = `translate(calc(-50% + ${rx * 20}px), calc(-50% + ${ry * 20}px))`;
+
+            // Debug Info
+            // els.debug.textContent = `Axes: ${gp.axes.map(a => a.toFixed(2)).join(', ')}`;
+
+            animationFrame = requestAnimationFrame(updateStatus);
+        }
+
+        function startLoop() {
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+            updateStatus();
+        }
+
+        els.vibrate.addEventListener('click', () => {
+            if (activePadIndex !== null) {
+                const gp = navigator.getGamepads()[activePadIndex];
+                if (gp && gp.vibrationActuator) {
+                    gp.vibrationActuator.playEffect("dual-rumble", {
+                        startDelay: 0,
+                        duration: 1000,
+                        weakMagnitude: 1.0,
+                        strongMagnitude: 1.0
+                    });
+                } else {
+                    alert('Vibration not supported by browser or controller.');
+                }
+            }
+        });
+
+        // Polling if event doesn't fire (sometimes happens)
+        setInterval(() => {
+            if (activePadIndex === null) {
+                const gps = navigator.getGamepads();
+                for (let i = 0; i < gps.length; i++) {
+                    if (gps[i]) {
+                        // Found one
+                        const event = new Event('gamepadconnected');
+                        event.gamepad = gps[i];
+                        window.dispatchEvent(event);
+                        break;
+                    }
+                }
+            }
+        }, 2000);
+
+    </script>
+</body>
+
+</html>

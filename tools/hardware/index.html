@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Testing Tools - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+
+        .tool-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 25px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(var(--primary-rgb), 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .tool-card h3 {
+            font-size: 1.2rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .tool-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-cube"></i> Vibox
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html">Home</a>
+                <a href="../pdf/index.html">PDF</a>
+                <a href="../image/index.html">Image</a>
+                <a href="../text/index.html">Text</a>
+                <a href="../dev/index.html">Dev</a>
+                <a href="#" class="active">Hardware</a>
+            </div>
+            <button id="themeToggle" class="icon-btn" aria-label="Toggle Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="container page-content">
+        <div class="page-header">
+            <h1>Hardware Testing Suite</h1>
+            <p>Verify and test your peripherals directly in the browser.</p>
+        </div>
+
+        <div class="tools-grid">
+            <a href="keyboard.html" class="tool-card">
+                <div class="card-icon"><i class="fas fa-keyboard"></i></div>
+                <h3>Keyboard Tester</h3>
+                <p>Check for ghosting, key rollovers, and verify every key on your keyboard.</p>
+                <span class="badge">N-Key</span>
+            </a>
+
+            <a href="gamepad.html" class="tool-card">
+                <div class="card-icon"><i class="fas fa-gamepad"></i></div>
+                <h3>Gamepad Tester</h3>
+                <p>Visualize controller inputs, axes, and test vibration motors.</p>
+                <span class="badge">API</span>
+            </a>
+
+            <a href="screen.html" class="tool-card">
+                <div class="card-icon"><i class="fas fa-desktop"></i></div>
+                <h3>Screen Tester</h3>
+                <p>Identify dead pixels, backlight bleeding, and color accuracy.</p>
+                <span class="badge">Visual</span>
+            </a>
+
+            <a href="audio.html" class="tool-card">
+                <div class="card-icon"><i class="fas fa-wave-square"></i></div>
+                <h3>Audio Tester</h3>
+                <p>Generate frequencies, test stereo channels, and check speaker phase.</p>
+                <span class="badge">Hz</span>
+            </a>
+            <a href="mic.html" class="tool-card" style="opacity: 0.5; pointer-events: none;">
+                <div class="card-icon"><i class="fas fa-microphone"></i></div>
+                <h3>Mic Tester</h3>
+                <p>Test microphone input and visualize audio levels. (Coming Soon)</p>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Vibox Tools. Privacy First.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/utils/common.js" type="module"></script>
+    <script>
+        // Simple Theme Toggle (reuse logic for standalone pages if common.js doesn't auto-init)
+        // common.js should handle it if set up correctly
+    </script>
+</body>
+
+</html>

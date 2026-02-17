@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Tester - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .audio-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            gap: 20px;
+        }
+
+        .audio-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .audio-card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .freq-display {
+            font-family: monospace;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            min-width: 100px;
+            text-align: right;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary-color);
+        }
+
+        .channel-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .channel-btn:hover {
+            background: rgba(var(--primary-rgb), 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .channel-btn.active {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        .visualizer-canvas {
+            width: 100%;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-cube"></i> Vibox
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html">Home</a>
+                <a href="index.html">Hardware</a>
+                <a href="#" class="active">Audio</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container page-content">
+        <div class="page-header">
+            <h1>Audio Tester</h1>
+            <p>Test speakers, headphones, and frequency response.</p>
+        </div>
+
+        <div class="audio-container">
+            <!-- Frequency Gen -->
+            <div class="audio-card">
+                <h2><i class="fas fa-wave-square"></i> Frequency Generator</h2>
+
+                <div class="control-row">
+                    <button class="btn btn-primary" id="btnPlayFreq">
+                        <i class="fas fa-play"></i> Play
+                    </button>
+                    <select id="oscType" class="input-field" style="width: auto;">
+                        <option value="sine">Sine</option>
+                        <option value="square">Square</option>
+                        <option value="sawtooth">Sawtooth</option>
+                        <option value="triangle">Triangle</option>
+                    </select>
+                </div>
+
+                <div class="control-row">
+                    <span>Frequency:</span>
+                    <input type="range" id="freqSlider" min="20" max="20000" step="1" value="440">
+                    <span class="freq-display"><span id="freqVal">440</span> Hz</span>
+                </div>
+
+                <canvas id="visualizer" class="visualizer-canvas"></canvas>
+            </div>
+
+            <!-- Stereo Test -->
+            <div class="audio-card">
+                <h2><i class="fas fa-headphones"></i> Stereo Channel Test</h2>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Click to play a voice or tone on specific
+                    channels to verify separation.</p>
+
+                <div class="control-row">
+                    <button class="channel-btn" id="btnLeft">
+                        <i class="fas fa-arrow-left"></i> Left Channel Only
+                    </button>
+                    <button class="channel-btn" id="btnCenter">
+                        <i class="fas fa-arrows-alt-h"></i> Center (Both)
+                    </button>
+                    <button class="channel-btn" id="btnRight">
+                        Right Channel Only <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Phase Test -->
+            <div class="audio-card">
+                <h2><i class="fas fa-exchange-alt"></i> Phase Test</h2>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">
+                    <strong>In Phase:</strong> Sound should come from the center.<br>
+                    <strong>Out of Phase:</strong> Sound should feel "hollow" or directionless.
+                </p>
+                <div class="control-row">
+                    <button class="btn btn-secondary" id="btnInPhase">Play In Phase</button>
+                    <button class="btn btn-secondary" id="btnOutPhase">Play Out of Phase</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/utils/common.js" type="module"></script>
+    <script>
+        const els = {
+            btnPlayFreq: document.getElementById('btnPlayFreq'),
+            oscType: document.getElementById('oscType'),
+            freqSlider: document.getElementById('freqSlider'),
+            freqVal: document.getElementById('freqVal'),
+            canvas: document.getElementById('visualizer'),
+            // Stereo
+            btnLeft: document.getElementById('btnLeft'),
+            btnCenter: document.getElementById('btnCenter'),
+            btnRight: document.getElementById('btnRight'),
+            // Phase
+            btnInPhase: document.getElementById('btnInPhase'),
+            btnOutPhase: document.getElementById('btnOutPhase')
+        };
+
+        const state = {
+            ctx: null,
+            osc: null,
+            gain: null,
+            isPlaying: false,
+            analyser: null,
+            animId: null
+        };
+
+        function initAudio() {
+            if (!state.ctx) {
+                state.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                state.analyser = state.ctx.createAnalyser();
+                state.analyser.fftSize = 2048;
+            }
+            if (state.ctx.state === 'suspended') state.ctx.resume();
+            return state.ctx;
+        }
+
+        // --- Frequency Generator ---
+        els.freqSlider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            els.freqVal.textContent = val;
+            if (state.osc) state.osc.frequency.setValueAtTime(val, state.ctx.currentTime);
+        });
+
+        els.oscType.addEventListener('change', (e) => {
+            if (state.osc) state.osc.type = e.target.value;
+        });
+
+        els.btnPlayFreq.addEventListener('click', () => {
+            const ctx = initAudio();
+
+            if (state.isPlaying) {
+                // Stop
+                state.osc.stop();
+                state.osc.disconnect();
+                state.isPlaying = false;
+                els.btnPlayFreq.innerHTML = '<i class="fas fa-play"></i> Play';
+                cancelAnimationFrame(state.animId);
+            } else {
+                // Start
+                state.osc = ctx.createOscillator();
+                state.gain = ctx.createGain();
+
+                state.osc.type = els.oscType.value;
+                state.osc.frequency.value = els.freqSlider.value;
+                state.gain.gain.value = 0.5;
+
+                state.osc.connect(state.gain);
+                state.gain.connect(state.analyser);
+                state.analyser.connect(ctx.destination);
+
+                state.osc.start();
+                state.isPlaying = true;
+                els.btnPlayFreq.innerHTML = '<i class="fas fa-stop"></i> Stop';
+                drawVisualizer();
+            }
+        });
+
+        function drawVisualizer() {
+            const bufferLength = state.analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            const canvasCtx = els.canvas.getContext('2d');
+            const width = els.canvas.width = els.canvas.offsetWidth;
+            const height = els.canvas.height = els.canvas.offsetHeight;
+
+            function draw() {
+                if (!state.isPlaying) return;
+                state.animId = requestAnimationFrame(draw);
+                state.analyser.getByteTimeDomainData(dataArray);
+
+                canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)'; // Trail effect
+                canvasCtx.fillRect(0, 0, width, height);
+
+                canvasCtx.lineWidth = 2;
+                canvasCtx.strokeStyle = '#00d2ff'; // Cyan
+                canvasCtx.beginPath();
+
+                const sliceWidth = width * 1.0 / bufferLength;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * height / 2;
+
+                    if (i === 0) canvasCtx.moveTo(x, y);
+                    else canvasCtx.lineTo(x, y);
+
+                    x += sliceWidth;
+                }
+                canvasCtx.lineTo(width, height / 2);
+                canvasCtx.stroke();
+            }
+            draw();
+        }
+
+        // --- Stereo Test ---
+        function playTone(panValue) {
+            const ctx = initAudio();
+            const osc = ctx.createOscillator();
+            const panner = ctx.createStereoPanner();
+            const gain = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.5); // Sweep up
+
+            panner.pan.value = panValue;
+            gain.gain.setValueAtTime(0.5, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+
+            osc.connect(panner);
+            panner.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
+        }
+
+        els.btnLeft.addEventListener('click', () => playTone(-1));
+        els.btnCenter.addEventListener('click', () => playTone(0));
+        els.btnRight.addEventListener('click', () => playTone(1));
+
+
+        // --- Phase Test ---
+        // Plays noise in both channels
+        // In phase: Same noise
+        // Out phase: One channel inverted
+        let phaseSource = null;
+
+        function playPhase(isInPhase) {
+            const ctx = initAudio();
+            if (phaseSource) {
+                phaseSource.stop();
+                phaseSource = null;
+                return;
+            }
+
+            // Create buffer with noise
+            const bufferSize = ctx.sampleRate * 2; // 2 seconds
+            const buffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
+            const left = buffer.getChannelData(0);
+            const right = buffer.getChannelData(1);
+
+            for (let i = 0; i < bufferSize; i++) {
+                const noise = Math.random() * 2 - 1;
+                left[i] = noise;
+                right[i] = isInPhase ? noise : -noise; // Invert for out of phase
+            }
+
+            phaseSource = ctx.createBufferSource();
+            phaseSource.buffer = buffer;
+            phaseSource.loop = true;
+            phaseSource.connect(ctx.destination);
+            phaseSource.start();
+
+            setTimeout(() => {
+                if (phaseSource) {
+                    phaseSource.stop();
+                    phaseSource = null;
+                }
+            }, 2000); // Play for 2s
+        }
+
+        els.btnInPhase.addEventListener('click', () => playPhase(true));
+        els.btnOutPhase.addEventListener('click', () => playPhase(false));
+
+    </script>
+</body>
+
+</html>
