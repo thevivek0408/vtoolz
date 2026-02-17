@@ -4,265 +4,617 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Dice Roller - Vibox</title>
+    <title>Dice Studio - Vibox</title>
     <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .scene {
-            width: 200px;
-            height: 200px;
-            perspective: 600px;
-            margin: 50px auto;
+        /* Dice Studio Styles */
+        body {
+            overflow: hidden;
+            background: var(--bg-color);
         }
 
-        .cube {
+        .studio-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--surface-color);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .control-group {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .control-group h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .control-item {
+            margin-bottom: 15px;
+        }
+
+        .control-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Main Area */
+        .preview-area {
+            background: radial-gradient(circle at center, #2a2a2a, #000);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+
+        .table-surface {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 50px;
+            padding: 50px;
+            perspective: 1000px;
+        }
+
+        /* 3D Dice */
+        .dice {
             width: 100px;
             height: 100px;
             position: relative;
             transform-style: preserve-3d;
-            transform: translateZ(-50px);
-            transition: transform 1s ease-out;
-            margin: 0 auto;
+            transform: rotateX(0deg) rotateY(0deg);
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
         }
 
-        .cube.show-1 {
-            transform: translateZ(-50px) rotateY(0deg);
+        .dice.rolling {
+            animation: roll 0.6s linear infinite;
         }
 
-        .cube.show-2 {
-            transform: translateZ(-50px) rotateY(-90deg);
+        @keyframes roll {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+
+            25% {
+                transform: rotateX(90deg) rotateY(180deg) rotateZ(45deg);
+            }
+
+            50% {
+                transform: rotateX(180deg) rotateY(360deg) rotateZ(90deg);
+            }
+
+            75% {
+                transform: rotateX(270deg) rotateY(540deg) rotateZ(135deg);
+            }
+
+            100% {
+                transform: rotateX(360deg) rotateY(720deg) rotateZ(180deg);
+            }
         }
 
-        .cube.show-3 {
-            transform: translateZ(-50px) rotateY(-180deg);
-        }
-
-        .cube.show-4 {
-            transform: translateZ(-50px) rotateY(90deg);
-        }
-
-        .cube.show-5 {
-            transform: translateZ(-50px) rotateX(-90deg);
-        }
-
-        .cube.show-6 {
-            transform: translateZ(-50px) rotateX(90deg);
-        }
-
-        .cube__face {
+        .face {
             position: absolute;
-            width: 100px;
-            height: 100px;
-            border: 2px solid #ccc;
-            line-height: 100px;
-            font-size: 40px;
-            font-weight: bold;
-            color: #333;
-            text-align: center;
-            background: white;
+            width: 100%;
+            height: 100%;
+            background: var(--dice-color, #fff);
+            border: 2px solid rgba(0, 0, 0, 0.1);
             border-radius: 10px;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0;
+            /* Hide text if using dots */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
         }
 
-        .cube__face--1 {
+        /* Face Translations */
+        .face-1 {
             transform: rotateY(0deg) translateZ(50px);
         }
 
-        .cube__face--2 {
+        .face-2 {
             transform: rotateY(90deg) translateZ(50px);
         }
 
-        .cube__face--3 {
+        .face-3 {
             transform: rotateY(180deg) translateZ(50px);
         }
 
-        .cube__face--4 {
+        .face-4 {
             transform: rotateY(-90deg) translateZ(50px);
         }
 
-        .cube__face--5 {
+        .face-5 {
             transform: rotateX(90deg) translateZ(50px);
         }
 
-        .cube__face--6 {
+        .face-6 {
             transform: rotateX(-90deg) translateZ(50px);
         }
 
-        .dots {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
+        /* DOTS */
         .dot {
             width: 18px;
             height: 18px;
-            background: #333;
+            background: var(--dot-color, #333);
             border-radius: 50%;
-            display: block;
-        }
-
-        /* Layouts for dots */
-        .face-1 {
-            justify-content: center;
-            align-items: center;
-        }
-
-        .face-2 {
-            justify-content: space-between;
-        }
-
-        .face-2 .dot:nth-child(2) {
-            align-self: flex-end;
-        }
-
-        .face-3 {
-            justify-content: space-between;
-        }
-
-        .face-3 .dot:nth-child(2) {
-            align-self: center;
-        }
-
-        .face-3 .dot:nth-child(3) {
-            align-self: flex-end;
-        }
-
-        .face-4 {
-            justify-content: space-between;
-        }
-
-        .face-4 .col {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-        }
-
-        .face-5 {
-            justify-content: space-between;
-        }
-
-        .face-5 .col {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-        }
-
-        .face-5 .dot:nth-child(3) {
             position: absolute;
+            box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Face 1 */
+        .face-1 .dot {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
 
-        .face-6 {
-            justify-content: space-between;
+        /* Face 2 */
+        .face-2 .dot:nth-child(1) {
+            top: 20%;
+            left: 20%;
         }
 
-        .face-6 .col {
+        .face-2 .dot:nth-child(2) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        /* Face 3 */
+        .face-3 .dot:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+
+        .face-3 .dot:nth-child(2) {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .face-3 .dot:nth-child(3) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        /* Face 4 */
+        .face-4 .dot:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+
+        .face-4 .dot:nth-child(2) {
+            top: 20%;
+            right: 20%;
+        }
+
+        .face-4 .dot:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+        }
+
+        .face-4 .dot:nth-child(4) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        /* Face 5 */
+        .face-5 .dot:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+
+        .face-5 .dot:nth-child(2) {
+            top: 20%;
+            right: 20%;
+        }
+
+        .face-5 .dot:nth-child(3) {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .face-5 .dot:nth-child(4) {
+            bottom: 20%;
+            left: 20%;
+        }
+
+        .face-5 .dot:nth-child(5) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        /* Face 6 */
+        .face-6 .dot:nth-child(1) {
+            top: 20%;
+            left: 20%;
+        }
+
+        .face-6 .dot:nth-child(2) {
+            top: 20%;
+            right: 20%;
+        }
+
+        .face-6 .dot:nth-child(3) {
+            top: 50%;
+            left: 20%;
+            transform: translateY(-50%);
+        }
+
+        .face-6 .dot:nth-child(4) {
+            top: 50%;
+            right: 20%;
+            transform: translateY(-50%);
+        }
+
+        .face-6 .dot:nth-child(5) {
+            bottom: 20%;
+            left: 20%;
+        }
+
+        .face-6 .dot:nth-child(6) {
+            bottom: 20%;
+            right: 20%;
+        }
+
+        /* Results Bar */
+        .results-bar {
+            height: 80px;
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 1px solid #333;
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
         }
 
-        /* Simplify dots for dev speed using unicode or just numbers? User wants "3D", let's use the dots */
-        /* Actually Unicode Dice faces exist and are easier: ⚀ ⚁ ⚂ ⚃ ⚄ ⚅ */
-        /* But user wants "Physics", usually implies proper 3d cube rotation. */
+        .total-display {
+            background: var(--primary-color);
+            padding: 5px 20px;
+            border-radius: 20px;
+            color: #000;
+        }
 
-        .controls {
-            text-align: center;
-            margin-top: 40px;
+        /* Inputs */
+        .range-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .studio-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .sidebar {
+                height: auto;
+                max-height: 30vh;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <a href="../../index.html" class="logo">Vibox</a>
-            <nav>
-                <ul>
-                    <li><a href="../../index.html">Home</a></li>
-                    <li><a href="index.html">Fun Tools</a></li>
-                    <li><a href="#" class="active">Dice</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
 
-    <main>
-        <div class="container tool-container">
-            <h1>3D Dice Roller</h1>
+    <div class="studio-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../../index.html" style="color:var(--text-color)"><i class="fas fa-chevron-left"></i></a>
+                <span class="logo-text">Dice Studio</span>
+            </div>
 
-            <div class="scene">
-                <div class="cube" id="cube">
-                    <div class="cube__face cube__face--1">1</div>
-                    <div class="cube__face cube__face--2">2</div>
-                    <div class="cube__face cube__face--3">3</div>
-                    <div class="cube__face cube__face--4">4</div>
-                    <div class="cube__face cube__face--5">5</div>
-                    <div class="cube__face cube__face--6">6</div>
+            <div class="control-group">
+                <h3>Settings</h3>
+                <div class="control-item">
+                    <label>Number of Dice: <span id="countVal">1</span></label>
+                    <input type="range" id="diceCount" min="1" max="6" value="1">
                 </div>
             </div>
 
-            <div class="controls">
-                <button id="rollBtn" class="btn btn-primary btn-lg">ROLL DICE</button>
-                <div id="result" style="margin-top: 20px; font-size: 1.5rem; font-weight: bold;"></div>
+            <div class="control-group">
+                <h3>Style</h3>
+                <div class="control-item">
+                    <label>Dice Color</label>
+                    <input type="color" id="diceColor" value="#ffffff"
+                        style="width:100%; height:40px; border:none; cursor:pointer;">
+                </div>
+                <div class="control-item">
+                    <label>Dot Color</label>
+                    <input type="color" id="dotColor" value="#333333"
+                        style="width:100%; height:40px; border:none; cursor:pointer;">
+                </div>
             </div>
-        </div>
-    </main>
+
+            <button id="rollBtn" class="btn btn-primary btn-block"
+                style="margin-top:20px; padding:15px; font-size:1.2rem;">
+                <i class="fas fa-dice"></i> ROLL ALL
+            </button>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="preview-area">
+            <div class="table-surface" id="table">
+                <!-- Dice will be injected here -->
+                <div class="dice" data-val="1">
+                    <div class="face face-1">
+                        <div class="dot"></div>
+                    </div>
+                    <div class="face face-2">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <div class="face face-3">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <div class="face face-4">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <div class="face face-5">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                    <div class="face face-6">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-bar">
+                <span>TOTAL:</span>
+                <span class="total-display" id="totalDisplay">1</span>
+            </div>
+        </main>
+    </div>
+
+    <!-- Audio -->
+    <audio id="rollSound"
+        src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
+    <!-- Placeholder silent audio, ideally we'd load a real sound or synth it -->
 
     <script type="module">
         import '../../js/utils/common.js';
 
-        const cube = document.getElementById('cube');
-        const rollBtn = document.getElementById('rollBtn');
-        const resultEl = document.getElementById('result');
-        let currentClass = '';
+        const els = {
+            table: document.getElementById('table'),
+            countInput: document.getElementById('diceCount'),
+            countVal: document.getElementById('countVal'),
+            colorInput: document.getElementById('diceColor'),
+            dotColorInput: document.getElementById('dotColor'),
+            rollBtn: document.getElementById('rollBtn'),
+            totalDisplay: document.getElementById('totalDisplay')
+        };
 
-        function rollDice() {
-            const min = 1;
-            const max = 6;
-            const result = Math.floor(Math.random() * (max - min + 1)) + min;
+        const state = {
+            count: 1,
+            color: '#ffffff',
+            dotColor: '#333333',
+            values: [1]
+        };
 
-            const showClass = 'show-' + result;
+        function init() {
+            els.countInput.addEventListener('input', updateCount);
+            els.colorInput.addEventListener('input', updateStyle);
+            els.dotColorInput.addEventListener('input', updateStyle);
+            els.rollBtn.addEventListener('click', rollAll);
 
-            if (currentClass) {
-                cube.classList.remove(currentClass);
-            }
+            // Allow clicking on table to roll
+            els.table.addEventListener('click', (e) => {
+                if (e.target === els.table) rollAll();
+            });
 
-            // Random spin effect before landing
-            const xRand = Math.floor(Math.random() * 4) * 360;
-            const yRand = Math.floor(Math.random() * 4) * 360;
-
-            // To animate, we need to trick the transition
-            // Just apply the class for now, CSS transition handles the rest?
-            // CSS transition only works if properties change.
-            // Let's just use the classes.
-
-            cube.classList.add(showClass);
-            currentClass = showClass;
-
-            resultEl.textContent = 'Rolled a...';
-
-            setTimeout(() => {
-                resultEl.textContent = `You rolled a ${result}!`;
-            }, 1000);
+            updateCount(); // Init dice
         }
 
-        rollBtn.addEventListener('click', rollDice);
+        function updateCount() {
+            state.count = parseInt(els.countInput.value);
+            els.countVal.textContent = state.count;
+            renderDice();
+        }
 
-        // Initial roll
-        rollDice();
+        function updateStyle() {
+            state.color = els.colorInput.value;
+            state.dotColor = els.dotColorInput.value;
+
+            document.documentElement.style.setProperty('--dice-color', state.color);
+            document.documentElement.style.setProperty('--dot-color', state.dotColor);
+        }
+
+        function renderDice() {
+            els.table.innerHTML = '';
+            state.values = [];
+
+            for (let i = 0; i < state.count; i++) {
+                const dice = createDiceElement(i);
+                els.table.appendChild(dice);
+                state.values.push(1);
+            }
+            updateTotal();
+        }
+
+        function createDiceElement(index) {
+            const dice = document.createElement('div');
+            dice.className = 'dice';
+            dice.id = `dice-${index}`;
+            dice.onclick = (e) => { e.stopPropagation(); rollOne(index); };
+
+            // Faces
+            const faces = [
+                { cls: 'face-1', dots: 1 },
+                { cls: 'face-2', dots: 2 },
+                { cls: 'face-3', dots: 3 },
+                { cls: 'face-4', dots: 4 },
+                { cls: 'face-5', dots: 5 },
+                { cls: 'face-6', dots: 6 }
+            ];
+
+            faces.forEach(f => {
+                const face = document.createElement('div');
+                face.className = `face ${f.cls}`;
+                for (let j = 0; j < f.dots; j++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    face.appendChild(dot);
+                }
+                dice.appendChild(face);
+            });
+
+            return dice;
+        }
+
+        function rollAll() {
+            state.values.forEach((_, i) => rollOne(i, false));
+        }
+
+        function rollOne(index, updateTot = true) {
+            const dice = document.getElementById(`dice-${index}`);
+            if (dice.classList.contains('rolling')) return;
+
+            // Audio (Synth)
+            playRollSound();
+
+            dice.classList.add('rolling');
+
+            const result = Math.floor(Math.random() * 6) + 1;
+            state.values[index] = result;
+
+            // Physics Landing
+            // We need to set the final transform based on the result
+            const rotations = {
+                1: [0, 0],
+                2: [0, -90],
+                3: [0, -180],
+                4: [0, 90],
+                5: [-90, 0],
+                6: [90, 0]
+            };
+
+            // Add some random extra spins (full 360s)
+            const extraX = Math.floor(Math.random() * 4) * 360;
+            const extraY = Math.floor(Math.random() * 4) * 360;
+
+            setTimeout(() => {
+                dice.classList.remove('rolling');
+                const [rx, ry] = rotations[result];
+                dice.style.transform = `rotateX(${rx + extraX}deg) rotateY(${ry + extraY}deg)`;
+
+                if (updateTot || index === state.count - 1) updateTotal();
+            }, 600 + (index * 100)); // Stagger slightly if rolling all? No, concurrent is better for chaos.
+        }
+
+        function updateTotal() {
+            const total = state.values.reduce((a, b) => a + b, 0);
+            els.totalDisplay.textContent = total;
+        }
+
+        function playRollSound() {
+            // Simple synth since external assets might fail
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(200, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.1);
+
+                gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1);
+            }
+        }
+
+        init();
     </script>
 </body>
 
