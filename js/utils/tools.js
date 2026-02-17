@@ -57,6 +57,8 @@ export const tools = [
     { id: 'util-screen', name: 'Screen Recorder', category: 'media', url: 'tools/media/screen-recorder.html', description: 'Record screen & mic.', icon: 'fas fa-video', color: '#e91e63', keywords: 'capture video' },
     { id: 'util-voice', name: 'Voice Recorder', category: 'media', url: 'tools/media/voice-recorder.html', description: 'Record audio/mp3.', icon: 'fas fa-microphone', color: '#e91e63', keywords: 'sound mic' },
     { id: 'util-audio', name: 'Audio Trimmer', category: 'media', url: 'tools/media/audio-trimmer.html', description: 'Cut MP3/WAV files.', icon: 'fas fa-cut', color: '#e91e63', keywords: 'music sound edit' },
+    { id: 'util-converter', name: 'Unit Converter', category: 'utility', url: 'tools/dev/unit-converter.html', description: 'Convert length, weight, currency.', icon: 'fas fa-exchange-alt', color: '#8e44ad', keywords: 'calc measure' },
+    { id: 'util-timer', name: 'Stopwatch & Timer', category: 'utility', url: 'tools/dev/timer.html', description: 'Track time accurately.', icon: 'fas fa-stopwatch', color: '#e74c3c', keywords: 'clock alarm' },
 
     // Fun & Games
     { id: 'game-hub', name: 'Game Arcade', category: 'fun', url: 'games/index.html', description: 'Play offline games.', icon: 'fas fa-gamepad', color: '#ffeb3b', keywords: 'play fun 2048' },

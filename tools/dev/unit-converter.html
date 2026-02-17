@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Converter - Vibox</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .converter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .converter-type {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .type-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .type-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .col-2 {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group input {
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            width: 100%;
+        }
+
+        .input-group select {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .swap-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 10px;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .swap-btn:hover {
+            background: var(--hover-bg);
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 600px) {
+            .col-2 {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .swap-btn {
+                transform: rotate(90deg);
+                margin: 0 auto;
+            }
+
+            .swap-btn:hover {
+                transform: rotate(270deg);
+            }
+        }
+
+        .result-info {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <a href="../../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+            <h1>Unit Converter</h1>
+        </header>
+
+        <main>
+            <div class="tool-card">
+                <div class="converter-container">
+                    <div class="converter-type" id="typeContainer">
+                        <button class="type-btn active" data-type="length">Length</button>
+                        <button class="type-btn" data-type="weight">Weight</button>
+                        <button class="type-btn" data-type="data">Data</button>
+                        <button class="type-btn" data-type="currency">Currency</button>
+                        <button class="type-btn" data-type="temperature">Temp</button>
+                        <button class="type-btn" data-type="time">Time</button>
+                    </div>
+
+                    <div class="col-2">
+                        <div class="input-group">
+                            <label>From</label>
+                            <input type="number" id="inputVal" value="1" placeholder="Enter value">
+                            <select id="fromUnit"></select>
+                        </div>
+
+                        <button class="swap-btn" id="swapBtn"><i class="fas fa-exchange-alt"></i></button>
+
+                        <div class="input-group">
+                            <label>To</label>
+                            <input type="number" id="outputVal" readonly placeholder="Result">
+                            <select id="toUnit"></select>
+                        </div>
+                    </div>
+
+                    <div class="result-info" id="rateInfo" style="display:none;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const units = {
+            length: {
+                base: 'm',
+                rates: { m: 1, km: 0.001, cm: 100, mm: 1000, in: 39.3701, ft: 3.28084, yd: 1.09361, mi: 0.000621371 }
+            },
+            weight: {
+                base: 'kg',
+                rates: { kg: 1, g: 1000, mg: 1000000, lb: 2.20462, oz: 35.274 }
+            },
+            data: {
+                base: 'B',
+                rates: { B: 1, KB: 1 / 1024, MB: 1 / 1048576, GB: 1 / 1073741824, TB: 1 / 1099511627776 }
+            },
+            time: {
+                base: 's',
+                rates: { s: 1, m: 1 / 60, h: 1 / 3600, d: 1 / 86400, w: 1 / 604800 }
+            },
+            temperature: {
+                special: true // Needs formula
+            },
+            currency: {
+                base: 'USD',
+                rates: { USD: 1, EUR: 0.93, GBP: 0.79, INR: 83.00, JPY: 150.00, CAD: 1.35, AUD: 1.53 }, // Fallback
+                symbol: { USD: '$', EUR: '€', GBP: '£', INR: '₹', JPY: '¥' }
+            }
+        };
+
+        let currentType = 'length';
+
+        const inputVal = document.getElementById('inputVal');
+        const outputVal = document.getElementById('outputVal');
+        const fromUnit = document.getElementById('fromUnit');
+        const toUnit = document.getElementById('toUnit');
+        const swapBtn = document.getElementById('swapBtn');
+        const rateInfo = document.getElementById('rateInfo');
+
+        // Initialize
+        function init() {
+            setupTypeButtons();
+            loadUnits(currentType);
+            addListeners();
+            convert();
+        }
+
+        function setupTypeButtons() {
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentType = btn.dataset.type;
+                    loadUnits(currentType);
+                    convert();
+                });
+            });
+        }
+
+        function loadUnits(type) {
+            fromUnit.innerHTML = '';
+            toUnit.innerHTML = '';
+
+            if (type === 'temperature') {
+                const tempUnits = ['Celsius', 'Fahrenheit', 'Kelvin'];
+                tempUnits.forEach(u => {
+                    fromUnit.add(new Option(u, u));
+                    toUnit.add(new Option(u, u));
+                });
+                toUnit.selectedIndex = 1;
+            } else {
+                const keys = Object.keys(units[type].rates);
+                keys.forEach(u => {
+                    fromUnit.add(new Option(u, u));
+                    toUnit.add(new Option(u, u));
+                });
+                // Set default different unit
+                if (keys.length > 1) toUnit.selectedIndex = 1;
+
+                if (type === 'currency') {
+                    fetchCurrencyRates();
+                } else {
+                    rateInfo.style.display = 'none';
+                }
+            }
+        }
+
+        function convert() {
+            const val = parseFloat(inputVal.value);
+            if (isNaN(val)) {
+                outputVal.value = '';
+                return;
+            }
+
+            const from = fromUnit.value;
+            const to = toUnit.value;
+            let result;
+
+            if (currentType === 'temperature') {
+                result = convertTemp(val, from, to);
+            } else {
+                const rateFrom = units[currentType].rates[from];
+                const rateTo = units[currentType].rates[to];
+                // Convert to base, then to target
+                const baseVal = val / rateFrom;
+                result = baseVal * rateTo;
+            }
+
+            // Formatting
+            if (currentType === 'currency') {
+                outputVal.value = result.toFixed(2);
+            } else if (result < 0.000001 || result > 1000000) {
+                outputVal.value = result.toExponential(4);
+            } else {
+                outputVal.value = parseFloat(result.toPrecision(6)); // Clean up floating point errors
+            }
+        }
+
+        function convertTemp(val, from, to) {
+            if (from === to) return val;
+            let cel;
+            // To Celsius
+            if (from === 'Celsius') cel = val;
+            if (from === 'Fahrenheit') cel = (val - 32) * 5 / 9;
+            if (from === 'Kelvin') cel = val - 273.15;
+
+            // From Celsius
+            if (to === 'Celsius') return cel;
+            if (to === 'Fahrenheit') return (cel * 9 / 5) + 32;
+            if (to === 'Kelvin') return cel + 273.15;
+        }
+
+        function addListeners() {
+            inputVal.addEventListener('input', convert);
+            fromUnit.addEventListener('change', convert);
+            toUnit.addEventListener('change', convert);
+            swapBtn.addEventListener('click', () => {
+                const temp = fromUnit.value;
+                fromUnit.value = toUnit.value;
+                toUnit.value = temp;
+                convert();
+            });
+        }
+
+        async function fetchCurrencyRates() {
+            // Only fetch if strictly currency and online
+            if (!navigator.onLine) {
+                rateInfo.textContent = "Offline mode: Estimated rates used.";
+                rateInfo.style.display = 'block';
+                return;
+            }
+
+            rateInfo.textContent = "Fetching live rates...";
+            rateInfo.style.display = 'block';
+
+            try {
+                // Using frankfurter.app (Open API, no key)
+                const res = await fetch('https://api.frankfurter.app/latest?from=USD');
+                const data = await res.json();
+
+                // Update USD base rates
+                if (data && data.rates) {
+                    // Update our internal table relative to USD
+                    units.currency.rates = { USD: 1, ...data.rates };
+                    rateInfo.textContent = `Live rates updated: ${data.date}`;
+                    convert(); // Recalculate
+                }
+            } catch (e) {
+                rateInfo.textContent = "Could not fetch live rates. Using estimates.";
+                console.error(e);
+            }
+        }
+
+        // Call init
+        init();
+
+    </script>
+</body>
+
+</html>
