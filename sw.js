@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v27-pdf-complete';
+const CACHE_NAME = 'vtoolz-v28-office-suite';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -25,6 +25,10 @@ const ASSETS_TO_CACHE = [
     './tools/pdf/pdf-to-word.html',
     './tools/pdf/html-to-pdf.html',
     './tools/pdf/excel-to-pdf.html',
+    './tools/office/index.html',
+    './tools/office/word.html',
+    './tools/office/excel.html',
+    './tools/office/powerpoint.html',
 
     // Core Vendors
     '/js/vendor/pdf-lib.min.js',
@@ -43,6 +47,13 @@ const ASSETS_TO_CACHE = [
     './js/vendor/mammoth.browser.min.js',
     './js/vendor/html2pdf.bundle.min.js',
     './js/vendor/xlsx.full.min.js',
+    './js/vendor/quill.min.js',
+    './js/vendor/quill.snow.css',
+    './js/vendor/jspreadsheet.js',
+    './js/vendor/jspreadsheet.css',
+    './js/vendor/jsuites.js',
+    './js/vendor/jsuites.css',
+    './js/vendor/pptxgen.bundle.min.js',
 
     // Tool Scripts (Just main ones, others cached at runtime)
     './js/pdf/pdf-main.js',

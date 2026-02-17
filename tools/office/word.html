@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free Online Word Processor - Create documents with rich text, images, tables. Export to DOCX & PDF. Works offline.">
+    <title>Word Processor - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../js/vendor/quill.snow.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --word-blue: #2b5797;
+            --word-blue-light: #1a73e8;
+        }
+
+        .word-app {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg, #1e1e2e);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .word-toolbar {
+            background: linear-gradient(135deg, var(--word-blue), var(--word-blue-light));
+            padding: 12px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .word-toolbar .tool-group {
+            display: flex;
+            gap: 4px;
+            padding-right: 12px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .word-toolbar .tool-group:last-child {
+            border-right: none;
+        }
+
+        .word-toolbar button {
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .word-toolbar button:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .word-toolbar button.active {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .word-toolbar select {
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .word-toolbar select option {
+            background: #222;
+            color: #fff;
+        }
+
+        .doc-title-bar {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .doc-title-bar input {
+            background: none;
+            border: 1px solid transparent;
+            color: inherit;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            flex: 1;
+        }
+
+        .doc-title-bar input:focus {
+            border-color: var(--word-blue-light);
+            outline: none;
+        }
+
+        .editor-container {
+            min-height: 500px;
+            background: #fff;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .ql-editor {
+            min-height: 450px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #1a1a2e;
+            padding: 40px 50px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        .ql-editor h1 {
+            font-size: 2em;
+            margin-bottom: 12px;
+        }
+
+        .ql-editor h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .ql-toolbar.ql-snow {
+            display: none !important;
+        }
+
+        .ql-container.ql-snow {
+            border: none !important;
+        }
+
+        .status-bar {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 6px 16px;
+            font-size: 12px;
+            opacity: 0.6;
+            display: flex;
+            gap: 20px;
+        }
+
+        .export-panel {
+            padding: 16px;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn.docx {
+            background: var(--word-blue);
+            color: #fff;
+        }
+
+        .export-btn.pdf {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .export-btn.txt {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .export-btn.import {
+            background: rgba(255, 255, 255, 0.1);
+            color: inherit;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        @media(max-width:600px) {
+            .ql-editor {
+                padding: 20px;
+            }
+
+            .editor-container {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">Vibox</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="index.html">Office</a></li>
+                    <li><a href="#" class="active">Word</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container" style="padding-top:20px;">
+            <div class="word-app">
+                <div class="word-toolbar" id="customToolbar">
+                    <div class="tool-group">
+                        <select id="fontFamily" title="Font Family">
+                            <option value="Georgia">Georgia</option>
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Trebuchet MS">Trebuchet MS</option>
+                        </select>
+                        <select id="fontSize" title="Font Size">
+                            <option value="12px">12</option>
+                            <option value="14px" selected>14</option>
+                            <option value="16px">16</option>
+                            <option value="18px">18</option>
+                            <option value="20px">20</option>
+                            <option value="24px">24</option>
+                            <option value="30px">30</option>
+                            <option value="36px">36</option>
+                        </select>
+                    </div>
+                    <div class="tool-group">
+                        <button id="btnBold" title="Bold"><i class="fas fa-bold"></i></button>
+                        <button id="btnItalic" title="Italic"><i class="fas fa-italic"></i></button>
+                        <button id="btnUnderline" title="Underline"><i class="fas fa-underline"></i></button>
+                        <button id="btnStrike" title="Strikethrough"><i class="fas fa-strikethrough"></i></button>
+                    </div>
+                    <div class="tool-group">
+                        <select id="heading" title="Heading">
+                            <option value="">Normal</option>
+                            <option value="1">H1</option>
+                            <option value="2">H2</option>
+                            <option value="3">H3</option>
+                        </select>
+                        <input type="color" id="textColor" value="#1a1a2e" title="Text Color"
+                            style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;">
+                        <input type="color" id="bgColor" value="#ffffff" title="Highlight"
+                            style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;">
+                    </div>
+                    <div class="tool-group">
+                        <button id="btnAlignL" title="Align Left"><i class="fas fa-align-left"></i></button>
+                        <button id="btnAlignC" title="Center"><i class="fas fa-align-center"></i></button>
+                        <button id="btnAlignR" title="Align Right"><i class="fas fa-align-right"></i></button>
+                        <button id="btnAlignJ" title="Justify"><i class="fas fa-align-justify"></i></button>
+                    </div>
+                    <div class="tool-group">
+                        <button id="btnBullet" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                        <button id="btnOrdered" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+                        <button id="btnBlockquote" title="Quote"><i class="fas fa-quote-right"></i></button>
+                        <button id="btnCode" title="Code Block"><i class="fas fa-code"></i></button>
+                    </div>
+                    <div class="tool-group">
+                        <button id="btnImage" title="Insert Image"><i class="fas fa-image"></i></button>
+                        <button id="btnLink" title="Insert Link"><i class="fas fa-link"></i></button>
+                        <button id="btnDivider" title="Divider"><i class="fas fa-minus"></i></button>
+                    </div>
+                    <div class="tool-group">
+                        <button id="btnUndo" title="Undo"><i class="fas fa-undo"></i></button>
+                        <button id="btnRedo" title="Redo"><i class="fas fa-redo"></i></button>
+                        <button id="btnClean" title="Clear Formatting"><i class="fas fa-eraser"></i></button>
+                    </div>
+                </div>
+
+                <div class="doc-title-bar">
+                    <i class="fas fa-file-word" style="color:var(--word-blue-light);"></i>
+                    <input type="text" id="docTitle" value="Untitled Document" placeholder="Document title...">
+                </div>
+
+                <div class="editor-container">
+                    <div id="editor"></div>
+                </div>
+
+                <div class="status-bar">
+                    <span id="wordCount">Words: 0</span>
+                    <span id="charCount">Characters: 0</span>
+                    <span id="lineCount">Lines: 0</span>
+                </div>
+
+                <div class="export-panel">
+                    <button class="export-btn import" onclick="importFile()">
+                        <i class="fas fa-file-import"></i> Import .txt
+                    </button>
+                    <button class="export-btn txt" onclick="exportTxt()">
+                        <i class="fas fa-file-alt"></i> Export .txt
+                    </button>
+                    <button class="export-btn docx" onclick="exportDocx()">
+                        <i class="fas fa-file-word"></i> Export .docx
+                    </button>
+                    <button class="export-btn pdf" onclick="exportPdf()">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
+        </div>
+    </footer>
+
+    <input type="file" id="fileInput" accept=".txt" style="display:none;">
+
+    <script src="../../js/vendor/quill.min.js"></script>
+    <script src="../../js/vendor/html2pdf.bundle.min.js"></script>
+    <script>
+        // Initialize Quill
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: false,
+                history: { maxStack: 100 }
+            },
+            placeholder: 'Start typing your document here...'
+        });
+
+        // Toolbar bindings
+        document.getElementById('btnBold').onclick = () => toggleFormat('bold');
+        document.getElementById('btnItalic').onclick = () => toggleFormat('italic');
+        document.getElementById('btnUnderline').onclick = () => toggleFormat('underline');
+        document.getElementById('btnStrike').onclick = () => toggleFormat('strike');
+
+        document.getElementById('btnAlignL').onclick = () => quill.format('align', false);
+        document.getElementById('btnAlignC').onclick = () => quill.format('align', 'center');
+        document.getElementById('btnAlignR').onclick = () => quill.format('align', 'right');
+        document.getElementById('btnAlignJ').onclick = () => quill.format('align', 'justify');
+
+        document.getElementById('btnBullet').onclick = () => toggleFormat('list', 'bullet');
+        document.getElementById('btnOrdered').onclick = () => toggleFormat('list', 'ordered');
+        document.getElementById('btnBlockquote').onclick = () => toggleFormat('blockquote');
+        document.getElementById('btnCode').onclick = () => toggleFormat('code-block');
+
+        document.getElementById('btnUndo').onclick = () => quill.history.undo();
+        document.getElementById('btnRedo').onclick = () => quill.history.redo();
+        document.getElementById('btnClean').onclick = () => {
+            const range = quill.getSelection();
+            if (range) quill.removeFormat(range.index, range.length);
+        };
+
+        document.getElementById('btnImage').onclick = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = () => {
+                const file = input.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const range = quill.getSelection(true);
+                    quill.insertEmbed(range.index, 'image', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        };
+
+        document.getElementById('btnLink').onclick = () => {
+            const url = prompt('Enter URL:');
+            if (url) {
+                const range = quill.getSelection(true);
+                if (range.length > 0) {
+                    quill.format('link', url);
+                } else {
+                    quill.insertText(range.index, url, 'link', url);
+                }
+            }
+        };
+
+        document.getElementById('btnDivider').onclick = () => {
+            const range = quill.getSelection(true);
+            quill.insertText(range.index, '\n');
+            quill.insertEmbed(range.index + 1, 'divider', true);
+            quill.setSelection(range.index + 2);
+        };
+
+        document.getElementById('fontFamily').onchange = function () {
+            quill.format('font', this.value);
+        };
+        document.getElementById('fontSize').onchange = function () {
+            quill.format('size', this.value);
+        };
+        document.getElementById('heading').onchange = function () {
+            quill.format('header', this.value ? parseInt(this.value) : false);
+        };
+        document.getElementById('textColor').oninput = function () {
+            quill.format('color', this.value);
+        };
+        document.getElementById('bgColor').oninput = function () {
+            quill.format('background', this.value);
+        };
+
+        function toggleFormat(name, value) {
+            const current = quill.getFormat();
+            if (value) {
+                quill.format(name, current[name] === value ? false : value);
+            } else {
+                quill.format(name, !current[name]);
+            }
+        }
+
+        // Word count
+        quill.on('text-change', () => {
+            const text = quill.getText().trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            const chars = text.length;
+            const lines = text.split('\n').length;
+            document.getElementById('wordCount').textContent = `Words: ${words}`;
+            document.getElementById('charCount').textContent = `Characters: ${chars}`;
+            document.getElementById('lineCount').textContent = `Lines: ${lines}`;
+        });
+
+        // Export as TXT
+        function exportTxt() {
+            const text = quill.getText();
+            const title = document.getElementById('docTitle').value || 'document';
+            const blob = new Blob([text], { type: 'text/plain' });
+            downloadBlob(blob, title + '.txt');
+        }
+
+        // Export as DOCX
+        function exportDocx() {
+            const html = quill.root.innerHTML;
+            const title = document.getElementById('docTitle').value || 'document';
+            const fullHtml = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+                <head><meta charset="utf-8"><title>${title}</title>
+                <style>
+                    body { font-family: 'Calibri', sans-serif; font-size: 12pt; line-height: 1.6; color: #1a1a2e; margin: 1in; }
+                    h1 { font-size: 24pt; color: #2b5797; }
+                    h2 { font-size: 18pt; color: #2b5797; }
+                    h3 { font-size: 14pt; color: #2b5797; }
+                    img { max-width: 100%; }
+                    blockquote { border-left: 4px solid #2b5797; padding-left: 12px; color: #555; }
+                    pre { background: #f5f5f5; padding: 12px; border-radius: 6px; font-family: 'Courier New', monospace; }
+                </style></head>
+                <body>${html}</body></html>
+            `;
+            const blob = new Blob(['\ufeff', fullHtml], { type: 'application/msword' });
+            downloadBlob(blob, title + '.doc');
+        }
+
+        // Export as PDF
+        function exportPdf() {
+            const element = quill.root.cloneNode(true);
+            element.style.padding = '30px';
+            element.style.background = '#fff';
+            element.style.color = '#1a1a2e';
+            element.style.fontFamily = 'Georgia, serif';
+            const title = document.getElementById('docTitle').value || 'document';
+            html2pdf().set({
+                margin: [15, 15, 15, 15],
+                filename: title + '.pdf',
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(element).save();
+        }
+
+        // Import TXT
+        function importFile() {
+            document.getElementById('fileInput').click();
+        }
+        document.getElementById('fileInput').onchange = function () {
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                quill.setText(e.target.result);
+                document.getElementById('docTitle').value = file.name.replace(/\.[^.]+$/, '');
+            };
+            reader.readAsText(file);
+        };
+
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-save to localStorage
+        const STORAGE_KEY = 'vibox-word-doc';
+        quill.on('text-change', debounce(() => {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                content: quill.getContents(),
+                title: document.getElementById('docTitle').value
+            }));
+        }, 1000));
+
+        // Restore
+        try {
+            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (saved && saved.content) {
+                quill.setContents(saved.content);
+                if (saved.title) document.getElementById('docTitle').value = saved.title;
+            }
+        } catch (e) { }
+
+        function debounce(fn, ms) {
+            let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+        }
+    </script>
+    <script src="../../js/utils/common.js" type="module"></script>
+</body>
+
+</html>

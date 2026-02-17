@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free Online Office Tools: Word Processor, Spreadsheet Editor, Presentation Maker. Work offline, fully client-side.">
+    <title>Office Tools - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .office-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            padding: 20px 0;
+        }
+
+        .office-card {
+            background: var(--card-bg, rgba(255, 255, 255, 0.06));
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .office-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .office-card .icon-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 18px;
+            color: #fff;
+        }
+
+        .office-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 8px;
+        }
+
+        .office-card p {
+            opacity: 0.7;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .office-card .badge {
+            margin-top: 14px;
+            font-size: 0.75em;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+
+        .word-bg {
+            background: linear-gradient(135deg, #2b5797, #1a73e8);
+        }
+
+        .excel-bg {
+            background: linear-gradient(135deg, #1d6f42, #21a366);
+        }
+
+        .ppt-bg {
+            background: linear-gradient(135deg, #d04423, #ff6f43);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="../../index.html" class="logo">Vibox</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="#" class="active">Office Tools</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container tool-container">
+            <div class="hero-section" style="padding: 40px 0; text-align: center;">
+                <h1>📝 Office Suite</h1>
+                <p>Create documents, spreadsheets, and presentations — all in your browser, 100% offline.</p>
+            </div>
+
+            <div class="office-grid">
+                <!-- Word -->
+                <a href="word.html" class="office-card">
+                    <div class="icon-wrap word-bg">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <h3>Word Processor</h3>
+                    <p>Rich text editing with fonts, styles, images, tables. Export to DOCX & PDF.</p>
+                    <span class="badge">📄 .docx / .pdf export</span>
+                </a>
+
+                <!-- Excel -->
+                <a href="excel.html" class="office-card">
+                    <div class="icon-wrap excel-bg">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <h3>Spreadsheet Editor</h3>
+                    <p>Full spreadsheet with formulas, sorting, formatting. Import & export XLSX/CSV.</p>
+                    <span class="badge">📊 formulas & charts</span>
+                </a>
+
+                <!-- PowerPoint -->
+                <a href="powerpoint.html" class="office-card">
+                    <div class="icon-wrap ppt-bg">
+                        <i class="fas fa-file-powerpoint"></i>
+                    </div>
+                    <h3>Presentation Maker</h3>
+                    <p>Create slide decks with text, shapes, images. Export as PPTX for PowerPoint.</p>
+                    <span class="badge">🎞️ .pptx export</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
+        </div>
+    </footer>
+    <script src="../../js/utils/common.js" type="module"></script>
+</body>
+
+</html>

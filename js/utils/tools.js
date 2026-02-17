@@ -85,4 +85,9 @@ export const tools = [
     { id: 'fun-reaction', name: 'Reaction Test', category: 'fun', url: 'tools/fun/reaction.html', description: 'Test multiple reflexes.', icon: 'fas fa-bolt', color: '#ffeb3b', keywords: 'speed game' },
     { id: 'fun-list', name: 'List Shuffler', category: 'fun', url: 'tools/fun/list.html', description: 'Randomize lists.', icon: 'fas fa-list-ol', color: '#ffeb3b', keywords: 'sort random' },
     { id: 'fun-music', name: 'Music Studio', category: 'fun', url: 'tools/fun/music.html', description: 'Play Piano & Drums.', icon: 'fas fa-music', color: '#ffeb3b', keywords: 'piano drums audio' },
+
+    // Office Tools
+    { id: 'office-word', name: 'Word Processor', category: 'office', url: 'tools/office/word.html', description: 'Rich text editor with export to DOCX & PDF.', icon: 'fas fa-file-word', color: '#2b5797', keywords: 'document write edit text docx word office' },
+    { id: 'office-excel', name: 'Spreadsheet Editor', category: 'office', url: 'tools/office/excel.html', description: 'Spreadsheet with formulas, import/export XLSX.', icon: 'fas fa-file-excel', color: '#21a366', keywords: 'excel sheet csv formula table data office' },
+    { id: 'office-ppt', name: 'Presentation Maker', category: 'office', url: 'tools/office/powerpoint.html', description: 'Create slide presentations, export PPTX.', icon: 'fas fa-file-powerpoint', color: '#d04423', keywords: 'slides powerpoint pptx presentation office' },
 ];
