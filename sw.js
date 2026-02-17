@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v23-fix-gov';
+const CACHE_NAME = 'vtoolz-v24-pwa-fix-2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
