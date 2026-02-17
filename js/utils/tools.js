@@ -72,4 +72,5 @@ export const tools = [
     { id: 'fun-team', name: 'Team Generator', category: 'fun', url: 'tools/fun/team.html', description: 'Randomize groups.', icon: 'fas fa-users', color: '#ffeb3b', keywords: 'groups teams' },
     { id: 'fun-reaction', name: 'Reaction Test', category: 'fun', url: 'tools/fun/reaction.html', description: 'Test multiple reflexes.', icon: 'fas fa-bolt', color: '#ffeb3b', keywords: 'speed game' },
     { id: 'fun-list', name: 'List Shuffler', category: 'fun', url: 'tools/fun/list.html', description: 'Randomize lists.', icon: 'fas fa-list-ol', color: '#ffeb3b', keywords: 'sort random' },
+    { id: 'fun-music', name: 'Music Studio', category: 'fun', url: 'tools/fun/music.html', description: 'Play Piano & Drums.', icon: 'fas fa-music', color: '#ffeb3b', keywords: 'piano drums audio' },
 ];

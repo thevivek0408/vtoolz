@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Studio - Vibox</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Music Studio Styles */
+        body {
+            overflow: hidden;
+            background: var(--bg-color);
+            user-select: none;
+            /* Prevent selection on rapid clicks */
+        }
+
+        .studio-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Sidebar similar to previous Studios but tailored */
+        .sidebar {
+            background: var(--surface-color);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .control-group {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .control-group h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .control-item {
+            margin-bottom: 15px;
+        }
+
+        button.nav-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button.nav-btn.active,
+        button.nav-btn:hover {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        /* Main Stage */
+        .stage {
+            background: radial-gradient(circle at center, #1a1a1a, #000);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* PIANO */
+        .piano-container {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+            background: #111;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .white-keys {
+            display: flex;
+        }
+
+        .key {
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            transition: all 0.1s;
+        }
+
+        .key.white {
+            width: 60px;
+            height: 200px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px;
+            z-index: 1;
+            box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .key.white:active,
+        .key.white.active {
+            background: #eee;
+            box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.2);
+            transform: translateY(2px);
+        }
+
+        .key.black {
+            width: 40px;
+            height: 120px;
+            background: #111;
+            border-radius: 0 0 5px 5px;
+            position: absolute;
+            z-index: 2;
+            top: 0;
+            margin-left: -20px;
+            /* Overlap previous white key */
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .key.black:active,
+        .key.black.active {
+            background: #333;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .key-label {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #999;
+            pointer-events: none;
+        }
+
+        .key.black .key-label {
+            bottom: 5px;
+            color: #555;
+        }
+
+        /* DRUMS */
+        .drum-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 30px;
+            background: #222;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .pad {
+            width: 100px;
+            height: 100px;
+            background: #333;
+            border-radius: 10px;
+            border: 2px solid #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.05s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pad:active,
+        .pad.active {
+            transform: scale(0.95);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+            background: #444;
+        }
+
+        .pad i {
+            font-size: 24px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .pad span {
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .pad .shortcut {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 10px;
+            color: #555;
+            background: #222;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .studio-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .sidebar {
+                height: auto;
+                padding: 10px;
+                flex-direction: row;
+                align-items: center;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .sidebar-header {
+                border-bottom: none;
+                padding-bottom: 0;
+                margin-right: 20px;
+            }
+
+            .control-group {
+                display: none;
+            }
+
+            /* Hide settings on small mobile for space */
+
+            /* Show instrument switcher as tabs */
+            .sidebar .nav-btn {
+                width: auto;
+                padding: 5px 15px;
+            }
+
+            .key.white {
+                width: 40px;
+                height: 160px;
+            }
+
+            .key.black {
+                width: 30px;
+                height: 100px;
+                margin-left: -15px;
+            }
+
+            .drum-container {
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .pad {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="studio-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../../index.html" style="color:var(--text-color)"><i class="fas fa-chevron-left"></i></a>
+                <span class="logo-text">Music Studio</span>
+            </div>
+
+            <div class="control-group">
+                <h3>Instruments</h3>
+                <!-- Tab Buttons -->
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <button class="nav-btn active" id="btnPiano" style="flex:1; justify-content:center;"><i
+                            class="fas fa-music"></i> Piano</button>
+                    <button class="nav-btn" id="btnDrums" style="flex:1; justify-content:center;"><i
+                            class="fas fa-drum"></i> Drums</button>
+                </div>
+
+                <!-- Preset Dropdown (Piano Only) -->
+                <div id="pianoControls">
+                    <label style="font-size:0.8rem; color:#888; display:block; margin-bottom:5px;">Sound Preset</label>
+                    <select id="pianoPreset"
+                        style="width:100%; padding:8px; background:var(--bg-color); border:1px solid var(--border-color); color:var(--text-color); border-radius:5px;">
+                        <option value="grand">Grand Piano</option>
+                        <option value="synth">Synth Lead</option>
+                        <option value="organ">Retro Organ</option>
+                        <option value="bass">Deep Bass</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Recording</h3>
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <button id="btnRecord" class="nav-btn"
+                        style="justify-content:center; color:#e74c3c; border-color:#e74c3c;">
+                        <i class="fas fa-circle"></i> Rec
+                    </button>
+                    <button id="btnStopRec" class="nav-btn" style="justify-content:center; display:none;">
+                        <i class="fas fa-stop"></i> Stop
+                    </button>
+                </div>
+                <div id="recordingStatus"
+                    style="font-size:0.8rem; color:#e74c3c; text-align:center; height:20px; margin-bottom:10px;"></div>
+                <button id="btnDownload" class="nav-btn"
+                    style="justify-content:center; display:none; background:#2ecc71; color:#fff; border:none;">
+                    <i class="fas fa-download"></i> Save .webm
+                </button>
+            </div>
+
+            <div class="control-group">
+                <h3>Settings</h3>
+                <div class="control-item">
+                    <label>Volume</label>
+                    <input type="range" id="volumeControl" min="0" max="100" value="80" style="width:100%">
+                </div>
+                <div class="control-item">
+                    <p style="font-size:0.8rem; color:#888;">Keys: A-K (White), W-O (Black)</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Stage -->
+        <main class="stage" id="stage">
+            <!-- Piano Interface -->
+            <div class="piano-container" id="pianoUI">
+                <!-- Keys will be generated by JS -->
+            </div>
+
+            <!-- Drum Interface (Hidden initially) -->
+            <div class="drum-container" id="drumUI" style="display:none;">
+                <!-- Pads will be generated by JS -->
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import '../../js/utils/common.js';
+
+        const els = {
+            stage: document.getElementById('stage'),
+            pianoUI: document.getElementById('pianoUI'),
+            drumUI: document.getElementById('drumUI'),
+            btnPiano: document.getElementById('btnPiano'),
+            btnDrums: document.getElementById('btnDrums'),
+            pianoControls: document.getElementById('pianoControls'),
+            pianoPreset: document.getElementById('pianoPreset'),
+            btnRecord: document.getElementById('btnRecord'),
+            btnStopRec: document.getElementById('btnStopRec'),
+            btnDownload: document.getElementById('btnDownload'),
+            recStatus: document.getElementById('recordingStatus'),
+            volume: document.getElementById('volumeControl')
+        };
+
+        const state = {
+            mode: 'piano', // or 'drums'
+            volume: 0.8,
+            audioCtx: null,
+            preset: 'grand',
+            recording: false,
+            mediaRecorder: null,
+            audioChunks: [],
+            destNode: null,
+            timerInterval: null,
+            startTime: 0
+        };
+
+        // --- AUDIO ENGINE START ---
+
+        function getAudioContext() {
+            if (!state.audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                state.audioCtx = new AudioContext();
+
+                // Create Destination Node for Recording
+                state.destNode = state.audioCtx.createMediaStreamDestination();
+            }
+            if (state.audioCtx.state === 'suspended') {
+                state.audioCtx.resume();
+            }
+            return state.audioCtx;
+        }
+
+        // --- EFFECTS ---
+
+        // Simple Reverb (Convolver) - Impulse Response
+        function createReverb(ctx) {
+            const convolver = ctx.createConvolver();
+            // Generate a simple impulse response (white noise decay)
+            const rate = ctx.sampleRate;
+            const length = rate * 2.0; // 2 seconds
+            const impulse = ctx.createBuffer(2, length, rate);
+            const left = impulse.getChannelData(0);
+            const right = impulse.getChannelData(1);
+
+            for (let i = 0; i < length; i++) {
+                // Exponential decay
+                const n = i;
+                const decay = Math.pow(1 - n / length, 2.0);
+                left[i] = (Math.random() * 2 - 1) * decay;
+                right[i] = (Math.random() * 2 - 1) * decay;
+            }
+            convolver.buffer = impulse;
+            return convolver;
+        }
+
+        let reverbNode = null;
+
+        function getMainOutput(ctx) {
+            // Chain: Source -> Gain -> [Reverb/Effects] -> Destination AND Recorder
+            return {
+                destination: ctx.destination,
+                recordDest: state.destNode.stream ? state.destNode : null
+            };
+        }
+
+        // --- SYNTHESIZER ---
+
+        function playNote(freq) {
+            const ctx = getAudioContext();
+            const t = ctx.currentTime;
+            const masterGain = ctx.createGain();
+
+            // Connect to real output
+            masterGain.connect(ctx.destination);
+            // Connect to recorder
+            if (state.destNode) masterGain.connect(state.destNode);
+
+            // Preset Logic
+            const type = state.preset;
+
+            if (type === 'grand') {
+                // Smooth Triangle with slight sine for body
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, t);
+
+                // Envelope (ADSR)
+                masterGain.gain.setValueAtTime(0, t);
+                masterGain.gain.linearRampToValueAtTime(state.volume, t + 0.01);
+                masterGain.gain.exponentialRampToValueAtTime(state.volume * 0.7, t + 0.1); // Decay
+                masterGain.gain.setTargetAtTime(0, t + 0.2, 0.5); // Release (approx)
+
+                osc.connect(masterGain);
+                osc.start(t);
+                osc.stop(t + 2.0);
+            } else if (type === 'synth') {
+                // Sawtooth + Detuned Sawtooth (Thick)
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                osc1.type = 'sawtooth';
+                osc2.type = 'sawtooth';
+
+                osc1.frequency.setValueAtTime(freq, t);
+                osc2.frequency.setValueAtTime(freq * 1.01, t); // Detune
+
+                // Filter (Lowpass)
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(2000, t);
+                filter.Q.value = 1;
+
+                // Envelope
+                masterGain.gain.setValueAtTime(0, t);
+                masterGain.gain.linearRampToValueAtTime(state.volume * 0.6, t + 0.05);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+
+                osc1.connect(filter);
+                osc2.connect(filter);
+                filter.connect(masterGain);
+
+                osc1.start(t);
+                osc2.start(t);
+                osc1.stop(t + 1.0);
+                osc2.stop(t + 1.0);
+            } else if (type === 'organ') {
+                // Square wave
+                const osc = ctx.createOscillator();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, t);
+
+                masterGain.gain.setValueAtTime(0, t);
+                masterGain.gain.linearRampToValueAtTime(state.volume * 0.5, t + 0.02);
+                masterGain.gain.setTargetAtTime(0, t + 0.1, 0.3);
+
+                osc.connect(masterGain);
+                osc.start(t);
+                osc.stop(t + 1.0);
+            } else if (type === 'bass') {
+                // Sine + Square Sub
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq * 0.5, t); // Octave down
+
+                masterGain.gain.setValueAtTime(0, t);
+                masterGain.gain.linearRampToValueAtTime(state.volume, t + 0.05);
+                masterGain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+
+                osc.connect(masterGain);
+                osc.start(t);
+                osc.stop(t + 1.0);
+            }
+        }
+
+        // --- DRUM ENGINE (Improved) ---
+        function playDrum(type) {
+            const ctx = getAudioContext();
+            const t = ctx.currentTime;
+
+            // Output node (Gain)
+            const masterGain = ctx.createGain();
+            masterGain.gain.value = 1.0;
+            masterGain.connect(ctx.destination);
+            if (state.destNode) masterGain.connect(state.destNode);
+
+            if (type === 'kick') {
+                // Punchy Kick
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(150, t);
+                osc.frequency.exponentialRampToValueAtTime(0.01, t + 0.5);
+
+                gain.gain.setValueAtTime(state.volume, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+
+                osc.start(t);
+                osc.stop(t + 0.5);
+
+                // Click (Attack)
+                const clickOsc = ctx.createOscillator();
+                const clickGain = ctx.createGain();
+                clickOsc.type = 'square';
+                clickOsc.frequency.setValueAtTime(1000, t);
+                clickGain.gain.setValueAtTime(state.volume * 0.3, t);
+                clickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+
+                clickOsc.connect(clickGain);
+                clickGain.connect(masterGain);
+                clickOsc.start(t);
+                clickOsc.stop(t + 0.02);
+            } else if (type === 'snare') {
+                // White Noise Burst
+                const bufferSize = ctx.sampleRate * 0.2;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 1000;
+
+                const noiseEnv = ctx.createGain();
+                noiseEnv.gain.setValueAtTime(state.volume, t);
+                noiseEnv.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+
+                noise.connect(filter);
+                filter.connect(noiseEnv);
+                noiseEnv.connect(masterGain);
+                noise.start(t);
+
+                // Tonal Snap (Body)
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(200, t);
+                const oscEnv = ctx.createGain();
+                oscEnv.gain.setValueAtTime(state.volume * 0.4, t);
+                oscEnv.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+
+                osc.connect(oscEnv);
+                oscEnv.connect(masterGain);
+                osc.start(t);
+                osc.stop(t + 0.1);
+            } else if (type === 'hihat') {
+                // High frequency metallic noise
+                const bufferSize = ctx.sampleRate * 0.05;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    if (Math.random() > 0.5) data[i] = 1;
+                    else data[i] = -1;
+                }
+
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 8000;
+
+                const env = ctx.createGain();
+                env.gain.setValueAtTime(state.volume * 0.6, t);
+                env.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+
+                noise.connect(filter);
+                filter.connect(env);
+                env.connect(masterGain);
+                noise.start(t);
+            } else if (type === 'tom') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, t);
+                osc.frequency.exponentialRampToValueAtTime(50, t + 0.3);
+
+                gain.gain.setValueAtTime(state.volume * 0.8, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start(t);
+                osc.stop(t + 0.3);
+            }
+        }
+
+
+        // --- UI LOGIC ---
+
+        const pianoKeys = [
+            { note: 'C3', type: 'white', freq: 130.81, key: 'a' },
+            { note: 'C#3', type: 'black', freq: 138.59, key: 'w' },
+            { note: 'D3', type: 'white', freq: 146.83, key: 's' },
+            { note: 'D#3', type: 'black', freq: 155.56, key: 'e' },
+            { note: 'E3', type: 'white', freq: 164.81, key: 'd' },
+            { note: 'F3', type: 'white', freq: 174.61, key: 'f' },
+            { note: 'F#3', type: 'black', freq: 185.00, key: 't' },
+            { note: 'G3', type: 'white', freq: 196.00, key: 'g' },
+            { note: 'G#3', type: 'black', freq: 207.65, key: 'y' },
+            { note: 'A3', type: 'white', freq: 220.00, key: 'h' },
+            { note: 'A#3', type: 'black', freq: 233.08, key: 'u' },
+            { note: 'B3', type: 'white', freq: 246.94, key: 'j' },
+            { note: 'C4', type: 'white', freq: 261.63, key: 'k' },
+            { note: 'C#4', type: 'black', freq: 277.18, key: 'o' },
+            { note: 'D4', type: 'white', freq: 293.66, key: 'l' },
+            { note: 'D#4', type: 'black', freq: 311.13, key: 'p' },
+            { note: 'E4', type: 'white', freq: 329.63, key: ';' },
+        ];
+
+        const drums = [
+            { name: 'Kick', type: 'kick', key: 'z', icon: 'fa-drum' },
+            { name: 'Snare', type: 'snare', key: 'x', icon: 'fa-drum-steelpan' },
+            { name: 'Hi-Hat', type: 'hihat', key: 'c', icon: 'fa-ring' },
+            { name: 'Tom 1', type: 'tom', key: 'v', icon: 'fa-drum' },
+            { name: 'Tom 2', type: 'tom', key: 'b', icon: 'fa-drum' },
+            { name: 'Kick', type: 'kick', key: 'n', icon: 'fa-drum' },
+            { name: 'Snare', type: 'snare', key: 'm', icon: 'fa-drum-steelpan' },
+            { name: 'Crash', type: 'hihat', key: ',', icon: 'fa-certificate' },
+            { name: 'Clap', type: 'snare', key: '.', icon: 'fa-hands-clapping' },
+        ];
+
+        const keyMap = {};
+
+        function initPiano() {
+            const whites = pianoKeys.filter(k => k.type === 'white');
+            whites.forEach((k, i) => {
+                const key = document.createElement('div');
+                key.className = 'key white';
+                key.dataset.freq = k.freq;
+                key.dataset.key = k.key;
+                key.innerHTML = `<span class="key-label">${k.key.toUpperCase()}</span>`;
+                key.addEventListener('mousedown', () => triggerKey(key));
+                els.pianoUI.appendChild(key);
+
+                const nextNoteIndex = pianoKeys.findIndex(pk => pk.note === k.note) + 1;
+                if (nextNoteIndex < pianoKeys.length && pianoKeys[nextNoteIndex].type === 'black') {
+                    const
+                        bkData = pianoKeys[nextNoteIndex]; const bKey = document.createElement('div'); bKey.className = 'key black';
+                    bKey.dataset.freq = bkData.freq; bKey.dataset.key = bkData.key; bKey.innerHTML = `<span class="key-label">
+                ${bkData.key.toUpperCase()}</span>`;
+                    bKey.style.left = `${(i + 1) * 60}px`;
+                    bKey.addEventListener('mousedown', (e) => { e.stopPropagation(); triggerKey(bKey); });
+                    els.pianoUI.appendChild(bKey);
+                    keyMap[bkData.key] = bKey;
+                }
+                keyMap[k.key] = key;
+            });
+            els.pianoUI.style.width = `${whites.length * 60 + 40}px`;
+        }
+
+        function initDrums() {
+            drums.forEach(d => {
+                const pad = document.createElement('div');
+                pad.className = 'pad';
+                pad.dataset.type = d.type;
+                pad.dataset.key = d.key;
+                pad.innerHTML = `<span class="shortcut">${d.key.toUpperCase()}</span><i
+                    class="fas ${d.icon}"></i><span>${d.name}</span>`;
+                pad.addEventListener('mousedown', () => triggerPad(pad));
+                els.drumUI.appendChild(pad);
+                keyMap[d.key] = pad;
+            });
+        }
+
+        function triggerKey(el) {
+            el.classList.add('active');
+            playNote(parseFloat(el.dataset.freq));
+            setTimeout(() => el.classList.remove('active'), 150);
+        }
+
+        function triggerPad(el) {
+            el.classList.add('active');
+            playDrum(el.dataset.type);
+            setTimeout(() => el.classList.remove('active'), 100);
+        }
+
+        function switchMode(mode) {
+            state.mode = mode;
+            if (mode === 'piano') {
+                els.pianoUI.style.display = 'flex';
+                els.drumUI.style.display = 'none';
+                els.btnPiano.classList.add('active');
+                els.btnDrums.classList.remove('active');
+                els.pianoControls.style.display = 'block';
+            } else {
+                els.pianoUI.style.display = 'none';
+                els.drumUI.style.display = 'grid';
+                els.btnPiano.classList.remove('active');
+                els.btnDrums.classList.add('active');
+                els.pianoControls.style.display = 'none';
+            }
+        }
+
+        // --- RECORDING ---
+
+        els.btnRecord.addEventListener('click', () => {
+            const ctx = getAudioContext();
+            state.audioChunks = [];
+
+            // Create MediaRecorder from the destination stream
+            const stream = state.destNode.stream;
+            state.mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+            state.mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) state.audioChunks.push(e.data);
+            };
+
+            state.mediaRecorder.onstop = () => {
+                const blob = new Blob(state.audioChunks, { type: 'audio/webm' });
+                const url = URL.createObjectURL(blob);
+                els.btnDownload.style.display = 'flex';
+                els.btnDownload.onclick = () => {
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `music-session-${Date.now()}.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                };
+            };
+
+            state.mediaRecorder.start();
+            state.recording = true;
+            state.startTime = Date.now();
+
+            els.btnRecord.style.display = 'none';
+            els.btnStopRec.style.display = 'flex';
+            els.btnDownload.style.display = 'none';
+
+            // Timer UI
+            state.timerInterval = setInterval(() => {
+                const diff = Math.floor((Date.now() - state.startTime) / 1000);
+                const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                const s = (diff % 60).toString().padStart(2, '0');
+                els.recStatus.textContent = `Recording... ${m}:${s}`;
+            }, 1000);
+            els.recStatus.textContent = `Recording... 00:00`;
+        });
+
+        els.btnStopRec.addEventListener('click', () => {
+            if (state.mediaRecorder && state.recording) {
+                state.mediaRecorder.stop();
+                state.recording = false;
+                clearInterval(state.timerInterval);
+                els.recStatus.textContent = "Recorded! Click Save.";
+
+                els.btnRecord.style.display = 'flex';
+                els.btnStopRec.style.display = 'none';
+            }
+        });
+
+        // --- INIT REFACTOR ---
+
+        els.btnPiano.addEventListener('click', () => switchMode('piano'));
+        els.btnDrums.addEventListener('click', () => switchMode('drums'));
+        els.volume.addEventListener('input', (e) => state.volume = e.target.value / 100);
+        els.pianoPreset.addEventListener('change', (e) => state.preset = e.target.value);
+
+        window.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
+            const k = e.key.toLowerCase();
+            if (state.mode === 'piano') {
+                const found = pianoKeys.find(pk => pk.key === k);
+                if (found && keyMap[k]) triggerKey(keyMap[k]);
+            } else {
+                const found = drums.find(d => d.key === k);
+                if (found && keyMap[k]) triggerPad(keyMap[k]);
+            }
+        });
+
+        initPiano();
+        initDrums();
+
+    </script>
+</body>
+
+</html>

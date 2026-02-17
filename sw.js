@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v24-pwa-fix-2';
+const CACHE_NAME = 'vtoolz-v24-pwa-fix-3';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -48,6 +48,7 @@ const ASSETS_TO_CACHE = [
     './js/dev/diff-checker.js',
     './js/media/voice-recorder.js',
     './js/media/audio-trimmer.js',
+    './tools/fun/music.html', // Caching new tool explicitly
 
     './manifest.json',
     './assets/icon.svg'
