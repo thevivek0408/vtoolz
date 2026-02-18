@@ -57,18 +57,26 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const grid = document.getElementById('gamesGrid');
+            const container = document.getElementById('gamesGrid'); // Renaming logically in head, but purely ID based here
+            // Actually I need to replace the container logic
+            const mainContainer = document.querySelector('main .container');
             const searchInput = document.getElementById('gameSearch');
+            // Remove filter dropdown (since we are grouping by default) or keep it to jump?
+            // Let's keep it to filter the groups.
             const categoryFilter = document.getElementById('categoryFilter');
+
+            // Clear initial loading
+            const loading = document.querySelector('.loading-spinner');
+            if (loading) loading.remove();
 
             let allGames = [];
 
             try {
                 const response = await fetch('data/games-config.json');
                 allGames = await response.json();
-                renderGames(allGames);
+                renderCategorized(allGames);
             } catch (error) {
-                grid.innerHTML = '<p class="error">Failed to load games database.</p>';
+                mainContainer.innerHTML += '<p class="error">Failed to load games database.</p>';
                 console.error(error);
             }
 
@@ -83,60 +91,120 @@
                     return matchesSearch && matchesCat;
                 });
 
-                renderGames(filtered);
+                renderCategorized(filtered, term !== '' || cat !== 'all');
             }
 
             searchInput.addEventListener('input', filterGames);
             categoryFilter.addEventListener('change', filterGames);
 
-            function renderGames(games) {
-                grid.innerHTML = '';
+            function renderCategorized(games, isFiltered) {
+                // Clear existing game grids
+                const existingSections = document.querySelectorAll('.game-category-section');
+                existingSections.forEach(s => s.remove());
+
+                const gridPlacement = document.getElementById('gamesGrid');
+                if (gridPlacement) gridPlacement.style.display = 'none'; // Hide default grid container
 
                 if (games.length === 0) {
-                    grid.innerHTML = '<p class="no-results">No games found.</p>';
+                    // Show no results
                     return;
                 }
 
-                games.forEach(game => {
-                    const card = document.createElement('a');
-                    card.className = 'game-card';
-                    card.href = `play.html?id=${game.id}`;
+                // If filtered, maybe just show a single grid?
+                // The user asked to "arrange by category".
+                // Even when filtered, we can keep categories or just list results.
+                // Let's Show List if searching, Categories if browsing.
 
-                    // Engine status check
-                    const isStub = ['word', 'turn', 'physics', 'idle'].includes(game.engine);
-                    if (isStub) {
-                        // card.classList.add('coming-soon'); 
-                        // Actually, I stubbed them so they ARE playable (display text), 
-                        // but maybe we mark them differently?
-                        // User wants "Games Platform" so let's make them look active.
+                if (isFiltered) {
+                    if (gridPlacement) {
+                        gridPlacement.style.display = 'grid';
+                        gridPlacement.innerHTML = '';
+                        games.forEach(g => gridPlacement.appendChild(createGameCard(g)));
                     }
+                    return;
+                }
 
-                    // Icon/Thumbnail generation based on category/name
-                    let icon = '🎮';
-                    let color = '#3498db';
+                // Group by Category
+                const categories = {
+                    'arcade': '🕹️ Arcade',
+                    'puzzle': '🧩 Puzzle',
+                    'card': '🃏 Card & Solitaire',
+                    'word': '📝 Word Games',
+                    'strategy': '♟️ Strategy',
+                    'two-player': '👥 Two Player',
+                    'brain': '🧠 Brain Training',
+                    'sports': '⚽ Sports',
+                    'other': '🎮 Other'
+                };
 
-                    if (game.category === 'arcade') { icon = '🕹️'; color = '#e74c3c'; }
-                    if (game.category === 'puzzle') { icon = '🧩'; color = '#9b59b6'; }
-                    if (game.category === 'card') { icon = '🃏'; color = '#2ecc71'; }
-                    if (game.category === 'word') { icon = '📝'; color = '#f1c40f'; }
-                    if (game.category === 'strategy') { icon = '♟️'; color = '#34495e'; }
-                    if (game.category === 'sports') { icon = '⚽'; color = '#e67e22'; }
-                    if (game.name.includes('Snake')) icon = '🐍';
-                    if (game.name.includes('Sudoku')) icon = '🔢';
-                    if (game.name.includes('Solitaire')) icon = '🂡';
+                // Get unique categories present in games list
+                const presentCats = [...new Set(games.map(g => g.category))];
 
-                    card.innerHTML = `
-                        <div class="game-thumbnail" style="background: ${color}; color: white;">${icon}</div>
-                        <div class="game-info">
-                            <div class="game-title">${game.name}</div>
-                            <div class="game-meta">
-                                <span class="tag ${game.mode}">${game.category}</span>
-                            </div>
-                        </div>
-                    `;
+                // Sort categories manually or alphabetically? Manual order is better
+                const order = ['arcade', 'puzzle', 'card', 'two-player', 'word', 'brain', 'strategy', 'sports'];
 
-                    grid.appendChild(card);
+                order.forEach(catKey => {
+                    if (presentCats.includes(catKey)) {
+                        renderSection(catKey, categories[catKey] || catKey.toUpperCase(), games.filter(g => g.category === catKey));
+                    }
                 });
+
+                // Others
+                const leftovers = games.filter(g => !order.includes(g.category));
+                if (leftovers.length > 0) {
+                    renderSection('other', 'Other Games', leftovers);
+                }
+            }
+
+            function renderSection(id, title, matches) {
+                const section = document.createElement('section');
+                section.className = 'container game-category-section';
+                section.style.marginTop = '40px';
+
+                section.innerHTML = `
+                    <h2 class="category-title">${title} <span style="font-size:0.6em; opacity:0.6; margin-left:10px;">(${matches.length})</span></h2>
+                    <div class="games-grid"></div>
+                `;
+
+                const grid = section.querySelector('.games-grid');
+                matches.forEach(g => grid.appendChild(createGameCard(g)));
+
+                mainContainer.appendChild(section);
+            }
+
+            function createGameCard(game) {
+                const card = document.createElement('a');
+                card.className = 'game-card';
+                card.href = `play.html?id=${game.id}`;
+
+                let icon = '🎮';
+                let color = '#3498db';
+
+                if (game.category === 'arcade') { icon = '🕹️'; color = '#e74c3c'; }
+                if (game.category === 'puzzle') { icon = '🧩'; color = '#9b59b6'; }
+                if (game.category === 'card') { icon = '🃏'; color = '#2ecc71'; }
+                if (game.category === 'word') { icon = '📝'; color = '#f1c40f'; }
+                if (game.category === 'strategy') { icon = '♟️'; color = '#34495e'; }
+                if (game.category === 'sports') { icon = '⚽'; color = '#e67e22'; }
+                if (game.category === 'two-player') { icon = '👥'; color = '#e67e22'; }
+
+                if (game.name.includes('Snake')) icon = '🐍';
+                if (game.name.includes('Sudoku')) icon = '🔢';
+                if (game.name.includes('Solitaire')) icon = '🂡';
+                if (game.name.includes('Chess')) icon = '♟️';
+                if (game.name.includes('Checkers')) icon = '🏁';
+                if (game.name.includes('Connect')) icon = '🔴';
+
+                card.innerHTML = `
+                    <div class="game-thumbnail" style="background: ${color}; color: white;">${icon}</div>
+                    <div class="game-info">
+                        <div class="game-title">${game.name}</div>
+                        <div class="game-meta">
+                            <span class="tag ${game.mode}">${game.category}</span>
+                        </div>
+                    </div>
+                `;
+                return card;
             }
         });
     </script>
