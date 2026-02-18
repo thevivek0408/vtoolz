@@ -8,7 +8,7 @@
         "category": "arcade",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "games/assets/covers/subway-surfers.png"
+        "image": "assets/covers/subway-surfers.png"
     },
     {
         "id": 2,
@@ -19,7 +19,7 @@
         "category": "action",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "games/assets/covers/g2.png"
+        "image": "assets/covers/g2.png"
     },
     {
         "id": 3,
@@ -30,7 +30,7 @@
         "category": "puzzle",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "games/assets/covers/g3.png"
+        "image": "assets/covers/g3.png"
     },
     {
         "id": 4,
@@ -41,7 +41,7 @@
         "category": "action",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "games/assets/covers/g4.png"
+        "image": "assets/covers/g4.png"
     },
     {
         "id": 5,
@@ -52,7 +52,7 @@
         "category": "arcade",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "games/assets/covers/g5.png"
+        "image": "assets/covers/g5.png"
     },
     {
         "id": 6,
@@ -63,7 +63,7 @@
         "category": "arcade",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "games/assets/covers/g6.png"
+        "image": "assets/covers/g6.png"
     },
     {
         "id": 7,
@@ -74,6 +74,6 @@
         "category": "puzzle",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "games/assets/covers/g7.png"
+        "image": "assets/covers/g7.png"
     }
 ]
