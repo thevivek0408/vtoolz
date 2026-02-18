@@ -142,24 +142,9 @@ function setupEventListeners() {
         }
     });
 
-    // Explore Button (Go to All)
-    const exploreBtn = document.getElementById('btn-explore');
-    if (exploreBtn) {
-        exploreBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            // Reset to All
-            searchInput.value = '';
-            filterTabs.forEach(t => t.classList.remove('active'));
-            document.querySelector('.filter-tab[data-category="all"]').classList.add('active');
-
-            currentCategory = 'all';
-            renderTools(tools);
-
-            // Scroll
-            document.getElementById('tools').scrollIntoView({ behavior: 'smooth' });
-        });
-    }
+    // Explore Button listener removed to allow default link behavior
+    // const exploreBtn = document.getElementById('btn-explore');
+    // if (exploreBtn) { ... }
 
     // Tabs
     filterTabs.forEach(tab => {
