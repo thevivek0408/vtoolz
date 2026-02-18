@@ -304,12 +304,17 @@ body {
 
 .game-thumb {
     height: 180px;
-    background: #f1f2f6;
+    background-color: #f1f2f6;
+    /* Fallback color */
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 4rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.3s ease;
 }
 
 .game-details {

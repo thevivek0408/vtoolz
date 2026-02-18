@@ -112,13 +112,25 @@
                     if (game.name.toLowerCase().includes('subway')) icon = '🏄';
                     if (game.name.toLowerCase().includes('chess')) icon = '♟️';
 
-                    card.innerHTML = `
-                        <div class="game-thumb" loading="lazy">${icon}</div>
-                        <div class="game-details">
-                            <div class="game-name">${game.name}</div>
-                            <div class="game-cat"><i class="fas fa-tag" style="font-size:0.7em"></i> ${game.category}</div>
-                        </div>
-                    `;
+                    if (game.image) {
+                        // Use image if available
+                        card.innerHTML = `
+                            <div class="game-thumb" style="background-image: url('${game.image}'); background-size: cover; background-position: center;"></div>
+                            <div class="game-details">
+                                <div class="game-name">${game.name}</div>
+                                <div class="game-cat"><i class="fas fa-tag" style="font-size:0.7em"></i> ${game.category}</div>
+                            </div>
+                        `;
+                    } else {
+                        // Fallback to Icon
+                        card.innerHTML = `
+                            <div class="game-thumb" loading="lazy">${icon}</div>
+                            <div class="game-details">
+                                <div class="game-name">${game.name}</div>
+                                <div class="game-cat"><i class="fas fa-tag" style="font-size:0.7em"></i> ${game.category}</div>
+                            </div>
+                        `;
+                    }
                     grid.appendChild(card);
                 });
             }

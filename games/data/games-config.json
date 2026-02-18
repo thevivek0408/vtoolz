@@ -7,7 +7,8 @@
         "url": "subway-surfers/index.html",
         "category": "arcade",
         "mode": "single",
-        "mobileOptimized": true
+        "mobileOptimized": true,
+        "image": "games/assets/covers/subway-surfers.png"
     },
     {
         "id": 2,
@@ -17,7 +18,8 @@
         "url": "temple-run-2/index.html",
         "category": "action",
         "mode": "single",
-        "mobileOptimized": true
+        "mobileOptimized": true,
+        "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&q=80"
     },
     {
         "id": 3,
@@ -27,7 +29,8 @@
         "url": "cut-the-rope/dist/index.html",
         "category": "puzzle",
         "mode": "single",
-        "mobileOptimized": true
+        "mobileOptimized": true,
+        "image": "https://images.unsplash.com/photo-1575451296726-2a628be0617a?w=500&q=80"
     },
     {
         "id": 4,
@@ -37,7 +40,8 @@
         "url": "fruit-ninja/index.html",
         "category": "action",
         "mode": "single",
-        "mobileOptimized": true
+        "mobileOptimized": true,
+        "image": "https://images.unsplash.com/photo-1615485500704-8e99099928b3?w=500&q=80"
     },
     {
         "id": 5,
@@ -47,7 +51,8 @@
         "url": "doodle-jump/index.html",
         "category": "arcade",
         "mode": "single",
-        "mobileOptimized": true
+        "mobileOptimized": true,
+        "image": "https://images.unsplash.com/photo-1541562232579-512a21360020?w=500&q=80"
     },
     {
         "id": 6,
@@ -57,7 +62,8 @@
         "url": "flappy-bird/index.html",
         "category": "arcade",
         "mode": "single",
-        "mobileOptimized": true
+        "mobileOptimized": true,
+        "image": "https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=500&q=80"
     },
     {
         "id": 7,
@@ -67,6 +73,7 @@
         "url": "2048/index.html",
         "category": "puzzle",
         "mode": "single",
-        "mobileOptimized": true
+        "mobileOptimized": true,
+        "image": "https://images.unsplash.com/photo-1611996900117-90924959db62?w=500&q=80"
     }
 ]
