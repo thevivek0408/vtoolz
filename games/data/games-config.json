@@ -164,7 +164,7 @@
     {
         "id": 24,
         "name": "Memory Pair",
-        "engine": "grid",
+        "engine": "card",
         "category": "puzzle",
         "mode": "single"
     },
