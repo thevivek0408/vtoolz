@@ -392,7 +392,9 @@ ul {
 
 /* --- Layout --- */
 .container {
-    max-width: var(--container-width);
+    width: 100%;
+    max-width: 1400px;
+    /* Increased from 1200px for wider screens */
     margin: 0 auto;
     padding: 0 20px;
 }
