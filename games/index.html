@@ -4,89 +4,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibox Arcade</title>
+    <title>Vibox Arcade - Premium Games</title>
     <link rel="icon" href="../favicon.png" type="image/png">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <header>
-        <div class="container">
-            <a href="../index.html" class="logo">Vibox</a>
+        <div class="container"
+            style="display: flex; justify-content: space-between; align-items: center; padding: 20px;">
+            <a href="../index.html" class="logo"
+                style="font-weight: 800; font-size: 1.5rem; color: var(--text-dark); text-decoration:none;">Vibox<span
+                    style="color:#FF6B6B">.</span></a>
             <nav>
-                <ul>
-                    <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="index.html" class="active"><i class="fas fa-gamepad"></i> Games</a></li>
-                </ul>
+                <a href="../index.html" style="font-weight: 600; color: var(--text-light); text-decoration:none;"><i
+                        class="fas fa-arrow-left"></i> Back to Tools</a>
             </nav>
         </div>
     </header>
 
-    <main>
-        <div class="games-header">
-            <div class="container">
-                <h1>🎮 Vibox Arcade</h1>
-                <p>Curated Web Games Collection</p>
-                <div class="search-container">
-                    <input type="text" id="gameSearch" placeholder="Search games...">
-                </div>
-            </div>
+    <div class="hero-section">
+        <div class="hero-bg-pattern"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Arcade Universe</h1>
+            <p class="hero-subtitle">Discover curated, high-quality web games. Play instantly.</p>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-wrapper">
+        <div class="search-box">
+            <i class="fas fa-search" style="color:#ccc; margin-left: 10px;"></i>
+            <input type="text" class="search-input" id="gameSearch"
+                placeholder="Search for games (e.g. Subway Surfers)...">
+            <button class="search-btn"><i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories-container" id="categoryTabs">
+        <div class="category-pill active" data-cat="all">All Games</div>
+        <div class="category-pill" data-cat="arcade">🕹️ Arcade</div>
+        <div class="category-pill" data-cat="action">⚔️ Action</div>
+        <div class="category-pill" data-cat="puzzle">🧩 Puzzle</div>
+        <div class="category-pill" data-cat="strategy">♟️ Strategy</div>
+        <div class="category-pill" data-cat="sports">⚽ Sports</div>
+    </div>
+
+    <!-- Featured (Only shows if Subway Surfers exists) -->
+    <div id="featured-spotlight">
+        <!-- Injected via JS -->
+    </div>
+
+    <!-- Grid -->
+    <div class="container">
+        <div class="section-header">
+            <div class="section-title">All Games</div>
+            <div style="color: #888; font-size: 0.9rem;" id="gameCount">0 Games</div>
         </div>
 
-        <section class="container">
-            <div id="gamesGrid" class="games-grid">
-                <div class="loading-spinner">Loading Library...</div>
-            </div>
-        </section>
-    </main>
+        <div id="gamesGrid" class="games-grid">
+            <div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>
+        </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const grid = document.getElementById('gamesGrid');
-            const searchInput = document.getElementById('gameSearch');
+            const gameSearch = document.getElementById('gameSearch');
+            const categoryTabs = document.getElementById('categoryTabs');
+            const pills = document.querySelectorAll('.category-pill');
+            const featuredContainer = document.getElementById('featured-spotlight');
             let allGames = [];
+            let currentFilter = 'all';
 
+            // Load Games
             try {
-                const response = await fetch('data/games-config.json');
-                allGames = await response.json();
+                const res = await fetch('data/games-config.json');
+                allGames = await res.json();
+
+                // Ensure at least Subway Surfers is highlighted if present
+                const subway = allGames.find(g => g.name.toLowerCase().includes('subway'));
+                if (subway) {
+                    renderFeatured(subway);
+                }
+
                 renderGames(allGames);
-            } catch (error) {
-                grid.innerHTML = '<p class="error">Library Empty. Add a game to start!</p>';
+            } catch (e) {
+                grid.innerHTML = '<div class="loading-state" style="color:#FF6B6B">Could not load library. Please try again.</div>';
             }
 
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                const filtered = allGames.filter(g => g.name.toLowerCase().includes(term));
-                renderGames(filtered);
-            });
+            // Featured Render
+            function renderFeatured(game) {
+                featuredContainer.innerHTML = `
+                <div class="featured-container">
+                    <div class="featured-card">
+                        <div class="featured-banner">
+                            <!-- Placeholder Gradient or Image -->
+                            <i class="fas fa-gamepad" style="font-size: 8rem; color: rgba(255,255,255,0.2);"></i>
+                        </div>
+                        <div class="featured-info">
+                            <div class="featured-label">Featured Game</div>
+                            <h2 class="featured-title">${game.name}</h2>
+                            <p class="featured-desc">Experience the ultimate endless runner. Dash across tracks, dodge trains, and escape the inspector in this high-speed arcade classic.</p>
+                            <a href="play.html?id=${game.id}" class="play-btn"><i class="fas fa-play"></i> Play Now</a>
+                        </div>
+                    </div>
+                </div>`;
+            }
 
+            // Grid Render
             function renderGames(games) {
                 grid.innerHTML = '';
+                document.getElementById('gameCount').innerText = `${games.length} Games`;
+
                 if (games.length === 0) {
-                    if (allGames.length > 0) grid.innerHTML = '<p>No matching games found.</p>';
-                    else grid.innerHTML = '<p>No games installed yet.</p>';
+                    grid.innerHTML = '<div class="loading-state">No games found.</div>';
                     return;
                 }
+
                 games.forEach(game => {
+                    // Skip if it is the featured one? Optional. Let's show all.
                     const card = document.createElement('a');
                     card.className = 'game-card';
                     card.href = `play.html?id=${game.id}`;
+
+                    let icon = '🎮';
+                    if (game.category === 'arcade') icon = '🕹️';
+                    if (game.category === 'puzzle') icon = '🧩';
+
+                    // Specific icons
+                    if (game.name.toLowerCase().includes('subway')) icon = '🏄';
+                    if (game.name.toLowerCase().includes('chess')) icon = '♟️';
+
                     card.innerHTML = `
-                        <div class="game-thumbnail">${getIcon(game.category)}</div>
-                        <div class="game-info">
-                            <div class="game-title">${game.name}</div>
-                            <div class="game-meta"><span class="tag">${game.category}</span></div>
+                        <div class="game-thumb">${icon}</div>
+                        <div class="game-details">
+                            <div class="game-name">${game.name}</div>
+                            <div class="game-cat"><i class="fas fa-tag" style="font-size:0.7em"></i> ${game.category}</div>
                         </div>
                     `;
                     grid.appendChild(card);
                 });
             }
 
-            function getIcon(cat) {
-                const map = { arcade: '🕹️', puzzle: '🧩', card: '🃏', action: '⚔️', strategy: '♟️' };
-                return map[cat] || '🎮';
+            // Filtering
+            pills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    pills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    currentFilter = pill.dataset.cat;
+                    filterLogic();
+                });
+            });
+
+            gameSearch.addEventListener('input', filterLogic);
+
+            function filterLogic() {
+                const term = gameSearch.value.toLowerCase();
+                const filtered = allGames.filter(g => {
+                    const matchesTerm = g.name.toLowerCase().includes(term);
+                    const matchesCat = currentFilter === 'all' || g.category.toLowerCase() === currentFilter;
+                    return matchesTerm && matchesCat;
+                });
+                renderGames(filtered);
             }
         });
     </script>

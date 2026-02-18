@@ -1,1 +1,12 @@
-[]
+[
+    {
+        "id": 1,
+        "name": "Subway Surfers",
+        "description": "Dash as fast as you can through the subway in this classic endless runner.",
+        "engine": "iframe",
+        "url": "subway-surfers/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true
+    }
+]
