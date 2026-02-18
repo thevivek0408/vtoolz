@@ -19,7 +19,7 @@
         "category": "action",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&q=80"
+        "image": "games/assets/covers/g2.png"
     },
     {
         "id": 3,
@@ -30,7 +30,7 @@
         "category": "puzzle",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "https://images.unsplash.com/photo-1575451296726-2a628be0617a?w=500&q=80"
+        "image": "games/assets/covers/g3.png"
     },
     {
         "id": 4,
@@ -41,7 +41,7 @@
         "category": "action",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "https://images.unsplash.com/photo-1615485500704-8e99099928b3?w=500&q=80"
+        "image": "games/assets/covers/g4.png"
     },
     {
         "id": 5,
@@ -52,7 +52,7 @@
         "category": "arcade",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "https://images.unsplash.com/photo-1541562232579-512a21360020?w=500&q=80"
+        "image": "games/assets/covers/g5.png"
     },
     {
         "id": 6,
@@ -63,7 +63,7 @@
         "category": "arcade",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=500&q=80"
+        "image": "games/assets/covers/g6.png"
     },
     {
         "id": 7,
@@ -74,6 +74,6 @@
         "category": "puzzle",
         "mode": "single",
         "mobileOptimized": true,
-        "image": "https://images.unsplash.com/photo-1611996900117-90924959db62?w=500&q=80"
+        "image": "games/assets/covers/g7.png"
     }
 ]
