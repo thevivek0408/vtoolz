@@ -8,5 +8,15 @@
         "category": "arcade",
         "mode": "single",
         "mobileOptimized": true
+    },
+    {
+        "id": 2,
+        "name": "Temple Run 2",
+        "description": "Navigate perilous cliffs, zip lines, mines and forests as you try to escape with the cursed idol.",
+        "engine": "iframe",
+        "url": "temple-run-2/index.html",
+        "category": "action",
+        "mode": "single",
+        "mobileOptimized": true
     }
 ]
