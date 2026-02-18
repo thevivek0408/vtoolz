@@ -225,7 +225,9 @@ export const Utils = {
             document.body.appendChild(overlay);
 
             // Toggle Logic
-            const toggleMenu = () => {
+            const toggleMenu = (e) => {
+                if (e && e.type === 'touchstart') e.preventDefault(); // Prevent ghost clicks
+
                 const isActive = navContainer.classList.toggle('nav-active');
                 overlay.classList.toggle('active');
                 btn.innerHTML = isActive ? '✕' : '☰';
@@ -235,7 +237,10 @@ export const Utils = {
             };
 
             btn.addEventListener('click', toggleMenu);
+            btn.addEventListener('touchstart', toggleMenu, { passive: false });
+
             overlay.addEventListener('click', toggleMenu);
+            overlay.addEventListener('touchstart', toggleMenu, { passive: false });
 
             // Close on link click
             navContainer.querySelectorAll('a').forEach(link => {

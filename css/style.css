@@ -124,8 +124,17 @@ body {
     width: 100%;
     position: relative;
     perspective: 1000px;
+    perspective-origin: 50% 50%;
+    /* Fix pitched up look */
     /* Global perspective */
     transition: background-color 0.3s, color 0.3s;
+}
+
+@media (max-width: 768px) {
+    body {
+        perspective: 800px;
+        /* Slightly flatter on mobile */
+    }
 }
 
 html {
