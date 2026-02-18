@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Free online Text tools: Word Count, Case Converter, Diff Checker, and Text Cleaner. Private and fast.">
+        content="Free online Text tools: Word Counter, Case Converter, Diff Checker, and more. 100% private.">
     <title>Text Tools - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 
@@ -18,49 +19,30 @@
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
-                    <li><a href="#" class="active">Text Tools</a></li>
+                    <li><a href="../pdf/index.html">PDF</a></li>
+                    <li><a href="../image/index.html">Image</a></li>
+                    <li><a href="#" class="active">Text</a></li>
+                    <li><a href="../dev/index.html">Dev</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main>
         <section class="container">
             <h1>Text Tools</h1>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 40px auto;">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="tool-search" placeholder="Search Text tools..." autocomplete="off">
+                </div>
+            </div>
             <div class="tool-grid">
-                <a href="transcoding.html" class="tool-card">
-                    <div class="card-icon" style="background: rgba(230, 126, 34, 0.2); color: #e67e22;">
-                        <i class="fas fa-exchange-alt"></i>
-                    </div>
-                    <h3>Text Transcoder</h3>
-                    <p>Convert Morse, Binary, Base64, Braille.</p>
-                    <div class="btn btn-primary btn-block">Open</div>
-                </a>
-
-                <!-- 29-33: Counters -->
-                <a href="counter.html" class="tool-card">
-                    <h3>📊 Text Analyzer</h3>
-                    <p>Word, Character, Sentence Counters & Read Time info.</p>
-                    <div class="btn btn-primary btn-block">Open</div>
-                </a>
-
-                <!-- 34-38: Modifiers -->
-                <a href="modifier.html" class="tool-card">
-                    <h3>📝 Text Modifier</h3>
-                    <p>Convert case, sort lines, cleanup & replace.</p>
-                    <div class="btn btn-primary btn-block">Open</div>
-                </a>
-
-                <a href="tts.html" class="tool-card">
-                    <h3>🗣️ Text to Speech</h3>
-                    <p>Read text aloud (AI Voices).</p>
-                    <div class="btn btn-primary btn-block">Open</div>
-                </a>
+                <!-- Populated by JS -->
             </div>
         </section>
     </main>
-
     <script src="../../js/utils/common.js" type="module"></script>
+    <script src="../../js/category.js" type="module"></script>
 </body>
 
 </html>

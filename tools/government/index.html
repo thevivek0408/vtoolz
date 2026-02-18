@@ -5,29 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Indian Government Tools: Resize photos/signatures for PAN, Aadhaar, Passport, and Exams (SSC, UPSC). 20KB/50KB presets.">
-    <title>Govt Tools (India) - Vibox</title>
-    <link rel="manifest" href="../../manifest.json">
+        content="Use ful tools for Government services: Aadhaar, PAN, Passport photo resizer and more. 100% private.">
+    <title>Government Tools - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .gov-card {
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .privacy-badge {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 20px;
-        }
-    </style>
 </head>
 
 <body>
@@ -37,116 +19,30 @@
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
-                    <li><a href="#" class="active">Gov Tools</a></li>
+                    <li><a href="../pdf/index.html">PDF</a></li>
+                    <li><a href="../image/index.html">Image</a></li>
+                    <li><a href="../text/index.html">Text</a></li>
+                    <li><a href="../dev/index.html">Dev</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
-    <main class="fade-in-up">
-        <div class="container tool-container">
-            <div class="hero-section" style="padding: 40px 0; text-align: center;">
-                <h1>Government & Application Tools (India)</h1>
-                <p>Resize, Compress, and Convert files for PAN, Aadhaar, Passport, and Exams.</p>
-                <div class="privacy-badge">
-                    <i class="fas fa-shield-alt"></i> 100% Client-Side. No Uploads.
+    <main>
+        <section class="container">
+            <h1>Government Tools</h1>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 40px auto;">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="tool-search" placeholder="Search Govt tools..." autocomplete="off">
                 </div>
             </div>
-
             <div class="tool-grid">
-                <!-- PAN -->
-                <a href="pan.html" class="tool-card gov-card">
-                    <div class="icon">
-                        <i class="fas fa-id-card"></i>
-                    </div>
-                    <h3>PAN Card Tools</h3>
-                    <p>Photo (50KB), Signature (20KB), Documents (1MB).</p>
-                </a>
-
-                <!-- Aadhaar -->
-                <a href="aadhaar.html" class="tool-card gov-card">
-                    <div class="icon">
-                        <i class="fas fa-fingerprint"></i>
-                    </div>
-                    <h3>Aadhaar Tools</h3>
-                    <p>Compress & Clean Scan copies for update.</p>
-                </a>
-
-                <!-- Passport -->
-                <a href="passport.html" class="tool-card gov-card">
-                    <div class="icon">
-                        <i class="fas fa-passport"></i>
-                    </div>
-                    <h3>Passport Tools</h3>
-                    <p>Photo (20-50KB), Sign, & Compliance Check.</p>
-                </a>
-
-                <!-- Exam -->
-                <a href="exam.html" class="tool-card gov-card">
-                    <div class="icon">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <h3>Exam & Education</h3>
-                    <p>SSC, UPSC, NEET, JEE Photo & Sign Resizer.</p>
-                </a>
-
-                <!-- KYC -->
-                <a href="kyc.html" class="tool-card gov-card">
-                    <div class="icon">
-                        <i class="fas fa-file-contract"></i>
-                    </div>
-                    <h3>Job & KYC Tools</h3>
-                    <p>Resume Optimization & General KYC Docs.</p>
-                </a>
-
-                <!-- KB Resizer (New) -->
-                <a href="kb-resizer.html" class="tool-card gov-card">
-                    <div class="icon">
-                        <i class="fas fa-compress-arrows-alt"></i>
-                    </div>
-                    <h3>Target Size (KB)</h3>
-                    <p>Resize Photo/Sign to exact 50KB/20KB.</p>
-                </a>
-
-                <!-- Age Calculator (New) -->
-                <a href="age-calculator.html" class="tool-card gov-card">
-                    <div class="icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <h3>Age Calculator</h3>
-                    <p>Check Exam Eligibility (Y/M/D).</p>
-                </a>
-
-                <!-- JPG to PDF (New) -->
-                <a href="jpg-to-pdf.html" class="tool-card gov-card">
-                    <div class="icon">
-                        <i class="fas fa-file-pdf"></i>
-                    </div>
-                    <h3>JPG to PDF</h3>
-                    <p>Compile Documents for Upload.</p>
-                </a>
-
-                <!-- Signature Pad (New) -->
-                <a href="signature.html" class="tool-card gov-card">
-                    <div class="icon">
-                        <i class="fas fa-file-signature"></i>
-                    </div>
-                    <h3>Signature Pad</h3>
-                    <p>Draw & Save Transparent Signatures.</p>
-                </a>
+                <!-- Populated by JS -->
             </div>
-        </div>
+        </section>
     </main>
-
-    <footer>
-        <div class="container">
-            <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">
-                &copy; 2026 Vibox. Open Source & Client-Side.
-                <div id="stats-widget" style="margin-top: 10px; font-size: 0.8rem;"></div>
-            </div>
-        </div>
-    </footer>
     <script src="../../js/utils/common.js" type="module"></script>
+    <script src="../../js/category.js" type="module"></script>
 </body>
 
 </html>

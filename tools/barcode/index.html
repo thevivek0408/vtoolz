@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Free Barcode tools: Generate and Scan commercial barcodes (EAN, UPC, Code128). Secure and fast.">
+    <meta name="description" content="Free online Barcode tools: Generator, Scanner. 100% private.">
     <title>Barcode Tools - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body>
@@ -19,45 +18,30 @@
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
-                    <li><a href="#" class="active">Barcode Tools</a></li>
+                    <li><a href="../pdf/index.html">PDF</a></li>
+                    <li><a href="../image/index.html">Image</a></li>
+                    <li><a href="../dev/index.html">Dev</a></li>
+                    <li><a href="#" class="active">Barcode</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main>
-        <div class="container tool-container">
-            <div class="hero-section" style="padding: 40px 0; text-align: center;">
-                <h1>Barcode Tools</h1>
-                <p>Generate and Scan standard 1D barcodes.</p>
+        <section class="container">
+            <h1>Barcode Tools</h1>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 40px auto;">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="tool-search" placeholder="Search Barcode tools..." autocomplete="off">
+                </div>
             </div>
-
             <div class="tool-grid">
-                <a href="generator.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-barcode"></i>
-                    </div>
-                    <h3>Barcode Generator</h3>
-                    <p>Create UPC, EAN, CODE128 and more.</p>
-                </a>
-
-                <a href="scanner.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-search-plus"></i> <!-- Or fa-barcode-scan if available, scan is fine -->
-                    </div>
-                    <h3>Barcode Scanner</h3>
-                    <p>Read barcodes from camera or files.</p>
-                </a>
+                <!-- Populated by JS -->
             </div>
-        </div>
+        </section>
     </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
-        </div>
-    </footer>
     <script src="../../js/utils/common.js" type="module"></script>
+    <script src="../../js/category.js" type="module"></script>
 </body>
 
 </html>

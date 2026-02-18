@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Free Developer tools: JSON Formatter, Base64 Encode/Decode, Hash Generator, and more. Offline capable.">
+        content="Free online Developer tools: JSON Formatter, Regex Tester, Hash Generator, and more. 100% private.">
     <title>Developer Tools - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 
@@ -18,53 +19,30 @@
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
-                    <li><a href="#" class="active">Dev Tools</a></li>
+                    <li><a href="../pdf/index.html">PDF</a></li>
+                    <li><a href="../image/index.html">Image</a></li>
+                    <li><a href="../text/index.html">Text</a></li>
+                    <li><a href="#" class="active">Dev</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main>
         <section class="container">
             <h1>Developer Tools</h1>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 40px auto;">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="tool-search" placeholder="Search Dev tools..." autocomplete="off">
+                </div>
+            </div>
             <div class="tool-grid">
-
-                <a href="json.html" class="tool-card">
-                    <h3>{ } JSON Tools</h3>
-                    <p>Format, Validate, Convert to CSV.</p>
-                    <div class="btn btn-primary btn-block">Open</div>
-                </a>
-
-                <a href="base64.html" class="tool-card">
-                    <h3>🔤 Encoders</h3>
-                    <p>Base64, URL Encode/Decode.</p>
-                    <div class="btn btn-primary btn-block">Open</div>
-                </a>
-
-                <a href="security.html" class="tool-card">
-                    <h3>🔐 Security</h3>
-                    <p>Hash Generators, Password Tools.</p>
-                    <div class="btn btn-primary btn-block">Open</div>
-                </a>
-
-                <a href="resume-builder.html" class="tool-card">
-                    <h3>📄 Resume Builder</h3>
-                    <p>Markdown to PDF Resume.</p>
-                    <div class="btn btn-primary btn-block">Open</div>
-                </a>
-
-                <a href="diff-checker.html" class="tool-card">
-                    <h3>⚖️ Diff Checker</h3>
-                    <p>Compare Text Differences.</p>
-                    <div class="btn btn-primary btn-block">Open</div>
-                </a>
-
-                <!-- Placeholder for Minifiers if needed in future -->
+                <!-- Populated by JS -->
             </div>
         </section>
     </main>
-
     <script src="../../js/utils/common.js" type="module"></script>
+    <script src="../../js/category.js" type="module"></script>
 </body>
 
 </html>

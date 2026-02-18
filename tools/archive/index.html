@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Free Archive tools: Create Zip files and Unzip archives directly in your browser. No server uploads.">
+    <meta name="description" content="Free online Archive tools: Zip, Unzip, Extract. 100% private.">
     <title>Archive Tools - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body>
@@ -19,45 +18,30 @@
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
-                    <li><a href="#" class="active">Archive Tools</a></li>
+                    <li><a href="../pdf/index.html">PDF</a></li>
+                    <li><a href="../image/index.html">Image</a></li>
+                    <li><a href="../dev/index.html">Dev</a></li>
+                    <li><a href="#" class="active">Archive</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main>
-        <div class="container tool-container">
-            <div class="hero-section" style="padding: 40px 0; text-align: center;">
-                <h1>Archive Tools</h1>
-                <p>Create and Extract Zip archives locally.</p>
+        <section class="container">
+            <h1>Archive Tools</h1>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 40px auto;">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="tool-search" placeholder="Search Archive tools..." autocomplete="off">
+                </div>
             </div>
-
             <div class="tool-grid">
-                <a href="zip.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-file-archive"></i>
-                    </div>
-                    <h3>Zip Creator</h3>
-                    <p>Compress multiple files into a single Zip archive.</p>
-                </a>
-
-                <a href="unzip.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-box-open"></i>
-                    </div>
-                    <h3>Unzip Utility</h3>
-                    <p>Extract files from Zip archives.</p>
-                </a>
+                <!-- Populated by JS -->
             </div>
-        </div>
+        </section>
     </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
-        </div>
-    </footer>
     <script src="../../js/utils/common.js" type="module"></script>
+    <script src="../../js/category.js" type="module"></script>
 </body>
 
 </html>

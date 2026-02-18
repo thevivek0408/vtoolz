@@ -4,59 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online Network tools: IP Calculator, Speed Test, WiFi QR. 100% private.">
     <title>Network Tools - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body>
     <header>
-        <nav class="container">
-            <a href="../../index.html" class="logo">
-                <i class="fas fa-cube"></i> Vibox
-            </a>
-            <div class="nav-links">
-                <a href="../../index.html">Home</a>
-                <a href="#" class="active">Network</a>
-            </div>
-        </nav>
+        <div class="container">
+            <a href="../../index.html" class="logo">Vibox</a>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="../pdf/index.html">PDF</a></li>
+                    <li><a href="../image/index.html">Image</a></li>
+                    <li><a href="../text/index.html">Text</a></li>
+                    <li><a href="../dev/index.html">Dev</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
-
-    <main class="container page-content">
-        <div class="page-header">
-            <h1>Network & Internet Tools</h1>
-            <p>Utilities for network analysis and connectivity.</p>
-        </div>
-
-        <div class="tools-grid">
-            <a href="ip-calc.html" class="tool-card">
-                <div class="card-icon" style="background: rgba(46, 204, 113, 0.2); color: #2ecc71;">
-                    <i class="fas fa-network-wired"></i>
+    <main>
+        <section class="container">
+            <h1>Network Tools</h1>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 40px auto;">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="tool-search" placeholder="Search Network tools..." autocomplete="off">
                 </div>
-                <h3>IP Subnet Calculator</h3>
-                <p>Calculate CIDR, netmask, and IP ranges.</p>
-            </a>
-
-            <a href="speed-test.html" class="tool-card">
-                <div class="card-icon" style="background: rgba(52, 152, 219, 0.2); color: #3498db;">
-                    <i class="fas fa-tachometer-alt"></i>
-                </div>
-                <h3>Internet Speed Test</h3>
-                <p>Test your download and upload speeds.</p>
-            </a>
-
-            <a href="wifi-qr.html" class="tool-card">
-                <div class="card-icon" style="background: rgba(155, 89, 182, 0.2); color: #9b59b6;">
-                    <i class="fas fa-qrcode"></i>
-                </div>
-                <h3>WiFi QR Generator</h3>
-                <p>Share Wi-Fi credentials via QR code.</p>
-            </a>
-        </div>
+            </div>
+            <div class="tool-grid">
+                <!-- Populated by JS -->
+            </div>
+        </section>
     </main>
-
     <script src="../../js/utils/common.js" type="module"></script>
+    <script src="../../js/category.js" type="module"></script>
 </body>
 
 </html>

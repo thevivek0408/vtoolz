@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v31-audit-fix';
+const CACHE_NAME = 'vtoolz-v32-icon-update';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -7,7 +7,7 @@ const ASSETS_TO_CACHE = [
     './js/utils/common.js',
     './js/utils/tools.js',
     './manifest.json',
-    './favicon.svg',
+    './favicon.png',
     './games/index.html',
     './tools/fun/music.html',
     './tools/hardware/index.html',
@@ -81,7 +81,7 @@ const ASSETS_TO_CACHE = [
     './tools/fun/music.html', // Caching new tool explicitly
 
     './manifest.json',
-    './assets/icon.svg'
+    './assets/icon.png'
 ];
 
 self.addEventListener('install', (event) => {

@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Free Media Tools: Remove Backgrounds (AI), Screen Recorder, Voice Recorder, Audio Trimmer. No plugins needed.">
+        content="Free online Media tools: Audio Trimmer, Voice Recorder, Screen Recorder. 100% private.">
     <title>Media Tools - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body>
@@ -19,65 +19,30 @@
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
-                    <li><a href="#" class="active">Media Tools</a></li>
+                    <li><a href="../pdf/index.html">PDF</a></li>
+                    <li><a href="../image/index.html">Image</a></li>
+                    <li><a href="../text/index.html">Text</a></li>
+                    <li><a href="../dev/index.html">Dev</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main>
-        <div class="container tool-container">
-            <div class="hero-section" style="padding: 40px 0; text-align: center;">
-                <h1>Media Magic Tools</h1>
-                <p>Advanced Client-Side Manipulation (WebAssembly & APIs).</p>
+        <section class="container">
+            <h1>Media Tools</h1>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 40px auto;">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="tool-search" placeholder="Search Media tools..." autocomplete="off">
+                </div>
             </div>
-
             <div class="tool-grid">
-                <!-- BG Remover -->
-                <a href="bg-remover.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-magic"></i>
-                    </div>
-                    <h3>AI Background Remover</h3>
-                    <p>Remove image backgrounds instantly using local AI.</p>
-                </a>
-
-                <!-- Screen Recorder -->
-                <a href="screen-recorder.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <h3>Screen Recorder</h3>
-                    <p>Record screen/cam/mic without watermarks.</p>
-                </a>
-
-                <!-- Voice Recorder (New) -->
-                <a href="voice-recorder.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-microphone"></i>
-                    </div>
-                    <h3>Voice Recorder</h3>
-                    <p>Record audio with visualizer & download.</p>
-                </a>
-
-                <!-- Audio Trimmer (New) -->
-                <a href="audio-trimmer.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-cut"></i>
-                    </div>
-                    <h3>Audio Trimmer</h3>
-                    <p>Cut MP3/WAV files easily.</p>
-                </a>
+                <!-- Populated by JS -->
             </div>
-        </div>
+        </section>
     </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
-        </div>
-    </footer>
     <script src="../../js/utils/common.js" type="module"></script>
+    <script src="../../js/category.js" type="module"></script>
 </body>
 
 </html>

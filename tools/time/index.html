@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Free Time & Date Tools: Stopwatch, Unix Converter, World Clock. Private and client-side.">
-    <title>Time & Date Tools - Vibox</title>
+    <meta name="description" content="Free online Time tools: Stopwatch, Timer, World Clock. 100% private.">
+    <title>Time Tools - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body>
@@ -19,56 +18,30 @@
             <nav>
                 <ul>
                     <li><a href="../../index.html">Home</a></li>
-                    <li><a href="#" class="active">Time Tools</a></li>
+                    <li><a href="../pdf/index.html">PDF</a></li>
+                    <li><a href="../image/index.html">Image</a></li>
+                    <li><a href="../dev/index.html">Dev</a></li>
+                    <li><a href="#" class="active">Time</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main>
-        <div class="container tool-container">
-            <div class="hero-section" style="padding: 40px 0; text-align: center;">
-                <h1>Time & Date Tools</h1>
-                <p>Manage time, convert timestamps, and track world clocks.</p>
+        <section class="container">
+            <h1>Time Tools</h1>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 40px auto;">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="tool-search" placeholder="Search Time tools..." autocomplete="off">
+                </div>
             </div>
-
             <div class="tool-grid">
-                <!-- Stopwatch -->
-                <a href="stopwatch.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-stopwatch"></i>
-                    </div>
-                    <h3>Stopwatch & Timer</h3>
-                    <p>Accurate stopwatch with laps and countdown timer.</p>
-                </a>
-
-                <!-- Unix -->
-                <a href="unix.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h3>Unix Timestamp</h3>
-                    <p>Convert Epoch to Human Date and vice-versa.</p>
-                </a>
-
-                <!-- World Clock -->
-                <a href="world-clock.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <h3>World Clock</h3>
-                    <p>Track time across different timezones.</p>
-                </a>
+                <!-- Populated by JS -->
             </div>
-        </div>
+        </section>
     </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
-        </div>
-    </footer>
     <script src="../../js/utils/common.js" type="module"></script>
+    <script src="../../js/category.js" type="module"></script>
 </body>
 
 </html>
