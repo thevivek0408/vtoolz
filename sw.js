@@ -1,9 +1,9 @@
-const CACHE_NAME = 'vtoolz-v30-office-complete';
+const CACHE_NAME = 'vtoolz-v31-audit-fix';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './css/style.css',
-    './js/app.js',
+    './js/home.js', // Replaced app.js
     './js/utils/common.js',
     './js/utils/tools.js',
     './manifest.json',
@@ -31,10 +31,10 @@ const ASSETS_TO_CACHE = [
     './tools/office/powerpoint.html',
 
     // Core Vendors
-    '/js/vendor/pdf-lib.min.js',
-    '/js/vendor/pdf.min.js',
-    '/js/vendor/pdf.worker.min.js',
-    '/js/vendor/cropper.min.js', // Ensure this was downloaded
+    './js/vendor/pdf-lib.min.js',
+    './js/vendor/pdf.min.js',
+    './js/vendor/pdf.worker.min.js',
+    './js/vendor/cropper.min.js', // Ensure this was downloaded
 
     // Phase 2 Vendors
     './js/vendor/html5-qrcode.min.js',
@@ -44,9 +44,8 @@ const ASSETS_TO_CACHE = [
     './js/vendor/highlight.min.js',
     './js/vendor/jszip.min.js',
     './js/vendor/qrcode.min.js',
-    './js/vendor/mammoth.browser.min.js',
-    './js/vendor/html2pdf.bundle.min.js',
-    './js/vendor/xlsx.full.min.js',
+    // Missing vendors removed to prevent SW install failure:
+    // mammoth.browser.min.js, html2pdf.bundle.min.js, xlsx.full.min.js
     './js/vendor/quill.min.js',
     './js/vendor/quill.snow.css',
     './js/vendor/jspreadsheet.js',

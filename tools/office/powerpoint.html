@@ -7,7 +7,7 @@
     <meta name="description"
         content="Free Online Presentation Maker - Theme presets, transitions, speaker notes. Export PPTX. Works offline.">
     <title>Presentation Maker - Vibox</title>
-    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="../../favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -191,6 +191,36 @@
             color: #fff;
             padding: 1px 4px;
             border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .ppt-workspace {
+                flex-direction: column;
+            }
+
+            .slide-panel {
+                width: 100%;
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                max-height: 100px;
+                padding-bottom: 10px;
+            }
+
+            .slide-thumb {
+                width: 100px;
+                height: 60px;
+                flex-shrink: 0;
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+
+            .ppt-toolbar button,
+            .ppt-toolbar select {
+                font-size: 11px;
+                padding: 0 6px;
+                height: 30px;
+            }
         }
 
         .slide-thumb .del-slide {

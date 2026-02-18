@@ -160,6 +160,15 @@ export const Utils = {
         const applyTheme = (theme) => {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
+
+            // Update Meta Theme Color for Mobile Browsers
+            let metaTheme = document.querySelector('meta[name="theme-color"]');
+            if (!metaTheme) {
+                metaTheme = document.createElement('meta');
+                metaTheme.name = 'theme-color';
+                document.head.appendChild(metaTheme);
+            }
+            metaTheme.content = theme === 'dark' ? '#0f172a' : '#f8f9fa';
         };
 
         // Default to Dark for 3D feel, or load saved

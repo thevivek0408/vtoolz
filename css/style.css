@@ -1184,33 +1184,111 @@ body.neon-mode h3 {
 }
 
 /* Responsive Grid overrides */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    /* Mobile Navigation & Layout */
+    .container {
+        padding: 0 15px;
+    }
+
+    header {
+        position: relative;
+        z-index: 1001;
+    }
+    
+    .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-color);
+        cursor: pointer;
+        z-index: 1002;
+    }
+
+    nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 250px;
+        height: 100vh;
+        background: var(--surface-color);
+        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+        padding: 80px 20px 20px;
+        transition: right 0.3s ease;
+        z-index: 1000;
+        overflow-y: auto;
+    }
+
+    nav.nav-active {
+        right: 0;
+    }
+
+    nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    nav a {
+        font-size: 1.1rem;
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .nav-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(3px);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .nav-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Typography Checks */
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .hero h1 { font-size: 2.2rem; }
+    .hero p { font-size: 1rem; }
+
+    /* Tool Card adjustments */
     .tool-card {
         flex-direction: row;
-        /* Keep row on mobile for media object look */
         align-items: center;
-        height: auto;
-        /* Dynamic height on mobile if needed */
-        min-height: 80px;
+        min-height: auto;
+        padding: 15px;
     }
 
     .tool-thumb {
-        width: 80px;
-        /* Smaller thumb */
-        height: 80px;
-        font-size: 1.8rem;
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+        margin-right: 15px;
     }
 
     .tool-info {
-        padding: 10px 15px;
+        padding: 0;
     }
-
+    
     .tool-arrow {
-        position: relative;
-        top: auto;
-        right: auto;
-        padding-right: 15px;
+        display: none; /* Simplify on mobile */
     }
+}
+
+/* Base styles for mobile menu button (hidden on desktop) */
+.mobile-menu-btn {
+    display: none;
 }
 
 /* --- UI Power Features (Phase 20) --- */
