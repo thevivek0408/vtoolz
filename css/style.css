@@ -1216,7 +1216,8 @@ body.neon-mode h3 {
         font-size: 1.5rem;
         color: var(--text-color);
         cursor: pointer;
-        z-index: 1002;
+        z-index: 10000;
+        /* Ensure button is always clickable */
     }
 
     nav {
@@ -1228,13 +1229,19 @@ body.neon-mode h3 {
         background: var(--surface-color);
         box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
         padding: 80px 20px 20px;
-        transition: right 0.3s ease;
-        z-index: 1000;
+        transition: right 0.3s ease, visibility 0.3s ease;
+        /* Animate visibility too */
+        z-index: 9999;
+        /* Ensure it's on top */
         overflow-y: auto;
+        visibility: hidden;
+        /* Hide when closed */
     }
 
     nav.nav-active {
         right: 0;
+        visibility: visible;
+        /* Show when open */
     }
 
     nav ul {
