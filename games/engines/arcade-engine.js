@@ -84,16 +84,38 @@ export default class ArcadeEngine {
             { x: 4, y: 5 },
             { x: 3, y: 5 }
         ];
+
+        // Variant Logic
+        this.speed = 100;
+        if (this.config.name.includes('Fast') || this.config.name.includes('Speed')) this.speed = 50;
+        if (this.config.name.includes('Slow')) this.speed = 150;
+
+        // Maze Generation
+        this.walls = [];
+        if (this.config.name.includes('Maze') || this.config.name.includes('Obstacle')) {
+            for (let i = 0; i < 15; i++) {
+                this.walls.push({
+                    x: Math.floor(Math.random() * this.cols),
+                    y: Math.floor(Math.random() * this.rows)
+                });
+            }
+        }
+
         this.spawnFood();
         this.updateUI();
     }
 
     spawnFood() {
-        // Random pos
-        this.food = {
-            x: Math.floor(Math.random() * this.cols),
-            y: Math.floor(Math.random() * this.rows)
-        };
+        // Random pos, avoid walls and snake
+        let valid = false;
+        while (!valid) {
+            this.food = {
+                x: Math.floor(Math.random() * this.cols),
+                y: Math.floor(Math.random() * this.rows)
+            };
+            valid = !this.snake.some(s => s.x === this.food.x && s.y === this.food.y) &&
+                !this.walls.some(w => w.x === this.food.x && w.y === this.food.y);
+        }
     }
 
     updateUI() {
@@ -129,8 +151,14 @@ export default class ArcadeEngine {
         if (this.direction === 'left') head.x--;
         if (this.direction === 'right') head.x++;
 
-        // Walls
+        // Walls (Boundary)
         if (head.x < 0 || head.x >= this.cols || head.y < 0 || head.y >= this.rows) {
+            this.gameOver = true;
+            return;
+        }
+
+        // Walls (Obstacles)
+        if (this.walls && this.walls.some(w => w.x === head.x && w.y === head.y)) {
             this.gameOver = true;
             return;
         }
@@ -169,6 +197,14 @@ export default class ArcadeEngine {
         // Food
         this.ctx.fillStyle = '#f00';
         this.ctx.fillRect(this.food.x * this.gridSize, this.food.y * this.gridSize, this.gridSize - 1, this.gridSize - 1);
+
+        // Walls
+        if (this.walls) {
+            this.ctx.fillStyle = '#7f8c8d';
+            this.walls.forEach(w => {
+                this.ctx.fillRect(w.x * this.gridSize, w.y * this.gridSize, this.gridSize, this.gridSize);
+            });
+        }
     }
 
     drawGameOver() {
