@@ -54,10 +54,7 @@
         <div class="category-pill" data-cat="sports">⚽ Sports</div>
     </div>
 
-    <!-- Featured (Only shows if Subway Surfers exists) -->
-    <div id="featured-spotlight">
-        <!-- Injected via JS -->
-    </div>
+    <!-- Featured Section Removed -->
 
     <!-- Grid -->
     <div class="container">
@@ -77,7 +74,6 @@
             const gameSearch = document.getElementById('gameSearch');
             const categoryTabs = document.getElementById('categoryTabs');
             const pills = document.querySelectorAll('.category-pill');
-            const featuredContainer = document.getElementById('featured-spotlight');
             let allGames = [];
             let currentFilter = 'all';
 
@@ -85,36 +81,12 @@
             try {
                 const res = await fetch('data/games-config.json');
                 allGames = await res.json();
-
-                // Ensure at least Subway Surfers is highlighted if present
-                const subway = allGames.find(g => g.name.toLowerCase().includes('subway'));
-                if (subway) {
-                    renderFeatured(subway);
-                }
-
                 renderGames(allGames);
             } catch (e) {
                 grid.innerHTML = '<div class="loading-state" style="color:#FF6B6B">Could not load library. Please try again.</div>';
             }
 
-            // Featured Render
-            function renderFeatured(game) {
-                featuredContainer.innerHTML = `
-                <div class="featured-container">
-                    <div class="featured-card">
-                        <div class="featured-banner">
-                            <!-- Placeholder Gradient or Image -->
-                            <i class="fas fa-gamepad" style="font-size: 8rem; color: rgba(255,255,255,0.2);"></i>
-                        </div>
-                        <div class="featured-info">
-                            <div class="featured-label">Featured Game</div>
-                            <h2 class="featured-title">${game.name}</h2>
-                            <p class="featured-desc">Experience the ultimate endless runner. Dash across tracks, dodge trains, and escape the inspector in this high-speed arcade classic.</p>
-                            <a href="play.html?id=${game.id}" class="play-btn"><i class="fas fa-play"></i> Play Now</a>
-                        </div>
-                    </div>
-                </div>`;
-            }
+            // Featured Render Removed
 
             // Grid Render
             function renderGames(games) {
