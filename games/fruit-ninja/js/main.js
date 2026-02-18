@@ -30,36 +30,36 @@ let highscoreButton;
 
 function preload() {
   // LOAD SOUNDS
-  boom = loadSound("sounds/boom.mp3");
-  spliced = loadSound("sounds/splatter.mp3");
-  missed = loadSound("sounds/missed.mp3");
-  start = loadSound("sounds/start.mp3");
-  over = loadSound("sounds/over.mp3");
+  boom = loadSound("sounds/boom.mp3", () => { }, (err) => console.error("Failed to load boom.mp3", err));
+  spliced = loadSound("sounds/splatter.mp3", () => { }, (err) => console.error("Failed to load splatter.mp3", err));
+  missed = loadSound("sounds/missed.mp3", () => { }, (err) => console.error("Failed to load missed.mp3", err));
+  start = loadSound("sounds/start.mp3", () => { }, (err) => console.error("Failed to load start.mp3", err));
+  over = loadSound("sounds/over.mp3", () => { }, (err) => console.error("Failed to load over.mp3", err));
 
   // LOAD IMAGES
   for (var i = 0; i < fruitsList.length - 1; i++) {
-    slicedFruitsImgs[2 * i] = loadImage("images/" + fruitsList[i] + "-1.png");
+    slicedFruitsImgs[2 * i] = loadImage("images/" + fruitsList[i] + "-1.png", () => { }, (err) => console.error("Failed to load " + fruitsList[i] + "-1.png", err));
     slicedFruitsImgs[2 * i + 1] = loadImage(
-      "images/" + fruitsList[i] + "-2.png"
+      "images/" + fruitsList[i] + "-2.png", () => { }, (err) => console.error("Failed to load " + fruitsList[i] + "-2.png", err)
     );
   }
   for (var i = 0; i < fruitsList.length; i++) {
-    fruitsImgs[i] = loadImage("images/" + fruitsList[i] + ".png");
+    fruitsImgs[i] = loadImage("images/" + fruitsList[i] + ".png", () => { }, (err) => console.error("Failed to load " + fruitsList[i] + ".png", err));
   }
   for (var i = 0; i < 3; i++) {
-    livesImgs[i] = loadImage("images/x" + (i + 1) + ".png");
+    livesImgs[i] = loadImage("images/x" + (i + 1) + ".png", () => { }, (err) => console.error("Failed to load x" + (i + 1) + ".png", err));
   }
   for (var i = 0; i < 3; i++) {
-    livesImgs2[i] = loadImage("images/xx" + (i + 1) + ".png");
+    livesImgs2[i] = loadImage("images/xx" + (i + 1) + ".png", () => { }, (err) => console.error("Failed to load xx" + (i + 1) + ".png", err));
   }
-  bg = loadImage("images/background.jpg");
-  foregroundImg = loadImage("images/home-mask.png");
-  fruitLogo = loadImage("images/fruit.png");
-  ninjaLogo = loadImage("images/ninja.png");
-  scoreImg = loadImage("images/score.png");
-  newGameImg = loadImage("images/new-game.png");
-  fruitImg = loadImage("images/fruitMode.png");
-  gameOverImg = loadImage("images/game-over.png");
+  bg = loadImage("images/background.jpg", () => { }, (err) => console.error("Failed to load background.jpg", err));
+  foregroundImg = loadImage("images/home-mask.png", () => { }, (err) => console.error("Failed to load home-mask.png", err));
+  fruitLogo = loadImage("images/fruit.png", () => { }, (err) => console.error("Failed to load fruit.png", err));
+  ninjaLogo = loadImage("images/ninja.png", () => { }, (err) => console.error("Failed to load ninja.png", err));
+  scoreImg = loadImage("images/score.png", () => { }, (err) => console.error("Failed to load score.png", err));
+  newGameImg = loadImage("images/new-game.png", () => { }, (err) => console.error("Failed to load new-game.png", err));
+  fruitImg = loadImage("images/fruitMode.png", () => { }, (err) => console.error("Failed to load fruitMode.png", err));
+  gameOverImg = loadImage("images/game-over.png", () => { }, (err) => console.error("Failed to load game-over.png", err));
 }
 
 function setup() {
