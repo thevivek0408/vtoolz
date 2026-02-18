@@ -292,7 +292,17 @@ function gameOver() {
 
 function sendScoreToServer(score) {
   console.log("Score:", score);
-  // Server saving removed for offline version
+
+  // LocalStorage Logic
+  let scores = JSON.parse(localStorage.getItem('fruitNinjaHighScores')) || [];
+  let name = prompt("Game Over! Enter your name for the leaderboard:", "Ninja");
+  if (!name) name = "Ninja";
+
+  scores.push({ name: name, score: score });
+  scores.sort((a, b) => b.score - a.score); // Sort descending
+  scores = scores.slice(0, 10); // Keep top 10
+
+  localStorage.setItem('fruitNinjaHighScores', JSON.stringify(scores));
 }
 
 function retryGame() {

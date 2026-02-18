@@ -1,55 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap"
-      rel="stylesheet"
-    />
-    <title>High Scores</title>
-    <style>
-      div {
-        /* display: flex; */
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-around;
-      }
-      body {
-        font-family: "Roboto Slab", serif;
-        background-image: url("images/background.jpg");
-        /* background-repeat: no-repeat; */
-        background-size: cover;
-        text-align: center;
-        color: beige;
-      }
-      table {
-        text-align: center;
-        width: 50%;
-        margin: 5% 25%;
-        border-radius: 5%;
-        border-collapse: collapse;
-      }
 
-      th,
-      td {
-        border: 1px solid black;
-        padding: 8px;
-        text-align: left;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet" />
+  <title>High Scores</title>
+  <style>
+    div {
+      /* display: flex; */
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+    }
 
-      th {
-        background-color: #8cff19ae;
-      }
-    </style>
-  </head>
-  <body>
-    <div style="padding-left: 10px">
-      <a
-        href="javascript:window.history.back()"
-        style="
+    body {
+      font-family: "Roboto Slab", serif;
+      background-image: url("images/background.jpg");
+      /* background-repeat: no-repeat; */
+      background-size: cover;
+      text-align: center;
+      color: beige;
+    }
+
+    table {
+      text-align: center;
+      width: 50%;
+      margin: 5% 25%;
+      border-radius: 5%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #8cff19ae;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="padding-left: 10px">
+    <a href="javascript:window.history.back()" style="
           margin-left: 20px;
           font-size: larger;
           text-decoration: none;
@@ -57,35 +56,39 @@
           top: 52px;
           right: 250px;
           color: white;
-        "
-        >&#8592;Back</a
-      >
-      <h1 style="color: white">High Scores</h1>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Score</th>
-        </tr>
-      </thead>
-      <tbody id="highScoresList">
-        <!-- High scores will be dynamically added here -->
-      </tbody>
-    </table>
-    <script>
-      fetch("http://localhost:3000/api/get-scores")
-        .then((response) => response.json())
-        .then((data) => {
-          const highScoresList = document.getElementById("highScoresList");
-          data.forEach((score) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${score.name}</td><td>${score.score}</td>`;
-            tr.style.backgroundColor = "#d1ff19ae";
-            highScoresList.appendChild(tr);
-          });
-        })
-        .catch((error) => console.error("Error fetching high scores:", error));
-    </script>
-  </body>
+        ">&#8592;Back</a>
+    <h1 style="color: white">High Scores</h1>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody id="highScoresList">
+      <!-- High scores will be dynamically added here -->
+    </tbody>
+  </table>
+  <script>
+    // Fetch from LocalStorage instead of Server
+    const scores = JSON.parse(localStorage.getItem('fruitNinjaHighScores')) || [];
+    const highScoresList = document.getElementById("highScoresList");
+
+    if (scores.length === 0) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="2" style="text-align:center;">No high scores yet! Play a game first.</td>`;
+      tr.style.backgroundColor = "#d1ff19ae";
+      highScoresList.appendChild(tr);
+    } else {
+      scores.forEach((score) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${score.name}</td><td>${score.score}</td>`;
+        tr.style.backgroundColor = "#d1ff19ae";
+        highScoresList.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+
 </html>
