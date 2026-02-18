@@ -116,6 +116,8 @@
     font-weight: 700;
     font-size: 1.1rem;
     margin-bottom: 5px;
+    color: var(--text-color, #333);
+    /* Fallback to dark gray */
 }
 
 .game-meta {
