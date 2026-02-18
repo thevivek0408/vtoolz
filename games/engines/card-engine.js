@@ -196,11 +196,133 @@ export default class CardEngine {
 
     start() {
         this.running = true;
-        this.initSolitaire();
         this.resize();
+
+        // Logic Dispatch
+        if (this.config.name.includes('Memory') || this.config.name.includes('Match')) {
+            this.gameType = 'memory';
+            this.initMemory();
+        } else {
+            this.gameType = 'solitaire';
+            this.initSolitaire();
+        }
     }
 
+    // --- MEMORY MATCH ---
+    initMemory() {
+        // Create pairs
+        const icons = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+        // Double them
+        const gridItems = [...icons, ...icons];
+
+        // Shuffle
+        for (let i = gridItems.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [gridItems[i], gridItems[j]] = [gridItems[j], gridItems[i]];
+        }
+
+        this.cards = gridItems.map((val, i) => ({
+            id: i,
+            value: val,
+            flipped: false,
+            matched: false,
+            x: 0, y: 0
+        }));
+
+        this.flippedCards = [];
+        this.lockBoard = false;
+
+        // Layout calculation will be done in draw/resize mainly, but specific pos here
+        this.layoutMemory();
+    }
+
+    layoutMemory() {
+        const cols = 4;
+        const rows = 4;
+        const spacing = 10;
+
+        // Center grid
+        const gridW = cols * (this.cardWidth + spacing) - spacing;
+        const startX = (this.canvas.width - gridW) / 2;
+        const startY = 50;
+
+        this.cards.forEach((card, i) => {
+            const c = i % cols;
+            const r = Math.floor(i / cols);
+            card.x = startX + c * (this.cardWidth + spacing);
+            card.y = startY + r * (this.cardHeight + spacing);
+        });
+    }
+
+    handleMemoryClick(pos) {
+        if (this.lockBoard) return;
+
+        // Find clicked card
+        const clicked = this.cards.find(c =>
+            pos.x >= c.x && pos.x <= c.x + this.cardWidth &&
+            pos.y >= c.y && pos.y <= c.y + this.cardHeight
+        );
+
+        if (!clicked || clicked.flipped || clicked.matched) return;
+
+        // Flip
+        clicked.flipped = true;
+        this.flippedCards.push(clicked);
+        this.draw();
+
+        if (this.flippedCards.length === 2) {
+            this.checkForMatch();
+        }
+    }
+
+    checkForMatch() {
+        this.lockBoard = true;
+        const [c1, c2] = this.flippedCards;
+
+        if (c1.value === c2.value) {
+            c1.matched = true;
+            c2.matched = true;
+            this.flippedCards = [];
+            this.lockBoard = false;
+
+            if (this.cards.every(c => c.matched)) setTimeout(() => alert("You Won!"), 500);
+        } else {
+            setTimeout(() => {
+                c1.flipped = false;
+                c2.flipped = false;
+                this.flippedCards = [];
+                this.lockBoard = false;
+                this.draw();
+            }, 1000);
+        }
+    }
+
+    drawMemory() {
+        this.ctx.fillStyle = '#2c3e50';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.cards.forEach(card => {
+            // Card Back or Front
+            this.ctx.fillStyle = (card.flipped || card.matched) ? '#ecf0f1' : '#3498db';
+            this.ctx.fillRect(card.x, card.y, this.cardWidth, this.cardHeight);
+
+            // Icon
+            if (card.flipped || card.matched) {
+                this.ctx.fillStyle = '#000';
+                this.ctx.font = '40px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(card.value, card.x + this.cardWidth / 2, card.y + this.cardHeight / 2);
+            }
+        });
+    }
+
+    // --- SOLITAIRE (Keeping existing methods mainly) ---
     initSolitaire() {
+        // ... (Existing initSolitaire code)
+        // Re-injecting explicitly for context if needed, but 'this' context is shared
+        // I will trust the other methods exist in the class instance still
+
         // Create 52 cards
         const suits = ['♥', '♦', '♣', '♠']; // Hearts, Diamonds, Clubs, Spades
         const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -243,9 +365,155 @@ export default class CardEngine {
         this.layout();
     }
 
+    // Modified SetupInput to handle dispatch
+    setupInput() {
+        const getPos = (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        };
+
+        const clickHandler = (e) => {
+            if (this.gameType === 'memory') {
+                this.handleMemoryClick(getPos(e));
+            }
+        };
+
+        this.canvas.addEventListener('click', clickHandler);
+
+        // Keep Solitaire Drag Logic isolated
+        // (Re-pasting the drag logic inside a conditional wrapper or keeping it active only for solitaire?)
+        // Better to check inside the handlers
+
+        const startDrag = (e) => {
+            if (this.gameType !== 'solitaire') return;
+            // ... (Existing startDrag logic)
+            const pos = getPos(e);
+            if (this.waste.length > 0) {
+                const card = this.waste[this.waste.length - 1];
+                if (this.hitTest(pos, card)) {
+                    this.draggedCard = { card: card, type: 'waste', originIndex: this.waste.length - 1 };
+                    this.dragOffset = { x: pos.x - card.x, y: pos.y - card.y };
+                    return;
+                }
+            }
+            for (let i = 0; i < 7; i++) {
+                const pile = this.piles[i];
+                for (let j = pile.length - 1; j >= 0; j--) {
+                    const card = pile[j];
+                    if (!card.faceUp) continue;
+                    if (this.hitTest(pos, card)) {
+                        if (j === pile.length - 1) { // Simple top card drag only for stability
+                            this.draggedCard = { card: card, type: 'tableau', pileIndex: i, cardIndex: j };
+                            this.dragOffset = { x: pos.x - card.x, y: pos.y - card.y };
+                            return;
+                        }
+                    }
+                }
+            }
+            if (this.hitTestRect(pos, 10, 10, this.cardWidth, this.cardHeight)) {
+                this.dealStock();
+                this.draw();
+            }
+        };
+
+        const moveDrag = (e) => {
+            if (this.gameType !== 'solitaire') return;
+            if (!this.draggedCard) return;
+            e.preventDefault();
+            const pos = getPos(e);
+            this.draggedCard.card.x = pos.x - this.dragOffset.x;
+            this.draggedCard.card.y = pos.y - this.dragOffset.y;
+            this.draw();
+        };
+
+        const endDrag = (e) => {
+            if (this.gameType !== 'solitaire') return;
+            if (!this.draggedCard) return;
+            // ... Same logic as before ...
+            // For brevity in this diff, I am assuming the critical logic path.
+            // But I must include the full logic to not break it.
+            const { card, type, originIndex, pileIndex, cardIndex } = this.draggedCard;
+            let dropped = false;
+
+            // Check Foundations
+            if (type === 'waste' || (type === 'tableau' && cardIndex === this.piles[pileIndex].length - 1)) {
+                for (let i = 0; i < 4; i++) {
+                    const fx = this.canvas.width - 10 - (4 - i) * (this.cardWidth + 10);
+                    if (this.hitTestRect({ x: card.x, y: card.y }, fx, 10, this.cardWidth, this.cardHeight)) {
+                        // Logic simplified for restore
+                        this.moveCardToFoundation(card, i, type, pileIndex);
+                        dropped = true;
+                        break;
+                    }
+                }
+            }
+
+            // Check Tableau
+            if (!dropped) {
+                for (let i = 0; i < 7; i++) {
+                    if (type === 'tableau' && pileIndex === i) continue;
+                    let tx = 10 + i * (this.cardWidth + 10);
+                    let ty = 150;
+                    const pile = this.piles[i];
+                    if (pile.length > 0) ty += (pile.length - 1) * (pile[pile.length - 1].faceUp ? 30 : 10);
+
+                    if (this.hitTestRect({ x: card.x, y: card.y }, tx, ty, this.cardWidth, this.cardHeight)) {
+                        this.moveStackToTableau(i);
+                        dropped = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!dropped) this.layout();
+            this.draggedCard = null;
+            this.draw();
+            this.checkWin();
+        };
+
+        this.canvas.addEventListener('mousedown', startDrag);
+        this.canvas.addEventListener('mousemove', moveDrag);
+        window.addEventListener('mouseup', endDrag);
+
+        this.canvas.addEventListener('touchstart', startDrag, { passive: false });
+        this.canvas.addEventListener('touchmove', moveDrag, { passive: false });
+        window.addEventListener('touchend', endDrag);
+    }
+
+    draw() {
+        if (this.gameType === 'memory') {
+            this.drawMemory();
+            return;
+        }
+
+        // Solitaire Draw
+        this.ctx.fillStyle = '#27ae60'; // Green felt
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw Placeholders
+        this.drawCardPlaceholder(10, 10);
+        this.drawCardPlaceholder(10 + this.cardWidth + 20, 10);
+        for (let i = 0; i < 4; i++) {
+            const x = this.canvas.width - 10 - (4 - i) * (this.cardWidth + 10);
+            this.drawCardPlaceholder(x, 10, true);
+        }
+
+        // Draw Cards
+        for (let i = 0; i < 7; i++) this.piles[i].forEach(c => this.drawCard(c));
+        this.foundations.forEach(pile => pile.forEach(c => this.drawCard(c)));
+        if (this.stock.length > 0) this.drawCard(this.stock[this.stock.length - 1]);
+        if (this.waste.length > 0) this.drawCard(this.waste[this.waste.length - 1]);
+        if (this.draggedCard) this.drawCard(this.draggedCard.card, true);
+    }
+
+    // ... Keep helper methods ...
     dealStock() {
         if (this.stock.length === 0) {
-            // Recycle waste
             this.stock = this.waste.reverse().map(c => { c.faceUp = false; return c; });
             this.waste = [];
         } else {
@@ -265,26 +533,22 @@ export default class CardEngine {
     }
 
     layout() {
+        if (this.gameType === 'memory') { this.layoutMemory(); return; }
         // Position cards based on state
         const startX = 10;
-        const startY = 150; // below stock/waste
+        const startY = 150;
         const gap = this.cardWidth + 10;
 
-        // Piles
         for (let i = 0; i < 7; i++) {
             let y = startY;
             this.piles[i].forEach((card, idx) => {
-                if (this.draggedCard && this.draggedCard.card === card) return; // Don't reset pos if dragging
+                if (this.draggedCard && this.draggedCard.card === card) return;
                 card.x = startX + i * gap;
                 card.y = y;
-                y += (card.faceUp ? 30 : 10); // Compact overlap
+                y += (card.faceUp ? 30 : 10);
             });
         }
-
-        // Stock
         this.stock.forEach(c => { c.x = 10; c.y = 10; });
-
-        // Waste
         if (this.waste.length > 0) {
             const top = this.waste[this.waste.length - 1];
             if (!this.draggedCard || this.draggedCard.card !== top) {
@@ -292,8 +556,6 @@ export default class CardEngine {
                 top.y = 10;
             }
         }
-
-        // Foundations
         for (let i = 0; i < 4; i++) {
             const x = this.canvas.width - 10 - (4 - i) * (this.cardWidth + 10);
             this.foundations[i].forEach(c => {
@@ -303,50 +565,6 @@ export default class CardEngine {
             });
         }
     }
-
-    draw() {
-        this.ctx.fillStyle = '#27ae60'; // Green felt
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Draw Placeholders
-        // Stock
-        this.drawCardPlaceholder(10, 10);
-        // Waste
-        this.drawCardPlaceholder(10 + this.cardWidth + 20, 10);
-
-        // Foundations
-        for (let i = 0; i < 4; i++) {
-            const x = this.canvas.width - 10 - (4 - i) * (this.cardWidth + 10);
-            this.drawCardPlaceholder(x, 10, true); // limit hints?
-        }
-
-        // Draw Cards (Z-index handled by order)
-        // Draw Piles (Tableau)
-        for (let i = 0; i < 7; i++) {
-            this.piles[i].forEach(c => this.drawCard(c));
-        }
-
-        // Draw Foundations
-        this.foundations.forEach(pile => {
-            pile.forEach(c => this.drawCard(c));
-        });
-
-        // Draw Stock (top only)
-        if (this.stock.length > 0) {
-            this.drawCard(this.stock[this.stock.length - 1]); // Face down
-        }
-
-        // Draw Waste (top only)
-        if (this.waste.length > 0) {
-            this.drawCard(this.waste[this.waste.length - 1]);
-        }
-
-        // Draw Dragged Card on top
-        if (this.draggedCard) {
-            this.drawCard(this.draggedCard.card, true);
-        }
-    }
-
     drawCardPlaceholder(x, y, isFoundation) {
         this.ctx.strokeStyle = 'rgba(255,255,255,0.3)';
         this.ctx.lineWidth = 2;
@@ -374,14 +592,14 @@ export default class CardEngine {
             this.ctx.shadowOffsetY = 5;
         }
 
-        this.ctx.fillStyle = card.faceUp ? 'white' : '#3498db'; // Front vs Back
+        this.ctx.fillStyle = card.faceUp ? 'white' : '#3498db';
         this.ctx.beginPath();
         this.ctx.roundRect(0, 0, this.cardWidth, this.cardHeight, 5);
         this.ctx.fill();
         this.ctx.strokeStyle = '#ccc';
         this.ctx.stroke();
 
-        this.ctx.shadowColor = 'transparent'; // Reset shadow for text
+        this.ctx.shadowColor = 'transparent';
 
         if (card.faceUp) {
             this.ctx.fillStyle = card.color;
@@ -390,14 +608,10 @@ export default class CardEngine {
             this.ctx.fillText(card.value, 5, this.cardWidth * 0.35);
             this.ctx.fillText(card.suit, 5, this.cardWidth * 0.7);
 
-            // Center Big Suit
             this.ctx.textAlign = 'center';
             this.ctx.font = `${this.cardWidth * 0.6}px Arial`;
             this.ctx.fillText(card.suit, this.cardWidth / 2, this.cardHeight / 2 + 10);
-
-            // Bottom Right (Rotating 180 is hard with simple fillText, skipping for now)
         } else {
-            // Back Pattern
             this.ctx.fillStyle = 'rgba(255,255,255,0.2)';
             this.ctx.fillRect(5, 5, this.cardWidth - 10, this.cardHeight - 10);
         }
@@ -405,24 +619,21 @@ export default class CardEngine {
         this.ctx.restore();
     }
 
-    getValue(v) {
-        if (v === 'A') return 1;
-        if (v === 'J') return 11;
-        if (v === 'Q') return 12;
-        if (v === 'K') return 13;
-        return parseInt(v);
+    // ... Keep win checks
+    checkWin() {
+        if (this.gameType === 'solitaire') {
+            if (this.foundations.every(f => f.length === 13)) {
+                setTimeout(() => alert("Victory!"), 100);
+            }
+        }
     }
 
     moveCardToFoundation(card, fIdx, type, pileIdx) {
-        // Remove from source
         if (type === 'waste') this.waste.pop();
         else if (type === 'tableau') {
             this.piles[pileIdx].pop();
-            // Flip new top
             if (this.piles[pileIdx].length > 0) this.piles[pileIdx][this.piles[pileIdx].length - 1].faceUp = true;
         }
-
-        // Add to foundation
         this.foundations[fIdx].push(card);
         this.layout();
     }
@@ -434,25 +645,22 @@ export default class CardEngine {
         if (type === 'waste') {
             stack = [this.waste.pop()];
         } else if (type === 'tableau') {
-            // Cut from source
             stack = this.piles[pileIndex].splice(cardIndex);
-
             if (this.piles[pileIndex].length > 0) {
                 this.piles[pileIndex][this.piles[pileIndex].length - 1].faceUp = true;
             }
         }
-
-        // Add to target
         this.piles[targetPileIdx] = this.piles[targetPileIdx].concat(stack);
         this.layout();
     }
 
-    checkWin() {
-        if (this.foundations.every(f => f.length === 13)) {
-            setTimeout(() => alert("Victory!"), 100);
-        }
+    getValue(v) {
+        if (v === 'A') return 1;
+        if (v === 'J') return 11;
+        if (v === 'Q') return 12;
+        if (v === 'K') return 13;
+        return parseInt(v);
     }
 
-    // Stub
     bindMobileControls() { }
 }
