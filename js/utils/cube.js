@@ -139,6 +139,7 @@ export class CubeRotator {
             }
         }
 
+        this.element.style.willChange = 'transform'; // Hint browser for performance
         this.element.style.transform = `translateZ(-50px) rotateX(${this.currentX}deg) rotateY(${this.currentY}deg)`;
 
         requestAnimationFrame(this.animate.bind(this));

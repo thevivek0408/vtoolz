@@ -426,12 +426,14 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         // Log for debugging
-        console.log('Attempting SW Register:', swPath, 'Scope:', swScope);
+        // console.log('Attempting SW Register:', swPath, 'Scope:', swScope);
 
         navigator.serviceWorker.register(swPath, { scope: swScope })
-            .then(reg => console.log('✅ SW Registered:', reg.scope))
+            .then(reg => {
+                // SW Registered
+            })
             .catch(err => {
-                console.log('❌ SW Registration Failed:', err);
+                console.warn('SW Registration Failed:', err);
                 // Last ditch effort for GitHub Pages if the above failed
                 if (swPath === '/sw.js' && window.location.hostname.includes('github.io')) {
                     const repo = window.location.pathname.split('/')[1]; // likely 'vtoolz'

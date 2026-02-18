@@ -9,9 +9,10 @@
     <title>Vibox - Privacy-First Tools</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.png" type="image/png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        media="print" onload="this.media='all'">
     <link rel="stylesheet" href="css/style.css?v=2">
-    <!-- Using system fonts for Privacy & Offline support -->
+    <script src="js/loader.js" defer></script> <!-- Defer loader for faster FCP -->
 </head>
 
 <div id="drop-overlay" class="drop-overlay">
