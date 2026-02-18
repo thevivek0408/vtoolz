@@ -112,6 +112,11 @@ body {
 
 .search-btn:hover {
     transform: scale(1.1);
+    background: #FF5252;
+}
+
+.search-btn:active {
+    transform: scale(0.95);
 }
 
 /* Category Pills */
