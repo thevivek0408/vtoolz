@@ -222,10 +222,12 @@ html {
 
 .cube-face.back {
     transform: rotateY(180deg) translateZ(50px);
-    border-color: #2ecc71;
-    color: #2ecc71;
-    background: rgba(46, 204, 113, 0.1);
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.6), 0 0 40px rgba(46, 204, 113, 0.3) inset;
+    border-color: #9b59b6;
+    color: #9b59b6;
+    background: rgba(155, 89, 182, 0.1);
+    box-shadow: 0 0 20px rgba(155, 89, 182, 0.6), 0 0 40px rgba(155, 89, 182, 0.3) inset;
+    font-size: 20px;
+    /* Smaller font for longer text */
 }
 
 .cube-face.left {
@@ -1185,6 +1187,7 @@ body.neon-mode h3 {
 
 /* Responsive Grid overrides */
 @media (max-width: 768px) {
+
     /* Mobile Navigation & Layout */
     .container {
         padding: 0 15px;
@@ -1194,7 +1197,7 @@ body.neon-mode h3 {
         position: relative;
         z-index: 1001;
     }
-    
+
     .mobile-menu-btn {
         display: block;
         background: none;
@@ -1212,7 +1215,7 @@ body.neon-mode h3 {
         width: 250px;
         height: 100vh;
         background: var(--surface-color);
-        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
         padding: 80px 20px 20px;
         transition: right 0.3s ease;
         z-index: 1000;
@@ -1243,7 +1246,7 @@ body.neon-mode h3 {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(3px);
         z-index: 999;
         opacity: 0;
@@ -1257,10 +1260,21 @@ body.neon-mode h3 {
     }
 
     /* Typography Checks */
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    .hero h1 { font-size: 2.2rem; }
-    .hero p { font-size: 1rem; }
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
 
     /* Tool Card adjustments */
     .tool-card {
@@ -1280,9 +1294,10 @@ body.neon-mode h3 {
     .tool-info {
         padding: 0;
     }
-    
+
     .tool-arrow {
-        display: none; /* Simplify on mobile */
+        display: none;
+        /* Simplify on mobile */
     }
 }
 
