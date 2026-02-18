@@ -1,0 +1,73 @@
+[
+    {
+        "id": 1,
+        "name": "Classic Sudoku",
+        "engine": "grid",
+        "category": "puzzle",
+        "mode": "single",
+        "description": "Fill the grid so that every row, column and 3x3 box contains 1-9.",
+        "thumbnail": "assets/sudoku.png"
+    },
+    {
+        "id": 31,
+        "name": "Snake Classic",
+        "engine": "arcade",
+        "category": "arcade",
+        "mode": "single",
+        "description": "Eat the food, grow longer, don't hit the wall or yourself!",
+        "thumbnail": "assets/snake.png",
+        "config": {
+            "speed": "normal",
+            "walls": true
+        }
+    },
+    {
+        "id": 4,
+        "name": "2048",
+        "engine": "standalone",
+        "url": "2048/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "description": "Join the numbers and get to the 2048 tile!",
+        "thumbnail": "assets/2048.png"
+    },
+    {
+        "id": 34,
+        "name": "Flappy Bird",
+        "engine": "standalone",
+        "url": "flappy/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "description": "Tap to fly through pipes!",
+        "thumbnail": "assets/flappy.png"
+    },
+    {
+        "id": 37,
+        "name": "Brick Breaker",
+        "engine": "standalone",
+        "url": "brick/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "description": "Destroy all bricks with the ball.",
+        "thumbnail": "assets/brick.png"
+    },
+    {
+        "id": 86,
+        "name": "Tic Tac Toe",
+        "engine": "standalone",
+        "url": "tictactoe/index.html",
+        "category": "two-player",
+        "mode": "2-player",
+        "description": "Classic X and O game.",
+        "thumbnail": "assets/tictactoe.png"
+    },
+    {
+        "id": 116,
+        "name": "Solitaire",
+        "engine": "card",
+        "category": "card",
+        "mode": "single",
+        "description": "Classic Klondike Solitaire.",
+        "thumbnail": "assets/solitaire.png"
+    }
+]
