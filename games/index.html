@@ -113,7 +113,7 @@
                     if (game.name.toLowerCase().includes('chess')) icon = '♟️';
 
                     card.innerHTML = `
-                        <div class="game-thumb">${icon}</div>
+                        <div class="game-thumb" loading="lazy">${icon}</div>
                         <div class="game-details">
                             <div class="game-name">${game.name}</div>
                             <div class="game-cat"><i class="fas fa-tag" style="font-size:0.7em"></i> ${game.category}</div>
@@ -146,6 +146,7 @@
             }
         });
     </script>
+    <script src="../js/loader.js" defer></script>
 </body>
 
 </html>
