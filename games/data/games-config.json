@@ -18,5 +18,55 @@
         "category": "action",
         "mode": "single",
         "mobileOptimized": true
+    },
+    {
+        "id": 3,
+        "name": "Cut the Rope",
+        "description": "Feed Om Nom candy in this physics-based puzzle game! Cut ropes, use bubbles, and avoid obstacles.",
+        "engine": "iframe",
+        "url": "cut-the-rope/dist/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true
+    },
+    {
+        "id": 4,
+        "name": "Fruit Ninja",
+        "description": "Slice fruit, avoid bombs! The classic arcade fruit slicer powered by p5.js.",
+        "engine": "iframe",
+        "url": "fruit-ninja/index.html",
+        "category": "action",
+        "mode": "single",
+        "mobileOptimized": true
+    },
+    {
+        "id": 5,
+        "name": "Doodle Jump",
+        "description": "Jump as high as you can! Bounce on platforms and avoid monsters in this addictive vertical platformer.",
+        "engine": "iframe",
+        "url": "doodle-jump/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true
+    },
+    {
+        "id": 6,
+        "name": "Flappy Bird",
+        "description": "Tap to fly, avoid pipes! The legendary rage game is back in your browser.",
+        "engine": "iframe",
+        "url": "flappy-bird/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true
+    },
+    {
+        "id": 7,
+        "name": "2048",
+        "description": "Join the numbers and get to the 2048 tile! A classic logic puzzle.",
+        "engine": "iframe",
+        "url": "2048/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true
     }
 ]
