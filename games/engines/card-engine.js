@@ -398,57 +398,61 @@ export default class CardEngine {
             // Bottom Right (Rotating 180 is hard with simple fillText, skipping for now)
         } else {
             // Back Pattern
-            this.ctx.restore();
+            this.ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            this.ctx.fillRect(5, 5, this.cardWidth - 10, this.cardHeight - 10);
         }
 
-        getValue(v) {
-            if (v === 'A') return 1;
-            if (v === 'J') return 11;
-            if (v === 'Q') return 12;
-            if (v === 'K') return 13;
-            return parseInt(v);
-        }
-
-        moveCardToFoundation(card, fIdx, type, pileIdx) {
-            // Remove from source
-            if (type === 'waste') this.waste.pop();
-            else if (type === 'tableau') {
-                this.piles[pileIdx].pop();
-                // Flip new top
-                if (this.piles[pileIdx].length > 0) this.piles[pileIdx][this.piles[pileIdx].length - 1].faceUp = true;
-            }
-
-            // Add to foundation
-            this.foundations[fIdx].push(card);
-            this.layout();
-        }
-
-        moveStackToTableau(targetPileIdx) {
-            const { card, type, pileIndex, cardIndex } = this.draggedCard;
-            let stack = [];
-
-            if (type === 'waste') {
-                stack = [this.waste.pop()];
-            } else if (type === 'tableau') {
-                // Cut from source
-                stack = this.piles[pileIndex].splice(cardIndex);
-
-                if (this.piles[pileIndex].length > 0) {
-                    this.piles[pileIndex][this.piles[pileIndex].length - 1].faceUp = true;
-                }
-            }
-
-            // Add to target
-            this.piles[targetPileIdx] = this.piles[targetPileIdx].concat(stack);
-            this.layout();
-        }
-
-        checkWin() {
-            if (this.foundations.every(f => f.length === 13)) {
-                setTimeout(() => alert("Victory!"), 100);
-            }
-        }
-
-        // Stub
-        bindMobileControls() { }
+        this.ctx.restore();
     }
+
+    getValue(v) {
+        if (v === 'A') return 1;
+        if (v === 'J') return 11;
+        if (v === 'Q') return 12;
+        if (v === 'K') return 13;
+        return parseInt(v);
+    }
+
+    moveCardToFoundation(card, fIdx, type, pileIdx) {
+        // Remove from source
+        if (type === 'waste') this.waste.pop();
+        else if (type === 'tableau') {
+            this.piles[pileIdx].pop();
+            // Flip new top
+            if (this.piles[pileIdx].length > 0) this.piles[pileIdx][this.piles[pileIdx].length - 1].faceUp = true;
+        }
+
+        // Add to foundation
+        this.foundations[fIdx].push(card);
+        this.layout();
+    }
+
+    moveStackToTableau(targetPileIdx) {
+        const { card, type, pileIndex, cardIndex } = this.draggedCard;
+        let stack = [];
+
+        if (type === 'waste') {
+            stack = [this.waste.pop()];
+        } else if (type === 'tableau') {
+            // Cut from source
+            stack = this.piles[pileIndex].splice(cardIndex);
+
+            if (this.piles[pileIndex].length > 0) {
+                this.piles[pileIndex][this.piles[pileIndex].length - 1].faceUp = true;
+            }
+        }
+
+        // Add to target
+        this.piles[targetPileIdx] = this.piles[targetPileIdx].concat(stack);
+        this.layout();
+    }
+
+    checkWin() {
+        if (this.foundations.every(f => f.length === 13)) {
+            setTimeout(() => alert("Victory!"), 100);
+        }
+    }
+
+    // Stub
+    bindMobileControls() { }
+}
