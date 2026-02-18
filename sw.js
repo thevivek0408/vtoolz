@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v34-fun-refactor';
+const CACHE_NAME = 'vtoolz-v35-games-offline';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -78,7 +78,20 @@ const ASSETS_TO_CACHE = [
     './js/dev/diff-checker.js',
     './js/media/voice-recorder.js',
     './js/media/audio-trimmer.js',
-    './tools/fun/music.html', // Caching new tool explicitly
+    './tools/fun/music.html',
+
+    // Games Platform
+    './games/index.html',
+    './games/play.html',
+    './games/style.css',
+    './games/data/games-config.json',
+    './games/engines/arcade-engine.js',
+    './games/engines/grid-engine.js',
+    './games/engines/turn-engine.js',
+    './games/engines/word-engine.js',
+    './games/engines/card-engine.js',
+    './games/engines/physics-engine.js', // Stub
+    './games/engines/idle-engine.js',    // Stub
 
     './manifest.json',
     './assets/icon.png'
