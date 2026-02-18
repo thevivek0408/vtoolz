@@ -48,8 +48,37 @@ export default class PhysicsEngine {
 
     start() {
         this.running = true;
+        this.applyPhysicsParams();
         this.resetGame();
         this.loop();
+    }
+
+    applyPhysicsParams() {
+        // Defaults
+        this.gravity = 0.6;
+        this.player.jumpPower = -12;
+        this.player.speed = 5;
+        this.player.color = '#e74c3c';
+
+        const name = this.config.name.toLowerCase();
+
+        if (name.includes('moon') || name.includes('space') || name.includes('gravity')) {
+            this.gravity = 0.3; // Low gravity
+            this.player.jumpPower = -10; // Jumping feels floaty
+            this.player.color = '#bdc3c7'; // Moon color
+        } else if (name.includes('heavy') || name.includes('iron')) {
+            this.gravity = 0.9; // Heavy gravity
+            this.player.jumpPower = -15; // Needs strong legs
+            this.player.color = '#2c3e50';
+        } else if (name.includes('speed') || name.includes('dash') || name.includes('ninja')) {
+            this.player.speed = 8;
+            this.player.color = '#f1c40f'; // Lightning
+        } else if (name.includes('tower') || name.includes('stack')) {
+            // Maybe slightly different mechanics? 
+            // Taller jump
+            this.player.jumpPower = -14;
+            this.player.color = '#8e44ad';
+        }
     }
 
     resetGame() {

@@ -140,31 +140,253 @@ export default class WordEngine {
 
     start() {
         this.running = true;
-        this.resetGame();
         this.resize();
+
+        // Mode Dispatch
+        if (this.config.name.includes('Type') || this.config.name.includes('Speed')) {
+            this.gameMode = 'typing';
+            this.initTyping();
+        } else if (this.config.name.includes('Hangman') || this.config.name.includes('Recall')) {
+            this.gameMode = 'hangman';
+            this.initHangman();
+        } else {
+            this.gameMode = 'wordle';
+            this.resetGame(); // Default Wordle
+        }
     }
 
-    resetGame() {
-        this.currentRow = 0;
-        this.currentCol = 0;
-        this.grid = Array(6).fill().map(() => Array(5).fill(''));
-        this.colors = Array(6).fill().map(() => Array(5).fill('#34495e')); // dark slate
-        this.gameState = 'playing';
+    // --- TYPING TEST ---
+    initTyping() {
+        this.targetSentence = "The quick brown fox jumps over the lazy dog.";
+        this.typedText = "";
+        this.startTime = 0;
+        this.wpm = 0;
+        this.gameState = 'waiting'; // waiting, playing, finished
+        this.draw();
+    }
 
-        // Pick new word
+    handleTypingInput(key) {
+        if (this.gameState === 'finished') return;
+        if (this.gameState === 'waiting') {
+            this.gameState = 'playing';
+            this.startTime = Date.now();
+        }
+
+        if (key === 'BACKSPACE') {
+            this.typedText = this.typedText.slice(0, -1);
+        } else if (key.length === 1) { // Normal char
+            this.typedText += key; // Case sensitive? Or force lower? 
+            // Key is UPPER from handler, sentence is mixed. Let's rely on event.key
+            // Wait, handler sends e.key.toUpperCase(). 
+            // My sentence is mixed case. I should normalize or handle raw input.
+            // For now, let's just append what we got.
+            // Actually, the main handler forces Upper.
+            // I'll adjust the main handler or just check against uppercase target.
+        }
+
+        // Calculate WPM
+        const time = (Date.now() - this.startTime) / 60000; // mins
+        const words = this.typedText.length / 5;
+        this.wpm = Math.floor(words / time) || 0;
+
+        // Check finish
+        // Upper comparison for simplicity since key handler converts to upper
+        if (this.typedText === this.targetSentence.toUpperCase()) {
+            this.gameState = 'finished';
+            alert(`Done! WPM: ${this.wpm}`);
+        }
+
+        this.draw();
+    }
+
+    drawTyping() {
+        this.ctx.fillStyle = '#2c3e50';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.ctx.fillStyle = '#fff';
+        this.ctx.font = '24px monospace';
+        this.ctx.textAlign = 'center';
+
+        const targetUpper = this.targetSentence.toUpperCase();
+
+        // Draw Target
+        this.ctx.fillStyle = '#95a5a6';
+        this.ctx.fillText(targetUpper, this.canvas.width / 2, this.canvas.height / 2 - 50);
+
+        // Draw Typed (Green for correct, Red for error)
+        let x = (this.canvas.width - this.ctx.measureText(targetUpper).width) / 2;
+        const startX = x; // Alignment is tricky with center text. 
+        // Better: simple left align block or line.
+        // Let's do center simple.
+
+        // Overlay typed text
+        this.ctx.textAlign = 'left';
+        // Hacky centering:
+        const width = this.ctx.measureText(targetUpper).width;
+        const leftX = (this.canvas.width - width) / 2;
+
+        for (let i = 0; i < this.typedText.length; i++) {
+            const char = this.typedText[i];
+            const targetChar = targetUpper[i];
+
+            this.ctx.fillStyle = (char === targetChar) ? '#27ae60' : '#e74c3c';
+            this.ctx.fillText(char, leftX + this.ctx.measureText(targetUpper.substring(0, i)).width, this.canvas.height / 2 - 50);
+        }
+
+        // Stats
+        this.ctx.textAlign = 'center';
+        this.ctx.fillStyle = '#fff';
+        this.ctx.fillText(`WPM: ${this.wpm}`, this.canvas.width / 2, this.canvas.height / 2 + 50);
+        this.ctx.font = '16px Arial';
+        this.ctx.fillText("Type the sentence above!", this.canvas.width / 2, this.canvas.height / 2 + 80);
+    }
+
+    // --- HANGMAN ---
+    initHangman() {
         this.targetWord = this.dictionary[Math.floor(Math.random() * this.dictionary.length)];
-        console.log("Target:", this.targetWord); // for debug
+        this.guessedLetters = new Set();
+        this.mistakes = 0;
+        this.maxMistakes = 6;
+        this.gameState = 'playing';
+        this.draw();
 
         // Reset keyboard colors
         if (this.keyboardEl) {
             const btns = this.keyboardEl.querySelectorAll('button');
             btns.forEach(b => b.style.background = '#d3d6da');
         }
+    }
 
+    handleHangmanInput(letter) {
+        if (this.gameState !== 'playing') return;
+        if (this.guessedLetters.has(letter)) return;
+
+        this.guessedLetters.add(letter);
+
+        if (this.targetWord.includes(letter)) {
+            // Good guess
+            this.updateKeyColor(letter, '#27ae60');
+            // Check Win
+            const allFound = this.targetWord.split('').every(c => this.guessedLetters.has(c));
+            if (allFound) {
+                this.gameState = 'won';
+                setTimeout(() => alert("You Saved Him!"), 100);
+            }
+        } else {
+            // Bad guess
+            this.mistakes++;
+            this.updateKeyColor(letter, '#e74c3c');
+            if (this.mistakes >= this.maxMistakes) {
+                this.gameState = 'lost';
+                setTimeout(() => alert(`Hangman! Word was ${this.targetWord}`), 100);
+            }
+        }
         this.draw();
     }
 
+    drawHangman() {
+        this.ctx.fillStyle = '#2c3e50';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Gallows
+        this.ctx.strokeStyle = '#fff';
+        this.ctx.lineWidth = 4;
+        this.ctx.beginPath();
+        this.ctx.moveTo(100, 300); this.ctx.lineTo(250, 300); // Base
+        this.ctx.moveTo(175, 300); this.ctx.lineTo(175, 50);  // Pole
+        this.ctx.lineTo(300, 50);  // Top
+        this.ctx.lineTo(300, 80);  // Rope
+        this.ctx.stroke();
+
+        // Man
+        if (this.mistakes > 0) { // Head
+            this.ctx.beginPath(); this.ctx.arc(300, 100, 20, 0, Math.PI * 2); this.ctx.stroke();
+        }
+        if (this.mistakes > 1) { // Body
+            this.ctx.beginPath(); this.ctx.moveTo(300, 120); this.ctx.lineTo(300, 200); this.ctx.stroke();
+        }
+        if (this.mistakes > 2) { // Left Arm
+            this.ctx.beginPath(); this.ctx.moveTo(300, 140); this.ctx.lineTo(270, 170); this.ctx.stroke();
+        }
+        if (this.mistakes > 3) { // Right Arm
+            this.ctx.beginPath(); this.ctx.moveTo(300, 140); this.ctx.lineTo(330, 170); this.ctx.stroke();
+        }
+        if (this.mistakes > 4) { // Left Leg
+            this.ctx.beginPath(); this.ctx.moveTo(300, 200); this.ctx.lineTo(280, 250); this.ctx.stroke();
+        }
+        if (this.mistakes > 5) { // Right Leg
+            this.ctx.beginPath(); this.ctx.moveTo(300, 200); this.ctx.lineTo(320, 250); this.ctx.stroke();
+        }
+
+        // Word Display
+        this.ctx.font = 'bold 40px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillStyle = '#fff';
+
+        let displayWord = "";
+        for (const char of this.targetWord) {
+            if (this.guessedLetters.has(char)) displayWord += char + " ";
+            else displayWord += "_ ";
+        }
+
+        this.ctx.fillText(displayWord, this.canvas.width / 2 + 50, 300);
+    }
+
+    // --- MAIN DRAW ---
+    draw() {
+        if (this.gameMode === 'typing') { this.drawTyping(); return; }
+        if (this.gameMode === 'hangman') { this.drawHangman(); return; }
+
+        // Default Wordle Draw
+        // Clear
+        this.ctx.fillStyle = '#2c3e50';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.ctx.save();
+        this.ctx.translate(this.offsetX, this.offsetY);
+        this.ctx.scale(this.renderScale, this.renderScale);
+
+        for (let r = 0; r < 6; r++) {
+            for (let c = 0; c < 5; c++) {
+                const x = c * (this.cellSize + this.gap);
+                const y = r * (this.cellSize + this.gap);
+
+                // Box
+                // Fill if submitted
+                if (r < this.currentRow) {
+                    this.ctx.fillStyle = this.colors[r][c];
+                    this.ctx.fillRect(x, y, this.cellSize, this.cellSize);
+                    this.ctx.strokeStyle = this.colors[r][c]; // Border same
+                } else {
+                    this.ctx.fillStyle = 'transparent';
+                    this.ctx.strokeStyle = (r === this.currentRow && c === this.currentCol) ? '#fff' : '#555';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.strokeRect(x, y, this.cellSize, this.cellSize);
+                }
+
+                // Letter
+                const char = this.grid[r][c];
+                if (char) {
+                    this.ctx.fillStyle = '#fff';
+                    this.ctx.font = 'bold 30px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.fillText(char, x + this.cellSize / 2, y + this.cellSize / 2);
+                }
+            }
+        }
+
+        this.ctx.restore();
+    }
+
+    // --- MODIFIED INPUT HANDLERS ---
+    // We need to route inputs based on Mode
+
     addLetter(letter) {
+        if (this.gameMode === 'hangman') { this.handleHangmanInput(letter); return; }
+        if (this.gameMode === 'typing') { this.handleTypingInput(letter); return; }
+
+        // Wordle Logic
         if (this.currentCol < 5) {
             this.grid[this.currentRow][this.currentCol] = letter;
             this.currentCol++;
@@ -173,6 +395,10 @@ export default class WordEngine {
     }
 
     deleteLetter() {
+        if (this.gameMode === 'typing') { this.handleTypingInput('BACKSPACE'); return; }
+        if (this.gameMode === 'hangman') return;
+
+        // Wordle Logic
         if (this.currentCol > 0) {
             this.currentCol--;
             this.grid[this.currentRow][this.currentCol] = '';
@@ -181,14 +407,15 @@ export default class WordEngine {
     }
 
     submitRow() {
+        if (this.gameMode !== 'wordle') return; // Only Wordle uses Enter to submit row
+
+        // Wordle Logic...
         if (this.currentCol < 5) {
             alert("Not enough letters");
             return;
         }
 
         const guess = this.grid[this.currentRow].join('');
-        // Check dictionary logic valid? (Skipping strict check for MVP, allow any 5 letters)
-
         // Check Colors
         const targetArr = this.targetWord.split('');
         const guessArr = guess.split('');
@@ -231,60 +458,6 @@ export default class WordEngine {
                 setTimeout(() => alert(`Game Over! Word was ${this.targetWord}`), 100);
             }
         }
-    }
-
-    updateKeyColor(key, color) {
-        if (!this.keyboardEl) return;
-        const btn = this.keyboardEl.querySelector(`button[data-key="${key}"]`);
-        if (btn) {
-            const cur = btn.style.background;
-            // Green beats Yellow beats Grey
-            if (color === '#27ae60') btn.style.background = color;
-            else if (color === '#f1c40f' && cur !== 'rgb(39, 174, 96)') btn.style.background = color; // rgb check is tricky, relying on var logic
-            else if (color === '#7f8c8d' && cur === 'rgb(211, 214, 218)') btn.style.background = color; // Only if default
-        }
-    }
-
-    draw() {
-        // Clear
-        this.ctx.fillStyle = '#2c3e50';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        this.ctx.save();
-        this.ctx.translate(this.offsetX, this.offsetY);
-        this.ctx.scale(this.renderScale, this.renderScale);
-
-        for (let r = 0; r < 6; r++) {
-            for (let c = 0; c < 5; c++) {
-                const x = c * (this.cellSize + this.gap);
-                const y = r * (this.cellSize + this.gap);
-
-                // Box
-                // Fill if submitted
-                if (r < this.currentRow) {
-                    this.ctx.fillStyle = this.colors[r][c];
-                    this.ctx.fillRect(x, y, this.cellSize, this.cellSize);
-                    this.ctx.strokeStyle = this.colors[r][c]; // Border same
-                } else {
-                    this.ctx.fillStyle = 'transparent';
-                    this.ctx.strokeStyle = (r === this.currentRow && c === this.currentCol) ? '#fff' : '#555';
-                    this.ctx.lineWidth = 2;
-                    this.ctx.strokeRect(x, y, this.cellSize, this.cellSize);
-                }
-
-                // Letter
-                const char = this.grid[r][c];
-                if (char) {
-                    this.ctx.fillStyle = '#fff';
-                    this.ctx.font = 'bold 30px Arial';
-                    this.ctx.textAlign = 'center';
-                    this.ctx.textBaseline = 'middle';
-                    this.ctx.fillText(char, x + this.cellSize / 2, y + this.cellSize / 2);
-                }
-            }
-        }
-
-        this.ctx.restore();
     }
 
     // Stub

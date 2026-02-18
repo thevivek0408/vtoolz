@@ -47,8 +47,78 @@ export default class IdleEngine {
 
     start() {
         this.running = true;
+        this.applyTheme();
         this.lastTime = performance.now();
         this.loop();
+    }
+
+    applyTheme() {
+        // Default
+        this.theme = {
+            resource: "Coins",
+            bg: '#2c3e50',
+            text: '#fff',
+            clickColor: '#f1c40f',
+            upgrades: [
+                { name: "Better Clicks", type: 'click' },
+                { name: "Auto Clicker", type: 'auto' },
+                { name: "Factory", type: 'auto' },
+                { name: "Mine", type: 'auto' }
+            ]
+        };
+
+        const name = this.config.name.toLowerCase();
+
+        if (name.includes('cookie') || name.includes('sweet')) {
+            this.theme.resource = "Cookies";
+            this.theme.bg = '#d35400';
+            this.theme.clickColor = '#e67e22';
+            this.theme.upgrades = [
+                { name: "Extra Chips", type: 'click' },
+                { name: "Grandma", type: 'auto' },
+                { name: "Bakery", type: 'auto' },
+                { name: "Cookie Factory", type: 'auto' }
+            ];
+        } else if (name.includes('tech') || name.includes('cyber') || name.includes('bit')) {
+            this.theme.resource = "Bits";
+            this.theme.bg = '#000000';
+            this.theme.text = '#00ff00';
+            this.theme.clickColor = '#00ff00';
+            this.theme.upgrades = [
+                { name: "Faster CPU", type: 'click' },
+                { name: "Bot Net", type: 'auto' },
+                { name: "Server Farm", type: 'auto' },
+                { name: "Quantum Core", type: 'auto' }
+            ];
+        } else if (name.includes('magic') || name.includes('mana')) {
+            this.theme.resource = "Mana";
+            this.theme.bg = '#2c003e'; // Dark Purple
+            this.theme.text = '#d1c4e9';
+            this.theme.clickColor = '#9b59b6';
+            this.theme.upgrades = [
+                { name: "Wand Polish", type: 'click' },
+                { name: "Apprentice", type: 'auto' },
+                { name: "Mana Well", type: 'auto' },
+                { name: "Void Siphon", type: 'auto' }
+            ];
+        } else if (name.includes('farm') || name.includes('crop')) {
+            this.theme.resource = "Crops";
+            this.theme.bg = '#27ae60';
+            this.theme.clickColor = '#f1c40f';
+            this.theme.upgrades = [
+                { name: "Better Tools", type: 'click' },
+                { name: "Farmhand", type: 'auto' },
+                { name: "Tractor", type: 'auto' },
+                { name: "Greenhouse", type: 'auto' }
+            ];
+        }
+
+        // Apply names to existing upgrade structure (keeping costs/ids same for simplicity)
+        this.upgrades.forEach((u, i) => {
+            if (this.theme.upgrades[i]) {
+                u.name = this.theme.upgrades[i].name;
+            }
+        });
     }
 
     handleClick(e) {
@@ -70,7 +140,6 @@ export default class IdleEngine {
 
     click() {
         this.resources += this.clickValue;
-        // Animation trigger? 
     }
 
     checkUpgrades(x, y) {
@@ -121,25 +190,28 @@ export default class IdleEngine {
     }
 
     draw() {
-        // Clear
-        this.ctx.fillStyle = '#2c3e50';
+        // Clear & BG Theme
+        this.ctx.fillStyle = this.theme ? this.theme.bg : '#2c3e50';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Main Area
-        this.ctx.fillStyle = '#fff';
+        this.ctx.fillStyle = this.theme ? this.theme.text : '#fff';
         this.ctx.font = 'bold 40px Arial';
         this.ctx.textAlign = 'center';
         this.ctx.fillText(`${Math.floor(this.resources)}`, (this.canvas.width - 220) / 2, this.canvas.height / 2);
+
         this.ctx.font = '20px Arial';
-        this.ctx.fillText("Coins", (this.canvas.width - 220) / 2, this.canvas.height / 2 + 30);
+        this.ctx.fillText(this.theme ? this.theme.resource : "Coins", (this.canvas.width - 220) / 2, this.canvas.height / 2 + 30);
         this.ctx.fillText(`+${this.autoRate}/sec`, (this.canvas.width - 220) / 2, this.canvas.height / 2 + 60);
 
         this.ctx.font = 'italic 16px Arial';
-        this.ctx.fillStyle = '#95a5a6';
+        this.ctx.fillStyle = this.theme ? this.theme.text : '#95a5a6'; // Use theme text color for visibility
+        this.ctx.globalAlpha = 0.7;
         this.ctx.fillText("Tap anywhere to earn!", (this.canvas.width - 220) / 2, this.canvas.height - 50);
+        this.ctx.globalAlpha = 1.0;
 
         // Sidebar (Upgrades)
-        this.ctx.fillStyle = '#34495e';
+        this.ctx.fillStyle = 'rgba(0,0,0,0.3)'; // Darker overlay for sidebar
         this.ctx.fillRect(this.canvas.width - 220, 0, 220, this.canvas.height);
 
         this.ctx.fillStyle = '#fff';
@@ -167,7 +239,7 @@ export default class IdleEngine {
         this.ctx.textAlign = 'center';
         this.particles.forEach(p => {
             this.ctx.globalAlpha = p.life;
-            this.ctx.fillStyle = '#f1c40f';
+            this.ctx.fillStyle = this.theme ? this.theme.clickColor : '#f1c40f';
             this.ctx.font = 'bold 20px Arial';
             this.ctx.fillText(p.text, p.x, p.y);
         });
@@ -184,6 +256,5 @@ export default class IdleEngine {
         requestAnimationFrame((t) => this.loop(t));
     }
 
-    // Stub
     bindMobileControls() { }
 }
