@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vtoolz-v33-fun-icons';
+const CACHE_NAME = 'vtoolz-v34-fun-refactor';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

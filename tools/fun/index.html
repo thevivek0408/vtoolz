@@ -31,114 +31,21 @@
     </header>
 
     <main>
-        <div class="container tool-container">
-            <div class="hero-section" style="padding: 40px 0; text-align: center;">
-                <h1>Fun & Misc Tools</h1>
-                <p>Relax, play, and get creative with these utilities.</p>
+        <section class="container">
+            <h1>Fun & Misc Tools</h1>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 40px auto;">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="tool-search" placeholder="Search Fun tools..." autocomplete="off">
+                </div>
             </div>
-
-            <div class="tool-grid">
-                <!-- Wheel -->
-                <a href="wheel.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-dharmachakra"></i>
-                    </div>
-                    <h3>Decision Wheel</h3>
-                    <p>Can't decide? Spin the wheel!</p>
-                </a>
-
-                <!-- Reaction -->
-                <a href="reaction.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Reaction Test</h3>
-                    <p>Test your reflexes in milliseconds.</p>
-                </a>
-
-                <!-- Dice -->
-                <a href="dice.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-dice-d20"></i>
-                    </div>
-                    <h3>3D Dice Roller</h3>
-                    <p>Roll virtual dice with physics.</p>
-                </a>
-
-                <!-- Zalgo -->
-                <a href="zalgo.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-ghost"></i>
-                    </div>
-                    <h3>Zalgo Text</h3>
-                    <p>G̷l̷i̷t̷c̷h̷ ̷y̷o̷u̷r̷ ̷t̷e̷x̷t̷.</p>
-                </a>
-
-                <!-- ASCII -->
-                <a href="ascii.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-font"></i>
-                    </div>
-                    <h3>ASCII Art Gen</h3>
-                    <p>Convert images to text art.</p>
-                </a>
-
-                <!-- Emoji -->
-                <a href="emoji.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-grin-stars"></i>
-                    </div>
-                    <h3>Emoji Picker</h3>
-                    <p>Search and copy emojis easily.</p>
-                </a>
-
-                <!-- Teams -->
-                <a href="team.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Team Generator</h3>
-                    <p>Split names into random groups.</p>
-                </a>
-
-                <!-- List -->
-                <a href="list.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-list-ol"></i>
-                    </div>
-                    <h3>List Randomizer</h3>
-                    <p>Shuffle, Sort, and Pick winners.</p>
-                </a>
-
-                <!-- Coin -->
-                <a href="coin.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-coins"></i>
-                    </div>
-                    <h3>3D Coin Flip</h3>
-                    <p>Heads or Tails? Flip to decide.</p>
-                </a>
-
-                <!-- Paint -->
-                <a href="paint.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-paint-brush"></i>
-                    </div>
-                    <h3>Paint & Whiteboard</h3>
-                    <p>Draw, sketch, and create art.</p>
-                </a>
-
-                <!-- Music -->
-                <a href="music.html" class="tool-card">
-                    <div class="icon">
-                        <i class="fas fa-headphones-alt"></i>
-                    </div>
-                    <h3>Music Studio</h3>
-                    <p>Play Piano & Drums online.</p>
-                </a>
+            <div class="tool-grid" id="tools-grid">
+                <!-- Populated by JS -->
             </div>
-        </div>
+        </section>
     </main>
+    <script src="../../js/utils/common.js" type="module"></script>
+    <script src="../../js/category.js" type="module"></script>
 
     <footer>
         <div class="container">
