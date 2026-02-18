@@ -108,20 +108,81 @@ export default class CardEngine {
 
         const endDrag = (e) => {
             if (!this.draggedCard) return;
-            const card = this.draggedCard.card;
+            const { card, type, originIndex, pileIndex, cardIndex } = this.draggedCard;
 
-            // 1. Check Drop on Foundations
             let dropped = false;
-            // ... Logic for dropping ...
 
-            // If invalid drop, return to origin
+            // 1. Check Foundations (Single card only)
+            if (type === 'waste' || (type === 'tableau' && cardIndex === this.piles[pileIndex].length - 1)) {
+                for (let i = 0; i < 4; i++) {
+                    // Foundation Hit Test
+                    const fx = this.canvas.width - 10 - (4 - i) * (this.cardWidth + 10);
+                    if (this.hitTestRect({ x: card.x, y: card.y }, fx, 10, this.cardWidth, this.cardHeight)) {
+                        // Check Rule
+                        const foundation = this.foundations[i];
+                        if (foundation.length === 0) {
+                            if (card.value === 'A') { // Simple check, need index
+                                // Ace matches any empty foundation? Usually suited.
+                                // Let's assign suits to foundations dynamically or strictly.
+                                // Strict: F0=Hearts, F1=Diamonds...
+                                const suitMap = ['♥', '♦', '♣', '♠'];
+                                if (card.suit === suitMap[i]) {
+                                    this.moveCardToFoundation(card, i, type, pileIndex);
+                                    dropped = true;
+                                }
+                            }
+                        } else {
+                            const top = foundation[foundation.length - 1];
+                            if (card.suit === top.suit && this.getValue(card.value) === this.getValue(top.value) + 1) {
+                                this.moveCardToFoundation(card, i, type, pileIndex);
+                                dropped = true;
+                            }
+                        }
+                        if (dropped) break;
+                    }
+                }
+            }
+
+            // 2. Check Tableau (Can drag stack)
             if (!dropped) {
-                // Return animation or snap
-                this.layout(); // Re-calculate positions
+                for (let i = 0; i < 7; i++) {
+                    // Don't drop on self
+                    if (type === 'tableau' && pileIndex === i) continue;
+
+                    const pile = this.piles[i];
+                    // Hit test top card of pile or empty pile
+                    let tx = 10 + i * (this.cardWidth + 10);
+                    let ty = 150;
+                    if (pile.length > 0) ty += (pile.length - 1) * (pile[pile.length - 1].faceUp ? 30 : 10);
+
+                    if (this.hitTestRect({ x: card.x, y: card.y }, tx, ty, this.cardWidth, this.cardHeight)) {
+                        // Valid move?
+                        if (pile.length === 0) {
+                            if (card.value === 'K') {
+                                this.moveStackToTableau(i);
+                                dropped = true;
+                                break;
+                            }
+                        } else {
+                            const top = pile[pile.length - 1];
+                            // Descending alternating color
+                            if (top.color !== card.color && this.getValue(top.value) === this.getValue(card.value) + 1) {
+                                this.moveStackToTableau(i);
+                                dropped = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!dropped) {
+                this.layout(); // Reset
             }
 
             this.draggedCard = null;
             this.draw();
+            this.checkWin();
         };
 
         this.canvas.addEventListener('mousedown', startDrag);
@@ -337,13 +398,57 @@ export default class CardEngine {
             // Bottom Right (Rotating 180 is hard with simple fillText, skipping for now)
         } else {
             // Back Pattern
-            this.ctx.fillStyle = 'rgba(255,255,255,0.2)';
-            this.ctx.fillRect(5, 5, this.cardWidth - 10, this.cardHeight - 10);
+            this.ctx.restore();
         }
 
-        this.ctx.restore();
-    }
+        getValue(v) {
+            if (v === 'A') return 1;
+            if (v === 'J') return 11;
+            if (v === 'Q') return 12;
+            if (v === 'K') return 13;
+            return parseInt(v);
+        }
 
-    // Stub
-    bindMobileControls() { }
-}
+        moveCardToFoundation(card, fIdx, type, pileIdx) {
+            // Remove from source
+            if (type === 'waste') this.waste.pop();
+            else if (type === 'tableau') {
+                this.piles[pileIdx].pop();
+                // Flip new top
+                if (this.piles[pileIdx].length > 0) this.piles[pileIdx][this.piles[pileIdx].length - 1].faceUp = true;
+            }
+
+            // Add to foundation
+            this.foundations[fIdx].push(card);
+            this.layout();
+        }
+
+        moveStackToTableau(targetPileIdx) {
+            const { card, type, pileIndex, cardIndex } = this.draggedCard;
+            let stack = [];
+
+            if (type === 'waste') {
+                stack = [this.waste.pop()];
+            } else if (type === 'tableau') {
+                // Cut from source
+                stack = this.piles[pileIndex].splice(cardIndex);
+
+                if (this.piles[pileIndex].length > 0) {
+                    this.piles[pileIndex][this.piles[pileIndex].length - 1].faceUp = true;
+                }
+            }
+
+            // Add to target
+            this.piles[targetPileIdx] = this.piles[targetPileIdx].concat(stack);
+            this.layout();
+        }
+
+        checkWin() {
+            if (this.foundations.every(f => f.length === 13)) {
+                setTimeout(() => alert("Victory!"), 100);
+            }
+        }
+
+        // Stub
+        bindMobileControls() { }
+    }
