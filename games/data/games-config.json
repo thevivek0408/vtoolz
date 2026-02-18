@@ -1161,7 +1161,7 @@
     },
     {
         "id": 166,
-        "name": "Mini Golf",
+        "name": "Space Mini Golf",
         "engine": "physics",
         "category": "sports",
         "mode": "single"
@@ -1182,14 +1182,14 @@
     },
     {
         "id": 169,
-        "name": "Bowling Mini",
+        "name": "Heavy Bowling",
         "engine": "physics",
         "category": "sports",
         "mode": "single"
     },
     {
         "id": 170,
-        "name": "Archery",
+        "name": "Speed Archery",
         "engine": "physics",
         "category": "sports",
         "mode": "single"
@@ -1210,7 +1210,7 @@
     },
     {
         "id": 173,
-        "name": "Bike Stunt",
+        "name": "Moon Bike Stunt",
         "engine": "physics",
         "category": "sports",
         "mode": "single"
@@ -1238,14 +1238,14 @@
     },
     {
         "id": 177,
-        "name": "Idle City Builder",
+        "name": "Tech City Builder",
         "engine": "idle",
         "category": "strategy",
         "mode": "single"
     },
     {
         "id": 178,
-        "name": "Resource Manager",
+        "name": "Magic Resource Manager",
         "engine": "idle",
         "category": "strategy",
         "mode": "single"
@@ -1259,7 +1259,7 @@
     },
     {
         "id": 180,
-        "name": "Clicker Empire",
+        "name": "Cookie Empire",
         "engine": "idle",
         "category": "strategy",
         "mode": "single"
@@ -1287,7 +1287,7 @@
     },
     {
         "id": 184,
-        "name": "Incremental Miner",
+        "name": "Incremental Cyber Miner",
         "engine": "idle",
         "category": "strategy",
         "mode": "single"
@@ -1357,14 +1357,14 @@
     },
     {
         "id": 194,
-        "name": "Color Match",
+        "name": "Color Flood Match",
         "engine": "grid",
         "category": "casual",
         "mode": "single"
     },
     {
         "id": 195,
-        "name": "Pattern Designer",
+        "name": "Lights Out Pattern",
         "engine": "grid",
         "category": "casual",
         "mode": "single"
