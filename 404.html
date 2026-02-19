@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | Vibox</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="stylesheet" href="css/style.css?v=3">
+    <style>
+        .error-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .error-code {
+            font-size: clamp(5rem, 15vw, 10rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        .error-page h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        .error-page p {
+            color: var(--text-muted);
+            max-width: 450px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .error-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .error-actions a {
+            padding: 12px 28px;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .error-actions .btn-home {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        .error-actions .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .error-actions .btn-tools {
+            background: var(--surface-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        .error-actions .btn-tools:hover {
+            background: var(--secondary-surface);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Vibox</a>
+        </div>
+    </header>
+
+    <main class="error-page">
+        <div class="error-code">404</div>
+        <h2>Page Not Found</h2>
+        <p>The page you're looking for doesn't exist or has been moved. Don't worry — all your favorite tools are still here.</p>
+        <div class="error-actions">
+            <a href="index.html" class="btn-home">Back to Home</a>
+            <a href="tools/index.html" class="btn-tools">Browse All Tools</a>
+        </div>
+    </main>
+
+    <script src="js/utils/common.js" type="module"></script>
+</body>
+
+</html>

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Free, private, client-side tools for PDF, Images, Text, and Developers. No file uploads, no tracking. Merge PDF, Compress Images, Format JSON, and more.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Vibox - Privacy-First Tools</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.png" type="image/png">
@@ -69,8 +70,7 @@
             <h1>Your Data, Your Tools.</h1>
             <p>Powerful utilities that run entirely in your browser. <br>No uploads. No servers. 100% Private.</p>
 
-            <!-- New Search Bar -->
-            <!-- New Search Bar -->
+            <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-input-wrapper">
                     <i class="fas fa-search search-icon"></i>
@@ -105,8 +105,13 @@
         </div>
 
         <!-- Dynamic Tool Grid -->
-        <div class="tool-grid" id="tools-grid">
-            <!-- Javascript will populate this -->
+        <div class="tool-grid" id="tools-grid" role="tabpanel" aria-label="Tools grid">
+            <!-- Loading skeleton -->
+            <div class="skeleton-grid" id="skeleton-loader">
+                <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+                <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+            </div>
         </div>
 
         <!-- No Results State -->
@@ -116,6 +121,7 @@
             <p>Try searching for a different keyword like "PDF" or "Color".</p>
         </div>
     </section>
+</main>
 
     <footer
         style="text-align: center; padding: 20px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 30px;">
@@ -127,6 +133,6 @@
 
     <script src="js/utils/common.js" type="module"></script>
     <script src="js/home.js" type="module"></script>
-    </body>
+</body>
 
 </html>

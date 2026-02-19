@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'vtoolz-v37';
+const CACHE_VERSION = 'vtoolz-v38';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const CDN_CACHE = `${CACHE_VERSION}-cdn`;
@@ -10,6 +10,8 @@ const MAX_DYNAMIC_ENTRIES = 150;
 const CRITICAL_ASSETS = [
     './',
     './index.html',
+    './offline.html',
+    './404.html',
     './css/style.css',
     './js/home.js',
     './js/utils/common.js',
@@ -171,7 +173,7 @@ self.addEventListener('fetch', (event) => {
                     const networkFetch = fetch(request).then(response => {
                         if (response.ok) cache.put(request, response.clone());
                         return response;
-                    }).catch(() => cached || caches.match('./index.html'));
+                    }).catch(() => cached || caches.match('./offline.html'));
 
                     // Return cached immediately if available, else wait for network
                     return cached || networkFetch;

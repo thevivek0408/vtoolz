@@ -54,8 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             Utils.showToast("Loading AI Module (Requires Internet)...", "info");
-            // Dynamic import
-            // Note: This URL must be reachable. If offline, this fails.
+            // Dynamic import from CDN — pinned to specific version for safety.
+            // Note: SRI is not available for dynamic imports. If self-hosting is
+            // feasible, copy this module locally for full integrity control.
             const module = await import("https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.3.0/+esm");
             imglyRemoveBackground = module.default;
             return true;

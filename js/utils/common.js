@@ -49,45 +49,17 @@ export const Utils = {
         }, duration);
     },
 
-    // Drag and Drop Helper
+    // Drag and Drop Helper (legacy alias)
     setupDragAndDrop: (dropZone, input, callback) => {
         if (!dropZone || !input) return;
-
-        // Smart click handler - works whether Input is INSIDE or OUTSIDE
-        dropZone.addEventListener('click', (e) => {
-            // Stop if we clicked the input itself (bubbling)
-            if (e.target === input) return;
-
-            input.click();
-        });
-
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropZone.classList.add('dragover');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                callback(e.dataTransfer.files[0]);
-            }
-        });
-
+        // Delegate to initDragAndDrop with adapter
+        Utils.initDragAndDrop(null, (files) => callback(files[0] || files), dropZone);
+        // Also wire up the specific input
         input.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                callback(e.target.files[0]);
-            }
-            input.value = ''; // Reset
+            if (e.target.files.length) callback(e.target.files[0]);
+            input.value = '';
         });
     },
-
-    // Download Helper
 
     // Download Helper
     downloadBlob: (blob, filename) => {
@@ -408,39 +380,76 @@ export const Utils = {
     // --- Error Boundary for Tool Pages ---
     initErrorBoundary: () => {
         window.addEventListener('error', (event) => {
-            // Check if it's a script loading error
             if (event.target && (event.target.tagName === 'SCRIPT' || event.target.tagName === 'LINK')) {
                 const src = event.target.src || event.target.href || 'unknown resource';
                 console.error('Resource failed to load:', src);
 
-                // Show user-facing error banner (only once)
                 if (!document.getElementById('error-boundary-banner')) {
                     const banner = document.createElement('div');
                     banner.id = 'error-boundary-banner';
                     banner.style.cssText = 'position:fixed; top:0; left:0; right:0; z-index:99999; background:#e74c3c; color:white; padding:12px 20px; text-align:center; font-size:0.9rem; box-shadow:0 2px 10px rgba(0,0,0,0.3);';
-                    banner.innerHTML = `
-                        <strong>⚠️ A required resource failed to load.</strong> 
-                        This tool may not work correctly. 
-                        <button onclick="location.reload()" style="margin-left:10px; padding:4px 12px; border:1px solid white; background:transparent; color:white; border-radius:4px; cursor:pointer; font-weight:600;">Reload Page</button>
-                        <button onclick="this.parentElement.remove()" style="margin-left:5px; padding:4px 12px; border:none; background:transparent; color:white; cursor:pointer; font-size:1.1rem;">✕</button>
-                    `;
+
+                    const msg = document.createElement('strong');
+                    msg.textContent = '⚠️ A required resource failed to load. This tool may not work correctly. ';
+                    banner.appendChild(msg);
+
+                    const reloadBtn = document.createElement('button');
+                    reloadBtn.textContent = 'Reload Page';
+                    reloadBtn.style.cssText = 'margin-left:10px; padding:4px 12px; border:1px solid white; background:transparent; color:white; border-radius:4px; cursor:pointer; font-weight:600;';
+                    reloadBtn.addEventListener('click', () => location.reload());
+                    banner.appendChild(reloadBtn);
+
+                    const closeBtn = document.createElement('button');
+                    closeBtn.textContent = '✕';
+                    closeBtn.style.cssText = 'margin-left:5px; padding:4px 12px; border:none; background:transparent; color:white; cursor:pointer; font-size:1.1rem;';
+                    closeBtn.addEventListener('click', () => banner.remove());
+                    banner.appendChild(closeBtn);
+
                     document.body.prepend(banner);
                 }
             }
-        }, true); // capture phase to catch resource load errors
+        }, true);
 
-        // Also handle unhandled promise rejections
         window.addEventListener('unhandledrejection', (event) => {
             console.error('Unhandled error:', event.reason);
         });
+    },
+
+    // --- Inject Font Awesome if missing (for tool pages) ---
+    ensureFontAwesome: () => {
+        if (!document.querySelector('link[href*="font-awesome"]')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+            link.media = 'print';
+            link.onload = function() { this.media = 'all'; };
+            document.head.appendChild(link);
+        }
+    },
+
+    // --- Inject Skip Link if missing (for tool/game pages) ---
+    ensureSkipLink: () => {
+        if (!document.querySelector('.skip-link')) {
+            const mainTarget = document.querySelector('main') || document.querySelector('.tool-container') || document.querySelector('.container');
+            if (mainTarget && !mainTarget.id) mainTarget.id = 'main-content';
+            const targetId = mainTarget?.id || 'main-content';
+
+            const skipLink = document.createElement('a');
+            skipLink.href = '#' + targetId;
+            skipLink.className = 'skip-link';
+            skipLink.textContent = 'Skip to content';
+            document.body.prepend(skipLink);
+        }
     }
 };
 
 // Initialize Theme & SW & Stats & Error Boundary
 window.addEventListener('DOMContentLoaded', () => {
-    window.Utils.initTheme();
-    window.Utils.initStatsWidget();
-    window.Utils.initErrorBoundary();
+    Utils.initTheme();
+    Utils.initStatsWidget();
+    Utils.initErrorBoundary();
+    Utils.ensureFontAwesome();
+    Utils.ensureSkipLink();
     new CommandPalette();
 
     // Track recently used tool (if on a tool page)
@@ -505,5 +514,5 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Expose to window for inline scripts
+// Expose to window for inline scripts (set IMMEDIATELY, not deferred)
 window.Utils = Utils;

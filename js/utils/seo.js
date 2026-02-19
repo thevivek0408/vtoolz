@@ -29,7 +29,7 @@
 
     const url = window.location.href;
     const canonicalDomain = 'https://vibox.app';
-    const image = canonicalDomain + '/assets/og-image.jpg';
+    const image = canonicalDomain + '/assets/icon.png';
 
     // Function to set meta tag
     function setMeta(name, content, attribute = 'name') {

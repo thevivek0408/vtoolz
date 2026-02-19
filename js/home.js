@@ -15,10 +15,31 @@ function init() {
     renderTools(tools);
     setupEventListeners();
 
+    // Hide skeleton loader once tools are rendered
+    const skeleton = document.getElementById('skeleton-loader');
+    if (skeleton) skeleton.classList.add('hidden');
+
+    // Keyboard shortcut: '/' or Ctrl+K to focus search
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && !isInputFocused()) {
+            e.preventDefault();
+            searchInput?.focus();
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput?.focus();
+        }
+    });
+
     // Check URL params for search/category
     const params = new URLSearchParams(window.location.search);
     const cat = params.get('category');
     if (cat) setCategory(cat);
+}
+
+function isInputFocused() {
+    const el = document.activeElement;
+    return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
 }
 
 // Render Recently Used Tools

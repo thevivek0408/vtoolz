@@ -86,7 +86,7 @@
     --secondary-surface: #e9ecef;
     --text-color: #2c3e50;
     /* Explicit Dark Blue-Grey */
-    --text-muted: #7f8c8d;
+    --text-muted: #5f6b6c;
     --border-color: #ecf0f1;
 
     /* Effects - Holographic & Glass */
@@ -1691,3 +1691,23 @@ a, button, input, select, textarea, .filter-tab, .tool-card, .btn {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
 }
+
+/* ===== Loading Skeleton ===== */
+.skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+.skeleton-card {
+    height: 120px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(90deg, var(--secondary-surface) 25%, var(--surface-color) 50%, var(--secondary-surface) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-grid.hidden { display: none; }
