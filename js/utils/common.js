@@ -501,7 +501,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
         navigator.serviceWorker.register(swPath, { scope: swScope })
             .then(reg => {
-                // SW Registered
+                // Detect SW updates and notify user
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    if (!newWorker) return;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            if (typeof Utils.showToast === 'function') {
+                                Utils.showToast('Update available! Reload for the latest version.', 'info', 8000);
+                            }
+                        }
+                    });
+                });
+                // Ask SW to lazy-cache vendor libs
+                if (reg.active) reg.active.postMessage('CACHE_VENDORS');
             })
             .catch(err => {
                 console.warn('SW Registration Failed:', err);

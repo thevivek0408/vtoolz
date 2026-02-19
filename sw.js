@@ -1,10 +1,11 @@
-const CACHE_VERSION = 'vtoolz-v38';
+const CACHE_VERSION = 'vtoolz-v39';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const CDN_CACHE = `${CACHE_VERSION}-cdn`;
 
-// Max dynamic cache entries (prevents unbounded growth)
+// Max cache entries (prevents unbounded growth)
 const MAX_DYNAMIC_ENTRIES = 150;
+const MAX_CDN_ENTRIES = 80;
 
 // Critical shell — MUST cache for offline
 const CRITICAL_ASSETS = [
@@ -21,7 +22,7 @@ const CRITICAL_ASSETS = [
     './assets/icon.png'
 ];
 
-// Secondary assets — best-effort precache
+// Secondary assets — best-effort precache (loaded via requestIdleCallback when possible)
 const SECONDARY_ASSETS = [
     './js/loader.js',
     './js/category.js',
@@ -51,26 +52,6 @@ const SECONDARY_ASSETS = [
     './tools/time/index.html',
     './tools/utility/index.html',
 
-    // Core Vendor libraries
-    './js/vendor/pdf-lib.min.js',
-    './js/vendor/pdf.min.js',
-    './js/vendor/pdf.worker.min.js',
-    './js/vendor/cropper.min.js',
-    './js/vendor/html5-qrcode.min.js',
-    './js/vendor/JsBarcode.all.min.js',
-    './js/vendor/marked.min.js',
-    './js/vendor/purify.min.js',
-    './js/vendor/highlight.min.js',
-    './js/vendor/jszip.min.js',
-    './js/vendor/qrcode.min.js',
-    './js/vendor/quill.min.js',
-    './js/vendor/quill.snow.css',
-    './js/vendor/jspreadsheet.js',
-    './js/vendor/jspreadsheet.css',
-    './js/vendor/jsuites.js',
-    './js/vendor/jsuites.css',
-    './js/vendor/pptxgen.bundle.min.js',
-
     // Core tool scripts
     './js/pdf/pdf-main.js',
     './js/image/image-main.js',
@@ -97,24 +78,55 @@ const SECONDARY_ASSETS = [
     './js/media/audio-trimmer.js',
 ];
 
+// Vendor libraries — lazy-precached after install via message or idle
+const VENDOR_ASSETS = [
+    './js/vendor/pdf-lib.min.js',
+    './js/vendor/pdf.min.js',
+    './js/vendor/pdf.worker.min.js',
+    './js/vendor/cropper.min.js',
+    './js/vendor/cropper.min.css',
+    './js/vendor/color-thief.umd.js',
+    './js/vendor/diff.min.js',
+    './js/vendor/html5-qrcode.min.js',
+    './js/vendor/JsBarcode.all.min.js',
+    './js/vendor/marked.min.js',
+    './js/vendor/purify.min.js',
+    './js/vendor/highlight.min.js',
+    './js/vendor/jszip.min.js',
+    './js/vendor/qrcode.min.js',
+    './js/vendor/quill.min.js',
+    './js/vendor/quill.snow.css',
+    './js/vendor/jspreadsheet.js',
+    './js/vendor/jspreadsheet.css',
+    './js/vendor/jsuites.js',
+    './js/vendor/jsuites.css',
+    './js/vendor/pptxgen.bundle.min.js',
+    './js/vendor/html2pdf.bundle.min.js',
+    './js/vendor/mammoth.browser.min.js',
+    './js/vendor/xlsx.full.min.js',
+    './js/vendor/chart.umd.min.js',
+];
+
 // NOTE: Games are NOT precached — they are large (especially Unity WebGL builds)
 // and will be cached on-demand when the user first plays them.
 
-// Trim dynamic cache to prevent storage bloat
+// Batch-trim cache to prevent storage bloat (non-recursive, O(1) open)
 async function trimCache(cacheName, maxItems) {
     const cache = await caches.open(cacheName);
     const keys = await cache.keys();
-    if (keys.length > maxItems) {
-        await cache.delete(keys[0]);
-        return trimCache(cacheName, maxItems);
-    }
+    if (keys.length <= maxItems) return;
+    // Delete oldest entries in batch
+    const deleteCount = keys.length - maxItems;
+    await Promise.all(keys.slice(0, deleteCount).map(key => cache.delete(key)));
 }
 
-// Install: Precache critical + secondary
+// Install: Precache critical shell + secondary scripts (vendor deferred)
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(STATIC_CACHE).then(async (cache) => {
+            // Critical — must succeed
             await cache.addAll(CRITICAL_ASSETS);
+            // Secondary — best-effort
             for (const url of SECONDARY_ASSETS) {
                 try { await cache.add(url); } catch (e) { console.warn('Optional cache miss:', url); }
             }
@@ -123,16 +135,40 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Activate: Clean ALL old version caches
+// Activate: Clean ALL old version caches, then lazy-load vendors
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keyList) => {
             return Promise.all(keyList.map((key) => {
                 if (!key.startsWith(CACHE_VERSION)) return caches.delete(key);
             }));
+        }).then(() => {
+            // Lazy-precache vendor libs after activation (non-blocking)
+            lazyCacheVendors();
         })
     );
     self.clients.claim();
+});
+
+// Lazy vendor precaching — runs after activate, non-blocking
+async function lazyCacheVendors() {
+    const cache = await caches.open(STATIC_CACHE);
+    for (const url of VENDOR_ASSETS) {
+        try {
+            const existing = await cache.match(url);
+            if (!existing) await cache.add(url);
+        } catch (e) { /* Non-critical, will cache on first use */ }
+    }
+}
+
+// Allow pages to trigger vendor precache early via message
+self.addEventListener('message', (event) => {
+    if (event.data === 'CACHE_VENDORS') {
+        lazyCacheVendors();
+    }
+    if (event.data === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
 
 // Fetch: Smart strategy based on request type
@@ -144,9 +180,10 @@ self.addEventListener('fetch', (event) => {
     if (request.method !== 'GET') return;
     if (!url.protocol.startsWith('http')) return;
 
-    // Strategy 1: CDN resources (Font Awesome, Google Fonts, cdnjs)
-    // → Cache-First (these rarely change)
+    // Strategy 1: CDN resources (Font Awesome, Google Fonts, cdnjs, jsdelivr)
+    // → Cache-First (these are versioned/immutable)
     if (url.hostname.includes('cdnjs.cloudflare.com') ||
+        url.hostname.includes('cdn.jsdelivr.net') ||
         url.hostname.includes('fonts.googleapis.com') ||
         url.hostname.includes('fonts.gstatic.com') ||
         url.hostname.includes('ajax.googleapis.com')) {
@@ -155,7 +192,11 @@ self.addEventListener('fetch', (event) => {
                 cache.match(request).then(cached => {
                     if (cached) return cached;
                     return fetch(request).then(response => {
-                        if (response.ok) cache.put(request, response.clone());
+                        if (response.ok) {
+                            cache.put(request, response.clone());
+                            // Trim CDN cache in background
+                            trimCache(CDN_CACHE, MAX_CDN_ENTRIES);
+                        }
                         return response;
                     });
                 })
