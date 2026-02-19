@@ -17,70 +17,70 @@
     <!-- Menu Bar -->
     <div class="menu-bar">
         <a href="../../index.html" class="app-logo"><span>V</span> Photo Editor</a>
-        <div class="menu-item" onclick="toggleDropdown('file-dd')">File
+        <div class="menu-item" data-onclick="toggleDropdown('file-dd')">File
             <div class="dropdown-content" id="file-dd">
-                <div class="dropdown-item" onclick="document.getElementById('new-project-modal').style.display='flex'">
+                <div class="dropdown-item" data-onclick="document.getElementById('new-project-modal').style.display='flex'">
                     New Project...</div>
-                <div class="dropdown-item" onclick="document.getElementById('file-input-load').click()">Open Project...
+                <div class="dropdown-item" data-onclick="document.getElementById('file-input-load').click()">Open Project...
                 </div>
-                <div class="dropdown-item" onclick="saveProject()">Save Project</div>
-                <div class="dropdown-item" onclick="exportImage()">Export as PNG...</div>
-                <div class="dropdown-item" onclick="closeProject()">Close Project</div>
+                <div class="dropdown-item" data-onclick="saveProject()">Save Project</div>
+                <div class="dropdown-item" data-onclick="exportImage()">Export as PNG...</div>
+                <div class="dropdown-item" data-onclick="closeProject()">Close Project</div>
             </div>
         </div>
-        <div class="menu-item" onclick="toggleDropdown('edit-dd')">Edit
+        <div class="menu-item" data-onclick="toggleDropdown('edit-dd')">Edit
             <div class="dropdown-content" id="edit-dd">
-                <div class="dropdown-item" onclick="restoreHistory(state.historyIndex-1)">Undo <span style='float:right;color:#888'>Ctrl+Z</span></div>
-                <div class="dropdown-item" onclick="restoreHistory(state.historyIndex+1)">Redo <span style='float:right;color:#888'>Ctrl+Y</span></div>
+                <div class="dropdown-item" data-onclick="restoreHistory(state.historyIndex-1)">Undo <span style='float:right;color:#888'>Ctrl+Z</span></div>
+                <div class="dropdown-item" data-onclick="restoreHistory(state.historyIndex+1)">Redo <span style='float:right;color:#888'>Ctrl+Y</span></div>
             </div>
         </div>
-        <div class="menu-item" onclick="toggleDropdown('image-dd')">Image
+        <div class="menu-item" data-onclick="toggleDropdown('image-dd')">Image
             <div class="dropdown-content" id="image-dd">
-                <div class="dropdown-item" onclick="openResizeModal('image')">Image Size</div>
-                <div class="dropdown-item" onclick="openResizeModal('canvas')">Canvas Size</div>
+                <div class="dropdown-item" data-onclick="openResizeModal('image')">Image Size</div>
+                <div class="dropdown-item" data-onclick="openResizeModal('canvas')">Canvas Size</div>
             </div>
         </div>
-        <div class="menu-item" onclick="toggleDropdown('layer-dd')">Layer
+        <div class="menu-item" data-onclick="toggleDropdown('layer-dd')">Layer
             <div class="dropdown-content" id="layer-dd">
                 <div class="dropdown-item" id="menu-new-layer">New Layer</div>
                 <div class="dropdown-item" id="menu-del-layer">Delete Layer</div>
             </div>
         </div>
-        <div class="menu-item" onclick="toggleDropdown('select-dd')">Select
+        <div class="menu-item" data-onclick="toggleDropdown('select-dd')">Select
             <div class="dropdown-content" id="select-dd">
-                <div class="dropdown-item" onclick="state.selection={x:0,y:0,w:state.config.width,h:state.config.height};state.selectionPath=null;state.selectionMask=null;">All <span style='float:right;color:#888'>Ctrl+A</span></div>
-                <div class="dropdown-item" onclick="state.selection=null;state.selectionPath=null;state.selectionMask=null;">Deselect <span style='float:right;color:#888'>Ctrl+D</span></div>
+                <div class="dropdown-item" data-onclick="state.selection={x:0,y:0,w:state.config.width,h:state.config.height};state.selectionPath=null;state.selectionMask=null;">All <span style='float:right;color:#888'>Ctrl+A</span></div>
+                <div class="dropdown-item" data-onclick="state.selection=null;state.selectionPath=null;state.selectionMask=null;">Deselect <span style='float:right;color:#888'>Ctrl+D</span></div>
             </div>
         </div>
-        <div class="menu-item" onclick="toggleDropdown('filter-dd')">Filter
+        <div class="menu-item" data-onclick="toggleDropdown('filter-dd')">Filter
             <div class="dropdown-content" id="filter-dd">
-                <div class="dropdown-item" onclick="applyAutoFix()">? Auto Magic Fix</div>
-                <div class="dropdown-item" onclick="openHueSatModal()">Hue/Saturation</div>
-                <div class="dropdown-item" onclick="applyWorkerFilter('denoise')">Denoise</div>
-                <div class="dropdown-item" onclick="applyWorkerFilter('blur')">Blur</div>
-                <div class="dropdown-item" onclick="applyWorkerFilter('sharpen')">Sharpen</div>
-                <div class="dropdown-item" onclick="applyWorkerFilter('emboss')">Emboss</div>
-                <div class="dropdown-item" onclick="applyWorkerFilter('edge')">Edge Detect</div>
-                <div class="dropdown-item" onclick="applyWorkerFilter('oil')">Oil Paint</div>
-                <div class="dropdown-item" onclick="promptLevels()">Levels</div>
+                <div class="dropdown-item" data-onclick="applyAutoFix()">? Auto Magic Fix</div>
+                <div class="dropdown-item" data-onclick="openHueSatModal()">Hue/Saturation</div>
+                <div class="dropdown-item" data-onclick="applyWorkerFilter('denoise')">Denoise</div>
+                <div class="dropdown-item" data-onclick="applyWorkerFilter('blur')">Blur</div>
+                <div class="dropdown-item" data-onclick="applyWorkerFilter('sharpen')">Sharpen</div>
+                <div class="dropdown-item" data-onclick="applyWorkerFilter('emboss')">Emboss</div>
+                <div class="dropdown-item" data-onclick="applyWorkerFilter('edge')">Edge Detect</div>
+                <div class="dropdown-item" data-onclick="applyWorkerFilter('oil')">Oil Paint</div>
+                <div class="dropdown-item" data-onclick="promptLevels()">Levels</div>
             </div>
         </div>
-        <div class="menu-item" onclick="toggleDropdown('view-dd')">View
+        <div class="menu-item" data-onclick="toggleDropdown('view-dd')">View
             <div class="dropdown-content" id="view-dd">
-                <div class="dropdown-item" onclick="state.zoom += 0.1; updateZoom();">Zoom In</div>
-                <div class="dropdown-item" onclick="state.zoom -= 0.1; updateZoom();">Zoom Out</div>
-                <div class="dropdown-item" onclick="openCompareModal()">Compare (Before/After)</div>
+                <div class="dropdown-item" data-onclick="state.zoom += 0.1; updateZoom();">Zoom In</div>
+                <div class="dropdown-item" data-onclick="state.zoom -= 0.1; updateZoom();">Zoom Out</div>
+                <div class="dropdown-item" data-onclick="openCompareModal()">Compare (Before/After)</div>
             </div>
         </div>
-        <div class="menu-item" onclick="toggleDropdown('window-dd')">Window
+        <div class="menu-item" data-onclick="toggleDropdown('window-dd')">Window
             <div class="dropdown-content" id="window-dd">
                 <div class="dropdown-item">Arrange</div>
                 <div class="dropdown-item">Workspace</div>
             </div>
         </div>
-        <div class="menu-item" onclick="toggleDropdown('more-dd')">More
+        <div class="menu-item" data-onclick="toggleDropdown('more-dd')">More
             <div class="dropdown-content" id="more-dd">
-                <div class="dropdown-item" onclick="document.getElementById('help-modal').style.display='flex'">Help
+                <div class="dropdown-item" data-onclick="document.getElementById('help-modal').style.display='flex'">Help
                 </div>
                 <div class="dropdown-item">About</div>
             </div>
@@ -126,7 +126,7 @@
         <div class="project-bar" id="project-bar" style="display:none;">
             <div class="project-tab active">
                 <span id="project-name-display">New Project.psd</span>
-                <span class="project-close" onclick="closeProject()">&times;</span>
+                <span class="project-close" data-onclick="closeProject()">&times;</span>
             </div>
         </div>
 
@@ -136,9 +136,9 @@
                 <div class="home-content">
                     <div class="home-logo"><span>V</span> Photo Editor</div>
                     <div class="home-btns">
-                        <button class="home-btn" onclick="openNewProjectDialog()"><i class="fas fa-file"></i> New
+                        <button class="home-btn" data-onclick="openNewProjectDialog()"><i class="fas fa-file"></i> New
                             Project</button>
-                        <button class="home-btn" onclick="document.getElementById('file-upload').click()"><i
+                        <button class="home-btn" data-onclick="document.getElementById('file-upload').click()"><i
                                 class="fas fa-folder-open"></i> Open From Computer</button>
                     </div>
                     <div class="drop-zone-msg">
@@ -264,7 +264,7 @@
             </div>
             <div class="modal-btns">
                 <button class="btn btn-primary"
-                    onclick="document.getElementById('help-modal').style.display='none'">Close</button>
+                    data-onclick="document.getElementById('help-modal').style.display='none'">Close</button>
             </div>
         </div>
     </div>
@@ -275,7 +275,7 @@
             <div class="np-header">
                 <h3>New Project</h3>
                 <button class="np-close"
-                    onclick="document.getElementById('new-project-modal').style.display='none'">&times;</button>
+                    data-onclick="document.getElementById('new-project-modal').style.display='none'">&times;</button>
             </div>
             <div class="np-body">
                 <!-- Sidebar -->
@@ -328,7 +328,7 @@
                     <div class="np-group">
                         <label>Background</label>
                         <div class="np-bg-select">
-                            <select id="np-bg-type" onchange="toggleNpColor(this.value)">
+                            <select id="np-bg-type" data-onchange="toggleNpColor(this.value)">
                                 <option value="white">White</option>
                                 <option value="black">Black</option>
                                 <option value="transparent">Transparent</option>
@@ -365,7 +365,7 @@
             </div>
             <div class="modal-btns">
                 <button class="btn btn-secondary"
-                    onclick="document.getElementById('resize-modal').style.display='none'">Cancel</button>
+                    data-onclick="document.getElementById('resize-modal').style.display='none'">Cancel</button>
                 <button class="btn btn-primary" id="btn-do-resize">Apply</button>
             </div>
         </div>
@@ -383,7 +383,7 @@
                     <option value="image/webp">WEBP</option>
                 </select>
                 <button class="btn btn-secondary"
-                    onclick="document.getElementById('export-modal').style.display='none'">Cancel</button>
+                    data-onclick="document.getElementById('export-modal').style.display='none'">Cancel</button>
                 <button class="btn btn-primary" id="btn-do-export">Download</button>
                 <button class="btn" id="btn-share-export"
                     style="display:none; background:var(--accent-color); color:white;"><i
@@ -407,7 +407,7 @@
             </div>
             <div class="modal-btns">
                 <button class="btn btn-secondary"
-                    onclick="document.getElementById('huesat-modal').style.display='none'">Cancel</button>
+                    data-onclick="document.getElementById('huesat-modal').style.display='none'">Cancel</button>
                 <button class="btn btn-primary" id="btn-apply-huesat">Apply</button>
             </div>
         </div>
@@ -418,7 +418,7 @@
         <div class="compare-container">
             <div class="compare-header">
                 <h3>Compare (Before / After)</h3>
-                <button class="icon-btn" onclick="document.getElementById('compare-modal').style.display='none'"><i
+                <button class="icon-btn" data-onclick="document.getElementById('compare-modal').style.display='none'"><i
                         class="fas fa-times"></i></button>
             </div>
             <div class="compare-view" id="compare-view">
@@ -434,9 +434,33 @@
 
     <!-- Hidden File Input -->
     <input type="file" id="file-input-load" style="display:none" accept=".vtz,.json"
-        onchange="handleFileLoad(this.files[0])">
+        data-onchange="handleFileLoad(this.files[0])">
 
     <script type="module" src="../../js/image/main.js"></script>
+    <script>
+        (() => {
+            const run = (code, element, event) => {
+                if (!code) return;
+                try {
+                    new Function('event', code).call(element, event);
+                } catch (error) {
+                    console.error('Event handler error:', error);
+                }
+            };
+
+            document.addEventListener('click', (event) => {
+                const element = event.target.closest('[data-onclick]');
+                if (!element) return;
+                run(element.getAttribute('data-onclick'), element, event);
+            });
+
+            document.addEventListener('change', (event) => {
+                const element = event.target.closest('[data-onchange]');
+                if (!element) return;
+                run(element.getAttribute('data-onchange'), element, event);
+            });
+        })();
+    </script>
 </body>
 
 </html>
