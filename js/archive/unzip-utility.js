@@ -69,12 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const isDir = zipEntry.dir;
             const icon = isDir ? 'fa-folder' : 'fa-file';
 
+            const _esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
             item.innerHTML = `
                 <div class="file-info">
                     <i class="fas ${icon}"></i>
-                    <span>${relativePath}</span>
+                    <span>${_esc(relativePath)}</span>
                 </div>
-                ${!isDir ? `<button class="extract-btn" data-filename="${relativePath}">Extract</button>` : ''}
+                ${!isDir ? `<button class="extract-btn" data-filename="${_esc(relativePath)}">Extract</button>` : ''}
             `;
             fileList.appendChild(item);
         });

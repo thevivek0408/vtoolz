@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <meta name="description"
         content="Free Online Spreadsheet Editor - Formulas, Charts, Conditional Formatting. Import/Export XLSX/CSV. Works offline.">
     <title>Spreadsheet Editor - Vibox</title>
@@ -780,13 +782,14 @@
         }
 
         // ── PRINT ──
+        const _esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         function printSheet() {
             if (!table) return;
             const data = table.getData();
-            let html = '<html><head><title>' + (_$('docTitle').value || 'Sheet') + '</title><style>table{border-collapse:collapse;width:100%;font-family:Arial;font-size:12px;}td,th{border:1px solid #ccc;padding:6px 8px;text-align:left;}th{background:#f0f0f0;font-weight:bold;}@media print{body{margin:0;}}</style></head><body><h3>' + (_$('docTitle').value || 'Spreadsheet') + '</h3><table>';
+            let html = '<html><head><title>' + _esc(_$('docTitle').value || 'Sheet') + '</title><style>table{border-collapse:collapse;width:100%;font-family:Arial;font-size:12px;}td,th{border:1px solid #ccc;padding:6px 8px;text-align:left;}th{background:#f0f0f0;font-weight:bold;}@media print{body{margin:0;}}</style></head><body><h3>' + _esc(_$('docTitle').value || 'Spreadsheet') + '</h3><table>';
             data.forEach((row, i) => {
                 html += '<tr>';
-                row.forEach(cell => html += (i === 0 ? '<th>' : '<td>') + (cell || '') + (i === 0 ? '</th>' : '</td>'));
+                row.forEach(cell => html += (i === 0 ? '<th>' : '<td>') + _esc(cell || '') + (i === 0 ? '</th>' : '</td>'));
                 html += '</tr>';
             });
             html += '</table></body></html>';

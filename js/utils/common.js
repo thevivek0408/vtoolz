@@ -411,8 +411,39 @@ export const Utils = {
         }, true);
 
         window.addEventListener('unhandledrejection', (event) => {
-            console.error('Unhandled error:', event.reason);
+            console.error('Unhandled promise rejection:', event.reason);
+            // Silently prevent the default browser error for handled-class rejections
+            if (event.reason && event.reason.name === 'AbortError') return;
+            // Show non-intrusive toast for genuine unhandled errors
+            if (typeof Utils.showToast === 'function') {
+                Utils.showToast('Something went wrong. Try again or reload.', 'error', 5000);
+            }
         });
+    },
+
+    // --- File Size Validator (reusable across tools) ---
+    validateFileSize: (file, maxMB = 100) => {
+        const maxBytes = maxMB * 1024 * 1024;
+        if (file.size > maxBytes) {
+            if (typeof Utils.showToast === 'function') {
+                Utils.showToast(`File too large (${Utils.formatBytes(file.size)}). Max ${maxMB}MB.`, 'error', 5000);
+            }
+            return false;
+        }
+        return true;
+    },
+
+    // --- Validate File MIME Type ---
+    validateFileType: (file, allowedTypes = []) => {
+        if (allowedTypes.length === 0) return true;
+        const valid = allowedTypes.some(t => {
+            if (t.endsWith('/*')) return file.type.startsWith(t.replace('/*', '/'));
+            return file.type === t;
+        });
+        if (!valid && typeof Utils.showToast === 'function') {
+            Utils.showToast('Unsupported file type. Please select a valid file.', 'error', 5000);
+        }
+        return valid;
     },
 
     // --- Inject Font Awesome if missing (for tool pages) ---

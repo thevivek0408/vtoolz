@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <meta name="description"
         content="Free Online Word Processor - Rich text editor with templates, DOCX import/export, Find & Replace, Focus Mode. Works offline.">
     <title>Word Processor - Vibox</title>
@@ -671,6 +673,7 @@
 
     <input type="file" id="fileInput" accept=".txt,.docx,.doc" style="display:none;">
 
+    <script src="../../js/vendor/purify.min.js"></script>
     <script src="../../js/vendor/quill.min.js"></script>
     <script src="../../js/vendor/html2pdf.bundle.min.js"></script>
     <script src="../../js/vendor/mammoth.browser.min.js"></script>
@@ -872,10 +875,14 @@
             icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
         };
 
+        // ── SANITIZE HELPER ──
+        const sanitizeHTML = (html) => typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(html, { USE_PROFILES: { html: true } }) : html;
+        const escapeHTML = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
         // ── PRINT ──
         $('btnPrint').onclick = () => {
             const w = window.open('', '', 'width=800,height=600');
-            w.document.write(`<html><head><title>${$('docTitle').value}</title><style>body{font-family:Georgia,serif;padding:40px;line-height:1.8;color:#1a1a2e;}h1{color:#2b5797;}h2{color:#2b5797;}img{max-width:100%;}blockquote{border-left:4px solid #2b5797;padding-left:12px;color:#555;}</style></head><body>${quill.root.innerHTML}</body></html>`);
+            w.document.write(`<html><head><title>${escapeHTML($('docTitle').value)}</title><style>body{font-family:Georgia,serif;padding:40px;line-height:1.8;color:#1a1a2e;}h1{color:#2b5797;}h2{color:#2b5797;}img{max-width:100%;}blockquote{border-left:4px solid #2b5797;padding-left:12px;color:#555;}</style></head><body>${sanitizeHTML(quill.root.innerHTML)}</body></html>`);
             w.document.close(); w.print();
         };
 
@@ -974,10 +981,10 @@
         $('btnPrint').onclick = () => {
             const hdr = $('headerInput').value, ftr = $('footerInput').value;
             const w = window.open('', '', 'width=800,height=600');
-            w.document.write(`<html><head><title>${$('docTitle').value}</title><style>body{font-family:Georgia,serif;padding:40px;line-height:1.8;color:#1a1a2e;}.hdr,.ftr{text-align:center;font-size:10px;color:#888;padding:8px;border-bottom:1px solid #eee;margin-bottom:16px;}.ftr{border-bottom:none;border-top:1px solid #eee;margin-top:16px;}h1,h2{color:#2b5797;}img{max-width:100%;}blockquote{border-left:4px solid #2b5797;padding-left:12px;color:#555;}</style></head><body>`);
-            if (hdr) w.document.write(`<div class="hdr">${hdr}</div>`);
-            w.document.write(quill.root.innerHTML);
-            if (ftr) w.document.write(`<div class="ftr">${ftr}</div>`);
+            w.document.write(`<html><head><title>${escapeHTML($('docTitle').value)}</title><style>body{font-family:Georgia,serif;padding:40px;line-height:1.8;color:#1a1a2e;}.hdr,.ftr{text-align:center;font-size:10px;color:#888;padding:8px;border-bottom:1px solid #eee;margin-bottom:16px;}.ftr{border-bottom:none;border-top:1px solid #eee;margin-top:16px;}h1,h2{color:#2b5797;}img{max-width:100%;}blockquote{border-left:4px solid #2b5797;padding-left:12px;color:#555;}</style></head><body>`);
+            if (hdr) w.document.write(`<div class="hdr">${escapeHTML(hdr)}</div>`);
+            w.document.write(sanitizeHTML(quill.root.innerHTML));
+            if (ftr) w.document.write(`<div class="ftr">${escapeHTML(ftr)}</div>`);
             w.document.write('</body></html>');
             w.document.close(); w.print();
         };

@@ -53,12 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
             item.draggable = true;
             item.dataset.index = index;
 
+            const _esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            const objUrl = URL.createObjectURL(file);
             item.innerHTML = `
                 <span style="margin-right:10px; color:var(--text-muted); cursor:grab;">☰</span>
-                <img src="${URL.createObjectURL(file)}" alt="Page ${index + 1}">
+                <img src="${objUrl}" alt="Page ${index + 1}">
                 <div class="file-info">
                     <strong>Page ${index + 1}</strong>
-                    <br><small>${file.name}</small>
+                    <br><small>${_esc(file.name)}</small>
                 </div>
                 <button class="btn-remove" data-idx="${index}">✖</button>
             `;

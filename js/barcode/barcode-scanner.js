@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure);
             isCameraRunning = true;
         } catch (err) {
-            console.error(err);
-            Utils.showToast("Error starting camera: " + err, "error");
+            console.error('Camera start error:', err);
+            Utils.showToast("Could not access camera. Please check permissions.", "error");
         }
     }
 
@@ -130,7 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
         resultText.value = text;
         resultFormat.value = format || "Detected";
 
-        searchBtn.href = `https://www.google.com/search?q=${text}`;
+        searchBtn.href = `https://www.google.com/search?q=${encodeURIComponent(text)}`;
+        searchBtn.rel = 'noopener noreferrer';
 
         Utils.showToast("Barcode Scanned!", "success");
     }

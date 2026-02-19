@@ -56,7 +56,8 @@ Passionate software engineer with 5+ years of experience in building scalable we
         // Parse Markdown using Marked.js (Global from <script> tag)
         // Configure marked to handle line breaks better if needed
         if (window.marked) {
-            resumePreview.innerHTML = window.marked.parse(text);
+            const rawHtml = window.marked.parse(text);
+            resumePreview.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
         } else {
             resumePreview.innerHTML = "<p style='color:red'>Error: Marked.js library not loaded.</p>";
         }

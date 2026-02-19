@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure);
             isCameraRunning = true;
         } catch (err) {
-            console.error(err);
-            Utils.showToast("Error starting camera: " + err, "error");
+            console.error('Camera start error:', err);
+            Utils.showToast("Could not access camera. Please check permissions.", "error");
         }
     }
 
@@ -126,8 +126,18 @@ document.addEventListener('DOMContentLoaded', () => {
         resultText.value = text;
 
         if (isValidURL(text)) {
-            openLinkBtn.style.display = 'inline-block';
-            openLinkBtn.href = text;
+            try {
+                const parsed = new URL(text);
+                if (['http:', 'https:'].includes(parsed.protocol)) {
+                    openLinkBtn.style.display = 'inline-block';
+                    openLinkBtn.href = text;
+                    openLinkBtn.rel = 'noopener noreferrer';
+                } else {
+                    openLinkBtn.style.display = 'none';
+                }
+            } catch (_) {
+                openLinkBtn.style.display = 'none';
+            }
         } else {
             openLinkBtn.style.display = 'none';
         }

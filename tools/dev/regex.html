@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Regex Tester - Vibox</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../css/style.css">
@@ -273,7 +275,11 @@ Order ID: #123456</textarea>
                 regexInput.style.borderColor = 'rgba(255, 255, 255, 0.1)';
             } catch (e) {
                 regexInput.style.borderColor = '#ff4757';
-                matchList.innerHTML = `<div style="padding:10px; color:#ff4757">Invalid Regex: ${e.message}</div>`;
+                const errDiv = document.createElement('div');
+                errDiv.style.cssText = 'padding:10px; color:#ff4757';
+                errDiv.textContent = `Invalid Regex: ${e.message}`;
+                matchList.innerHTML = '';
+                matchList.appendChild(errDiv);
                 highlights.innerHTML = text.replace(/</g, '&lt;');
             }
         }
@@ -287,8 +293,8 @@ Order ID: #123456</textarea>
             matchList.innerHTML = matches.map((m, i) => `
                 <div class="match-item">
                     <span class="match-index">#${i + 1}</span>
-                    <span class="match-content">${m[0].replace(/</g, '&lt;')}</span>
-                    ${m.length > 1 ? `<br><small style="color:var(--text-muted)">Groups: ${m.slice(1).join(', ')}</small>` : ''}
+                    <span class="match-content">${m[0].replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+                    ${m.length > 1 ? `<br><small style="color:var(--text-muted)">Groups: ${m.slice(1).map(g => String(g).replace(/</g, '&lt;').replace(/>/g, '&gt;')).join(', ')}</small>` : ''}
                 </div>
             `).join('');
         }

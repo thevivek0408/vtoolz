@@ -66,10 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
         filesToZip.forEach((file, index) => {
             const item = document.createElement('div');
             item.className = 'file-item';
+            const _esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
             item.innerHTML = `
                 <div class="file-info">
                     <i class="fas fa-file"></i>
-                    <span>${file.name}</span>
+                    <span>${_esc(file.name)}</span>
                     <span class="text-muted" style="font-size: 0.8rem;">(${Utils.formatBytes(file.size)})</span>
                 </div>
                 <button class="remove-btn" data-index="${index}"><i class="fas fa-times"></i></button>

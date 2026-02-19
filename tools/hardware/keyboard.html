@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Keyboard Tester - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
@@ -277,7 +279,15 @@
         function logEvent(e) {
             const entry = document.createElement('div');
             entry.className = 'log-entry';
-            entry.innerHTML = `<span>${e.type}</span>: Key="${e.key}" Code="<span class='code'>${e.code}</span>" Which=${e.which}`;
+            const typeSpan = document.createElement('span');
+            typeSpan.textContent = e.type;
+            entry.appendChild(typeSpan);
+            entry.appendChild(document.createTextNode(`: Key="${e.key}" Code="`));
+            const codeSpan = document.createElement('span');
+            codeSpan.className = 'code';
+            codeSpan.textContent = e.code;
+            entry.appendChild(codeSpan);
+            entry.appendChild(document.createTextNode(`" Which=${e.which}`));
             els.log.insertBefore(entry, els.log.firstChild);
         }
 

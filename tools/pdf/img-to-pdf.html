@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Image to PDF - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
@@ -87,14 +89,20 @@
 
             // Preview
             const img = document.createElement('img');
-            img.src = URL.createObjectURL(file);
+            const objUrl = URL.createObjectURL(file);
+            img.src = objUrl;
             img.style.width = '40px';
             img.style.height = '40px';
             img.style.objectFit = 'cover';
             img.style.borderRadius = '4px';
+            img.onload = () => URL.revokeObjectURL(objUrl);
 
             const name = document.createElement('span');
-            name.innerHTML = `${file.name} <small class="text-muted">(${window.Utils.formatBytes(file.size)})</small>`;
+            name.textContent = file.name + ' ';
+            const sizeSmall = document.createElement('small');
+            sizeSmall.className = 'text-muted';
+            sizeSmall.textContent = `(${window.Utils.formatBytes(file.size)})`;
+            name.appendChild(sizeSmall);
 
             info.appendChild(img);
             info.appendChild(name);
