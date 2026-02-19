@@ -12,7 +12,7 @@
         allGames = await res.json();
         renderGames(allGames);
     } catch (e) {
-        grid.innerHTML = '<div class="loading-state" style="color:#FF6B6B">Could not load library. Please try again.</div>';
+        grid.innerHTML = '<div class="loading-state" style="color:var(--danger-color, #FF6B6B)">Could not load library. Please try again.</div>';
     }
 
     // Featured Render Removed
@@ -85,4 +85,4 @@
         });
         renderGames(filtered);
     }
-});
+});

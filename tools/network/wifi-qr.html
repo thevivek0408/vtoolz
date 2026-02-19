@@ -44,7 +44,7 @@
                     <div style="position: relative;">
                         <input type="password" id="password" class="form-control" placeholder="Password">
                         <i class="fas fa-eye" id="toggle-pw"
-                            style="position: absolute; right: 10px; top: 10px; cursor: pointer; color: #666;"></i>
+                            style="position: absolute; right: 10px; top: 10px; cursor: pointer; color: var(--text-muted);"></i>
                     </div>
                 </div>
 
@@ -64,9 +64,9 @@
                 <button id="btn-generate" class="btn btn-primary btn-block">Generate QR Code</button>
 
                 <div id="result"
-                    style="display: none; margin-top: 30px; text-align: center; background: white; padding: 20px; border-radius: 8px;">
+                    style="display: none; margin-top: 30px; text-align: center; background: var(--surface-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
                     <div id="qrcode" style="display: inline-block;"></div>
-                    <p style="margin-top: 15px; color: #333; font-weight: bold;">Scan to Connect</p>
+                    <p style="margin-top: 15px; color: var(--text-color); font-weight: bold;">Scan to Connect</p>
                     <button id="btn-print" class="btn btn-secondary btn-sm"><i class="fas fa-print"></i> Print</button>
                     <button id="btn-download" class="btn btn-secondary btn-sm"><i class="fas fa-download"></i>
                         Download</button>

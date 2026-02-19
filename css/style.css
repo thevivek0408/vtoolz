@@ -124,12 +124,20 @@
 
     --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
 
     /* Dark Mode Glass */
     --glass-bg: rgba(30, 41, 59, 0.6);
     --glass-border: 1px solid rgba(255, 255, 255, 0.08);
     --holo-sheen: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%);
     --holo-glow: 0 0 20px rgba(52, 152, 219, 0.1);
+
+    /* Neon Glow Effects */
+    --neon-glow-sm: 0 0 8px rgba(52, 152, 219, 0.3);
+    --neon-glow-md: 0 0 15px rgba(52, 152, 219, 0.35), 0 0 30px rgba(52, 152, 219, 0.15);
+    --neon-glow-lg: 0 0 20px rgba(52, 152, 219, 0.4), 0 0 40px rgba(52, 152, 219, 0.2), 0 0 60px rgba(52, 152, 219, 0.1);
+    --neon-border: 1px solid rgba(52, 152, 219, 0.35);
+    --neon-text-glow: 0 0 10px rgba(52, 152, 219, 0.5), 0 0 20px rgba(52, 152, 219, 0.3);
 }
 
 * {
@@ -327,6 +335,11 @@ html {
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
 
+[data-theme="dark"] .tool-container {
+    border-color: rgba(52, 152, 219, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(52, 152, 219, 0.05);
+}
+
 /* Premium Drop Zone */
 .drop-zone {
     border: 2px dashed var(--border-color);
@@ -482,6 +495,10 @@ header .container {
     letter-spacing: -0.5px;
 }
 
+[data-theme="dark"] .logo {
+    filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.4));
+}
+
 nav ul {
     display: flex;
     gap: 20px;
@@ -517,6 +534,11 @@ nav a.active::after {
     width: 100%;
 }
 
+[data-theme="dark"] nav a:hover::after,
+[data-theme="dark"] nav a.active::after {
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.5), 0 0 16px rgba(52, 152, 219, 0.2);
+}
+
 /* --- Buttons --- */
 .btn {
     display: inline-block;
@@ -539,6 +561,15 @@ nav a.active::after {
     background: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+}
+
+/* Neon glow on buttons in dark mode */
+[data-theme="dark"] .btn-primary {
+    box-shadow: var(--neon-glow-sm);
+}
+
+[data-theme="dark"] .btn-primary:hover {
+    box-shadow: var(--neon-glow-md);
 }
 
 .btn-primary:active {
@@ -567,10 +598,18 @@ nav a.active::after {
     background: radial-gradient(circle at center, rgba(52, 152, 219, 0.1) 0%, transparent 70%);
 }
 
+[data-theme="dark"] .hero {
+    background: radial-gradient(ellipse at center, rgba(52, 152, 219, 0.15) 0%, rgba(52, 152, 219, 0.05) 40%, transparent 70%);
+}
+
 .hero h1 {
     font-size: 3rem;
     margin-bottom: 15px;
     letter-spacing: -1px;
+}
+
+[data-theme="dark"] .hero h1 {
+    text-shadow: var(--neon-text-glow);
 }
 
 .hero p {
@@ -634,6 +673,16 @@ nav a.active::after {
     z-index: 100;
 }
 
+/* Neon glow on cards in dark mode */
+[data-theme="dark"] .tool-card {
+    border-color: rgba(52, 152, 219, 0.12);
+}
+
+[data-theme="dark"] .tool-card:hover {
+    box-shadow: var(--neon-glow-md);
+    border-color: rgba(52, 152, 219, 0.5);
+}
+
 .tool-card:hover::before {
     left: 150%;
     transition: left 0.7s ease-in-out;
@@ -675,6 +724,13 @@ nav a.active::after {
 .drop-zone.highlight {
     border-color: var(--primary-color);
     background: rgba(52, 152, 219, 0.05);
+}
+
+[data-theme="dark"] .drop-zone:hover,
+[data-theme="dark"] .drop-zone.highlight {
+    box-shadow: var(--neon-glow-sm);
+    border-color: rgba(52, 152, 219, 0.6);
+    background: rgba(52, 152, 219, 0.08);
 }
 
 .drop-zone-icon {
@@ -821,6 +877,20 @@ textarea {
     border-color: var(--danger-color);
 }
 
+/* Neon glow on toast in dark mode */
+[data-theme="dark"] .toast {
+    box-shadow: var(--shadow-lg), var(--neon-glow-sm);
+    border-left-width: 4px;
+}
+
+[data-theme="dark"] .toast-success {
+    box-shadow: var(--shadow-lg), 0 0 12px rgba(39, 174, 96, 0.3);
+}
+
+[data-theme="dark"] .toast-error {
+    box-shadow: var(--shadow-lg), 0 0 12px rgba(231, 76, 60, 0.3);
+}
+
 /* Standard Fade In Up Animation */
 .fade-in-up {
     animation: fadeInUp 0.6s ease-out forwards;
@@ -852,6 +922,14 @@ textarea {
     border-color: var(--primary-color);
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+[data-theme="dark"] .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15), var(--neon-glow-sm);
+}
+
+[data-theme="dark"] .form-control:focus {
+    box-shadow: var(--neon-glow-sm), 0 0 0 3px rgba(52, 152, 219, 0.15);
 }
 
 /* Scroll Animation Classes */
@@ -1064,6 +1142,11 @@ body.neon-mode h3 {
     transform: translateY(-2px);
 }
 
+[data-theme="dark"] .search-input-wrapper:focus-within {
+    box-shadow: var(--neon-glow-md);
+    border-color: rgba(52, 152, 219, 0.6);
+}
+
 .search-icon {
     position: absolute;
     left: 20px;
@@ -1182,6 +1265,15 @@ body.neon-mode h3 {
     transform: scale(1.05);
 }
 
+[data-theme="dark"] .filter-tab.active {
+    box-shadow: var(--neon-glow-md);
+}
+
+[data-theme="dark"] .filter-tab:hover {
+    border-color: rgba(52, 152, 219, 0.4);
+    text-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+}
+
 
 /* New Tool Card Style */
 .tool-card {
@@ -1205,6 +1297,11 @@ body.neon-mode h3 {
 .tool-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .tool-card:hover {
+    box-shadow: var(--neon-glow-md);
+    border-color: rgba(52, 152, 219, 0.4);
 }
 
 .tool-thumb {
@@ -1713,6 +1810,45 @@ a, button, input, select, textarea, .filter-tab, .tool-card, .btn {
     transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+}
+
+/* ===== Footer ===== */
+.site-footer {
+    text-align: center;
+    padding: 25px 20px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+    margin-top: 40px;
+    font-size: 0.9rem;
+}
+
+.site-footer p {
+    margin: 0 0 5px;
+}
+
+.footer-credit {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin: 0 !important;
+}
+
+.footer-credit a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.footer-credit a:hover {
+    text-decoration: underline;
+}
+
+[data-theme="dark"] .site-footer {
+    border-top-color: rgba(52, 152, 219, 0.1);
+}
+
+[data-theme="dark"] .footer-credit a {
+    text-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
 }
 
 /* ===== Loading Skeleton ===== */
