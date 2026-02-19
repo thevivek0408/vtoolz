@@ -9,18 +9,41 @@ export function saveHistory(actionName) {
         state.history = state.history.slice(0, state.historyIndex + 1);
     }
 
-    // Deep Clone Layers
+    // Deep Clone Layers (skip groups without canvas)
     const layersSnapshot = state.layers.map(l => {
-        const newC = document.createElement('canvas');
-        newC.width = l.canvas.width;
-        newC.height = l.canvas.height;
-        newC.getContext('2d').drawImage(l.canvas, 0, 0);
-        return {
-            ...l,
-            canvas: newC,
-            ctx: newC.getContext('2d')
-        };
+        if (l.type === 'group') {
+            return { ...l, children: l.children ? l.children.map(cloneRasterLayer) : [] };
+        }
+        return cloneRasterLayer(l);
     });
+
+    state.history.push({
+        name: actionName,
+        layers: layersSnapshot,
+        width: state.config.width,
+        height: state.config.height,
+        activeLayerId: state.activeLayerId
+    });
+
+    if (state.history.length > state.maxHistory) state.history.shift();
+    else state.historyIndex++;
+
+    window.dispatchEvent(new CustomEvent('history-update'));
+}
+
+function cloneRasterLayer(l) {
+    if (!l.canvas) return { ...l };
+    const newC = document.createElement('canvas');
+    newC.width = l.canvas.width;
+    newC.height = l.canvas.height;
+    const newCtx = newC.getContext('2d');
+    newCtx.drawImage(l.canvas, 0, 0);
+    return {
+        ...l,
+        canvas: newC,
+        ctx: newCtx
+    };
+}
 
     state.history.push({
         name: actionName,
@@ -50,16 +73,10 @@ export function restoreHistory(index) {
 
     // Restore Layers
     state.layers = snapshot.layers.map(lState => {
-        const newC = document.createElement('canvas');
-        newC.width = lState.canvas.width;
-        newC.height = lState.canvas.height;
-        newC.getContext('2d').drawImage(lState.canvas, 0, 0);
-
-        return {
-            ...lState,
-            canvas: newC,
-            ctx: newC.getContext('2d')
-        };
+        if (lState.type === 'group') {
+            return { ...lState, children: lState.children ? lState.children.map(cloneRasterLayer) : [] };
+        }
+        return cloneRasterLayer(lState);
     });
 
     requestRender();

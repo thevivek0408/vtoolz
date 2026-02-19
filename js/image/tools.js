@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { canvas, getMousePos, requestRender } from './core.js';
+import { canvas, getMousePos, requestRender, updateZoom } from './core.js';
 import { getActiveLayer } from './layers.js';
 import { saveHistory } from './history.js';
 
@@ -11,26 +11,7 @@ export function initTools() {
     canvas.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('dblclick', onDoubleClick);
-
-    // Bind Tool Buttons
-    document.querySelectorAll('.tool').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            // Remove active class from all
-            document.querySelectorAll('.tool').forEach(t => t.classList.remove('active'));
-            // Add to clicked
-            const target = e.currentTarget;
-            target.classList.add('active');
-            // Set state
-            state.tool = target.dataset.tool;
-            console.log("Tool selected:", state.tool);
-
-            // Optional: Update cursor
-            canvas.style.cursor = 'crosshair';
-            if (state.tool === 'move') canvas.style.cursor = 'move';
-            if (state.tool === 'text') canvas.style.cursor = 'text';
-        });
-    });
+    canvas.addEventListener('dblclick', onDoubleClick);
 
     // Bind Handles
     document.querySelectorAll('.handle').forEach(h => {
@@ -61,7 +42,13 @@ function onHandleDown(e) {
 }
 
 function onMouseDown(e) {
-    if (state.isSpacePressed) return;
+    // Space + click = pan
+    if (state.isSpacePressed) {
+        state.isPanning = true;
+        state.start = { x: e.clientX, y: e.clientY };
+        canvas.style.cursor = 'grabbing';
+        return;
+    }
 
     const pos = getMousePos(e);
     startX = pos.x;
@@ -84,18 +71,21 @@ function onMouseDown(e) {
     } else if (state.tool === 'pipette') {
         const p = layer.ctx.getImageData(startX, startY, 1, 1).data;
         const hex = rgbToHex(p[0], p[1], p[2]);
-        // Update UI color picker?
-        // document.getElementById('color-picker').value = hex; 
+        state.toolSettings.color = hex;
+        const fgDisplay = document.getElementById('fg-color-display');
+        const fgInput = document.getElementById('fg-color-picker');
+        if (fgDisplay) fgDisplay.style.backgroundColor = hex;
+        if (fgInput) fgInput.value = hex;
+        if (window.showToast) window.showToast(`Color: ${hex}`, 'info');
     } else if (state.tool === 'clone') {
         if (e.altKey) {
             // Set Source
             state.cloneSource = { x: startX, y: startY };
-            // Optional: Visual feedback?
-            alert(`Clone Source Set: ${Math.floor(startX)}, ${Math.floor(startY)}`); // temporary feedback
+            if (window.showToast) window.showToast(`Clone source: ${Math.floor(startX)}, ${Math.floor(startY)}`, 'info');
             return;
         }
         if (!state.cloneSource) {
-            alert("Alt+Click to set a source point first!");
+            if (window.showToast) window.showToast('Alt+Click to set a clone source first', 'info');
             return;
         }
     } else if (state.tool === 'magic-wand') {
@@ -210,6 +200,17 @@ function applyRetouch(e) {
 }
 
 function onMouseMove(e) {
+    // Panning
+    if (state.isPanning && state.isSpacePressed) {
+        const dx = e.clientX - state.start.x;
+        const dy = e.clientY - state.start.y;
+        state.pan.x += dx;
+        state.pan.y += dy;
+        state.start = { x: e.clientX, y: e.clientY };
+        updateZoom();
+        return;
+    }
+
     // Transform Logic
     if (state.isTransforming && state.transformHandle) {
         handleTransform(e);
@@ -240,36 +241,52 @@ function onMouseMove(e) {
         return;
     }
 
+    // Clone stamp — separate from brush/eraser
+    if (state.tool === 'clone') {
+        if (!state.cloneSource) return;
+
+        const deltaX = pos.x - startX;
+        const deltaY = pos.y - startY;
+        const srcX = state.cloneSource.x + deltaX;
+        const srcY = state.cloneSource.y + deltaY;
+
+        const r = state.toolSettings.size / 2;
+
+        layer.ctx.save();
+        layer.ctx.beginPath();
+        layer.ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
+        layer.ctx.clip();
+        layer.ctx.drawImage(layer.canvas,
+            srcX - r, srcY - r, r * 2, r * 2,
+            pos.x - r, pos.y - r, r * 2, r * 2
+        );
+        layer.ctx.restore();
+
+        lastX = pos.x;
+        lastY = pos.y;
+        requestRender();
+        return;
+    }
+
     if (state.tool === 'brush' || state.tool === 'eraser') {
         // Selection Clipping Check
         if (state.selection) {
-            // Simple Point Check (Clipping path is better but context state is tricky)
-            // If any part of the line segment is outside, we might skip or clip.
-            // For now, strict check: if current mouse pos is outside, don't draw.
-            // A better way for smooth strokes is using clip() on the context, but that requires save/restore per stroke or per frame.
-            // Let's try simple bounds check for the current point.
             if (pos.x < state.selection.x || pos.x > state.selection.x + state.selection.w ||
                 pos.y < state.selection.y || pos.y > state.selection.y + state.selection.h) {
-                // Determine if we should lift pen or just not draw segment?
-                targetCtx.moveTo(pos.x, pos.y); // Skip to new pos without drawing
                 lastX = pos.x;
                 lastY = pos.y;
                 return;
             }
 
-            // Polygon Check
             if (state.selectionPath && !isPointInPolygon(pos, state.selectionPath)) {
-                targetCtx.moveTo(pos.x, pos.y);
                 lastX = pos.x;
                 lastY = pos.y;
                 return;
             }
 
-            // Mask Check (Magic Wand)
             if (state.selectionMask) {
                 const idx = (Math.floor(pos.y) * layer.canvas.width + Math.floor(pos.x));
                 if (!state.selectionMask[idx]) {
-                    targetCtx.moveTo(pos.x, pos.y);
                     lastX = pos.x;
                     lastY = pos.y;
                     return;
@@ -277,76 +294,20 @@ function onMouseMove(e) {
             }
         }
 
-        if (state.tool === 'clone') {
-            if (!state.cloneSource) return;
-
-            // Calculate source position based on delta from start
-            const deltaX = pos.x - startX;
-            const deltaY = pos.y - startY;
-            const srcX = state.cloneSource.x + deltaX;
-            const srcY = state.cloneSource.y + deltaY;
-
-            const r = state.toolSettings.size / 2;
-
-            // Draw from source to dest
-            // We use standard drawImage
-            layer.ctx.save();
-            layer.ctx.beginPath();
-            layer.ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
-            layer.ctx.clip();
-            // Draw image data from the layer itself (or a snapshot of it?)
-            // If we draw on the same layer, we might be cloning what we just painted.
-            // Standard clone stamp usually samples from the state at Start of stroke, or current state.
-            // Photoshop samples current state (so you can trail).
-
-            // To prevent clipping issues with source out of bounds, drawImage handles it.
-            layer.ctx.drawImage(layer.canvas,
-                srcX - r, srcY - r, r * 2, r * 2,
-                pos.x - r, pos.y - r, r * 2, r * 2
-            );
-            layer.ctx.restore();
-
-            // We don't use lineTo for clone, we stamp circles along the path?
-            // "Brush" logic uses lineTo which is smooth. Stamping circles might have gaps if fast.
-            // For MVP, stamping circles at mouse move check is okay, but interpolating is better.
-            // Let's stick to simple stamping for now.
-            lastX = pos.x;
-            lastY = pos.y;
-            requestRender();
-            return;
-        }
-
-        // ... (existing)
+        // Per-segment stroke for performance (avoids re-stroking entire path)
+        targetCtx.beginPath();
+        targetCtx.moveTo(lastX, lastY);
         targetCtx.lineTo(pos.x, pos.y);
         targetCtx.lineCap = 'round';
         targetCtx.lineJoin = 'round';
         targetCtx.lineWidth = state.toolSettings.size;
 
-        // Logic for mask vs layer
         if (layer.isMaskActive) {
             if (state.tool === 'eraser') {
-                targetCtx.globalCompositeOperation = 'destination-out'; // Erase mask = Hide
+                targetCtx.globalCompositeOperation = 'destination-out';
                 targetCtx.strokeStyle = 'rgba(0,0,0,1)';
             } else {
-                targetCtx.globalCompositeOperation = 'source-over'; // Paint mask = Show
-                targetCtx.strokeStyle = '#fff'; // Always white for mask reveal?
-                // Or allow gray? For now assume reveal.
-                // Actually, standard masks: Black hides, White reveals.
-                // Brush (default black?) -> Hides?
-                // Usually User picks color.
-                // If mask active, we should force grayscale?
-                // Let's stick to using current color but maybe valid mask colors.
-                // If user picks Red, it draws grayscale red?
-                // For MVP, if Mask Active:
-                // Eraser -> destination-out (Black/Transparent) -> actually transparent in canvas means... 
-                // Wait, mask composition is `destination-in`.
-                // So Mask Canvas:
-                // - Transparent = Hidden
-                // - Opaque = Visible.
-                // So Eraser (destination-out) makes it transparent = Hidden. Correct.
-                // Brush (source-over) makes it opaque = Visible. Correct.
-                // Color doesn't matter for `destination-in` alpha composite, only Alpha matters.
-                // So any color works.
+                targetCtx.globalCompositeOperation = 'source-over';
                 targetCtx.strokeStyle = state.toolSettings.color;
             }
         } else {
@@ -375,6 +336,13 @@ function onMouseMove(e) {
 }
 
 function onMouseUp(e) {
+    // End panning
+    if (state.isPanning) {
+        state.isPanning = false;
+        canvas.style.cursor = state.isSpacePressed ? 'grab' : (state.tool === 'move' ? 'move' : 'crosshair');
+        return;
+    }
+
     if (state.transformHandle) {
         state.transformHandle = null;
         saveHistory('Transform');
@@ -618,100 +586,6 @@ function floodFill(layer, x, y, hexColor) {
     if (state.selectionMask) {
         state.selectionPath = traceContourNew(state.selectionMask, w, h);
     }
-}
-
-function traceContour(mask, w, h) {
-    // Moore-Neighbor Tracing
-    const points = [];
-    const B = []; // Boundary points set to avoid duplicates/loops if needed, but path is ordered.
-
-    // 1. Find start point
-    let s = null;
-    for (let i = 0; i < mask.length; i++) {
-        if (mask[i]) {
-            s = i;
-            break;
-        }
-    }
-    if (s === null) return null;
-
-    let p = s;
-    let b = p - w; // Backtrack pixel (enter from top)
-
-    // Helper xy from idx
-    const getXY = (idx) => ({ x: idx % w, y: Math.floor(idx / w) });
-    const getIdx = (x, y) => {
-        if (x < 0 || x >= w || y < 0 || y >= h) return -1;
-        return y * w + x;
-    };
-
-    // We need a robust tracer. Simple approach:
-    // March squares or just follow edge.
-    // Let's use a simplified approach since full Moore is complex to impl in one go.
-    // Marching Squares is easier for "vectorizing" a bitmap.
-
-    // Let's stick to a simpler edge detection for now:
-    // Collect all boundary pixels (pixels with at least one empty neighbor)
-    // Then sort them? No, sorting is hard.
-
-    // Let's try Moore again.
-    // Neighbors: P1 to P8 clockwise from b.
-    // This requires a valid generic algorithm. 
-
-    // Alternative: create a polygon directly from the flood fill stack?
-    // Too sparse.
-
-    // Let's use a library-free Marching Squares simplified.
-    // Or just a simple scan for lines (RLE).
-    // Marching Ants usually implies a vector path.
-
-    // Attempting Moore Neighbor Tracing:
-    const startPos = getXY(s);
-    let curr = { x: startPos.x, y: startPos.y };
-    // Enter from left/top?
-    let prev = { x: curr.x, y: curr.y - 1 }; // Dummy previous
-
-    // Only if start has empty neighbor? 
-    // Magic Wand selection might is solid.
-
-    // Fallback: Just return generic bounds if too complex?
-    // No, user wants refinement.
-
-    // Let's try a simpler approach: 
-    // "Isolate" the mask, then generic convex hull? No, concave.
-
-    // Implementation of Moore-Neighbor:
-    // https://en.wikipedia.org/wiki/Moore-neighbor_tracing
-
-    const boundary = [curr];
-
-    // Only works if there is a boundary.
-    // Check 8 neighbors.
-    const neighbors = [
-        { dx: 0, dy: -1 }, { dx: 1, dy: -1 }, { dx: 1, dy: 0 }, { dx: 1, dy: 1 },
-        { dx: 0, dy: 1 }, { dx: -1, dy: 1 }, { dx: -1, dy: 0 }, { dx: -1, dy: -1 }
-    ];
-
-    let P = curr;
-    let max = w * h; // safety
-
-    // Find first black pixel neighbor starting from backtracking
-    // But we are using 1D array.
-
-    // Let's defer full tracing to a separate task if it fails.
-    // For now, let's just make a box around it as placeholder?
-    // No, let's try to get edge pixels.
-
-    // Scan all pixels, if pixel is ON and has OFF neighbor, it's an edge.
-    // Collect edge pixels.
-    // This gives us a cloud of points. render() draws lineTo.
-    // Lines will be messy if not ordered.
-
-    // Let's stick to the Overlay for now, but refine it to be "Ants" style (dashed lines)?
-    // Problem: Overlay is raster. Ants are vector.
-
-    // Return empty for now to rely on Overlay until proper tracer implementation.
-    return null;
 }
 
 function traceContourNew(mask, w, h) {

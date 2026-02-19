@@ -23,6 +23,14 @@ window.addEventListener('resize', () => {
     requestRender();
 });
 
+// Mouse wheel zoom
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+    state.zoom = Math.max(0.1, Math.min(10, state.zoom + delta));
+    updateZoom();
+}, { passive: false });
+
 // Main Render Loop
 let isRenderPending = false;
 
@@ -224,15 +232,35 @@ function render() {
     // Transform Controls are DOM based, updated separately or here?
     updateTransformControls();
 
-    // Loop for animation if selection exists
+    // Animated selection: schedule next frame only if selection exists
     if (state.selection || state.selectionPath) {
-        requestAnimationFrame(render);
+        if (!state._selectionAnimId) {
+            state._selectionAnimId = setInterval(() => {
+                if (state.selection || state.selectionPath) {
+                    requestRender();
+                } else {
+                    clearInterval(state._selectionAnimId);
+                    state._selectionAnimId = null;
+                }
+            }, 100); // 10fps for marching ants — efficient
+        }
+    } else if (state._selectionAnimId) {
+        clearInterval(state._selectionAnimId);
+        state._selectionAnimId = null;
     }
 }
 
 function drawCheckerboard() {
-    // Optional: Draw transparency grid
-    // ctx.fillStyle = '#ccc'; ...
+    // Draw transparency grid pattern
+    const size = 8;
+    const w = canvas.width;
+    const h = canvas.height;
+    for (let y = 0; y < h; y += size) {
+        for (let x = 0; x < w; x += size) {
+            ctx.fillStyle = ((x / size + y / size) % 2 === 0) ? '#ffffff' : '#cccccc';
+            ctx.fillRect(x, y, size, size);
+        }
+    }
 }
 
 function updateTransformControls() {

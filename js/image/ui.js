@@ -128,10 +128,13 @@ export function initUI() {
             document.querySelectorAll('.tool').forEach(e => e.classList.remove('active'));
             t.classList.add('active');
             state.tool = t.dataset.tool;
-            console.log("Tool selected:", state.tool);
+            canvas.style.cursor = state.tool === 'move' ? 'move' : state.tool === 'text' ? 'text' : 'crosshair';
             updateOptionsBar();
         });
     });
+
+    // Expose updateOptionsBar for keyboard shortcuts
+    window._updateOptionsBar = updateOptionsBar;
 
     // Init Options
     updateOptionsBar();
@@ -318,7 +321,6 @@ export function initUI() {
         beforeImg.src = state.originalImage || '';
         afterImg.src = canvas.toDataURL();
 
-        modal.display = 'flex'; // Wait, modal is the element
         modal.style.display = 'flex';
 
         // Slider Logic
@@ -338,17 +340,31 @@ export function initUI() {
             afterImg.style.clipPath = `inset(0 0 0 ${pos}%)`;
         };
 
-        slider.onmousedown = (e) => { isDragging = true; };
-        window.onmouseup = () => { isDragging = false; };
-        window.onmousemove = (e) => {
+        // Use addEventListener to avoid overwriting global handlers
+        const onSliderDown = () => { isDragging = true; };
+        const onSliderUp = () => { isDragging = false; };
+        const onSliderMove = (e) => {
             if (!isDragging) return;
             updateSlider(e.clientX);
         };
+        const onViewClick = (e) => { updateSlider(e.clientX); };
 
-        // Click to jump
-        compareView.onclick = (e) => {
-            updateSlider(e.clientX);
+        slider.addEventListener('mousedown', onSliderDown);
+        window.addEventListener('mouseup', onSliderUp);
+        window.addEventListener('mousemove', onSliderMove);
+        compareView.addEventListener('click', onViewClick);
+
+        // Cleanup on modal close
+        const closeBtn = modal.querySelector('.icon-btn');
+        const cleanup = () => {
+            slider.removeEventListener('mousedown', onSliderDown);
+            window.removeEventListener('mouseup', onSliderUp);
+            window.removeEventListener('mousemove', onSliderMove);
+            compareView.removeEventListener('click', onViewClick);
         };
+        if (closeBtn) {
+            closeBtn.addEventListener('click', cleanup, { once: true });
+        }
     };
 }
 
@@ -365,33 +381,8 @@ window.openNewProjectDialog = () => {
     document.getElementById('new-project-modal').style.display = 'flex';
 };
 
-window.saveProject = () => {
-    const project = {
-        width: state.config.width,
-        height: state.config.height,
-        layers: state.layers.map(l => ({
-            id: l.id,
-            name: l.name,
-            type: l.type,
-            x: l.x, y: l.y,
-            width: l.width, height: l.height,
-            visible: l.visible, opacity: l.opacity,
-            blendMode: l.blendMode,
-            filters: l.filters,
-            text: l.text,
-            data: l.canvas.toDataURL()
-        }))
-    };
-
-    const blob = new Blob([JSON.stringify(project)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = "vtoolz_project.vtz";
-    a.click();
-    URL.revokeObjectURL(url);
-    console.log("Project saved.");
-};
+// Note: window.saveProject is set by main.js from project.js
+// Removed duplicate definition here
 
 // Menu Hooks (Indirectly called via global state or onclick, but we can add listeners here for better clean code)
 // ... existing hooks ...

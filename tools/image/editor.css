@@ -985,3 +985,77 @@ input[type="color"] {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     border: 2px solid white;
 }
+
+/* Toast Animation */
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Drag-over visual */
+.drag-over .drop-zone-msg {
+    border-color: #00ccff !important;
+    background: #1a3a4a !important;
+    color: #00ccff !important;
+}
+
+.drag-over {
+    outline: 2px dashed #00ccff;
+    outline-offset: -4px;
+}
+
+/* Active history item */
+.history-item.active {
+    background: #4a6a80;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Btn styles for modals */
+.btn {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-primary {
+    background: #0078d7;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1a8ae0;
+}
+
+.btn-secondary {
+    background: #555;
+    color: #ddd;
+}
+
+.btn-secondary:hover {
+    background: #666;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    color: #fff;
+}
+
+/* Responsive — hide panels when narrow */
+@media (max-width: 900px) {
+    body {
+        grid-template-columns: 40px 1fr;
+    }
+    .panels {
+        display: none;
+    }
+}

@@ -28,11 +28,8 @@
         </div>
         <div class="menu-item" onclick="toggleDropdown('edit-dd')">Edit
             <div class="dropdown-content" id="edit-dd">
-                <div class="dropdown-item" onclick="restoreHistory(state.historyIndex-1)">Undo</div>
-                <div class="dropdown-item" onclick="restoreHistory(state.historyIndex+1)">Redo</div>
-                <div class="dropdown-item">Cut</div>
-                <div class="dropdown-item">Copy</div>
-                <div class="dropdown-item">Paste</div>
+                <div class="dropdown-item" onclick="restoreHistory(state.historyIndex-1)">Undo <span style='float:right;color:#888'>Ctrl+Z</span></div>
+                <div class="dropdown-item" onclick="restoreHistory(state.historyIndex+1)">Redo <span style='float:right;color:#888'>Ctrl+Y</span></div>
             </div>
         </div>
         <div class="menu-item" onclick="toggleDropdown('image-dd')">Image
@@ -49,8 +46,8 @@
         </div>
         <div class="menu-item" onclick="toggleDropdown('select-dd')">Select
             <div class="dropdown-content" id="select-dd">
-                <div class="dropdown-item">All</div>
-                <div class="dropdown-item">Deselect</div>
+                <div class="dropdown-item" onclick="state.selection={x:0,y:0,w:state.config.width,h:state.config.height};state.selectionPath=null;state.selectionMask=null;">All <span style='float:right;color:#888'>Ctrl+A</span></div>
+                <div class="dropdown-item" onclick="state.selection=null;state.selectionPath=null;state.selectionMask=null;">Deselect <span style='float:right;color:#888'>Ctrl+D</span></div>
             </div>
         </div>
         <div class="menu-item" onclick="toggleDropdown('filter-dd')">Filter
@@ -110,7 +107,7 @@
         <div class="tool" data-tool="clone" title="Clone Stamp (S) - Alt+Click to Set Source"><i
                 class="fas fa-stamp"></i></div>
         <div class="tool" data-tool="fill" title="Fill (G)"><i class="fas fa-fill-drip"></i></div>
-        <div class="tool" data-tool="gradient" title="Gradient (L)"><i class="fas fa-magic"></i></div>
+        <div class="tool" data-tool="gradient" title="Gradient"><i class="fas fa-palette"></i></div>
         <div class="tool" data-tool="text" title="Text (T)"><i class="fas fa-font"></i></div>
         <div class="tool" data-tool="shape" title="Shapes (U)"><i class="fas fa-shapes"></i></div>
         <div class="tool" data-tool="pipette" title="Eyedropper (I)"><i class="fas fa-eye-dropper"></i></div>
@@ -234,7 +231,6 @@
 
     <!-- Hidden Inputs -->
     <input type="file" id="file-upload" accept="image/*" style="display:none">
-    <input type="file" id="project-upload" accept=".vtz" style="display:none">
 
     <!-- Modals -->
     <div class="modal-overlay" id="help-modal">
@@ -242,7 +238,27 @@
             <h3>Keyboard Shortcuts</h3>
             <div class="shortcut-list">
                 <div class="shortcut-item"><span>Move Tool</span> <span>V</span></div>
-                <!-- ... content ... -->
+                <div class="shortcut-item"><span>Brush</span> <span>B</span></div>
+                <div class="shortcut-item"><span>Eraser</span> <span>E</span></div>
+                <div class="shortcut-item"><span>Text</span> <span>T</span></div>
+                <div class="shortcut-item"><span>Rect Select</span> <span>M</span></div>
+                <div class="shortcut-item"><span>Lasso Select</span> <span>L</span></div>
+                <div class="shortcut-item"><span>Magic Wand</span> <span>W</span></div>
+                <div class="shortcut-item"><span>Fill</span> <span>G</span></div>
+                <div class="shortcut-item"><span>Clone Stamp</span> <span>S</span></div>
+                <div class="shortcut-item"><span>Eyedropper</span> <span>I</span></div>
+                <div class="shortcut-item"><span>Pen</span> <span>P</span></div>
+                <div class="shortcut-item"><span>Shapes</span> <span>U</span></div>
+                <div class="shortcut-item"><span>Switch Colors</span> <span>X</span></div>
+                <div class="shortcut-item"><span>Undo</span> <span>Ctrl+Z</span></div>
+                <div class="shortcut-item"><span>Redo</span> <span>Ctrl+Y</span></div>
+                <div class="shortcut-item"><span>Deselect</span> <span>Ctrl+D</span></div>
+                <div class="shortcut-item"><span>Save Project</span> <span>Ctrl+S</span></div>
+                <div class="shortcut-item"><span>Export</span> <span>Ctrl+E</span></div>
+                <div class="shortcut-item"><span>Pan Canvas</span> <span>Space+Drag</span></div>
+                <div class="shortcut-item"><span>Zoom In/Out</span> <span>+/-</span></div>
+                <div class="shortcut-item"><span>Brush Size</span> <span>[ / ]</span></div>
+                <div class="shortcut-item"><span>Delete Selection</span> <span>Delete</span></div>
             </div>
             <div class="modal-btns">
                 <button class="btn btn-primary"

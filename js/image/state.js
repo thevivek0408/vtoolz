@@ -28,8 +28,9 @@ export const state = {
     previewCanvas: null,
     previewCtx: null,
 
-
     // Navigation
+    zoom: 1.0,
+    pan: { x: 0, y: 0 },
     transformHandle: null,
     isTransforming: false,
 
@@ -44,7 +45,6 @@ export const state = {
     // State Flags
     resizeType: 'image', // 'image', 'canvas', 'new-project'
     isDrawing: false,
-    isTransforming: false,
     isSpacePressed: false,
     isPanning: false,
 
@@ -54,7 +54,6 @@ export const state = {
     selectionMask: null, // Uint8Array 0/1 for pixel mask
     lassoPoints: [], // Temp points during creation
     clipboard: null,
-    transformHandle: null,
 
     // Data
     originalImage: null,

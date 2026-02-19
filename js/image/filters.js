@@ -6,20 +6,21 @@ import { updateLayerList } from './ui.js';
 
 // Workers
 // Logic: Paths are relative to editor.html (tools/image/)
-const resizeWorker = new Worker('../../js/image/resize-worker.js');
-const filterWorker = new Worker('../../js/image/filters-worker.js');
+let resizeWorker, filterWorker;
+try {
+    resizeWorker = new Worker('../../js/image/resize-worker.js');
+    filterWorker = new Worker('../../js/image/filters-worker.js');
+} catch (e) {
+    console.warn('Workers failed to load:', e);
+}
 
 export function initFilters() {
     // Resize Worker Callback
     resizeWorker.onmessage = function (e) {
         const { imageData, width, height, targetWidth, targetHeight } = e.data;
-        // Logic depends on what we sent. 
-        // If it was resize:
         if (state.resizeType === 'hq') {
             const l = getActiveLayer();
             if (l) {
-                console.log("Resize Worker Done", width, height);
-                // If we passed target dimensions, use them
                 const finalW = targetWidth || width;
                 const finalH = targetHeight || height;
 
@@ -31,7 +32,7 @@ export function initFilters() {
 
                 requestRender();
                 saveHistory("HQ Resize");
-                alert("Resize Complete");
+                if (window.showToast) window.showToast('Resize complete!', 'success');
             }
         }
     };
@@ -46,7 +47,7 @@ export function initFilters() {
             l.ctx.putImageData(imgData, 0, 0);
             requestRender();
             saveHistory("Filter Async");
-            alert("Filter Applied");
+            if (window.showToast) window.showToast('Filter applied!', 'success');
         }
     };
 
@@ -162,6 +163,7 @@ export function applyFilter(type, val) {
 export function applyWorkerFilter(type, val) {
     const l = getActiveLayer();
     if (!l) return;
+    if (!filterWorker) { if (window.showToast) window.showToast('Filter worker unavailable', 'error'); return; }
 
     // Get raw data
     const data = l.ctx.getImageData(0, 0, l.canvas.width, l.canvas.height);
@@ -174,10 +176,13 @@ export function applyWorkerFilter(type, val) {
         value: val
     }, [data.data.buffer]);
 
-    alert("Applying filter... please wait.");
+    if (window.showToast) window.showToast('Applying filter...', 'info');
+}
 }
 
 // Global Expose for Menu Items
 window.applyWorkerFilter = applyWorkerFilter;
 window.openHueSatModal = () => document.getElementById('huesat-modal').style.display = 'flex'; // UI logic mixed here helper
-window.promptLevels = () => alert("Levels not implemented in this version.");
+window.promptLevels = () => {
+    if (window.showToast) window.showToast('Levels: coming soon!', 'info');
+};

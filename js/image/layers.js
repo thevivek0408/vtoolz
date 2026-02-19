@@ -79,6 +79,9 @@ export function createLayer(name = 'Layer', wOverride, hOverride, type = 'raster
         opacity: 100,
         blendMode: 'source-over',
         canvas: newCanvas, // The pixel data
+        ctx: newCanvas.getContext('2d'), // Drawing context
+
+        filters: { brightness: 100, contrast: 100, blur: 0, grayscale: 0, invert: 0, sepia: 0 },
 
         mask: null, // Canvas
         maskCtx: null,
