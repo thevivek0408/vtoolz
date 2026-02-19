@@ -305,6 +305,15 @@ window.onerror = function (msg, url, line) {
     return false;
 };
 
-document.addEventListener('DOMContentLoaded', init);
-// Start
-window.addEventListener('load', init);
+// Init once when DOM is ready (type="module" scripts are deferred)
+let _initDone = false;
+function safeInit() {
+    if (_initDone) return;
+    _initDone = true;
+    init();
+}
+document.addEventListener('DOMContentLoaded', safeInit);
+// Fallback for edge cases
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    safeInit();
+}

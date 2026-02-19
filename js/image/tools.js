@@ -476,12 +476,12 @@ function initPreviewCanvas() {
     }
 }
 
-// Text Tool
-window.addEventListener('click', onOneClick); // We need a click handler for text
+// Text Tool — only on canvas clicks, not the whole window
+canvas.addEventListener('click', onTextClick);
 
-function onOneClick(e) {
+function onTextClick(e) {
     if (state.tool !== 'text') return;
-    // Don't trigger if dragging
+    // Don't trigger if user was dragging
     if (Math.abs(lastX - startX) > 5 || Math.abs(lastY - startY) > 5) return;
 
     const pos = getMousePos(e);

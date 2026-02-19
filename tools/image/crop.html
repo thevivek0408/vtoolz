@@ -9,7 +9,7 @@
     <!-- Using local Cropper.js for offline privacy -->
     <link rel="stylesheet" href="../../js/vendor/cropper.min.css" />
     <style>
-        .cropper-container {
+        .crop-preview {
             max-width: 100%;
             height: 500px;
             /* Constrain height */
@@ -44,7 +44,6 @@
     </header>
 
     <main>
-        <main>
             <div class="tool-container" id="tool-container">
                 <div class="step-indicator">
                     <span class="step active">1. Upload</span>
@@ -67,7 +66,7 @@
                 <div id="editor-area" style="display:none;">
                     <div class="cropper-wrapper"
                         style="border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #000;">
-                        <div class="cropper-container" style="margin-top:0;">
+                        <div class="crop-preview" style="margin-top:0;">
                             <img id="image-to-crop" src="">
                         </div>
                     </div>
@@ -81,16 +80,6 @@
                     </div>
                 </div>
             </div>
-        </main>
-
-        <div class="controls">
-            <button id="crop-btn" class="btn btn-primary">Crop & Download</button>
-            <button class="btn btn-secondary" onclick="cropper.rotate(90)">Rotate ↻</button>
-            <button class="btn btn-secondary" onclick="cropper.scaleX(-1)">Flip H</button>
-            <button class="btn btn-secondary" onclick="cropper.reset()">Reset</button>
-        </div>
-        </div>
-        </div>
     </main>
 
     <script src="../../js/vendor/cropper.min.js"></script>

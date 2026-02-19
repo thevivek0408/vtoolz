@@ -21,7 +21,6 @@
     </header>
 
     <main>
-        <main>
             <div class="tool-container" id="tool-container">
                 <div class="step-indicator">
                     <span class="step active">1. Upload</span>
@@ -106,7 +105,6 @@
                     style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px; margin-top:20px;">
                 </div>
             </div>
-        </main>
 
         <style>
             .form-control {
@@ -121,6 +119,17 @@
             .form-control:focus {
                 border-color: var(--primary-color);
                 outline: none;
+            }
+
+            .tool-card {
+                height: auto;
+                overflow: visible;
+                flex-direction: column;
+                padding: 20px;
+            }
+            .tool-card:hover {
+                transform: none;
+                box-shadow: none;
             }
         </style>
 
