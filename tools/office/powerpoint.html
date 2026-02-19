@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <meta name="description"
         content="Free Online Presentation Maker - Theme presets, transitions, speaker notes. Export PPTX. Works offline.">
     <title>Presentation Maker - Vibox</title>
@@ -678,7 +678,7 @@
                     <button onclick="findInSlides()">Find</button>
                     <span class="count" id="findCount"></span>
                     <button onclick="document.getElementById('findPanel').classList.remove('open')"
-                        style="margin-left:auto;">✕</button>
+                        style="margin-left:auto;">?</button>
                 </div>
 
                 <div class="doc-title-bar">
@@ -699,7 +699,7 @@
 
                 <!-- Speaker Notes -->
                 <div class="notes-bar">
-                    <label>📝 Speaker Notes</label>
+                    <label>?? Speaker Notes</label>
                     <textarea id="speakerNotes" placeholder="Add speaker notes for this slide..."
                         onchange="saveSpeakerNotes()"></textarea>
                 </div>
@@ -717,8 +717,8 @@
     <!-- Theme Modal -->
     <div class="modal-overlay" id="themeModal">
         <div class="modal">
-            <button class="close-modal" onclick="closeThemeModal()">✕</button>
-            <h2>🎨 Theme Presets</h2>
+            <button class="close-modal" onclick="closeThemeModal()">?</button>
+            <h2>?? Theme Presets</h2>
             <div class="theme-grid" id="themeGrid"></div>
         </div>
     </div>

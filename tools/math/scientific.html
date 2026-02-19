@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Scientific Calculator - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
@@ -154,16 +154,16 @@
                     <button class="btn-sci" onclick="appendFunc('Math.log10(')">log</button>
                     <button class="btn-sci" onclick="appendFunc('Math.log(')">ln</button>
 
-                    <button class="btn-sci" onclick="appendFunc('Math.sqrt(')">√</button>
+                    <button class="btn-sci" onclick="appendFunc('Math.sqrt(')">v</button>
                     <button class="btn-sci" onclick="appendFunc('Math.pow(')">x^y</button>
-                    <button class="btn-sci" onclick="appendChar('**2')">x²</button>
+                    <button class="btn-sci" onclick="appendChar('**2')">x�</button>
                     <button class="btn-sci" onclick="appendChar('(')">(</button>
                     <button class="btn-sci" onclick="appendChar(')')">)</button>
 
-                    <button class="btn-sci" onclick="appendChar(Math.PI)">π</button>
+                    <button class="btn-sci" onclick="appendChar(Math.PI)">p</button>
                     <button class="btn-sci" onclick="appendChar(Math.E)">e</button>
                     <button class="btn-sci" onclick="appendFunc('Math.abs(')">|x|</button>
-                    <button class="btn-sci" onclick="backspace()">⌫</button>
+                    <button class="btn-sci" onclick="backspace()">?</button>
                     <button class="btn-sci clear" onclick="clearDisplay()">AC</button>
                 </div>
 
@@ -171,12 +171,12 @@
                     <button class="btn-calc" onclick="appendChar('7')">7</button>
                     <button class="btn-calc" onclick="appendChar('8')">8</button>
                     <button class="btn-calc" onclick="appendChar('9')">9</button>
-                    <button class="btn-calc operator" onclick="appendChar('/')">÷</button>
+                    <button class="btn-calc operator" onclick="appendChar('/')">�</button>
 
                     <button class="btn-calc" onclick="appendChar('4')">4</button>
                     <button class="btn-calc" onclick="appendChar('5')">5</button>
                     <button class="btn-calc" onclick="appendChar('6')">6</button>
-                    <button class="btn-calc operator" onclick="appendChar('*')">×</button>
+                    <button class="btn-calc operator" onclick="appendChar('*')">�</button>
 
                     <button class="btn-calc" onclick="appendChar('1')">1</button>
                     <button class="btn-calc" onclick="appendChar('2')">2</button>

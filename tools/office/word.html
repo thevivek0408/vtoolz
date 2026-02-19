@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <meta name="description"
         content="Free Online Word Processor - Rich text editor with templates, DOCX import/export, Find & Replace, Focus Mode. Works offline.">
     <title>Word Processor - Vibox</title>
@@ -610,7 +610,7 @@
                     <button onclick="replaceOne()">Replace</button>
                     <button onclick="replaceAll()">All</button>
                     <span class="count" id="findCount"></span>
-                    <button onclick="closeFind()" style="margin-left:auto;">✕</button>
+                    <button onclick="closeFind()" style="margin-left:auto;">?</button>
                 </div>
 
                 <div class="doc-title-bar">
@@ -648,23 +648,23 @@
     <!-- Templates Modal -->
     <div class="modal-overlay" id="templateModal">
         <div class="modal" style="position:relative;">
-            <button class="close-modal" onclick="closeTemplateModal()">✕</button>
-            <h2>📄 Document Templates</h2>
+            <button class="close-modal" onclick="closeTemplateModal()">?</button>
+            <h2>?? Document Templates</h2>
             <div class="tpl-grid" id="tplGrid"></div>
         </div>
     </div>
 
     <!-- Focus Mode -->
     <div class="focus-overlay" id="focusOverlay">
-        <button class="focus-exit" onclick="exitFocus()">✕ Exit Focus</button>
+        <button class="focus-exit" onclick="exitFocus()">? Exit Focus</button>
         <div class="focus-editor" id="focusEditor" contenteditable="true"></div>
     </div>
 
     <!-- Version History Modal -->
     <div class="versions-modal" id="versionsModal">
         <div class="vm-inner">
-            <button class="close-modal" onclick="closeVersions()">✕</button>
-            <h2>📋 Version History</h2>
+            <button class="close-modal" onclick="closeVersions()">?</button>
+            <h2>?? Version History</h2>
             <p style="font-size:12px;opacity:.5;margin-bottom:12px;">Auto-saved every 30 seconds. Up to 10 versions
                 kept.</p>
             <div id="versionsList"></div>

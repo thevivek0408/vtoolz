@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,7 +7,7 @@
     <meta name="referrer" content="no-referrer">
     <meta name="description"
         content="Free, private, client-side tools for PDF, Images, Text, and Developers. No file uploads, no tracking. Merge PDF, Compress Images, Format JSON, and more.">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Vibox - Privacy-First Tools</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.png" type="image/png">
@@ -17,9 +17,8 @@
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <!-- Critical CSS first -->
     <link rel="stylesheet" href="css/style.css?v=3">
-    <!-- Non-critical: Font Awesome deferred -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        media="print" onload="this.media='all'">
+    <!-- Font Awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Preload key JS modules -->
     <link rel="modulepreload" href="js/utils/common.js">
     <link rel="modulepreload" href="js/utils/tools.js">

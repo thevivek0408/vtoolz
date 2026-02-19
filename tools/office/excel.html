@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <meta name="description"
         content="Free Online Spreadsheet Editor - Formulas, Charts, Conditional Formatting. Import/Export XLSX/CSV. Works offline.">
     <title>Spreadsheet Editor - Vibox</title>
@@ -456,7 +456,7 @@
                     </div>
                     <div class="tg">
                         <select id="formulaInsert" title="Insert Formula">
-                            <option value="">⚡ Formula</option>
+                            <option value="">? Formula</option>
                             <option value="=SUM(">SUM</option>
                             <option value="=AVERAGE(">AVERAGE</option>
                             <option value="=COUNT(">COUNT</option>
@@ -492,7 +492,7 @@
                     <button onclick="replaceInSheet()">Replace</button>
                     <button onclick="replaceAllInSheet()">All</button>
                     <span class="count" id="findCount"></span>
-                    <button onclick="closeFindPanel()" style="margin-left:auto;">✕</button>
+                    <button onclick="closeFindPanel()" style="margin-left:auto;">?</button>
                 </div>
 
                 <div class="doc-title-bar">
@@ -530,8 +530,8 @@
     <!-- Chart Modal -->
     <div class="modal-overlay" id="chartModal">
         <div class="modal">
-            <button class="close-modal" onclick="closeChartModal()">✕</button>
-            <h2>📊 Create Chart</h2>
+            <button class="close-modal" onclick="closeChartModal()">?</button>
+            <h2>?? Create Chart</h2>
             <div class="chart-options">
                 <label>Type<select id="chartType">
                         <option value="bar">Bar</option>
