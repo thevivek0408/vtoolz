@@ -1772,11 +1772,11 @@ var UnityLoader = UnityLoader || {
         handler: function(e, t) {
             var r = t ? this.demangle(e, t) : e.message;
             if (!(t && t.errorhandler && t.errorhandler(r, e.filename, e.lineno) || (console.log("Invoking error handler due to\n" + r), "function" == typeof dump && dump("Invoking error handler due to\n" + r), -1 != r.indexOf("UnknownError") || -1 != r.indexOf("Program terminated with exit(0)") || this.didShowErrorMessage))) {
-                parent.showUnitywebNoSupport();
+                this.didShowErrorMessage = !0, console.error("Unity WebGL error:", r);
             }
         },
         popup: function(e, t, r) {
-            parent.showUnitywebNoSupport();
+            alert(t), r && r.forEach(function(t) { t.callback && t.callback(); });
         }
     },
     Job: {
@@ -2031,13 +2031,7 @@ var UnityLoader = UnityLoader || {
         }
     }(),
     compatibilityCheck: function(e, t, r) {
-        UnityLoader.SystemInfo.hasWebGL ? UnityLoader.SystemInfo.mobile ? e.popup("Please note that Unity WebGL is not currently supported on mobiles. Press OK if you wish to continue anyway.", [{
-            text: "OK",
-            callback: t
-        }]) : -1 == ["Edge", "Firefox", "Chrome", "Safari"].indexOf(UnityLoader.SystemInfo.browser) ? e.popup("Please note that your browser is not currently supported for this Unity WebGL content. Press OK if you wish to continue anyway.", [{
-            text: "OK",
-            callback: t
-        }]) : t() : e.popup("Your browser does not support WebGL", [{
+        UnityLoader.SystemInfo.hasWebGL ? t() : e.popup("Your browser does not support WebGL", [{
             text: "OK",
             callback: r
         }])
@@ -2209,7 +2203,7 @@ var UnityLoader = UnityLoader || {
             return n.compatibilityCheck(n, function() {
                 var t = new XMLHttpRequest;
                 t.open("GET", n.url, !0), t.responseType = "text", t.onerror = function() {
-                    parent.showUnitywebNoSupport();
+                    console.error("Failed to load Unity build config:", n.url);
                 }, t.onload = function() {
                     var a = JSON.parse(t.responseText);
                     for (var s in a) void 0 === o[s] && (o[s] = a[s]);
