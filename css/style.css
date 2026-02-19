@@ -1570,3 +1570,55 @@ button:focus-visible {
         display: none !important;
     }
 }
+
+/* ===== Universal Mobile Responsive Fixes ===== */
+@media (max-width: 768px) {
+    /* Stack inline grid layouts used across tool pages */
+    .layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Tool container responsive */
+    .tool-container {
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+
+    /* Prevent horizontal overflow from any element */
+    img, video, canvas, svg, iframe {
+        max-width: 100%;
+    }
+
+    /* Fix wide textareas */
+    textarea {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Action buttons should wrap */
+    .action-bar, .controls, .btn-row {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .tool-container {
+        padding: 0.75rem;
+        margin: 0.5rem auto;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .btn {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+
+    .btn-lg {
+        padding: 10px 18px;
+        font-size: 0.95rem;
+    }
+}

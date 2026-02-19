@@ -1059,3 +1059,39 @@ input[type="color"] {
         display: none;
     }
 }
+
+@media (max-width: 768px) {
+    body {
+        grid-template-columns: 1fr;
+        grid-template-rows: 28px 30px auto 1fr;
+    }
+    .toolbar {
+        grid-row: 3;
+        grid-column: 1;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        width: 100%;
+    }
+    .workspace {
+        grid-row: 4;
+        grid-column: 1;
+    }
+    .panels {
+        display: none;
+    }
+    .menu-bar {
+        overflow-x: auto;
+        font-size: 12px;
+    }
+    .options-bar {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+    .options-bar label,
+    .options-bar select,
+    .options-bar input {
+        font-size: 11px;
+    }
+}

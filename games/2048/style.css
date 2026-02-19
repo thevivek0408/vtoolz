@@ -18,7 +18,9 @@ p, h2 {
 
 .container {
     width: 468px;
+    max-width: 95vw;
     margin-top: 30px;
+    box-sizing: border-box;
 }
 
 .info {
@@ -31,24 +33,31 @@ p, h2 {
     display: flex;
     flex-wrap: wrap;
     width: 456px;
-    height: 456px;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
     background-color: #BBADA0;
     border: 7px solid #BBADA0;
     border-radius: 6px;
     margin-top: 20px;
+    box-sizing: border-box;
 }
 
 .grid div {
-    width: 100px;
-    height: 100px;
+    width: calc(25% - 14px);
+    aspect-ratio: 1 / 1;
+    height: auto;
     margin: 7px;
     border-radius: 3px;
     background-color: #EEE4DA;
     color: #AFA192;
     font-weight: bold;
     text-align: center;
-    font-size: 60px;
-    line-height: 1.6;
+    font-size: clamp(24px, 8vw, 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .score-container {
@@ -66,5 +75,25 @@ p, h2 {
 
 .score-title {
     font-size: 16px;
+}
+
+@media (max-width: 500px) {
+    h1 {
+        font-size: 48px;
+    }
+    .container {
+        margin-top: 15px;
+        padding: 0 10px;
+    }
+    .grid {
+        border-width: 5px;
+    }
+    .grid div {
+        margin: 5px;
+        width: calc(25% - 10px);
+    }
+    #result {
+        font-size: 14px;
+    }
 }
 

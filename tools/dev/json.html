@@ -34,6 +34,20 @@
             display: flex;
             gap: 10px;
         }
+
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr !important;
+            }
+            .controls {
+                flex-direction: row !important;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            textarea {
+                height: 300px !important;
+            }
+        }
     </style>
 </head>
 

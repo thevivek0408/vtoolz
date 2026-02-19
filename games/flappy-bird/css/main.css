@@ -372,3 +372,19 @@ Screen - Game
    text-decoration: none;
    color: #fff;
 }
+
+/* Responsive adjustments */
+@media (max-width: 420px) {
+   #splash {
+      left: 50%;
+      transform: translateX(-50%);
+   }
+   #scoreboard {
+      left: 50%;
+      transform: translateX(-50%);
+   }
+   #bigscore {
+      left: 50%;
+      transform: translateX(-50%);
+   }
+}

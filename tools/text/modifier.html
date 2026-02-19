@@ -47,6 +47,18 @@
             font-size: 1rem;
             margin-bottom: 10px;
         }
+
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr !important;
+            }
+            .controls {
+                flex: 1 1 100% !important;
+            }
+            textarea {
+                height: 250px !important;
+            }
+        }
     </style>
 </head>
 

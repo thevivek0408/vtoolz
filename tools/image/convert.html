@@ -11,6 +11,16 @@
             margin-top: 20px;
         }
 
+        .tool-card {
+            height: auto;
+            overflow: visible;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .tool-card:hover {
+            transform: none;
+        }
+
         .convert-row {
             display: flex;
             align-items: center;
@@ -20,6 +30,8 @@
             margin-bottom: 10px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 8px;
         }
     </style>
 </head>
@@ -37,7 +49,6 @@
     </header>
 
     <main>
-        <main>
             <div class="tool-container" id="tool-container">
                 <div class="step-indicator">
                     <span class="step active">1. Upload</span>

@@ -96,6 +96,28 @@
             border-color: var(--primary-color);
             color: var(--primary-color);
         }
+
+        @media (max-width: 520px) {
+            .calculator {
+                padding: 12px;
+            }
+            .scientific-mode {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .btn-sci {
+                padding: 8px 4px;
+                font-size: 0.8rem;
+            }
+            .btn-calc {
+                padding: 10px;
+                font-size: 1rem;
+            }
+            .display {
+                font-size: 1.5rem;
+                padding: 12px;
+                min-height: 60px;
+            }
+        }
     </style>
 </head>
 
