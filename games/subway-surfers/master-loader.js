@@ -14,8 +14,18 @@ if (!window.config.unityWebglLoaderUrl) {
         minor = versionSplit[1];
     window.config.unityWebglLoaderUrl = "./UnityLoader.2019.2.js"
 }
-var sdkScript = document.createElement("script");
-sdkScript.src = "./poki-sdk.js", sdkScript.onload = function() {
-    var i = document.createElement("script");
-    i.src = root + loader, document.body.appendChild(i)
-}, document.body.appendChild(sdkScript);
+// Mock PokiSDK for mobile/offline compatibility
+window.PokiSDK = {
+    init: function() { return Promise.resolve(); },
+    setDebug: function() {},
+    gameLoadingStart: function() {},
+    gameLoadingFinished: function() {},
+    gameLoadingProgress: function() {},
+    commercialBreak: function() { return Promise.resolve(); },
+    rewardedBreak: function() { return Promise.resolve(true); },
+    displayAd: function() {},
+    destroyAd: function() {}
+};
+
+var i = document.createElement("script");
+i.src = root + loader, document.body.appendChild(i);
