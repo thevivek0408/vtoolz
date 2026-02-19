@@ -1065,7 +1065,22 @@ body.neon-mode h3 {
     scrollbar-width: none;
     /* Hide scrollbar Firefox */
     flex-wrap: nowrap;
-    /* Prevent wrapping */
+    /* Prevent wrapping on desktop */
+}
+
+@media (max-width: 768px) {
+    .filter-tabs {
+        flex-wrap: wrap;
+        justify-content: center;
+        overflow-x: visible;
+        gap: 8px;
+        margin-bottom: 25px;
+    }
+
+    .filter-tab {
+        padding: 7px 16px;
+        font-size: 0.85rem;
+    }
 }
 
 .filter-tabs::-webkit-scrollbar {
