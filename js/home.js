@@ -1,5 +1,6 @@
 import { tools } from './utils/tools.js';
 import { Utils } from './utils/common.js';
+import { initParticles } from './utils/particles.js';
 
 // State
 let currentCategory = 'all';
@@ -402,4 +403,5 @@ window.addEventListener('DOMContentLoaded', () => {
     init();
     initDragAndDrop();
     initDynamicTheme();
+    initParticles('hero-particles');
 });

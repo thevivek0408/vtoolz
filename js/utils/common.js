@@ -234,28 +234,6 @@ export const Utils = {
         };
         injectLights();
 
-        // 1b. Floating Particles Injection
-        const injectParticles = () => {
-            if (document.querySelector('.particles-container')) return;
-            const container = document.createElement('div');
-            container.className = 'particles-container';
-            container.setAttribute('aria-hidden', 'true');
-            const count = window.innerWidth < 768 ? 8 : 15;
-            for (let i = 0; i < count; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                const size = Math.random() * 4 + 2;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.animationDuration = (Math.random() * 20 + 15) + 's, ' + (Math.random() * 20 + 15) + 's';
-                p.style.animationDelay = (Math.random() * -30) + 's, ' + (Math.random() * -30) + 's';
-                container.appendChild(p);
-            }
-            document.body.appendChild(container);
-        };
-        injectParticles();
-
         // 2. Card Spotlight Effect (rAF-throttled)
         const initSpotlight = () => {
             const toolsCards = document.querySelectorAll('.tool-card');
