@@ -32,7 +32,7 @@
             <nav style="display:flex; align-items:center; gap:15px;">
                 <a href="../index.html" style="font-weight: 600; color: var(--text-light); text-decoration:none;"><i
                         class="fas fa-arrow-left"></i> Back to Tools</a>
-                <button onclick="(function(){var h=document.documentElement,c=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',c);localStorage.setItem('theme',c);this.textContent=c==='dark'?'☀️':'🌙'}).call(this)" style="background:none;border:none;cursor:pointer;font-size:1.3rem;padding:5px;">🌓</button>
+                <button data-onclick="(function(){var h=document.documentElement,c=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',c);localStorage.setItem('theme',c);this.textContent=c==='dark'?'☀️':'🌙'}).call(this)" style="background:none;border:none;cursor:pointer;font-size:1.3rem;padding:5px;">🌓</button>
             </nav>
         </div>
     </header>
@@ -80,6 +80,7 @@
     </div>
 
     <script src="index.inline.js"></script>
+    <script src="../js/utils/data-events.js"></script>
     <script src="../js/loader.js" defer></script>
 </body>
 

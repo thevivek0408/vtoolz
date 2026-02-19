@@ -220,12 +220,13 @@
             </div>
             <div style="text-align:right;">
                 <button type="button" class="btn btn-secondary"
-                    onclick="document.getElementById('task-modal').close()">Cancel</button>
+                    data-onclick="document.getElementById('task-modal').close()">Cancel</button>
                 <button type="submit" class="btn btn-primary">Add Task</button>
             </div>
         </form>
     </dialog>
 
+    <script src="../../js/utils/data-events.js"></script>
     <script type="module" src="../../js/productivity/kanban.js"></script>
 </body>
 

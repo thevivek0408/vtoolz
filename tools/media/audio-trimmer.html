@@ -104,7 +104,7 @@
             <div class="tool-card">
                 <div class="trimmer-container">
 
-                    <div id="upload-area" class="drop-zone" onclick="document.getElementById('file-input').click()">
+                    <div id="upload-area" class="drop-zone" data-onclick="document.getElementById('file-input').click()">
                         <p>Click or Drag Audio File Here (MP3/WAV)</p>
                         <input type="file" id="file-input" accept="audio/*" hidden>
                     </div>
@@ -136,6 +136,7 @@
         </div>
     </main>
 
+    <script src="../../js/utils/data-events.js"></script>
     <script type="module" src="../../js/media/audio-trimmer.js"></script>
 </body>
 

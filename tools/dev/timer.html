@@ -159,8 +159,8 @@
             <div class="tool-card">
                 <div class="timer-container">
                     <div class="tabs">
-                        <button class="tab-btn active" onclick="switchTab('stopwatch')">Stopwatch</button>
-                        <button class="tab-btn" onclick="switchTab('timer')">Timer</button>
+                        <button class="tab-btn active" data-onclick="switchTab('stopwatch')">Stopwatch</button>
+                        <button class="tab-btn" data-onclick="switchTab('timer')">Timer</button>
                     </div>
 
                     <!-- Stopwatch -->
@@ -210,6 +210,7 @@
         </main>
     </div>
 
+    <script src="../../js/utils/data-events.js"></script>
     <script src="timer.inline.js"></script>
 </body>
 

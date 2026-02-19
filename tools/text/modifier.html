@@ -94,28 +94,28 @@
                     <div class="control-group">
                         <h3>Case Converter</h3>
                         <button class="btn btn-secondary btn-block"
-                            onclick="apply(t => t.toUpperCase())">UPPERCASE</button>
+                            data-onclick="apply(t => t.toUpperCase())">UPPERCASE</button>
                         <button class="btn btn-secondary btn-block"
-                            onclick="apply(t => t.toLowerCase())">lowercase</button>
-                        <button class="btn btn-secondary btn-block" onclick="apply(TextUtils.toTitleCase)">Title
+                            data-onclick="apply(t => t.toLowerCase())">lowercase</button>
+                        <button class="btn btn-secondary btn-block" data-onclick="apply(TextUtils.toTitleCase)">Title
                             Case</button>
                     </div>
 
                     <div class="control-group">
                         <h3>Line Operations</h3>
-                        <button class="btn btn-secondary btn-block" onclick="apply(TextUtils.sortLines)">Sort
+                        <button class="btn btn-secondary btn-block" data-onclick="apply(TextUtils.sortLines)">Sort
                             Lines</button>
                         <button class="btn btn-secondary btn-block"
-                            onclick="apply(TextUtils.removeDuplicateLines)">Unique</button>
+                            data-onclick="apply(TextUtils.removeDuplicateLines)">Unique</button>
                         <button class="btn btn-secondary btn-block"
-                            onclick="apply(TextUtils.reverseLines)">Reverse</button>
+                            data-onclick="apply(TextUtils.reverseLines)">Reverse</button>
                     </div>
 
                     <div class="control-group">
                         <h3>Cleanup</h3>
-                        <button class="btn btn-secondary btn-block" onclick="apply(TextUtils.removeExtraSpaces)">Fix
+                        <button class="btn btn-secondary btn-block" data-onclick="apply(TextUtils.removeExtraSpaces)">Fix
                             Spaces</button>
-                        <button class="btn btn-secondary btn-block" onclick="apply(t => t.trim())">Trim</button>
+                        <button class="btn btn-secondary btn-block" data-onclick="apply(t => t.trim())">Trim</button>
                     </div>
                 </div>
 
@@ -144,6 +144,7 @@
         </div>
     </main>
 
+    <script src="../../js/utils/data-events.js"></script>
     <script src="modifier.inline.js" type="module"></script>
 </body>
 

@@ -112,7 +112,7 @@
                         <div style="display:flex; gap:10px; margin-bottom: 10px;">
                             <input type="text" id="pass-gen-out" class="form-control" readonly
                                 style="flex:1; background: var(--bg-secondary); color: var(--text-color); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; font-family: monospace; font-size: 1.1rem;">
-                            <button class="btn btn-secondary" onclick="generate()">?</button>
+                            <button class="btn btn-secondary" data-onclick="generate()">?</button>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <label><input type="checkbox" id="opt-upper" checked> A-Z</label>
@@ -140,6 +140,7 @@
         </div>
     </main>
 
+    <script src="../../js/utils/data-events.js"></script>
     <script src="security.inline.js" type="module"></script>
 </body>
 

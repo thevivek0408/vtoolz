@@ -86,12 +86,13 @@
         <div class="offline-icon">??</div>
         <h1>You're Offline</h1>
         <p>This page hasn't been cached yet. Go back to a page you've visited before, or try again when you're online.</p>
-        <button class="retry-btn" onclick="location.reload()">Try Again</button>
+        <button class="retry-btn" data-onclick="location.reload()">Try Again</button>
         <div class="cached-tools">
             <p>?? Tip: Visit tools while online and they'll work offline next time.</p>
             <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">? Back to Home</a>
         </div>
     </div>
+    <script src="js/utils/data-events.js"></script>
 </body>
 
 </html>

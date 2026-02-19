@@ -77,7 +77,7 @@
 
             <div class="tool-card">
                 <div class="action-bar" style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
-                    <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                    <button class="btn btn-primary" data-onclick="document.getElementById('file-input').click()">
                         <span style="font-size:1.2rem;">+</span> Add Photos
                     </button>
                     <button id="btn-create-pdf" class="btn btn-success" disabled>
@@ -86,7 +86,7 @@
                 </div>
                 <input type="file" id="file-input" multiple accept="image/jpeg, image/png, image/jpg" hidden>
 
-                <p class="text-center text-muted">A4 Paper Size • Standard Margins • Optimized for Uploads</p>
+                <p class="text-center text-muted">A4 Paper Size ï¿½ Standard Margins ï¿½ Optimized for Uploads</p>
 
                 <div id="file-list" class="file-list-area">
                     <p class="text-center text-muted" style="margin-top: 70px;">
@@ -107,6 +107,7 @@
     <!-- Reuse PDF Worker Logic via Facade if possible, or simple jspdf if lightweight. 
          We already have pdf-lib in pdf-worker.js. Let's reuse pdf-worker logic imagesToPdf 
     -->
+    <script src="../../js/utils/data-events.js"></script>
     <script type="module" src="../../js/government/jpg-to-pdf.js"></script>
 </body>
 

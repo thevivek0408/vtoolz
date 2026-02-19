@@ -205,15 +205,15 @@
                     <div class="panel-header">
                         <span class="panel-title">Markdown</span>
                         <div class="toolbar">
-                            <button class="toolbar-btn" title="Bold" onclick="insertMarkdown('**', '**')"><i
+                                <button class="toolbar-btn" title="Bold" data-onclick="insertMarkdown('**', '**')"><i
                                     class="fas fa-bold"></i></button>
-                            <button class="toolbar-btn" title="Italic" onclick="insertMarkdown('*', '*')"><i
+                                <button class="toolbar-btn" title="Italic" data-onclick="insertMarkdown('*', '*')"><i
                                     class="fas fa-italic"></i></button>
-                            <button class="toolbar-btn" title="Heading" onclick="insertMarkdown('### ', '')"><i
+                                <button class="toolbar-btn" title="Heading" data-onclick="insertMarkdown('### ', '')"><i
                                     class="fas fa-heading"></i></button>
-                            <button class="toolbar-btn" title="Link" onclick="insertMarkdown('[', '](url)')"><i
+                                <button class="toolbar-btn" title="Link" data-onclick="insertMarkdown('[', '](url)')"><i
                                     class="fas fa-link"></i></button>
-                            <button class="toolbar-btn" title="Code Block" onclick="insertMarkdown('```\n', '\n```')"><i
+                                <button class="toolbar-btn" title="Code Block" data-onclick="insertMarkdown('```\n', '\n```')"><i
                                     class="fas fa-code"></i></button>
                             <button class="toolbar-btn" title="Clear" id="clear-btn"><i
                                     class="fas fa-trash"></i></button>
@@ -236,6 +236,7 @@
         </div>
     </main>
 
+    <script src="../../js/utils/data-events.js"></script>
     <script type="module" src="../../js/markdown/editor.js"></script>
     <script type="module" src="../../js/utils/common.js"></script>
 </body>

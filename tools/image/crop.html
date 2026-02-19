@@ -76,16 +76,17 @@
 
                     <div class="controls" style="justify-content: center; margin-top: 2rem; gap: 15px;">
                         <button id="crop-btn" class="btn btn-primary">Crop & Download</button>
-                        <button class="btn btn-secondary" onclick="cropper.rotate(90)">Rotate ?</button>
+                        <button class="btn btn-secondary" data-onclick="cropper.rotate(90)">Rotate ?</button>
                         <button class="btn btn-secondary"
-                            onclick="cropper.scaleX(window.scaleXVal = (window.scaleXVal || 1) * -1)">Flip H</button>
-                        <button class="btn btn-secondary" onclick="cropper.reset()">Reset</button>
+                            data-onclick="cropper.scaleX(window.scaleXVal = (window.scaleXVal || 1) * -1)">Flip H</button>
+                        <button class="btn btn-secondary" data-onclick="cropper.reset()">Reset</button>
                     </div>
                 </div>
             </div>
     </main>
 
     <script src="../../js/vendor/cropper.min.js"></script>
+    <script src="../../js/utils/data-events.js"></script>
     <script src="crop.inline.js" type="module"></script>
 </body>
 
