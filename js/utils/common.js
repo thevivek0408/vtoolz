@@ -515,7 +515,7 @@ export const Utils = {
         ).join('');
         
         const main = document.querySelector('main') || document.querySelector('.tool-container');
-        if (main) main.parentNode.insertBefore(breadcrumb, main);
+        if (main && main.parentNode === document.body) main.parentNode.insertBefore(breadcrumb, main);
     }
 };
 
