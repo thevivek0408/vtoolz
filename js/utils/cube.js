@@ -4,6 +4,7 @@ export class CubeRotator {
         this.isDragging = false;
         this.isVisible = true;
         this.rafId = null;
+        this.hintHidden = false;
 
         // Rotation State
         this.currentX = -20;
@@ -31,6 +32,9 @@ export class CubeRotator {
     init() {
         this.element.style.cursor = 'grab';
         this.element.style.willChange = 'transform';
+
+        // Detect cube size for translateZ offset
+        this.zOffset = this.element.offsetWidth / 2 || 60;
 
         // Bound handlers for cleanup
         this._onDown = this.onDown.bind(this);
@@ -92,6 +96,13 @@ export class CubeRotator {
         this.autoRotate = false;
         this.wasDragging = false;
         clearTimeout(this.resumeTimeout);
+
+        // Hide drag hint on first interaction
+        if (!this.hintHidden) {
+            this.hintHidden = true;
+            const hint = this.element.closest('.hero-scene')?.querySelector('.cube-hint');
+            if (hint) hint.classList.add('hidden');
+        }
 
         // Stop inertia
         this.velocityX = 0;
@@ -170,7 +181,7 @@ export class CubeRotator {
             }
         }
 
-        this.element.style.transform = `translateZ(-50px) rotateX(${this.currentX}deg) rotateY(${this.currentY}deg)`;
+        this.element.style.transform = `translateZ(-${this.zOffset}px) rotateX(${this.currentX}deg) rotateY(${this.currentY}deg)`;
 
         this.rafId = requestAnimationFrame(this.animate.bind(this));
     }
