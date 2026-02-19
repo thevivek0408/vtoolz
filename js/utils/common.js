@@ -225,9 +225,7 @@ export const Utils = {
             document.body.appendChild(overlay);
 
             // Toggle Logic
-            const toggleMenu = (e) => {
-                if (e && e.type === 'touchstart') e.preventDefault(); // Prevent ghost clicks
-
+            const toggleMenu = () => {
                 const isActive = navContainer.classList.toggle('nav-active');
                 overlay.classList.toggle('active');
                 btn.innerHTML = isActive ? '✕' : '☰';
@@ -237,10 +235,8 @@ export const Utils = {
             };
 
             btn.addEventListener('click', toggleMenu);
-            btn.addEventListener('touchstart', toggleMenu, { passive: false });
 
             overlay.addEventListener('click', toggleMenu);
-            overlay.addEventListener('touchstart', toggleMenu, { passive: false });
 
             // Close on link click
             navContainer.querySelectorAll('a').forEach(link => {
@@ -263,19 +259,24 @@ export const Utils = {
         };
         injectLights();
 
-        // 2. Card Spotlight Effect
+        // 2. Card Spotlight Effect (rAF-throttled)
         const initSpotlight = () => {
             const toolsCards = document.querySelectorAll('.tool-card');
+            let spotRaf = null;
 
             toolsCards.forEach(card => {
                 card.classList.add('spotlight-card');
                 card.addEventListener('mousemove', e => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    card.style.setProperty('--mouse-x', `${x}px`);
-                    card.style.setProperty('--mouse-y', `${y}px`);
-                });
+                    if (spotRaf) return;
+                    spotRaf = requestAnimationFrame(() => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        card.style.setProperty('--mouse-x', `${x}px`);
+                        card.style.setProperty('--mouse-y', `${y}px`);
+                        spotRaf = null;
+                    });
+                }, { passive: true });
             });
         };
         initSpotlight();

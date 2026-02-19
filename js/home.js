@@ -109,16 +109,20 @@ function renderTools(toolsToRender) {
         toolsGrid.appendChild(card);
     });
 
-    // Spotlight Effect Listener (Global for Grid)
-    // Updates ALL cards to create a seamless "flashlight" effect
+    // Spotlight Effect Listener — throttled via rAF for smooth 60fps
+    let spotlightRaf = null;
     toolsGrid.onmousemove = e => {
-        for (const card of document.getElementsByClassName('spotlight-card')) {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
-        }
+        if (spotlightRaf) return;
+        spotlightRaf = requestAnimationFrame(() => {
+            for (const card of document.getElementsByClassName('spotlight-card')) {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            }
+            spotlightRaf = null;
+        });
     };
 }
 

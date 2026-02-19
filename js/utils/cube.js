@@ -2,6 +2,8 @@ export class CubeRotator {
     constructor(element) {
         this.element = element;
         this.isDragging = false;
+        this.isVisible = true;
+        this.rafId = null;
 
         // Rotation State
         this.currentX = -20;
@@ -28,16 +30,23 @@ export class CubeRotator {
 
     init() {
         this.element.style.cursor = 'grab';
+        this.element.style.willChange = 'transform';
 
-        // Mouse Events
-        document.addEventListener('mousedown', this.onDown.bind(this));
-        document.addEventListener('mousemove', this.onMove.bind(this));
-        document.addEventListener('mouseup', this.onUp.bind(this));
+        // Bound handlers for cleanup
+        this._onDown = this.onDown.bind(this);
+        this._onMove = this.onMove.bind(this);
+        this._onUp = this.onUp.bind(this);
 
-        // Touch Events
-        document.addEventListener('touchstart', this.onDown.bind(this), { passive: false });
-        document.addEventListener('touchmove', this.onMove.bind(this), { passive: false });
-        document.addEventListener('touchend', this.onUp.bind(this));
+        // Mouse Events — scoped to hero-scene to avoid global jank
+        const scene = this.element.closest('.hero-scene') || this.element;
+        scene.addEventListener('mousedown', this._onDown);
+        document.addEventListener('mousemove', this._onMove, { passive: true });
+        document.addEventListener('mouseup', this._onUp);
+
+        // Touch Events — scoped
+        scene.addEventListener('touchstart', this._onDown, { passive: false });
+        document.addEventListener('touchmove', this._onMove, { passive: false });
+        document.addEventListener('touchend', this._onUp);
 
         // Prevent default drag interactions on links
         const links = this.element.querySelectorAll('a');
@@ -49,6 +58,27 @@ export class CubeRotator {
                 }
             });
             link.addEventListener('dragstart', e => e.preventDefault());
+        });
+
+        // IntersectionObserver — pause when off-screen
+        if ('IntersectionObserver' in window) {
+            this._observer = new IntersectionObserver((entries) => {
+                this.isVisible = entries[0].isIntersecting;
+                if (this.isVisible && !this.rafId) {
+                    this.animate();
+                }
+            }, { threshold: 0.1 });
+            this._observer.observe(scene);
+        }
+
+        // Pause on tab hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.isVisible = false;
+            } else {
+                this.isVisible = true;
+                if (!this.rafId) this.animate();
+            }
         });
 
         // Start Loop
@@ -118,30 +148,30 @@ export class CubeRotator {
     }
 
     animate() {
+        // Stop loop when off-screen or tab hidden
+        if (!this.isVisible) {
+            this.rafId = null;
+            return;
+        }
+
         if (!this.isDragging) {
             if (this.autoRotate) {
-                // Auto rotate logic (overrides inertia if active)
                 this.currentY += this.autoRotateSpeed;
-                // Fade out tilt
                 this.currentX += ((-20 - this.currentX) * 0.05);
             } else {
-                // Inertia logic
                 this.currentY += this.velocityX;
                 this.currentX -= this.velocityY;
 
-                // Friction
                 this.velocityX *= this.friction;
                 this.velocityY *= this.friction;
 
-                // Stop if very slow
                 if (Math.abs(this.velocityX) < 0.001) this.velocityX = 0;
                 if (Math.abs(this.velocityY) < 0.001) this.velocityY = 0;
             }
         }
 
-        this.element.style.willChange = 'transform'; // Hint browser for performance
         this.element.style.transform = `translateZ(-50px) rotateX(${this.currentX}deg) rotateY(${this.currentY}deg)`;
 
-        requestAnimationFrame(this.animate.bind(this));
+        this.rafId = requestAnimationFrame(this.animate.bind(this));
     }
 }

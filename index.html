@@ -9,11 +9,20 @@
     <title>Vibox - Privacy-First Tools</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.png" type="image/png">
+    <!-- Preconnect to CDNs for zero-latency font/icon loading -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <!-- Critical CSS first -->
+    <link rel="stylesheet" href="css/style.css?v=3">
+    <!-- Non-critical: Font Awesome deferred -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="css/style.css?v=2">
-    <script src="js/loader.js" defer></script> <!-- Defer loader for faster FCP -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <!-- Preload key JS modules -->
+    <link rel="modulepreload" href="js/utils/common.js">
+    <link rel="modulepreload" href="js/utils/tools.js">
+    <link rel="modulepreload" href="js/home.js">
+    <script src="js/loader.js" defer></script>
 </head>
 
 <body>

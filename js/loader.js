@@ -1,31 +1,41 @@
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Fade In on Load
+    // Instant fade-in (no delay)
     document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.4s ease-out';
+    document.body.style.transition = 'opacity 0.2s ease-out';
 
     requestAnimationFrame(() => {
-        document.body.style.opacity = '1';
+        requestAnimationFrame(() => {
+            document.body.style.opacity = '1';
+        });
     });
 
-    // 2. Intercept Links for Fade Out
-    const links = document.querySelectorAll('a');
+    // Intercept links for smooth page transitions
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (!link) return;
 
-    links.forEach(link => {
-        // Skip external links, anchors, or new tabs
+        // Skip external links, anchors, new tabs, downloads
         if (link.hostname !== window.location.hostname ||
             link.getAttribute('target') === '_blank' ||
-            link.getAttribute('href').startsWith('#')) return;
+            (link.getAttribute('href') || '').startsWith('#') ||
+            link.hasAttribute('download') ||
+            e.ctrlKey || e.metaKey || e.shiftKey) return;
 
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const href = link.getAttribute('href');
+        const href = link.getAttribute('href');
+        if (!href) return;
 
-            document.body.style.opacity = '0';
+        e.preventDefault();
 
-            setTimeout(() => {
+        // Use View Transitions API if available (Chrome 111+)
+        if (document.startViewTransition) {
+            document.startViewTransition(() => {
                 window.location.href = href;
-            }, 400); // Wait for transition
-        });
+            });
+        } else {
+            // Fast fallback — 150ms exit animation
+            document.body.style.opacity = '0';
+            setTimeout(() => { window.location.href = href; }, 150);
+        }
     });
 });

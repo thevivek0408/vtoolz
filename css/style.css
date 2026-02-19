@@ -16,6 +16,29 @@
     backdrop-filter: blur(5px);
 }
 
+/* View Transitions API — smooth iOS-like page transitions */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: 150ms ease-out both fade-out;
+}
+
+::view-transition-new(root) {
+    animation: 200ms ease-in both fade-in;
+}
+
+@keyframes fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
 .drop-overlay.active {
     opacity: 1;
     visibility: visible;
@@ -113,6 +136,8 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    /* Eliminate tap delay on iOS/Android */
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -125,21 +150,26 @@ body {
     position: relative;
     perspective: 1000px;
     perspective-origin: 50% 50%;
-    /* Fix pitched up look */
-    /* Global perspective */
     transition: background-color 0.3s, color 0.3s;
+    /* iOS momentum scrolling */
+    -webkit-overflow-scrolling: touch;
+    /* Smooth font rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 @media (max-width: 768px) {
     body {
         perspective: 800px;
-        /* Slightly flatter on mobile */
     }
 }
 
 html {
     overflow-x: hidden;
     width: 100%;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Real 3D Cube Animation */
@@ -484,6 +514,7 @@ nav a.active::after {
     cursor: pointer;
     font-size: 0.95rem;
     transition: var(--transition);
+    touch-action: manipulation; /* Kill 300ms tap delay on iOS */
 }
 
 .btn-primary {
@@ -575,6 +606,12 @@ nav a.active::after {
     transition: left 0.5s;
     pointer-events: none;
     z-index: 10;
+}
+
+.tool-card {
+    will-change: transform, box-shadow;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 .tool-card:hover {
@@ -841,6 +878,7 @@ body.neon-mode h3 {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
+    contain: layout style;
     padding: 10px 0;
 }
 
@@ -1107,6 +1145,10 @@ body.neon-mode h3 {
     background: var(--secondary-surface);
     color: var(--primary-color);
     border-color: var(--primary-color);
+}
+
+.filter-tab {
+    will-change: transform, background;
 }
 
 .filter-tab.active {
@@ -1636,4 +1678,16 @@ button:focus-visible {
         padding: 10px 18px;
         font-size: 0.95rem;
     }
+}
+
+/* ===== iOS / Touch Smoothness ===== */
+a, button, input, select, textarea, .filter-tab, .tool-card, .btn {
+    touch-action: manipulation;
+}
+
+/* GPU-promote animated elements */
+.tool-card, .cube, .cube-face, .drop-overlay, .toast, nav {
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
