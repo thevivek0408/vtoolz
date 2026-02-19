@@ -605,12 +605,12 @@
                 <div class="find-panel" id="findPanel">
                     <input type="text" id="findInput" placeholder="Find...">
                     <input type="text" id="replaceInput" placeholder="Replace with...">
-                    <button onclick="findNext()">Next</button>
-                    <button onclick="findPrev()">Prev</button>
-                    <button onclick="replaceOne()">Replace</button>
-                    <button onclick="replaceAll()">All</button>
+                    <button data-onclick="findNext()">Next</button>
+                    <button data-onclick="findPrev()">Prev</button>
+                    <button data-onclick="replaceOne()">Replace</button>
+                    <button data-onclick="replaceAll()">All</button>
                     <span class="count" id="findCount"></span>
-                    <button onclick="closeFind()" style="margin-left:auto;">?</button>
+                    <button data-onclick="closeFind()" style="margin-left:auto;">?</button>
                 </div>
 
                 <div class="doc-title-bar">
@@ -634,12 +634,12 @@
                 </div>
 
                 <div class="export-panel">
-                    <button class="export-btn import" onclick="importFile()"><i class="fas fa-file-import"></i>
+                    <button class="export-btn import" data-onclick="importFile()"><i class="fas fa-file-import"></i>
                         Import</button>
-                    <button class="export-btn txt" onclick="exportTxt()"><i class="fas fa-file-alt"></i> .txt</button>
-                    <button class="export-btn docx" onclick="exportDocx()"><i class="fas fa-file-word"></i>
+                    <button class="export-btn txt" data-onclick="exportTxt()"><i class="fas fa-file-alt"></i> .txt</button>
+                    <button class="export-btn docx" data-onclick="exportDocx()"><i class="fas fa-file-word"></i>
                         .doc</button>
-                    <button class="export-btn pdf" onclick="exportPdf()"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button class="export-btn pdf" data-onclick="exportPdf()"><i class="fas fa-file-pdf"></i> PDF</button>
                 </div>
             </div>
         </div>
@@ -648,7 +648,7 @@
     <!-- Templates Modal -->
     <div class="modal-overlay" id="templateModal">
         <div class="modal" style="position:relative;">
-            <button class="close-modal" onclick="closeTemplateModal()">?</button>
+            <button class="close-modal" data-onclick="closeTemplateModal()">?</button>
             <h2>?? Document Templates</h2>
             <div class="tpl-grid" id="tplGrid"></div>
         </div>
@@ -656,14 +656,14 @@
 
     <!-- Focus Mode -->
     <div class="focus-overlay" id="focusOverlay">
-        <button class="focus-exit" onclick="exitFocus()">? Exit Focus</button>
+        <button class="focus-exit" data-onclick="exitFocus()">? Exit Focus</button>
         <div class="focus-editor" id="focusEditor" contenteditable="true"></div>
     </div>
 
     <!-- Version History Modal -->
     <div class="versions-modal" id="versionsModal">
         <div class="vm-inner">
-            <button class="close-modal" onclick="closeVersions()">?</button>
+            <button class="close-modal" data-onclick="closeVersions()">?</button>
             <h2>?? Version History</h2>
             <p style="font-size:12px;opacity:.5;margin-bottom:12px;">Auto-saved every 30 seconds. Up to 10 versions
                 kept.</p>
@@ -678,6 +678,30 @@
     <script src="../../js/vendor/html2pdf.bundle.min.js"></script>
     <script src="../../js/vendor/mammoth.browser.min.js"></script>
     <script src="word.inline.js"></script>
+    <script>
+        (() => {
+            const run = (code, element, event) => {
+                if (!code) return;
+                try {
+                    new Function('event', code).call(element, event);
+                } catch (error) {
+                    console.error('Event handler error:', error);
+                }
+            };
+
+            document.addEventListener('click', (event) => {
+                const element = event.target.closest('[data-onclick]');
+                if (!element) return;
+                run(element.getAttribute('data-onclick'), element, event);
+            });
+
+            document.addEventListener('change', (event) => {
+                const element = event.target.closest('[data-onchange]');
+                if (!element) return;
+                run(element.getAttribute('data-onchange'), element, event);
+            });
+        })();
+    </script>
     <script src="../../js/utils/common.js" type="module"></script>
 </body>
 

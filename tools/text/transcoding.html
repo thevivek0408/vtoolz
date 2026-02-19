@@ -150,9 +150,9 @@
                     <h3>Text Input</h3>
                     <textarea id="morseInput" placeholder="Enter text here..."></textarea>
                     <div class="controls">
-                        <button class="action-btn" onclick="copyToClipboard('morseInput')"><i class="fas fa-copy"></i>
+                        <button class="action-btn" data-onclick="copyToClipboard('morseInput')"><i class="fas fa-copy"></i>
                             Copy</button>
-                        <button class="action-btn" onclick="clearText('morseInput', 'morseOutput')"><i
+                        <button class="action-btn" data-onclick="clearText('morseInput', 'morseOutput')"><i
                                 class="fas fa-trash"></i> Clear</button>
                     </div>
                 </div>
@@ -160,8 +160,8 @@
                     <h3>Morse Output</h3>
                     <textarea id="morseOutput" placeholder="... --- ..."></textarea>
                     <div class="controls">
-                        <button class="action-btn" onclick="playMorse()"><i class="fas fa-play"></i> Play Audio</button>
-                        <button class="action-btn" onclick="copyToClipboard('morseOutput')"><i class="fas fa-copy"></i>
+                        <button class="action-btn" data-onclick="playMorse()"><i class="fas fa-play"></i> Play Audio</button>
+                        <button class="action-btn" data-onclick="copyToClipboard('morseOutput')"><i class="fas fa-copy"></i>
                             Copy</button>
                     </div>
                 </div>
@@ -173,9 +173,9 @@
                     <h3>Text Input</h3>
                     <textarea id="binaryInput" placeholder="Enter text here..."></textarea>
                     <div class="controls">
-                        <button class="action-btn" onclick="copyToClipboard('binaryInput')"><i class="fas fa-copy"></i>
+                        <button class="action-btn" data-onclick="copyToClipboard('binaryInput')"><i class="fas fa-copy"></i>
                             Copy</button>
-                        <button class="action-btn" onclick="clearText('binaryInput', 'binaryOutput')"><i
+                        <button class="action-btn" data-onclick="clearText('binaryInput', 'binaryOutput')"><i
                                 class="fas fa-trash"></i> Clear</button>
                     </div>
                 </div>
@@ -183,7 +183,7 @@
                     <h3>Binary Output</h3>
                     <textarea id="binaryOutput" placeholder="01001000 01100101..."></textarea>
                     <div class="controls">
-                        <button class="action-btn" onclick="copyToClipboard('binaryOutput')"><i class="fas fa-copy"></i>
+                        <button class="action-btn" data-onclick="copyToClipboard('binaryOutput')"><i class="fas fa-copy"></i>
                             Copy</button>
                     </div>
                 </div>
@@ -195,9 +195,9 @@
                     <h3>Text Input</h3>
                     <textarea id="base64Input" placeholder="Enter text here..."></textarea>
                     <div class="controls">
-                        <button class="action-btn" onclick="copyToClipboard('base64Input')"><i class="fas fa-copy"></i>
+                        <button class="action-btn" data-onclick="copyToClipboard('base64Input')"><i class="fas fa-copy"></i>
                             Copy</button>
-                        <button class="action-btn" onclick="clearText('base64Input', 'base64Output')"><i
+                        <button class="action-btn" data-onclick="clearText('base64Input', 'base64Output')"><i
                                 class="fas fa-trash"></i> Clear</button>
                     </div>
                 </div>
@@ -205,7 +205,7 @@
                     <h3>Base64 Output</h3>
                     <textarea id="base64Output" placeholder="SGVsbG8gV29ybGQ="></textarea>
                     <div class="controls">
-                        <button class="action-btn" onclick="copyToClipboard('base64Output')"><i class="fas fa-copy"></i>
+                        <button class="action-btn" data-onclick="copyToClipboard('base64Output')"><i class="fas fa-copy"></i>
                             Copy</button>
                     </div>
                 </div>
@@ -217,9 +217,9 @@
                     <h3>Text Input</h3>
                     <textarea id="brailleInput" placeholder="Enter text here..."></textarea>
                     <div class="controls">
-                        <button class="action-btn" onclick="copyToClipboard('brailleInput')"><i class="fas fa-copy"></i>
+                        <button class="action-btn" data-onclick="copyToClipboard('brailleInput')"><i class="fas fa-copy"></i>
                             Copy</button>
-                        <button class="action-btn" onclick="clearText('brailleInput', 'brailleOutput')"><i
+                        <button class="action-btn" data-onclick="clearText('brailleInput', 'brailleOutput')"><i
                                 class="fas fa-trash"></i> Clear</button>
                     </div>
                 </div>
@@ -227,7 +227,7 @@
                     <h3>Braille Output</h3>
                     <textarea id="brailleOutput" placeholder="?????"></textarea>
                     <div class="controls">
-                        <button class="action-btn" onclick="copyToClipboard('brailleOutput')"><i
+                        <button class="action-btn" data-onclick="copyToClipboard('brailleOutput')"><i
                                 class="fas fa-copy"></i> Copy</button>
                     </div>
                 </div>
@@ -238,6 +238,30 @@
 
     <script src="../../js/utils/common.js" type="module"></script>
     <script src="transcoding.inline.js"></script>
+    <script>
+        (() => {
+            const run = (code, element, event) => {
+                if (!code) return;
+                try {
+                    new Function('event', code).call(element, event);
+                } catch (error) {
+                    console.error('Event handler error:', error);
+                }
+            };
+
+            document.addEventListener('click', (event) => {
+                const element = event.target.closest('[data-onclick]');
+                if (!element) return;
+                run(element.getAttribute('data-onclick'), element, event);
+            });
+
+            document.addEventListener('change', (event) => {
+                const element = event.target.closest('[data-onchange]');
+                if (!element) return;
+                run(element.getAttribute('data-onchange'), element, event);
+            });
+        })();
+    </script>
 </body>
 
 </html>

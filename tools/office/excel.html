@@ -488,11 +488,11 @@
                 <div class="find-panel" id="findPanel">
                     <input type="text" id="findInput" placeholder="Find...">
                     <input type="text" id="replaceInput" placeholder="Replace...">
-                    <button onclick="findInSheet()">Find</button>
-                    <button onclick="replaceInSheet()">Replace</button>
-                    <button onclick="replaceAllInSheet()">All</button>
+                    <button data-onclick="findInSheet()">Find</button>
+                    <button data-onclick="replaceInSheet()">Replace</button>
+                    <button data-onclick="replaceAllInSheet()">All</button>
                     <span class="count" id="findCount"></span>
-                    <button onclick="closeFindPanel()" style="margin-left:auto;">?</button>
+                    <button data-onclick="closeFindPanel()" style="margin-left:auto;">?</button>
                 </div>
 
                 <div class="doc-title-bar">
@@ -516,12 +516,12 @@
                 </div>
 
                 <div class="export-panel">
-                    <button class="export-btn import" onclick="importFile()"><i class="fas fa-file-import"></i>
+                    <button class="export-btn import" data-onclick="importFile()"><i class="fas fa-file-import"></i>
                         Import</button>
-                    <button class="export-btn csv" onclick="exportCSV()"><i class="fas fa-file-csv"></i> CSV</button>
-                    <button class="export-btn xlsx" onclick="exportXLSX()"><i class="fas fa-file-excel"></i>
+                    <button class="export-btn csv" data-onclick="exportCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+                    <button class="export-btn xlsx" data-onclick="exportXLSX()"><i class="fas fa-file-excel"></i>
                         XLSX</button>
-                    <button class="export-btn pdf" onclick="printSheet()"><i class="fas fa-print"></i> Print</button>
+                    <button class="export-btn pdf" data-onclick="printSheet()"><i class="fas fa-print"></i> Print</button>
                 </div>
             </div>
         </div>
@@ -530,7 +530,7 @@
     <!-- Chart Modal -->
     <div class="modal-overlay" id="chartModal">
         <div class="modal">
-            <button class="close-modal" onclick="closeChartModal()">?</button>
+            <button class="close-modal" data-onclick="closeChartModal()">?</button>
             <h2>?? Create Chart</h2>
             <div class="chart-options">
                 <label>Type<select id="chartType">
@@ -548,8 +548,8 @@
             </div>
             <div class="chart-canvas-wrap"><canvas id="chartCanvas" height="300"></canvas></div>
             <div class="chart-actions">
-                <button class="gen" onclick="generateChart()">Generate Chart</button>
-                <button class="dl" onclick="downloadChart()">Download PNG</button>
+                <button class="gen" data-onclick="generateChart()">Generate Chart</button>
+                <button class="dl" data-onclick="downloadChart()">Download PNG</button>
             </div>
         </div>
     </div>
@@ -567,6 +567,30 @@
     <script src="../../js/vendor/xlsx.full.min.js"></script>
     <script src="../../js/vendor/chart.umd.min.js"></script>
     <script src="excel.inline.js"></script>
+    <script>
+        (() => {
+            const run = (code, element, event) => {
+                if (!code) return;
+                try {
+                    new Function('event', code).call(element, event);
+                } catch (error) {
+                    console.error('Event handler error:', error);
+                }
+            };
+
+            document.addEventListener('click', (event) => {
+                const element = event.target.closest('[data-onclick]');
+                if (!element) return;
+                run(element.getAttribute('data-onclick'), element, event);
+            });
+
+            document.addEventListener('change', (event) => {
+                const element = event.target.closest('[data-onchange]');
+                if (!element) return;
+                run(element.getAttribute('data-onchange'), element, event);
+            });
+        })();
+    </script>
     <script src="../../js/utils/common.js" type="module"></script>
 </body>
 
