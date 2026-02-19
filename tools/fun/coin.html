@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>3D Coin Flip - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
@@ -110,57 +110,7 @@
         </div>
     </main>
 
-    <script type="module">
-        import '../../js/utils/common.js';
-
-        const coin = document.getElementById('coin');
-        const flipBtn = document.getElementById('flipBtn');
-        const resultEl = document.getElementById('result');
-        const headsEl = document.getElementById('headsCount');
-        const tailsEl = document.getElementById('tailsCount');
-
-        let heads = 0;
-        let tails = 0;
-        let isFlipping = false;
-
-        flipBtn.addEventListener('click', () => {
-            if (isFlipping) return;
-            isFlipping = true;
-            resultEl.textContent = "Flipping...";
-
-            // Random outcome 0 or 1
-            const outcome = Math.floor(Math.random() * 2);
-
-            // To animate, we need to spin a lot then land.
-            // basic rots: Heads = 0, Tails = 180
-            // Add (5 * 360) for 5 full spins
-            const spins = 1800; // 5 spins
-            const degrees = spins + (outcome === 0 ? 0 : 180);
-
-            // Reset transition for instant rewind if needed? No, let's accumulate if possible or reset.
-            // Resetting is cleaner to avoid huge numbers.
-            coin.style.transition = 'none';
-            coin.style.transform = 'rotateX(0deg)';
-
-            setTimeout(() => {
-                coin.style.transition = 'transform 3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                coin.style.transform = `rotateX(${degrees}deg)`;
-            }, 50);
-
-            setTimeout(() => {
-                if (outcome === 0) {
-                    heads++;
-                    headsEl.textContent = heads;
-                    resultEl.textContent = "It's HEADS!";
-                } else {
-                    tails++;
-                    tailsEl.textContent = tails;
-                    resultEl.textContent = "It's TAILS!";
-                }
-                isFlipping = false;
-            }, 3000);
-        });
-    </script>
+    <script src="coin.inline.js" type="module"></script>
 </body>
 
 </html>

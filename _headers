@@ -1,0 +1,23 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+
+/tools/qr/scanner.html
+  Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=(), usb=()
+
+/tools/barcode/scanner.html
+  Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=(), usb=()
+
+/tools/media/voice-recorder.html
+  Permissions-Policy: camera=(), microphone=(self), geolocation=(), payment=(), usb=()
+
+/tools/media/audio-trimmer.html
+  Permissions-Policy: camera=(), microphone=(self), geolocation=(), payment=(), usb=()
+
+/tools/media/screen-recorder.html
+  Permissions-Policy: camera=(), microphone=(self), geolocation=(), payment=(), usb=()
+
+/tools/hardware/audio.html
+  Permissions-Policy: camera=(), microphone=(self), geolocation=(), payment=(), usb=()

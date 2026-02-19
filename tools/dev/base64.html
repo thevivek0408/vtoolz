@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Encoders - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
@@ -94,31 +94,7 @@
         </div>
     </main>
 
-    <script type="module">
-        import { DevUtils } from '../../js/dev/dev-utils.js';
-
-        const decoded = document.getElementById('decoded');
-        const encoded = document.getElementById('encoded');
-        const mode = document.getElementById('mode');
-
-        document.getElementById('btn-encode').addEventListener('click', () => {
-            try {
-                if (mode.value === 'base64') encoded.value = DevUtils.base64Encode(decoded.value);
-                else encoded.value = DevUtils.urlEncode(decoded.value);
-            } catch (e) {
-                window.Utils.showToast('Encoding Error', 'error');
-            }
-        });
-
-        document.getElementById('btn-decode').addEventListener('click', () => {
-            try {
-                if (mode.value === 'base64') decoded.value = DevUtils.base64Decode(encoded.value);
-                else decoded.value = DevUtils.urlDecode(encoded.value);
-            } catch (e) {
-                window.Utils.showToast('Decoding Error', 'error');
-            }
-        });
-    </script>
+    <script src="base64.inline.js" type="module"></script>
 </body>
 
 </html>

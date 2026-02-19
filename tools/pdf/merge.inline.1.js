@@ -1,0 +1,1 @@
+﻿pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';

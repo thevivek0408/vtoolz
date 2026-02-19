@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Vibox Arcade - Premium Games</title>
     <meta name="description" content="Play free browser games at Vibox Arcade. 2048, Flappy Bird, Doodle Jump, Fruit Ninja and more — all running locally, no downloads needed.">
     <link rel="icon" href="../favicon.png" type="image/png">
@@ -71,96 +71,7 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const grid = document.getElementById('gamesGrid');
-            const gameSearch = document.getElementById('gameSearch');
-            const categoryTabs = document.getElementById('categoryTabs');
-            const pills = document.querySelectorAll('.category-pill');
-            let allGames = [];
-            let currentFilter = 'all';
-
-            // Load Games
-            try {
-                const res = await fetch('data/games-config.json');
-                allGames = await res.json();
-                renderGames(allGames);
-            } catch (e) {
-                grid.innerHTML = '<div class="loading-state" style="color:#FF6B6B">Could not load library. Please try again.</div>';
-            }
-
-            // Featured Render Removed
-
-            // Grid Render
-            function renderGames(games) {
-                grid.innerHTML = '';
-                document.getElementById('gameCount').innerText = `${games.length} Games`;
-
-                if (games.length === 0) {
-                    grid.innerHTML = '<div class="loading-state">No games found.</div>';
-                    return;
-                }
-
-                games.forEach(game => {
-                    // Skip if it is the featured one? Optional. Let's show all.
-                    const card = document.createElement('a');
-                    card.className = 'game-card';
-                    card.href = `play.html?id=${game.id}`;
-
-                    let icon = '🎮';
-                    if (game.category === 'arcade') icon = '🕹️';
-                    if (game.category === 'puzzle') icon = '🧩';
-
-                    // Specific icons
-                    if (game.name.toLowerCase().includes('subway')) icon = '🏄';
-                    if (game.name.toLowerCase().includes('chess')) icon = '♟️';
-
-                    if (game.image) {
-                        // Use image if available
-                        card.innerHTML = `
-                            <div class="game-thumb" style="background-image: url('${game.image}'); background-size: cover; background-position: center;"></div>
-                            <div class="game-details">
-                                <div class="game-name">${game.name}</div>
-                                <div class="game-cat"><i class="fas fa-tag" style="font-size:0.7em"></i> ${game.category}</div>
-                            </div>
-                        `;
-                    } else {
-                        // Fallback to Icon
-                        card.innerHTML = `
-                            <div class="game-thumb" loading="lazy">${icon}</div>
-                            <div class="game-details">
-                                <div class="game-name">${game.name}</div>
-                                <div class="game-cat"><i class="fas fa-tag" style="font-size:0.7em"></i> ${game.category}</div>
-                            </div>
-                        `;
-                    }
-                    grid.appendChild(card);
-                });
-            }
-
-            // Filtering
-            pills.forEach(pill => {
-                pill.addEventListener('click', () => {
-                    pills.forEach(p => p.classList.remove('active'));
-                    pill.classList.add('active');
-                    currentFilter = pill.dataset.cat;
-                    filterLogic();
-                });
-            });
-
-            gameSearch.addEventListener('input', filterLogic);
-
-            function filterLogic() {
-                const term = gameSearch.value.toLowerCase();
-                const filtered = allGames.filter(g => {
-                    const matchesTerm = g.name.toLowerCase().includes(term);
-                    const matchesCat = currentFilter === 'all' || g.category.toLowerCase() === currentFilter;
-                    return matchesTerm && matchesCat;
-                });
-                renderGames(filtered);
-            }
-        });
-    </script>
+    <script src="index.inline.js"></script>
     <script src="../js/loader.js" defer></script>
 </body>
 

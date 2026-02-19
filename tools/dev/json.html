@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>JSON Tools - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
@@ -99,45 +99,7 @@
         </div>
     </main>
 
-    <script type="module">
-        import { DevUtils } from '../../js/dev/dev-utils.js';
-
-        const input = document.getElementById('input');
-        const output = document.getElementById('output');
-
-        window.format = () => {
-            try {
-                output.value = DevUtils.formatJson(input.value);
-                window.Utils.showToast('JSON is valid and formatted', 'success');
-            } catch (e) {
-                output.value = e.message;
-                window.Utils.showToast('Invalid JSON', 'error');
-            }
-        };
-
-        window.minify = () => {
-            try {
-                output.value = DevUtils.minifyJson(input.value);
-                window.Utils.showToast('JSON Minified', 'success');
-            } catch (e) {
-                window.Utils.showToast('Invalid JSON', 'error');
-            }
-        };
-
-        window.toCsv = () => {
-            try {
-                output.value = DevUtils.jsonToCsv(input.value);
-                window.Utils.showToast('Converted to CSV', 'success');
-            } catch (e) {
-                window.Utils.showToast('Error converting to CSV: ' + e.message, 'error');
-            }
-        };
-
-        window.clearAll = () => {
-            input.value = '';
-            output.value = '';
-        };
-    </script>
+    <script src="json.inline.js" type="module"></script>
 </body>
 
 </html>

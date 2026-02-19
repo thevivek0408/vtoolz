@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Random Team Generator - Vibox</title>
     <link rel="icon" href="../../favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
@@ -133,62 +133,7 @@ Frank"></textarea>
         </div>
     </main>
 
-    <script type="module">
-        import '../../js/utils/common.js';
-
-        document.getElementById('generateBtn').addEventListener('click', () => {
-            const text = document.getElementById('namesInput').value;
-            const names = text.split('\n').map(n => n.trim()).filter(n => n.length > 0);
-
-            if (names.length < 2) {
-                alert("Please enter at least 2 names.");
-                return;
-            }
-
-            // Fisher-Yates Shuffle
-            for (let i = names.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [names[i], names[j]] = [names[j], names[i]];
-            }
-
-            const type = document.getElementById('splitType').value;
-            const val = parseInt(document.getElementById('splitValue').value);
-            const teams = [];
-
-            if (type === 'count') {
-                const teamCount = val;
-                for (let i = 0; i < teamCount; i++) teams.push([]);
-                names.forEach((name, i) => {
-                    teams[i % teamCount].push(name);
-                });
-            } else {
-                const size = val;
-                for (let i = 0; i < names.length; i += size) {
-                    teams.push(names.slice(i, i + size));
-                }
-            }
-
-            renderTeams(teams);
-        });
-
-        function renderTeams(teams) {
-            const container = document.getElementById('results');
-            container.innerHTML = '';
-
-            teams.forEach((team, i) => {
-                if (team.length === 0) return;
-                const div = document.createElement('div');
-                div.className = 'team-card';
-                div.innerHTML = `
-                    <h3>Team ${i + 1}</h3>
-                    <ul>
-                        ${team.map(n => `<li>${n}</li>`).join('')}
-                    </ul>
-                `;
-                container.appendChild(div);
-            });
-        }
-    </script>
+    <script src="team.inline.js" type="module"></script>
 </body>
 
 </html>

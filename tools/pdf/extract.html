@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Split PDF - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
@@ -121,147 +121,7 @@
 
         <!-- Load PDF.js for rendering previews -->
         <script src="../../js/vendor/pdf.min.js"></script>
-        <script type="module">
-            import '../../js/pdf/pdf-main.js';
-
-            // Set worker path for PDF.js rendering on main thread
-            pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';
-
-            let currentFile = null;
-            let pdfDoc = null;
-            let selectedPages = new Set();
-            let totalPages = 0;
-
-            window.Utils.initDragAndDrop('#drop-zone', (files) => {
-                if (files.length > 0) loadFile(files[0]);
-            });
-
-            document.getElementById('file-input').addEventListener('change', (e) => {
-                if (e.target.files.length > 0) loadFile(e.target.files[0]);
-            });
-
-            async function loadFile(file) {
-                if (file.type !== 'application/pdf') {
-                    window.Utils.showToast('Please upload a PDF file.', 'error');
-                    return;
-                }
-
-                window.Utils.showToast('Loading PDF...', 'info');
-                currentFile = file;
-
-                try {
-                    const arrayBuffer = await file.arrayBuffer();
-                    pdfDoc = await pdfjsLib.getDocument(arrayBuffer).promise;
-                    totalPages = pdfDoc.numPages;
-
-                    renderPageGrid();
-                    document.getElementById('drop-zone').style.display = 'none';
-                    document.getElementById('controls').style.display = 'block';
-                    window.Utils.showToast(`Loaded ${totalPages} pages.`, 'success');
-                } catch (err) {
-                    console.error(err);
-                    window.Utils.showToast('Error loading PDF: ' + err.message, 'error');
-                }
-            }
-
-            async function renderPageGrid() {
-                const grid = document.getElementById('page-grid');
-                grid.innerHTML = '';
-                selectedPages.clear();
-
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageItem = document.createElement('div');
-                    pageItem.className = 'page-item';
-                    pageItem.dataset.pageNumber = i;
-
-                    // Canvas for preview
-                    const canvas = document.createElement('canvas');
-                    pageItem.appendChild(canvas);
-
-                    // Overlay info
-                    const num = document.createElement('span');
-                    num.className = 'page-number';
-                    num.textContent = i;
-                    pageItem.appendChild(num);
-
-                    const check = document.createElement('span');
-                    check.className = 'check-mark';
-                    check.textContent = '✓';
-                    pageItem.appendChild(check);
-
-                    // Click handler
-                    pageItem.addEventListener('click', () => togglePageSelection(i, pageItem));
-
-                    grid.appendChild(pageItem);
-
-                    // Render thumbnail
-                    renderThumbnail(i, canvas);
-                }
-            }
-
-            async function renderThumbnail(pageParams, canvas) {
-                const page = await pdfDoc.getPage(pageParams);
-                const viewport = page.getViewport({ scale: 0.5 }); // Low res for thumbnail
-                const context = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                await page.render({
-                    canvasContext: context,
-                    viewport: viewport
-                }).promise;
-            }
-
-            function togglePageSelection(pageNum, element) {
-                if (selectedPages.has(pageNum)) {
-                    selectedPages.delete(pageNum);
-                    element.classList.remove('selected');
-                } else {
-                    selectedPages.add(pageNum);
-                    element.classList.add('selected');
-                }
-            }
-
-            document.getElementById('select-all-btn').addEventListener('click', () => {
-                document.querySelectorAll('.page-item').forEach(el => {
-                    const page = parseInt(el.dataset.pageNumber);
-                    selectedPages.add(page);
-                    el.classList.add('selected');
-                });
-            });
-
-            document.getElementById('deselect-all-btn').addEventListener('click', () => {
-                selectedPages.clear();
-                document.querySelectorAll('.page-item').forEach(el => el.classList.remove('selected'));
-            });
-
-            document.getElementById('split-btn').addEventListener('click', async () => {
-                if (selectedPages.size === 0) {
-                    window.Utils.showToast('Please select at least one page.', 'error');
-                    return;
-                }
-
-                try {
-                    window.Utils.showToast('Creating new PDF...', 'info');
-
-                    const buffer = await window.PdfTools.readFileAsBuffer(currentFile);
-
-                    // Convert 1-based Set to 0-based sorted array
-                    const pages = Array.from(selectedPages).map(p => p - 1).sort((a, b) => a - b);
-
-                    const blob = await window.PdfTools.runPdfTask('SPLIT_PDF', {
-                        file: buffer,
-                        ranges: pages
-                    });
-
-                    window.Utils.downloadBlob(blob, 'split-document.pdf');
-                    window.Utils.showToast('Download started!', 'success');
-                } catch (err) {
-                    console.error(err);
-                    window.Utils.showToast('Error: ' + err.message, 'error');
-                }
-            });
-        </script>
+        <script src="extract.inline.js" type="module"></script>
 </body>
 
 </html>

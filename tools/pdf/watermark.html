@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Watermark PDF - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
@@ -70,57 +70,7 @@
         </div>
     </main>
 
-    <script type="module">
-        import '../../js/pdf/pdf-main.js';
-
-        let currentFile = null;
-
-        window.Utils.initDragAndDrop('#drop-zone', (files) => {
-            if (files.length > 0) loadFile(files[0]);
-        });
-
-        document.getElementById('file-input').addEventListener('change', (e) => {
-            if (e.target.files.length > 0) loadFile(e.target.files[0]);
-        });
-
-        function loadFile(file) {
-            if (file.type !== 'application/pdf') {
-                window.Utils.showToast('Please upload a PDF file.', 'error');
-                return;
-            }
-            currentFile = file;
-
-            document.getElementById('drop-zone').style.display = 'none';
-            document.getElementById('controls').style.display = 'block';
-        }
-
-        document.getElementById('apply-btn').addEventListener('click', async () => {
-            const text = document.getElementById('watermark-text').value;
-            if (!text.trim()) {
-                window.Utils.showToast('Please enter watermark text.', 'error');
-                return;
-            }
-
-            try {
-                window.Utils.showToast('Applying watermark...', 'info');
-
-                const buffer = await window.PdfTools.readFileAsBuffer(currentFile);
-                const opacity = parseFloat(document.getElementById('opacity-range').value);
-
-                const blob = await window.PdfTools.runPdfTask('WATERMARK_PDF', {
-                    file: buffer,
-                    text: text,
-                    options: { opacity }
-                });
-
-                window.Utils.downloadBlob(blob, 'watermarked-document.pdf');
-                window.Utils.showToast('Download started!', 'success');
-            } catch (err) {
-                console.error(err);
-                window.Utils.showToast('Error: ' + err.message, 'error');
-            }
-        });
-    </script>
+    <script src="watermark.inline.js" type="module"></script>
 </body>
 
 </html>

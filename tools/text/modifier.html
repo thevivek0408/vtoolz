@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Text Modifier - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
@@ -144,41 +144,7 @@
         </div>
     </main>
 
-    <script type="module">
-        import { TextUtils } from '../../js/text/text-utils.js';
-
-        const input = document.getElementById('input');
-        const output = document.getElementById('output');
-
-        // Expose utils and apply to window for inline onclick handlers
-        window.TextUtils = TextUtils;
-
-        window.apply = (fn) => {
-            if (!input.value) return;
-            // Handle if fn is a string name of TextUtils (if passed from HTML as string?) No, we passed function ref.
-            // But TextUtils.sortLines passed directly works.
-            // Wait, inline onclick="apply(TextUtils.sortLines)" requires TextUtils to be global.
-            // We set window.TextUtils above.
-
-            output.value = fn(input.value);
-            // window.Utils.showToast('Transformation applied', 'success'); // Common utils
-        };
-
-        // Find & Replace
-        document.getElementById('replace-btn').addEventListener('click', () => {
-            const find = document.getElementById('find-text').value;
-            const replace = document.getElementById('replace-text').value;
-            if (!find) return;
-            output.value = TextUtils.replaceAll(input.value, find, replace);
-        });
-
-        // Copy
-        document.getElementById('copy-btn').addEventListener('click', () => {
-            output.select();
-            document.execCommand('copy');
-        });
-
-    </script>
+    <script src="modifier.inline.js" type="module"></script>
 </body>
 
 </html>

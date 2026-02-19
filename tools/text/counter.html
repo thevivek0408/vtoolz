@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Text Analyzer - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
@@ -104,33 +104,7 @@
         </div>
     </main>
 
-    <script type="module">
-        import { TextUtils } from '../../js/text/text-utils.js';
-        import '../../js/utils/common.js'; // Just for global utils
-
-        const input = document.getElementById('text-input');
-
-        // Debounce for performance on huge texts
-        let timeout;
-        input.addEventListener('input', () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(analyze, 100);
-        });
-
-        function analyze() {
-            const text = input.value;
-
-            document.getElementById('count-words').textContent = TextUtils.countWords(text);
-            document.getElementById('count-chars').textContent = TextUtils.countChars(text);
-            document.getElementById('count-sentences').textContent = TextUtils.countSentences(text);
-            document.getElementById('count-paragraphs').textContent = TextUtils.countParagraphs(text);
-
-            const time = TextUtils.calculateReadTime(text);
-            let timeString = `${time.totalSeconds}s`;
-            if (time.minutes > 0) timeString = `${time.minutes}m ${time.seconds}s`;
-            document.getElementById('read-time').textContent = timeString;
-        }
-    </script>
+    <script src="counter.inline.js" type="module"></script>
 </body>
 
 </html>
