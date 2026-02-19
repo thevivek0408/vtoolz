@@ -251,10 +251,10 @@ html {
 
 .cube-face.back {
     transform: rotateY(180deg) translateZ(60px);
-    border-color: #9b59b6;
-    color: #9b59b6;
-    background: rgba(155, 89, 182, 0.08);
-    box-shadow: 0 0 20px rgba(155, 89, 182, 0.5), 0 0 40px rgba(155, 89, 182, 0.2) inset;
+    border-color: #ec4899;
+    color: #ec4899;
+    background: rgba(236, 72, 153, 0.08);
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.5), 0 0 40px rgba(236, 72, 153, 0.2) inset;
 }
 
 .cube-face.left {
@@ -267,18 +267,18 @@ html {
 
 .cube-face.top {
     transform: rotateX(90deg) translateZ(60px);
-    border-color: #2ecc71;
-    color: #2ecc71;
-    background: rgba(46, 204, 113, 0.08);
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.5), 0 0 40px rgba(46, 204, 113, 0.2) inset;
+    border-color: #a855f7;
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.08);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(168, 85, 247, 0.2) inset;
 }
 
 .cube-face.bottom {
     transform: rotateX(-90deg) translateZ(60px);
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background: rgba(52, 152, 219, 0.08);
-    box-shadow: 0 0 20px rgba(52, 152, 219, 0.5), 0 0 40px rgba(52, 152, 219, 0.2) inset;
+    border-color: #10b981;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.08);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5), 0 0 40px rgba(16, 185, 129, 0.2) inset;
 }
 
 /* Cube Ground Reflection Shadow */

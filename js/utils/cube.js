@@ -6,11 +6,11 @@ export class CubeRotator {
         this.rafId = null;
         this.hintHidden = false;
 
-        // Rotation State
-        this.currentX = -20;
-        this.currentY = 45;
-        this.targetX = -20;
-        this.targetY = 45;
+        // Rotation State — start facing Vibox (top face = rotateX -90)
+        this.currentX = -90;
+        this.currentY = 0;
+        this.targetX = -90;
+        this.targetY = 0;
 
         // Momentum
         this.velocityX = 0;
@@ -22,9 +22,15 @@ export class CubeRotator {
         this.sensitivity = 0.5;
         this.friction = 0.95;
         this.autoRotateSpeed = 0.2;
-        this.autoRotate = true;
+        this.autoRotate = false; // Hold on Vibox face for 2s, then rotate
 
+        // Intro hold — show Vibox face for 2s then start spinning
+        this.introHold = true;
         this.resumeTimeout = null;
+        this.introTimeout = setTimeout(() => {
+            this.introHold = false;
+            this.autoRotate = true;
+        }, 2000);
 
         this.init();
     }
@@ -96,6 +102,12 @@ export class CubeRotator {
         this.autoRotate = false;
         this.wasDragging = false;
         clearTimeout(this.resumeTimeout);
+
+        // Cancel intro hold if user interacts early
+        if (this.introHold) {
+            clearTimeout(this.introTimeout);
+            this.introHold = false;
+        }
 
         // Hide drag hint on first interaction
         if (!this.hintHidden) {
