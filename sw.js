@@ -1,42 +1,53 @@
-const CACHE_NAME = 'vtoolz-v35-games-offline';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'vtoolz-v36-optimized';
+
+// Critical shell — these MUST cache successfully for offline to work
+const CRITICAL_ASSETS = [
     './',
     './index.html',
     './css/style.css',
-    './js/home.js', // Replaced app.js
+    './js/home.js',
     './js/utils/common.js',
     './js/utils/tools.js',
     './manifest.json',
     './favicon.png',
-    './games/index.html',
-    './tools/fun/music.html',
-    './tools/hardware/index.html',
-    './tools/hardware/keyboard.html',
-    './tools/hardware/gamepad.html',
-    './tools/hardware/screen.html',
-    './tools/hardware/audio.html',
-    './tools/network/index.html',
-    './tools/network/ip-calc.html',
-    './tools/network/speed-test.html',
-    './tools/network/wifi-qr.html',
-    './tools/text/transcoding.html',
-    './tools/pdf/index.html',
-    './tools/pdf/word-to-pdf.html',
-    './tools/pdf/pdf-to-word.html',
-    './tools/pdf/html-to-pdf.html',
-    './tools/pdf/excel-to-pdf.html',
-    './tools/office/index.html',
-    './tools/office/word.html',
-    './tools/office/excel.html',
-    './tools/office/powerpoint.html',
+    './assets/icon.png'
+];
 
-    // Core Vendors
+// Secondary assets — cached if available, but won't block SW install
+const SECONDARY_ASSETS = [
+    './js/loader.js',
+    './js/category.js',
+    './js/utils/seo.js',
+    './js/utils/command-palette.js',
+    './js/utils/cube.js',
+    './js/utils/tilt.js',
+    './tools/index.html',
+
+    // Tool landing pages
+    './tools/pdf/index.html',
+    './tools/image/index.html',
+    './tools/text/index.html',
+    './tools/dev/index.html',
+    './tools/media/index.html',
+    './tools/fun/index.html',
+    './tools/government/index.html',
+    './tools/hardware/index.html',
+    './tools/network/index.html',
+    './tools/office/index.html',
+    './tools/qr/index.html',
+    './tools/barcode/index.html',
+    './tools/markdown/index.html',
+    './tools/archive/index.html',
+    './tools/productivity/index.html',
+    './tools/math/index.html',
+    './tools/time/index.html',
+    './tools/utility/index.html',
+
+    // Core Vendor libraries
     './js/vendor/pdf-lib.min.js',
     './js/vendor/pdf.min.js',
     './js/vendor/pdf.worker.min.js',
-    './js/vendor/cropper.min.js', // Ensure this was downloaded
-
-    // Phase 2 Vendors
+    './js/vendor/cropper.min.js',
     './js/vendor/html5-qrcode.min.js',
     './js/vendor/JsBarcode.all.min.js',
     './js/vendor/marked.min.js',
@@ -44,8 +55,6 @@ const ASSETS_TO_CACHE = [
     './js/vendor/highlight.min.js',
     './js/vendor/jszip.min.js',
     './js/vendor/qrcode.min.js',
-    // Missing vendors removed to prevent SW install failure:
-    // mammoth.browser.min.js, html2pdf.bundle.min.js, xlsx.full.min.js
     './js/vendor/quill.min.js',
     './js/vendor/quill.snow.css',
     './js/vendor/jspreadsheet.js',
@@ -54,7 +63,7 @@ const ASSETS_TO_CACHE = [
     './js/vendor/jsuites.css',
     './js/vendor/pptxgen.bundle.min.js',
 
-    // Tool Scripts (Just main ones, others cached at runtime)
+    // Core tool scripts
     './js/pdf/pdf-main.js',
     './js/image/image-main.js',
     './js/qr/qr-generator.js',
@@ -71,38 +80,28 @@ const ASSETS_TO_CACHE = [
     './js/government/exam.js',
     './js/government/kyc.js',
 
-    // New Innovative Tools
+    // Innovative Tools
     './js/productivity/kanban.js',
     './js/image/meme-generator.js',
     './js/text/tts.js',
     './js/dev/diff-checker.js',
     './js/media/voice-recorder.js',
     './js/media/audio-trimmer.js',
-    './tools/fun/music.html',
-
-    // Games Platform
-    './games/index.html',
-    './games/play.html',
-    './games/style.css',
-    './games/data/games-config.json',
-    './games/engines/arcade-engine.js',
-    './games/engines/grid-engine.js',
-    './games/engines/turn-engine.js',
-    './games/engines/word-engine.js',
-    './games/engines/card-engine.js',
-    './games/engines/physics-engine.js', // Stub
-    './games/engines/idle-engine.js',    // Stub
-
-    './manifest.json',
-    './assets/icon.png'
 ];
+
+// NOTE: Games are NOT precached — they are large (especially Unity WebGL builds)
+// and will be cached on-demand when the user first plays them.
+// This prevents the SW install from being bloated by 50-100MB of game assets.
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            // We use addAll but catch errors so one missing file doesn't break everything
-            // In production you want to be stricter, but for this dynamic list:
-            return cache.addAll(ASSETS_TO_CACHE).catch(err => console.warn('Cache incomplete:', err));
+        caches.open(CACHE_NAME).then(async (cache) => {
+            // Critical assets MUST succeed — fail install if any are missing
+            await cache.addAll(CRITICAL_ASSETS);
+            // Secondary assets are best-effort — don't block install
+            for (const url of SECONDARY_ASSETS) {
+                try { await cache.add(url); } catch (e) { console.warn('Optional cache miss:', url); }
+            }
         })
     );
     self.skipWaiting();

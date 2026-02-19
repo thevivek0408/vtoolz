@@ -382,14 +382,75 @@ export const Utils = {
 
         // Initial check
         updateUI();
+    },
+
+    // --- Recently Used Tools ---
+    trackRecentTool: (toolId) => {
+        try {
+            const MAX_RECENT = 8;
+            let recent = JSON.parse(localStorage.getItem('recentTools') || '[]');
+            // Remove if already exists, then prepend
+            recent = recent.filter(id => id !== toolId);
+            recent.unshift(toolId);
+            // Trim to max
+            if (recent.length > MAX_RECENT) recent = recent.slice(0, MAX_RECENT);
+            localStorage.setItem('recentTools', JSON.stringify(recent));
+        } catch (e) { /* localStorage unavailable */ }
+    },
+
+    getRecentTools: () => {
+        try {
+            return JSON.parse(localStorage.getItem('recentTools') || '[]');
+        } catch (e) { return []; }
+    },
+
+    // --- Error Boundary for Tool Pages ---
+    initErrorBoundary: () => {
+        window.addEventListener('error', (event) => {
+            // Check if it's a script loading error
+            if (event.target && (event.target.tagName === 'SCRIPT' || event.target.tagName === 'LINK')) {
+                const src = event.target.src || event.target.href || 'unknown resource';
+                console.error('Resource failed to load:', src);
+
+                // Show user-facing error banner (only once)
+                if (!document.getElementById('error-boundary-banner')) {
+                    const banner = document.createElement('div');
+                    banner.id = 'error-boundary-banner';
+                    banner.style.cssText = 'position:fixed; top:0; left:0; right:0; z-index:99999; background:#e74c3c; color:white; padding:12px 20px; text-align:center; font-size:0.9rem; box-shadow:0 2px 10px rgba(0,0,0,0.3);';
+                    banner.innerHTML = `
+                        <strong>⚠️ A required resource failed to load.</strong> 
+                        This tool may not work correctly. 
+                        <button onclick="location.reload()" style="margin-left:10px; padding:4px 12px; border:1px solid white; background:transparent; color:white; border-radius:4px; cursor:pointer; font-weight:600;">Reload Page</button>
+                        <button onclick="this.parentElement.remove()" style="margin-left:5px; padding:4px 12px; border:none; background:transparent; color:white; cursor:pointer; font-size:1.1rem;">✕</button>
+                    `;
+                    document.body.prepend(banner);
+                }
+            }
+        }, true); // capture phase to catch resource load errors
+
+        // Also handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled error:', event.reason);
+        });
     }
 };
 
-// Initialize Theme & SW & Stats
+// Initialize Theme & SW & Stats & Error Boundary
 window.addEventListener('DOMContentLoaded', () => {
     window.Utils.initTheme();
     window.Utils.initStatsWidget();
+    window.Utils.initErrorBoundary();
     new CommandPalette();
+
+    // Track recently used tool (if on a tool page)
+    const path = window.location.pathname;
+    if (path.includes('/tools/') && !path.endsWith('index.html')) {
+        // Import tool registry to find matching tool
+        import('./tools.js').then(({ tools }) => {
+            const match = tools.find(t => path.includes(t.url.replace('tools/', '')));
+            if (match) Utils.trackRecentTool(match.id);
+        }).catch(() => {});
+    }
 
 
     // Responsive PWA Registration

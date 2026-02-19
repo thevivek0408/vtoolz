@@ -11,6 +11,7 @@ const filterTabs = document.querySelectorAll('.filter-tab');
 
 // Initialize
 function init() {
+    renderRecentTools();
     renderTools(tools);
     setupEventListeners();
 
@@ -18,6 +19,63 @@ function init() {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get('category');
     if (cat) setCategory(cat);
+}
+
+// Render Recently Used Tools
+function renderRecentTools() {
+    const recentIds = Utils.getRecentTools ? Utils.getRecentTools() : [];
+    if (recentIds.length === 0) return;
+
+    const recentTools = recentIds
+        .map(id => tools.find(t => t.id === id))
+        .filter(Boolean);
+
+    if (recentTools.length === 0) return;
+
+    // Create section before the tools grid
+    const toolsSection = document.getElementById('tools');
+    if (!toolsSection) return;
+
+    const section = document.createElement('div');
+    section.className = 'recent-tools-section';
+    section.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 15px;">
+            <h3 style="margin:0; font-size:1.1rem; color:var(--text-dark);"><i class="fas fa-history" style="margin-right:8px; opacity:0.6;"></i>Recently Used</h3>
+            <button id="clear-recent" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem; opacity:0.7; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">Clear</button>
+        </div>
+        <div class="recent-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px; margin-bottom:30px;"></div>
+    `;
+
+    // Insert before the filter tabs
+    const filterTabs = toolsSection.querySelector('.filter-tabs');
+    if (filterTabs) {
+        toolsSection.insertBefore(section, filterTabs);
+    } else {
+        toolsSection.prepend(section);
+    }
+
+    const grid = section.querySelector('.recent-grid');
+    recentTools.forEach(tool => {
+        const card = document.createElement('a');
+        card.href = tool.url;
+        card.className = 'tool-card zoom-in spotlight-card';
+        card.style.cssText = 'padding: 12px; min-height: auto;';
+        card.innerHTML = `
+            <div class="tool-thumb" style="color: ${tool.color}; width:36px; height:36px; font-size:1rem;">
+                <i class="${tool.icon}"></i>
+            </div>
+            <div class="tool-info" style="padding: 0 8px;">
+                <h3 style="font-size:0.9rem; margin:0;">${tool.name}</h3>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    // Clear button
+    section.querySelector('#clear-recent').addEventListener('click', () => {
+        localStorage.removeItem('recentTools');
+        section.remove();
+    });
 }
 
 // Render Tools

@@ -15,6 +15,8 @@ export const tools = [
     { id: 'html-to-pdf', name: 'HTML to PDF', category: 'pdf', url: 'tools/pdf/html-to-pdf.html', description: 'Convert HTML files to PDF.', icon: 'fas fa-code', color: '#e74c3c', keywords: 'webpage convert' },
     { id: 'excel-to-pdf', name: 'Excel to PDF', category: 'pdf', url: 'tools/pdf/excel-to-pdf.html', description: 'Convert Excel spreadsheets to PDF.', icon: 'fas fa-file-excel', color: '#e74c3c', keywords: 'xls xlsx convert' },
     { id: 'pdf-reorder', name: 'Reorder PDF', category: 'pdf', url: 'tools/pdf/reorder.html', description: 'Rearrange page order.', icon: 'fas fa-sort', color: '#e74c3c', keywords: 'organize sort' },
+    { id: 'pdf-reverse', name: 'Reverse PDF', category: 'pdf', url: 'tools/pdf/reverse.html', description: 'Reverse page order.', icon: 'fas fa-undo', color: '#e74c3c', keywords: 'backwards flip order' },
+    { id: 'pdf-flatten', name: 'Flatten PDF', category: 'pdf', url: 'tools/pdf/flatten.html', description: 'Flatten form fields & annotations.', icon: 'fas fa-layer-group', color: '#e74c3c', keywords: 'forms annotations embed' },
 
     // Image Tools
     { id: 'img-compress', name: 'Compress Image', category: 'image', url: 'tools/image/compress.html', description: 'Shrink JPG/PNG/WEBP.', icon: 'fas fa-compress', color: '#3498db', keywords: 'shrink tiny optimize' },
@@ -45,6 +47,7 @@ export const tools = [
     { id: 'dev-base64', name: 'Base64 Encode', category: 'dev', url: 'tools/dev/base64.html', description: 'Encode/Decode text.', icon: 'fas fa-shield-alt', color: '#f39c12', keywords: 'convert string' },
     { id: 'dev-resume', name: 'Resume Builder', category: 'dev', url: 'tools/dev/resume-builder.html', description: 'Build CV with Markdown.', icon: 'fas fa-file-invoice', color: '#ff5722', keywords: 'cv job application' },
     { id: 'dev-zip', name: 'Archive Manager', category: 'dev', url: 'tools/archive/zip.html', description: 'Zip & Unzip files.', icon: 'fas fa-file-archive', color: '#f39c12', keywords: 'compress extract' },
+    { id: 'dev-security', name: 'Security Tools', category: 'dev', url: 'tools/dev/security.html', description: 'Password generator & strength checker.', icon: 'fas fa-shield-alt', color: '#f39c12', keywords: 'password generate strength check' },
 
     // Govt & Utility
     { id: 'govt-aadhaar', name: 'Aadhaar Tools', category: 'govt', url: 'tools/government/aadhaar.html', description: 'Compress/Clean Aadhaar.', icon: 'fas fa-id-card', color: '#9c27b0', keywords: 'uidai identity' },
@@ -56,6 +59,7 @@ export const tools = [
     { id: 'govt-age', name: 'Age Calculator', category: 'govt', url: 'tools/government/age-calculator.html', description: 'Calculate exact age.', icon: 'fas fa-birthday-cake', color: '#9c27b0', keywords: 'dob years months' },
     { id: 'govt-resize', name: 'KB Resizer', category: 'govt', url: 'tools/government/kb-resizer.html', description: 'Resize to target KB.', icon: 'fas fa-compress-arrows-alt', color: '#9c27b0', keywords: 'size compress' },
     { id: 'govt-jpg2pdf', name: 'JPG to PDF', category: 'govt', url: 'tools/government/jpg-to-pdf.html', description: 'Convert images to PDF.', icon: 'fas fa-file-pdf', color: '#9c27b0', keywords: 'convert image document' },
+    { id: 'govt-passport', name: 'Passport Tools', category: 'govt', url: 'tools/government/passport.html', description: 'Passport photo resize & compliance.', icon: 'fas fa-passport', color: '#9c27b0', keywords: 'travel visa photo document' },
     { id: 'wifi-qr', name: 'WiFi QR Generator', category: 'network', url: 'tools/network/wifi-qr.html', description: 'Share Wi-Fi access via QR code.', icon: 'fas fa-wifi', color: '#8e44ad', keywords: 'wifi internet qr code share network' },
     { id: 'util-encrypt', name: 'The Vault', category: 'utility', url: 'tools/utility/encrypt.html', description: 'Encrypt files securely.', icon: 'fas fa-lock', color: '#2c3e50', keywords: 'secure aes private' },
     { id: 'util-kanban', name: 'Kanban Board', category: 'utility', url: 'tools/productivity/kanban.html', description: 'Manage tasks offline.', icon: 'fas fa-columns', color: '#27ae60', keywords: 'todo plan project' },
@@ -90,4 +94,29 @@ export const tools = [
     { id: 'office-word', name: 'Word Processor', category: 'office', url: 'tools/office/word.html', description: 'Rich text editor with export to DOCX & PDF.', icon: 'fas fa-file-word', color: '#2b5797', keywords: 'document write edit text docx word office' },
     { id: 'office-excel', name: 'Spreadsheet Editor', category: 'office', url: 'tools/office/excel.html', description: 'Spreadsheet with formulas, import/export XLSX.', icon: 'fas fa-file-excel', color: '#21a366', keywords: 'excel sheet csv formula table data office' },
     { id: 'office-ppt', name: 'Presentation Maker', category: 'office', url: 'tools/office/powerpoint.html', description: 'Create slide presentations, export PPTX.', icon: 'fas fa-file-powerpoint', color: '#d04423', keywords: 'slides powerpoint pptx presentation office' },
+
+    // Math Tools
+    { id: 'math-bmi', name: 'BMI Calculator', category: 'math', url: 'tools/math/bmi.html', description: 'Calculate Body Mass Index.', icon: 'fas fa-weight', color: '#00bcd4', keywords: 'health weight body mass' },
+    { id: 'math-percentage', name: 'Percentage Calculator', category: 'math', url: 'tools/math/percentage.html', description: 'Calculate percentages easily.', icon: 'fas fa-percent', color: '#00bcd4', keywords: 'math ratio discount' },
+    { id: 'math-scientific', name: 'Scientific Calculator', category: 'math', url: 'tools/math/scientific.html', description: 'Advanced scientific calculator.', icon: 'fas fa-square-root-alt', color: '#00bcd4', keywords: 'math sin cos log algebra' },
+
+    // Time Tools
+    { id: 'time-stopwatch', name: 'Stopwatch', category: 'time', url: 'tools/time/stopwatch.html', description: 'Precision stopwatch with laps.', icon: 'fas fa-stopwatch', color: '#ff5722', keywords: 'timer lap track' },
+    { id: 'time-unix', name: 'Unix Timestamp', category: 'time', url: 'tools/time/unix.html', description: 'Convert Unix timestamps.', icon: 'fas fa-clock', color: '#ff5722', keywords: 'epoch convert date' },
+    { id: 'time-world', name: 'World Clock', category: 'time', url: 'tools/time/world-clock.html', description: 'View multiple time zones.', icon: 'fas fa-globe', color: '#ff5722', keywords: 'timezone gmt utc' },
+
+    // Network Tools
+    { id: 'net-ip', name: 'IP Calculator', category: 'network', url: 'tools/network/ip-calc.html', description: 'Calculate IP subnets & ranges.', icon: 'fas fa-network-wired', color: '#8e44ad', keywords: 'subnet cidr mask' },
+    { id: 'net-speed', name: 'Speed Test', category: 'network', url: 'tools/network/speed-test.html', description: 'Test internet speed.', icon: 'fas fa-tachometer-alt', color: '#8e44ad', keywords: 'bandwidth download upload ping' },
+
+    // QR Sub-tools
+    { id: 'qr-gen', name: 'QR Generator', category: 'dev', url: 'tools/qr/generator.html', description: 'Generate custom QR codes.', icon: 'fas fa-qrcode', color: '#34495e', keywords: 'create make code' },
+    { id: 'qr-scan', name: 'QR Scanner', category: 'dev', url: 'tools/qr/scanner.html', description: 'Scan QR codes with camera.', icon: 'fas fa-camera', color: '#34495e', keywords: 'read decode camera' },
+
+    // Barcode Sub-tools
+    { id: 'barcode-gen', name: 'Barcode Generator', category: 'dev', url: 'tools/barcode/generator.html', description: 'Create UPC, EAN, CODE128 barcodes.', icon: 'fas fa-barcode', color: '#34495e', keywords: 'upc ean code128 create' },
+    { id: 'barcode-scan', name: 'Barcode Scanner', category: 'dev', url: 'tools/barcode/scanner.html', description: 'Scan barcodes with camera.', icon: 'fas fa-camera', color: '#34495e', keywords: 'read decode camera' },
+
+    // Archive Sub-tools
+    { id: 'archive-unzip', name: 'Unzip Files', category: 'dev', url: 'tools/archive/unzip.html', description: 'Extract ZIP archives.', icon: 'fas fa-file-archive', color: '#f39c12', keywords: 'extract decompress open' },
 ];

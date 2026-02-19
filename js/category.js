@@ -25,9 +25,12 @@ function init() {
     else if (path.includes('/productivity/')) currentCategory = 'utility'; // or productivity
     else if (path.includes('/utility/')) currentCategory = 'utility';
     else if (path.includes('/media/')) currentCategory = 'media';
-    else if (path.includes('/qr/')) currentCategory = 'dev'; // tools.js maps qr to dev usually, or check tools.js
+    else if (path.includes('/math/')) currentCategory = 'math';
+    else if (path.includes('/time/')) currentCategory = 'time';
+    else if (path.includes('/qr/')) currentCategory = 'dev'; // tools.js maps qr to dev
     else if (path.includes('/barcode/')) currentCategory = 'dev'; // tools.js maps barcode to dev
     else if (path.includes('/archive/')) currentCategory = 'dev'; // tools.js maps zip to dev
+    else if (path.includes('/markdown/')) currentCategory = 'dev';
     else {
         // Fallback: Check tools.js to see what category the folder maps to?
         // Or default to 'all' (but we want specific)
@@ -81,13 +84,16 @@ function renderCategory(category) {
 
     // If folder is 'qr', we want tools that are related to QR.
     if (location.pathname.includes('/qr/')) {
-        toolsToRender = tools.filter(t => t.id.includes('qr'));
+        toolsToRender = tools.filter(t => t.id.includes('qr') || t.url.includes('/qr/'));
     }
     else if (location.pathname.includes('/barcode/')) {
-        toolsToRender = tools.filter(t => t.id.includes('barcode'));
+        toolsToRender = tools.filter(t => t.id.includes('barcode') || t.url.includes('/barcode/'));
     }
     else if (location.pathname.includes('/archive/')) {
-        toolsToRender = tools.filter(t => t.id.includes('zip') || t.keywords.includes('archive'));
+        toolsToRender = tools.filter(t => t.id.includes('zip') || t.id.includes('archive') || t.url.includes('/archive/'));
+    }
+    else if (location.pathname.includes('/markdown/')) {
+        toolsToRender = tools.filter(t => t.id.includes('markdown') || t.url.includes('/markdown/'));
     }
 
     renderGrid(toolsToRender);

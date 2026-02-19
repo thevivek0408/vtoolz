@@ -5,11 +5,31 @@
 
 (function initSEO() {
     const title = document.title;
-    const description = document.querySelector('meta[name="description"]')?.content ||
-        document.querySelector('h1')?.textContent + ' - Free, privacy-focused online tool.' ||
-        'Free client-side tools for privacy.';
+    
+    // Build a rich description from page content
+    const existingDesc = document.querySelector('meta[name="description"]')?.content;
+    const h1Text = document.querySelector('h1')?.textContent?.trim();
+    const heroDesc = document.querySelector('.hero p, .tool-container p, main p')?.textContent?.trim();
+    
+    let description;
+    if (existingDesc) {
+        description = existingDesc;
+    } else if (h1Text && heroDesc) {
+        description = `${h1Text} - ${heroDesc} Free, private, no uploads.`;
+    } else if (h1Text) {
+        description = `${h1Text} - Free, privacy-focused online tool. 100% client-side, no uploads.`;
+    } else {
+        description = 'Vibox - Free client-side tools for privacy. No uploads, no tracking.';
+    }
+
+    // Trim to ~155 chars for optimal SEO
+    if (description.length > 160) {
+        description = description.substring(0, 157) + '...';
+    }
+
     const url = window.location.href;
-    const image = 'https://vtoolz.pages.dev/assets/og-image.jpg'; // Placeholder
+    const canonicalDomain = 'https://vibox.app';
+    const image = canonicalDomain + '/assets/og-image.jpg';
 
     // Function to set meta tag
     function setMeta(name, content, attribute = 'name') {
@@ -59,5 +79,13 @@
     script.textContent = JSON.stringify(schema);
     document.head.appendChild(script);
 
-    console.log('SEO tags injected.');
+    // Canonical URL (prevents duplicate content across vibox.app & github.io)
+    if (!document.querySelector('link[rel="canonical"]')) {
+        const canonical = document.createElement('link');
+        canonical.rel = 'canonical';
+        // Build canonical from path, always using the primary domain
+        const path = window.location.pathname.replace(/^\/vtoolz/, '');
+        canonical.href = canonicalDomain + path;
+        document.head.appendChild(canonical);
+    }
 })();
