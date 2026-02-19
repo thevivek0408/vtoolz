@@ -1500,3 +1500,73 @@ body.neon-mode h3 {
     border-radius: 4px;
     font-family: inherit;
 }
+
+/* ===== Accessibility ===== */
+
+/* Skip-to-content link */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-color);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    z-index: 100000;
+    font-weight: 600;
+    text-decoration: none;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Focus-visible styles for keyboard navigation */
+*:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+.tool-card:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(52, 152, 219, 0.2);
+}
+
+.filter-tab:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.btn:focus-visible,
+button:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Reduced motion for users with vestibular disorders */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .cube {
+        animation: none !important;
+    }
+
+    .ambient-light {
+        display: none !important;
+    }
+
+    .tool-card::before {
+        display: none !important;
+    }
+}

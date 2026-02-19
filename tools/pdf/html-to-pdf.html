@@ -113,7 +113,12 @@
         const downloadBtn = document.getElementById('downloadBtn');
 
         function updatePreview() {
-            preview.innerHTML = htmlInput.value;
+            // Sanitize to prevent XSS from pasted HTML
+            if (typeof DOMPurify !== 'undefined') {
+                preview.innerHTML = DOMPurify.sanitize(htmlInput.value);
+            } else {
+                preview.textContent = htmlInput.value;
+            }
         }
 
         previewBtn.addEventListener('click', updatePreview);

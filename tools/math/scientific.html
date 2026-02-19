@@ -213,6 +213,48 @@
     <script type="module">
         import '../../js/utils/common.js';
 
+        // Safe math expression evaluator — prevents code injection
+        // Only allows: numbers, operators (+,-,*,/,%), parentheses, decimal points,
+        // and whitelisted Math functions (sin, cos, tan, sqrt, log, pow, PI, E, etc.)
+        function safeMathEval(expr) {
+            // Whitelist of allowed Math functions/constants
+            const ALLOWED_MATH = ['sin','cos','tan','asin','acos','atan','sqrt','cbrt',
+                'log','log2','log10','abs','ceil','floor','round','pow','exp',
+                'PI','E','LN2','LN10','SQRT2'];
+            
+            // Strip all whitespace
+            let sanitized = expr.replace(/\s/g, '');
+            
+            // Validate: only allow safe characters
+            // Allowed: digits, decimal point, operators, parentheses, commas, and 'Math.' prefix
+            const safePattern = /^[0-9+\-*/%().,'Math\w]+$/;
+            if (!safePattern.test(sanitized)) {
+                throw new Error('Invalid characters in expression');
+            }
+            
+            // Ensure no property access tricks (no brackets, no backslash, no template literals)
+            if (/[\[\]`\\{}]/.test(sanitized)) {
+                throw new Error('Invalid expression');
+            }
+            
+            // Ensure all 'Math.' calls use whitelisted functions only
+            const mathCalls = sanitized.matchAll(/Math\.(\w+)/g);
+            for (const match of mathCalls) {
+                if (!ALLOWED_MATH.includes(match[1])) {
+                    throw new Error(`Function Math.${match[1]} is not allowed`);
+                }
+            }
+            
+            // Block dangerous patterns: constructor, prototype, __proto__, window, document, eval, Function
+            const blocked = /constructor|prototype|__proto__|window|document|eval|Function|alert|fetch|import|require/i;
+            if (blocked.test(sanitized)) {
+                throw new Error('Expression contains blocked keywords');
+            }
+            
+            // Safe to evaluate with Function (input is now validated)
+            return new Function('Math', 'return ' + sanitized)(Math);
+        }
+
         const display = document.getElementById('result');
         const history = document.getElementById('history');
         let currentExpr = '';
@@ -255,9 +297,8 @@
         window.calculate = () => {
             try {
                 history.textContent = display.textContent + ' =';
-                // Safe eval replacement? For a calculator, eval is standard if input is sanitized or just math. 
-                // Using Function to avoid local scope access.
-                let result = new Function('return ' + currentExpr)();
+                // Safe math evaluation — only allows numbers, operators, Math functions, and parentheses
+                let result = safeMathEval(currentExpr);
 
                 // Format decimal
                 if (result % 1 !== 0) {

@@ -13,7 +13,12 @@
         media="print" onload="this.media='all'">
     <link rel="stylesheet" href="css/style.css?v=2">
     <script src="js/loader.js" defer></script> <!-- Defer loader for faster FCP -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 </head>
+
+<body>
+
+<a href="#tools" class="skip-link">Skip to content</a>
 
 <div id="drop-overlay" class="drop-overlay">
     <div class="drop-content">
@@ -61,8 +66,8 @@
                 <div class="search-input-wrapper">
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" id="tool-search" placeholder="Search tools (e.g., 'merge', 'resize', 'qr')..."
-                        autocomplete="off">
-                    <button id="search-btn" class="search-btn"><i class="fas fa-arrow-right"></i></button>
+                        autocomplete="off" aria-label="Search tools" role="searchbox">
+                    <button id="search-btn" class="search-btn" aria-label="Search"><i class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
 
@@ -74,20 +79,20 @@
 
     <section id="tools" class="container">
         <!-- Filter Tabs -->
-        <div class="filter-tabs">
-            <div class="filter-tab active" data-category="all">All</div>
-            <div class="filter-tab" data-category="pdf">PDF</div>
-            <div class="filter-tab" data-category="image">Image</div>
-            <div class="filter-tab" data-category="text">Text</div>
-            <div class="filter-tab" data-category="dev">Dev</div>
-            <div class="filter-tab" data-category="media">Media</div>
-            <div class="filter-tab" data-category="fun">Fun</div>
-            <div class="filter-tab" data-category="govt">Govt</div>
-            <div class="filter-tab" data-category="office">Office</div>
-            <div class="filter-tab" data-category="math">Math</div>
-            <div class="filter-tab" data-category="time">Time</div>
-            <div class="filter-tab" data-category="network">Network</div>
-            <div class="filter-tab" data-category="hardware">Hardware</div>
+        <div class="filter-tabs" role="tablist" aria-label="Tool categories">
+            <button class="filter-tab active" data-category="all" role="tab" aria-selected="true" tabindex="0">All</button>
+            <button class="filter-tab" data-category="pdf" role="tab" aria-selected="false" tabindex="-1">PDF</button>
+            <button class="filter-tab" data-category="image" role="tab" aria-selected="false" tabindex="-1">Image</button>
+            <button class="filter-tab" data-category="text" role="tab" aria-selected="false" tabindex="-1">Text</button>
+            <button class="filter-tab" data-category="dev" role="tab" aria-selected="false" tabindex="-1">Dev</button>
+            <button class="filter-tab" data-category="media" role="tab" aria-selected="false" tabindex="-1">Media</button>
+            <button class="filter-tab" data-category="fun" role="tab" aria-selected="false" tabindex="-1">Fun</button>
+            <button class="filter-tab" data-category="govt" role="tab" aria-selected="false" tabindex="-1">Govt</button>
+            <button class="filter-tab" data-category="office" role="tab" aria-selected="false" tabindex="-1">Office</button>
+            <button class="filter-tab" data-category="math" role="tab" aria-selected="false" tabindex="-1">Math</button>
+            <button class="filter-tab" data-category="time" role="tab" aria-selected="false" tabindex="-1">Time</button>
+            <button class="filter-tab" data-category="network" role="tab" aria-selected="false" tabindex="-1">Network</button>
+            <button class="filter-tab" data-category="hardware" role="tab" aria-selected="false" tabindex="-1">Hardware</button>
         </div>
 
         <!-- Dynamic Tool Grid -->

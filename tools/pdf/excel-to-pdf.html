@@ -158,7 +158,12 @@
                 // Convert to HTML
                 const html = XLSX.utils.sheet_to_html(worksheet);
 
-                preview.innerHTML = html;
+                // Sanitize to prevent XSS from malicious spreadsheets
+                if (typeof DOMPurify !== 'undefined') {
+                    preview.innerHTML = DOMPurify.sanitize(html);
+                } else {
+                    preview.textContent = html;
+                }
                 preview.style.display = 'block';
                 controls.style.display = 'flex';
             };

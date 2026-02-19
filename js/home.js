@@ -96,14 +96,14 @@ function renderTools(toolsToRender) {
         card.className = 'tool-card zoom-in spotlight-card';
         card.innerHTML = `
             <div class="tool-thumb" style="color: ${tool.color}">
-                <i class="${tool.icon}"></i>
+                <i class=\"${tool.icon}\" aria-hidden=\"true\"></i>
             </div>
-            <div class="tool-info">
+            <div class=\"tool-info\">
                 <h3>${tool.name}</h3>
                 <p>${tool.description}</p>
             </div>
-            <div class="tool-arrow">
-                <i class="fas fa-chevron-right"></i>
+            <div class=\"tool-arrow\">
+                <i class=\"fas fa-chevron-right\" aria-hidden=\"true\"></i>
             </div>
         `;
         toolsGrid.appendChild(card);
@@ -208,8 +208,14 @@ function setupEventListeners() {
     filterTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             // UI Update
-            filterTabs.forEach(t => t.classList.remove('active'));
+            filterTabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+                t.setAttribute('tabindex', '-1');
+            });
             tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+            tab.setAttribute('tabindex', '0');
 
             // Logic Update
             currentCategory = tab.dataset.category;
@@ -218,6 +224,36 @@ function setupEventListeners() {
             renderTools(results);
         });
     });
+
+    // Keyboard arrow navigation for tabs (WAI-ARIA tab pattern)
+    const tabList = document.querySelector('.filter-tabs');
+    if (tabList) {
+        tabList.addEventListener('keydown', (e) => {
+            const tabs = Array.from(filterTabs);
+            const current = tabs.indexOf(document.activeElement);
+            if (current === -1) return;
+
+            let next = current;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                next = (current + 1) % tabs.length;
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                next = (current - 1 + tabs.length) % tabs.length;
+                e.preventDefault();
+            } else if (e.key === 'Home') {
+                next = 0;
+                e.preventDefault();
+            } else if (e.key === 'End') {
+                next = tabs.length - 1;
+                e.preventDefault();
+            } else {
+                return;
+            }
+
+            tabs[next].focus();
+            tabs[next].click();
+        });
+    }
 }
 
 // Helper to set category manually

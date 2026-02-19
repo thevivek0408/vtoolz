@@ -174,14 +174,19 @@
         }
 
         function displayResult(result) {
-            preview.innerHTML = result.value;
+            // Sanitize mammoth output to prevent XSS from malicious .docx files
+            if (typeof DOMPurify !== 'undefined') {
+                preview.innerHTML = DOMPurify.sanitize(result.value);
+            } else {
+                preview.textContent = result.value;
+            }
             preview.style.display = 'block';
             controls.style.display = 'flex';
 
             // Basic messages
             const messages = result.messages;
             if (messages.length > 0) {
-                console.log('Mammoth messages:', messages);
+                // Suppressed in production
             }
         }
 

@@ -139,6 +139,8 @@
                     iframe.id = 'gameFrame';
                     iframe.src = game.url;
                     iframe.allowFullscreen = true;
+                    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups');
+                    iframe.setAttribute('loading', 'lazy');
                     gameContainerDiv.appendChild(iframe);
                     iframe.onload = () => document.getElementById('loading').style.display = 'none';
                     document.getElementById('game-container').appendChild(gameContainerDiv);
