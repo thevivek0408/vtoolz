@@ -223,13 +223,38 @@ export const Utils = {
             if (!document.querySelector('.ambient-light')) {
                 const light1 = document.createElement('div');
                 light1.className = 'ambient-light one';
-                // const light2 = document.createElement('div');
-                // light2.className = 'ambient-light two';
+                const light2 = document.createElement('div');
+                light2.className = 'ambient-light two';
+                const light3 = document.createElement('div');
+                light3.className = 'ambient-light three';
                 document.body.appendChild(light1);
-                // document.body.appendChild(light2); // Removed bottom green light per user request
+                document.body.appendChild(light2);
+                document.body.appendChild(light3);
             }
         };
         injectLights();
+
+        // 1b. Floating Particles Injection
+        const injectParticles = () => {
+            if (document.querySelector('.particles-container')) return;
+            const container = document.createElement('div');
+            container.className = 'particles-container';
+            container.setAttribute('aria-hidden', 'true');
+            const count = window.innerWidth < 768 ? 8 : 15;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 4 + 2;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's, ' + (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = (Math.random() * -30) + 's, ' + (Math.random() * -30) + 's';
+                container.appendChild(p);
+            }
+            document.body.appendChild(container);
+        };
+        injectParticles();
 
         // 2. Card Spotlight Effect (rAF-throttled)
         const initSpotlight = () => {
@@ -253,7 +278,7 @@ export const Utils = {
         };
         initSpotlight();
 
-        // 3. Scroll Animations
+        // 3. Scroll Animations (staggered reveal)
         const observerOptions = {
             threshold: 0.1,
             rootMargin: "0px 0px -50px 0px"
@@ -263,15 +288,35 @@ export const Utils = {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target); // Only animate once
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        document.querySelectorAll('.tool-card, .hero, h2, canvas').forEach(el => {
+        // Stagger tool cards with incremental delay
+        const staggerCards = () => {
+            const cards = document.querySelectorAll('.tool-card');
+            cards.forEach((card, i) => {
+                card.classList.add('fade-in-section');
+                card.style.transitionDelay = `${Math.min(i * 50, 400)}ms`;
+                observer.observe(card);
+            });
+        };
+
+        document.querySelectorAll('.hero, h2, canvas').forEach(el => {
             el.classList.add('fade-in-section');
             observer.observe(el);
         });
+
+        // Run stagger now and re-run when grid changes (filtering)
+        staggerCards();
+        const grid = document.getElementById('tools-grid');
+        if (grid) {
+            const mo = new MutationObserver(() => {
+                requestAnimationFrame(staggerCards);
+            });
+            mo.observe(grid, { childList: true });
+        }
 
         // 4. Neon Mode Secret (Triple Click Theme Toggle or dedicated button)
         // For now, let's auto-enable it if 'neon' is in localStorage, or add a secret trigger.
