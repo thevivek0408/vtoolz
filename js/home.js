@@ -30,7 +30,6 @@ function init() {
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
             searchInput?.focus();
-            if (!searchInput?.value.trim()) showPopularDropdown();
         }
     });
 
@@ -218,16 +217,10 @@ function setupEventListeners() {
         if (query.trim().length > 0) {
             showSearchDropdown(query);
         } else {
-            // Show popular tools when input is cleared but still focused
-            showPopularDropdown();
+            hideSearchDropdown();
         }
     });
 
-    // Show popular tools on focus (for Ctrl+K empty-open)
-    searchInput.addEventListener('focus', () => {
-        if (!searchInput.value.trim()) showPopularDropdown();
-    });
-    
     // Hide dropdown on blur (with delay for click)
     searchInput.addEventListener('blur', () => {
         setTimeout(hideSearchDropdown, 200);
@@ -387,27 +380,6 @@ function showSearchDropdown(query) {
     }
     
     dropdown.innerHTML = buildDropdownHTML(matches);
-    dropdown.classList.add('active');
-    dropdownIndex = -1;
-}
-
-function showPopularDropdown() {
-    const dropdown = document.getElementById('search-dropdown');
-    if (!dropdown) return;
-
-    // Show recently used first, then fall back to a curated popular list
-    const recentIds = (Utils.getRecentTools ? Utils.getRecentTools() : []).slice(0, 4);
-    const recentTools = recentIds.map(id => tools.find(t => t.id === id)).filter(Boolean);
-
-    const popularIds = ['pdf-merge', 'img-compress', 'qr-code', 'word-counter', 'json-formatter', 'img-resize'];
-    const popularTools = popularIds.map(id => tools.find(t => t.id === id)).filter(Boolean);
-
-    const shown = recentTools.length >= 4 ? recentTools : [...recentTools, ...popularTools.filter(t => !recentIds.includes(t.id))].slice(0, 6);
-
-    if (shown.length === 0) return;
-
-    const label = recentTools.length > 0 ? 'Recent' : 'Popular';
-    dropdown.innerHTML = `<div style="padding:8px 16px 4px; font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); font-weight:600;">${label}</div>` + buildDropdownHTML(shown);
     dropdown.classList.add('active');
     dropdownIndex = -1;
 }
