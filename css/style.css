@@ -350,7 +350,20 @@ html {
     font-size: 3rem;
     margin-bottom: 1rem;
     display: block;
-    animation: float 3s ease-in-out infinite;
+    color: var(--primary-color);
+    opacity: 0.7;
+    animation: dropZoneFloat 3s ease-in-out infinite;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.drop-zone:hover .drop-zone-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+@keyframes dropZoneFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
 }
 
 /* Premium File List */
@@ -666,6 +679,16 @@ nav a.active::after {
 
 .drop-zone-icon {
     font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+    opacity: 0.7;
+    animation: dropZoneFloat 3s ease-in-out infinite;
+    transition: opacity 0.3s ease;
+}
+
+.drop-zone:hover .drop-zone-icon {
+    opacity: 1;
 }
 
 /* Ambient Visual Effects (Phase 10) */
