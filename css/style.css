@@ -2159,38 +2159,6 @@ body.theme-evening {
 
 /* Afternoon keeps default --accent-color: #27ae60 */
 
-/* ===== Breadcrumb (Tool Pages) ===== */
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.breadcrumb a {
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.breadcrumb a:hover {
-    color: var(--primary-color);
-}
-
-.breadcrumb .separator {
-    opacity: 0.4;
-    font-size: 0.7rem;
-}
-
-.breadcrumb .current {
-    color: var(--text-color);
-    font-weight: 600;
-}
-
 /* ===== Mobile Page Load Animation ===== */
 @keyframes pageSlideUp {
     from {

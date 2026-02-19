@@ -482,40 +482,6 @@ export const Utils = {
             skipLink.textContent = 'Skip to content';
             document.body.prepend(skipLink);
         }
-    },
-
-    initBreadcrumb: () => {
-        // Only on tool pages (not home)
-        const path = window.location.pathname;
-        if (path === '/' || path === '/index.html' || path.endsWith('/tools/') || path.endsWith('/tools/index.html')) return;
-        
-        const segments = path.split('/').filter(s => s && s !== 'index.html');
-        if (segments.length < 2) return;
-        
-        const breadcrumb = document.createElement('nav');
-        breadcrumb.className = 'breadcrumb';
-        breadcrumb.setAttribute('aria-label', 'Breadcrumb');
-        
-        const items = [{ label: 'Home', href: '/' }];
-        let href = '';
-        segments.forEach((seg, i) => {
-            href += '/' + seg;
-            const label = seg.replace(/-/g, ' ').replace(/\.html$/, '');
-            if (i === segments.length - 1) {
-                items.push({ label: label.charAt(0).toUpperCase() + label.slice(1), href: null });
-            } else {
-                items.push({ label: label.charAt(0).toUpperCase() + label.slice(1), href: href + '/' });
-            }
-        });
-        
-        breadcrumb.innerHTML = items.map((item, i) => 
-            item.href 
-                ? `<a href="${item.href}">${item.label}</a>${i < items.length - 1 ? '<span class="separator">/</span>' : ''}`
-                : `<span class="current">${item.label}</span>`
-        ).join('');
-        
-        const main = document.querySelector('main') || document.querySelector('.tool-container');
-        if (main && main.parentNode === document.body) main.parentNode.insertBefore(breadcrumb, main);
     }
 };
 
@@ -526,7 +492,6 @@ window.addEventListener('DOMContentLoaded', () => {
     Utils.initErrorBoundary();
     Utils.ensureFontAwesome();
     Utils.ensureSkipLink();
-    Utils.initBreadcrumb();
     new CommandPalette();
 
     // Track recently used tool (if on a tool page)

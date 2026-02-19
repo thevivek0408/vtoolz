@@ -30,6 +30,7 @@ function init() {
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
             searchInput?.focus();
+            if (!searchInput?.value.trim()) showPopularDropdown();
         }
     });
 
@@ -217,8 +218,14 @@ function setupEventListeners() {
         if (query.trim().length > 0) {
             showSearchDropdown(query);
         } else {
-            hideSearchDropdown();
+            // Show popular tools when input is cleared but still focused
+            showPopularDropdown();
         }
+    });
+
+    // Show popular tools on focus (for Ctrl+K empty-open)
+    searchInput.addEventListener('focus', () => {
+        if (!searchInput.value.trim()) showPopularDropdown();
     });
     
     // Hide dropdown on blur (with delay for click)
@@ -229,26 +236,39 @@ function setupEventListeners() {
     // Keyboard navigation for dropdown
     searchInput.addEventListener('keydown', (e) => {
         const dropdown = document.getElementById('search-dropdown');
-        if (!dropdown || !dropdown.classList.contains('show')) return;
-        
-        const items = dropdown.querySelectorAll('.search-dropdown-item');
+        const isOpen = dropdown && dropdown.classList.contains('active');
+
+        if (e.key === 'Escape') {
+            hideSearchDropdown();
+            searchInput.blur();
+            return;
+        }
+
+        if (!isOpen) return;
+
+        const items = Array.from(dropdown.querySelectorAll('a.search-dropdown-item'));
         if (items.length === 0) return;
-        
+
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             dropdownIndex = Math.min(dropdownIndex + 1, items.length - 1);
             updateDropdownSelection(items);
+            items[dropdownIndex].scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             dropdownIndex = Math.max(dropdownIndex - 1, 0);
             updateDropdownSelection(items);
+            items[dropdownIndex].scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'Enter' && dropdownIndex >= 0) {
             e.preventDefault();
-            items[dropdownIndex].click();
-        } else if (e.key === 'Escape') {
-            hideSearchDropdown();
-            searchInput.blur();
+            e.stopPropagation();
+            window.location.href = items[dropdownIndex].href;
         }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-container')) hideSearchDropdown();
     });
 
     // Search Button
@@ -336,6 +356,19 @@ function setCategory(cat) {
 
 
 // Search Dropdown
+function buildDropdownHTML(matches) {
+    return matches.map(tool => `
+        <a href="${tool.url}" class="search-dropdown-item">
+            <div class="dd-icon" style="color: ${tool.color}"><i class="${tool.icon}"></i></div>
+            <div class="dd-info">
+                <div class="dd-name">${tool.name}</div>
+                <div class="dd-desc">${tool.description}</div>
+            </div>
+            <i class="fas fa-chevron-right dd-arrow"></i>
+        </a>
+    `).join('');
+}
+
 function showSearchDropdown(query) {
     const dropdown = document.getElementById('search-dropdown');
     if (!dropdown) return;
@@ -345,35 +378,51 @@ function showSearchDropdown(query) {
         t.name.toLowerCase().includes(lowerQuery) ||
         t.description.toLowerCase().includes(lowerQuery) ||
         (t.keywords || '').toLowerCase().includes(lowerQuery)
-    ).slice(0, 5);
+    ).slice(0, 6);
     
     if (matches.length === 0) {
-        hideSearchDropdown();
+        dropdown.innerHTML = `<div class="search-dropdown-item" style="pointer-events:none;opacity:0.5;"><div class="dd-info"><div class="dd-name">No results for "${query}"</div></div></div>`;
+        dropdown.classList.add('active');
         return;
     }
     
-    dropdown.innerHTML = matches.map((tool, i) => `
-        <a href="${tool.url}" class="search-dropdown-item${i === dropdownIndex ? ' selected' : ''}">
-            <i class="${tool.icon}" style="color: ${tool.color}"></i>
-            <span>${tool.name}</span>
-        </a>
-    `).join('');
-    
-    dropdown.classList.add('show');
+    dropdown.innerHTML = buildDropdownHTML(matches);
+    dropdown.classList.add('active');
+    dropdownIndex = -1;
+}
+
+function showPopularDropdown() {
+    const dropdown = document.getElementById('search-dropdown');
+    if (!dropdown) return;
+
+    // Show recently used first, then fall back to a curated popular list
+    const recentIds = (Utils.getRecentTools ? Utils.getRecentTools() : []).slice(0, 4);
+    const recentTools = recentIds.map(id => tools.find(t => t.id === id)).filter(Boolean);
+
+    const popularIds = ['pdf-merge', 'img-compress', 'qr-code', 'word-counter', 'json-formatter', 'img-resize'];
+    const popularTools = popularIds.map(id => tools.find(t => t.id === id)).filter(Boolean);
+
+    const shown = recentTools.length >= 4 ? recentTools : [...recentTools, ...popularTools.filter(t => !recentIds.includes(t.id))].slice(0, 6);
+
+    if (shown.length === 0) return;
+
+    const label = recentTools.length > 0 ? 'Recent' : 'Popular';
+    dropdown.innerHTML = `<div style="padding:8px 16px 4px; font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); font-weight:600;">${label}</div>` + buildDropdownHTML(shown);
+    dropdown.classList.add('active');
     dropdownIndex = -1;
 }
 
 function hideSearchDropdown() {
     const dropdown = document.getElementById('search-dropdown');
     if (dropdown) {
-        dropdown.classList.remove('show');
+        dropdown.classList.remove('active');
         dropdownIndex = -1;
     }
 }
 
 function updateDropdownSelection(items) {
     items.forEach((item, i) => {
-        item.classList.toggle('selected', i === dropdownIndex);
+        item.classList.toggle('active', i === dropdownIndex);
     });
 }
 
