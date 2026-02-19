@@ -4,6 +4,7 @@ import { initParticles } from './utils/particles.js';
 
 // State
 let currentCategory = 'all';
+let dropdownIndex = -1;
 
 // DOM Elements
 const toolsGrid = document.getElementById('tools-grid');
@@ -206,10 +207,48 @@ function filterTools(query) {
 
 // Events
 function setupEventListeners() {
-    // Search
+    // Search with dropdown
     searchInput.addEventListener('input', (e) => {
-        const results = filterTools(e.target.value);
+        const query = e.target.value;
+        const results = filterTools(query);
         renderTools(results);
+        
+        // Show dropdown for quick access
+        if (query.trim().length > 0) {
+            showSearchDropdown(query);
+        } else {
+            hideSearchDropdown();
+        }
+    });
+    
+    // Hide dropdown on blur (with delay for click)
+    searchInput.addEventListener('blur', () => {
+        setTimeout(hideSearchDropdown, 200);
+    });
+    
+    // Keyboard navigation for dropdown
+    searchInput.addEventListener('keydown', (e) => {
+        const dropdown = document.getElementById('search-dropdown');
+        if (!dropdown || !dropdown.classList.contains('show')) return;
+        
+        const items = dropdown.querySelectorAll('.search-dropdown-item');
+        if (items.length === 0) return;
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            dropdownIndex = Math.min(dropdownIndex + 1, items.length - 1);
+            updateDropdownSelection(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            dropdownIndex = Math.max(dropdownIndex - 1, 0);
+            updateDropdownSelection(items);
+        } else if (e.key === 'Enter' && dropdownIndex >= 0) {
+            e.preventDefault();
+            items[dropdownIndex].click();
+        } else if (e.key === 'Escape') {
+            hideSearchDropdown();
+            searchInput.blur();
+        }
     });
 
     // Search Button
@@ -292,6 +331,80 @@ function setCategory(cat) {
         if (toolsSection) {
             toolsSection.scrollIntoView({ behavior: 'smooth' });
         }
+    }
+}
+
+
+// Search Dropdown
+function showSearchDropdown(query) {
+    const dropdown = document.getElementById('search-dropdown');
+    if (!dropdown) return;
+    
+    const lowerQuery = query.toLowerCase().trim();
+    const matches = tools.filter(t => 
+        t.name.toLowerCase().includes(lowerQuery) ||
+        t.description.toLowerCase().includes(lowerQuery) ||
+        (t.keywords || '').toLowerCase().includes(lowerQuery)
+    ).slice(0, 5);
+    
+    if (matches.length === 0) {
+        hideSearchDropdown();
+        return;
+    }
+    
+    dropdown.innerHTML = matches.map((tool, i) => `
+        <a href="${tool.url}" class="search-dropdown-item${i === dropdownIndex ? ' selected' : ''}">
+            <i class="${tool.icon}" style="color: ${tool.color}"></i>
+            <span>${tool.name}</span>
+        </a>
+    `).join('');
+    
+    dropdown.classList.add('show');
+    dropdownIndex = -1;
+}
+
+function hideSearchDropdown() {
+    const dropdown = document.getElementById('search-dropdown');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+        dropdownIndex = -1;
+    }
+}
+
+function updateDropdownSelection(items) {
+    items.forEach((item, i) => {
+        item.classList.toggle('selected', i === dropdownIndex);
+    });
+}
+
+
+// Back to Top
+function initBackToTop() {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+    
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+            btn.classList.add('show');
+        } else {
+            btn.classList.remove('show');
+        }
+    }, { passive: true });
+    
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+
+// PC-only hints visibility
+function initPCHints() {
+    // Only show PC hints on devices with precise pointer (mouse)
+    const isPCLike = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (isPCLike) {
+        document.querySelectorAll('.pc-hint').forEach(el => {
+            el.style.display = '';
+        });
     }
 }
 
@@ -404,4 +517,6 @@ window.addEventListener('DOMContentLoaded', () => {
     initDragAndDrop();
     initDynamicTheme();
     initParticles('hero-particles');
+    initBackToTop();
+    initPCHints();
 });

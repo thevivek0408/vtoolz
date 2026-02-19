@@ -9,6 +9,17 @@
         content="Free, private, client-side tools for PDF, Images, Text, and Developers. No file uploads, no tracking. Merge PDF, Compress Images, Format JSON, and more.">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Vibox - Privacy-First Tools</title>
+    <meta name="theme-color" content="#0f172a">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Vibox - Privacy-First Tools">
+    <meta property="og:description" content="Free, private, client-side tools for PDF, Images, Text, and Developers. No uploads, no tracking.">
+    <meta property="og:image" content="/assets/og-image.png">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vibox - Privacy-First Tools">
+    <meta name="twitter:description" content="Free, private browser tools. No uploads, no servers.">
+    <meta name="twitter:image" content="/assets/og-image.png">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.png" type="image/png">
     <!-- Preconnect to CDNs for zero-latency font/icon loading -->
@@ -17,8 +28,9 @@
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <!-- Critical CSS first -->
     <link rel="stylesheet" href="css/style.css?v=5">
-    <!-- Font Awesome icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome icons (async for faster FCP) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <!-- Preload key JS modules -->
     <link rel="modulepreload" href="js/utils/common.js">
     <link rel="modulepreload" href="js/utils/tools.js">
@@ -79,13 +91,16 @@
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" id="tool-search" placeholder="Search tools (e.g., 'merge', 'resize', 'qr')..."
                         autocomplete="off" aria-label="Search tools" role="searchbox">
+                    <kbd class="search-kbd-hint pc-hint" title="Press Ctrl+K to focus search">Ctrl K</kbd>
                     <button id="search-btn" class="search-btn" aria-label="Search"><i class="fas fa-arrow-right"></i></button>
                 </div>
+                <div id="search-dropdown" class="search-dropdown" role="listbox" aria-label="Search suggestions"></div>
             </div>
 
             <div style="display:flex; justify-content:center; gap:15px; margin-top: 20px;">
                 <a href="tools/index.html" class="btn btn-primary" id="btn-explore">Explore All Tools</a>
             </div>
+            <p class="pc-hint drag-drop-hint"><i class="fas fa-cloud-upload-alt"></i> Drop any file on this page to find the right tool</p>
         </div>
     </section>
 
@@ -125,6 +140,10 @@
         </div>
     </section>
 </main>
+
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
 
     <footer class="site-footer">
         <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>

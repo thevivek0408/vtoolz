@@ -118,9 +118,14 @@ export const Utils = {
         // Toggle Button
         const toggle = document.createElement('button');
         toggle.className = 'theme-toggle';
-        toggle.innerHTML = '🌓';
         toggle.title = "Toggle Dark Mode";
         toggle.ariaLabel = "Toggle Dark Mode";
+
+        const updateToggleIcon = (theme) => {
+            toggle.innerHTML = theme === 'dark'
+                ? '<i class="fas fa-sun"></i>'
+                : '<i class="fas fa-moon"></i>';
+        };
 
         const nav = document.querySelector('nav ul');
         if (nav) {
@@ -141,6 +146,7 @@ export const Utils = {
                 document.head.appendChild(metaTheme);
             }
             metaTheme.content = theme === 'dark' ? '#0f172a' : '#f8f9fa';
+            updateToggleIcon(theme);
         };
 
         // Default to Dark for 3D feel, or load saved
@@ -217,22 +223,6 @@ export const Utils = {
                 });
             });
         }
-
-        // 1. Ambient Lights Injection
-        const injectLights = () => {
-            if (!document.querySelector('.ambient-light')) {
-                const light1 = document.createElement('div');
-                light1.className = 'ambient-light one';
-                const light2 = document.createElement('div');
-                light2.className = 'ambient-light two';
-                const light3 = document.createElement('div');
-                light3.className = 'ambient-light three';
-                document.body.appendChild(light1);
-                document.body.appendChild(light2);
-                document.body.appendChild(light3);
-            }
-        };
-        injectLights();
 
         // 2. Card Spotlight Effect (rAF-throttled)
         const initSpotlight = () => {
@@ -492,6 +482,40 @@ export const Utils = {
             skipLink.textContent = 'Skip to content';
             document.body.prepend(skipLink);
         }
+    },
+
+    initBreadcrumb: () => {
+        // Only on tool pages (not home)
+        const path = window.location.pathname;
+        if (path === '/' || path === '/index.html' || path.endsWith('/tools/') || path.endsWith('/tools/index.html')) return;
+        
+        const segments = path.split('/').filter(s => s && s !== 'index.html');
+        if (segments.length < 2) return;
+        
+        const breadcrumb = document.createElement('nav');
+        breadcrumb.className = 'breadcrumb';
+        breadcrumb.setAttribute('aria-label', 'Breadcrumb');
+        
+        const items = [{ label: 'Home', href: '/' }];
+        let href = '';
+        segments.forEach((seg, i) => {
+            href += '/' + seg;
+            const label = seg.replace(/-/g, ' ').replace(/\.html$/, '');
+            if (i === segments.length - 1) {
+                items.push({ label: label.charAt(0).toUpperCase() + label.slice(1), href: null });
+            } else {
+                items.push({ label: label.charAt(0).toUpperCase() + label.slice(1), href: href + '/' });
+            }
+        });
+        
+        breadcrumb.innerHTML = items.map((item, i) => 
+            item.href 
+                ? `<a href="${item.href}">${item.label}</a>${i < items.length - 1 ? '<span class="separator">/</span>' : ''}`
+                : `<span class="current">${item.label}</span>`
+        ).join('');
+        
+        const main = document.querySelector('main') || document.querySelector('.tool-container');
+        if (main) main.parentNode.insertBefore(breadcrumb, main);
     }
 };
 
@@ -502,6 +526,7 @@ window.addEventListener('DOMContentLoaded', () => {
     Utils.initErrorBoundary();
     Utils.ensureFontAwesome();
     Utils.ensureSkipLink();
+    Utils.initBreadcrumb();
     new CommandPalette();
 
     // Track recently used tool (if on a tool page)
