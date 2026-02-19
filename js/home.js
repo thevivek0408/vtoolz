@@ -221,11 +221,17 @@ function setupEventListeners() {
         }
     });
 
-    // Hide dropdown on blur (with delay for click)
-    searchInput.addEventListener('blur', () => {
-        setTimeout(hideSearchDropdown, 200);
+    // Hide dropdown on blur — only close if focus left the whole search container
+    searchInput.addEventListener('blur', (e) => {
+        // If focus is moving into the dropdown, don't close
+        setTimeout(() => {
+            const dropdown = document.getElementById('search-dropdown');
+            if (dropdown && !dropdown.contains(document.activeElement)) {
+                hideSearchDropdown();
+            }
+        }, 150);
     });
-    
+
     // Keyboard navigation for dropdown
     searchInput.addEventListener('keydown', (e) => {
         const dropdown = document.getElementById('search-dropdown');
@@ -245,17 +251,45 @@ function setupEventListeners() {
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             dropdownIndex = Math.min(dropdownIndex + 1, items.length - 1);
-            updateDropdownSelection(items);
-            items[dropdownIndex].scrollIntoView({ block: 'nearest' });
+            items[dropdownIndex].focus();
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            dropdownIndex = Math.max(dropdownIndex - 1, 0);
-            updateDropdownSelection(items);
-            items[dropdownIndex].scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'Enter' && dropdownIndex >= 0) {
+            if (dropdownIndex <= 0) {
+                dropdownIndex = -1;
+                searchInput.focus();
+            } else {
+                dropdownIndex--;
+                items[dropdownIndex].focus();
+            }
+        } else if (e.key === 'Enter') {
+            // Let it fall through — browser handles Enter on focused <a>
+        }
+    });
+
+    // Arrow keys while focus is on a dropdown item
+    document.getElementById('search-dropdown').addEventListener('keydown', (e) => {
+        const dropdown = document.getElementById('search-dropdown');
+        const items = Array.from(dropdown.querySelectorAll('a.search-dropdown-item'));
+        const focused = document.activeElement;
+        const idx = items.indexOf(focused);
+
+        if (e.key === 'ArrowDown') {
             e.preventDefault();
-            e.stopPropagation();
-            window.location.href = items[dropdownIndex].href;
+            const next = Math.min(idx + 1, items.length - 1);
+            dropdownIndex = next;
+            items[next].focus();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (idx <= 0) {
+                dropdownIndex = -1;
+                searchInput.focus();
+            } else {
+                dropdownIndex = idx - 1;
+                items[dropdownIndex].focus();
+            }
+        } else if (e.key === 'Escape') {
+            hideSearchDropdown();
+            searchInput.focus();
         }
     });
 
@@ -271,10 +305,13 @@ function setupEventListeners() {
         toolsGrid.scrollIntoView({ behavior: 'smooth' });
     });
 
-    // Enter Key Search
-    searchInput.addEventListener('keypress', (e) => {
+    // Enter Key Search — only when dropdown is closed
+    searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            toolsGrid.scrollIntoView({ behavior: 'smooth' });
+            const dropdown = document.getElementById('search-dropdown');
+            if (!dropdown || !dropdown.classList.contains('active')) {
+                toolsGrid.scrollIntoView({ behavior: 'smooth' });
+            }
         }
     });
 
