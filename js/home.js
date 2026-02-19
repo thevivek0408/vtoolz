@@ -21,13 +21,13 @@ function init() {
     const skeleton = document.getElementById('skeleton-loader');
     if (skeleton) skeleton.classList.add('hidden');
 
-    // Keyboard shortcut: '/' or Ctrl+K to focus search
+    // Keyboard shortcut: '/' or Ctrl/Cmd+K to focus search
     document.addEventListener('keydown', (e) => {
         if (e.key === '/' && !isInputFocused()) {
             e.preventDefault();
             searchInput?.focus();
         }
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
             e.preventDefault();
             searchInput?.focus();
         }

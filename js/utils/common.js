@@ -543,18 +543,50 @@ window.addEventListener('DOMContentLoaded', () => {
 
         navigator.serviceWorker.register(swPath, { scope: swScope })
             .then(reg => {
-                // Detect SW updates and notify user
+                let hasRefreshPrompted = false;
+                let isRefreshing = false;
+
+                const promptForUpdate = (waitingWorker) => {
+                    if (!waitingWorker || hasRefreshPrompted) return;
+                    hasRefreshPrompted = true;
+
+                    if (typeof Utils.showToast === 'function') {
+                        Utils.showToast('New version available. Click OK on the next prompt to refresh.', 'info', 6000);
+                    }
+
+                    setTimeout(() => {
+                        const shouldUpdate = window.confirm('A new version of Vibox is available. Refresh now?');
+                        if (shouldUpdate) {
+                            waitingWorker.postMessage('SKIP_WAITING');
+                        } else {
+                            hasRefreshPrompted = false;
+                        }
+                    }, 120);
+                };
+
+                // If an update is already waiting when page loads
+                if (reg.waiting) {
+                    promptForUpdate(reg.waiting);
+                }
+
+                // Detect new installing worker
                 reg.addEventListener('updatefound', () => {
                     const newWorker = reg.installing;
                     if (!newWorker) return;
                     newWorker.addEventListener('statechange', () => {
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            if (typeof Utils.showToast === 'function') {
-                                Utils.showToast('Update available! Reload for the latest version.', 'info', 8000);
-                            }
+                            promptForUpdate(newWorker);
                         }
                     });
                 });
+
+                // Reload once when the new SW takes control
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (isRefreshing) return;
+                    isRefreshing = true;
+                    window.location.reload();
+                });
+
                 // Ask SW to lazy-cache vendor libs
                 if (reg.active) reg.active.postMessage('CACHE_VENDORS');
             })

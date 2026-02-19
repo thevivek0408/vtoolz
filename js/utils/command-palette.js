@@ -36,6 +36,7 @@ export class CommandPalette {
                     <span><kbd>↑↓</kbd> to navigate</span>
                     <span><kbd>Enter</kbd> to select</span>
                     <span><kbd>Esc</kbd> to close</span>
+                    <span><kbd>Ctrl/Cmd+Shift+K</kbd> to open</span>
                 </div>
             </div>
         `;
@@ -44,9 +45,9 @@ export class CommandPalette {
     }
 
     bindEvents() {
-        // Toggle Global Shortcut
+        // Toggle Global Shortcut (Ctrl/Cmd+Shift+K)
         document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
                 this.toggle();
             }

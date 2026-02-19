@@ -15,3 +15,27 @@ VtoolZ is a collection of 50+ powerful web utilities that run entirely in your b
 - **Developer Tools**: JSON Formatter, Base64, Hashing, Regex.
 - **Security**: Password Generator, Strength Checker.
 
+## 🧱 CSP Tightening Roadmap
+
+The project currently uses an allowlist CSP with `'unsafe-inline'` / `'unsafe-eval'` for compatibility across many tools.
+This roadmap hardens CSP in safe, staged steps without breaking tools:
+
+### Phase 1 (Immediate)
+- Keep functionality stable, but standardize CSP policy text across pages.
+- Remove shortcut conflicts and avoid adding new inline handlers/styles.
+- Track pages still using inline `style="..."`, `on*=` attributes, or eval-dependent libs.
+
+### Phase 2 (Migration)
+- Move inline styles into CSS classes and component utilities.
+- Replace inline event handlers (`onclick`, `onload`, etc.) with `addEventListener` in JS modules.
+- Reduce third-party CDN dependencies where possible (self-host critical assets).
+
+### Phase 3 (Hardening)
+- Remove `'unsafe-eval'` first (after validating vendor bundles).
+- Remove `'unsafe-inline'` from `script-src` after handler migration.
+- Introduce nonce/hash-based policy for any remaining unavoidable inline script.
+
+### Phase 4 (Strict CSP)
+- Enforce strict CSP for `script-src` and tighter `connect-src` / `font-src` / `img-src` scopes.
+- Add CSP validation in CI to prevent regressions.
+
