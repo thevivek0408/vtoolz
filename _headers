@@ -26,9 +26,9 @@
   Cache-Control: public, max-age=604800
   Content-Type: image/x-icon
 
-/favicon.svg
+/favicon.png
   Cache-Control: public, max-age=604800
-  Content-Type: image/svg+xml
+  Content-Type: image/png
 
 /apple-touch-icon.png
   Cache-Control: public, max-age=604800

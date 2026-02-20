@@ -19,7 +19,7 @@ const CRITICAL_ASSETS = [
     './js/utils/tools.js',
     './manifest.json',
     './favicon.ico',
-    './favicon.svg',
+    './favicon.png',
     './favicon-48.png',
     './apple-touch-icon.png',
     './assets/icon.png'
