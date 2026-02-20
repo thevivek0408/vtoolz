@@ -5,30 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>PDF to Image - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        .pdf2img-hero {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .output-area {
+        .pdf2img-output {
             display: none;
             margin-top: 20px;
             text-align: center;
         }
 
-        .status-pill {
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-
-        .image-grid {
+        .pdf2img-grid {
             display: grid;
             gap: 20px;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            margin-top: 16px;
         }
 
         .pdf2img-card {
@@ -36,22 +28,14 @@
             flex-direction: column;
             align-items: center;
             gap: 10px;
-        }
-
-        .pdf2img-card img {
-            max-width: 100%;
+            padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
         }
 
-        .pdf2img-action {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .pdf2img-convert-btn {
-            min-width: 200px;
-            display: inline-block;
+        .pdf2img-card img {
+            max-width: 100%;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -76,46 +60,119 @@
                 <span class="step">3. Download</span>
             </div>
 
-            <div class="pdf2img-hero">
+            <div class="u-center-mb-2">
                 <h1>PDF to Image</h1>
                 <p class="text-muted">Convert PDF pages into high-quality images (JPG) instantly.</p>
             </div>
 
-            <div class="drop-zone" id="drop-zone">
+            <div class="drop-zone" id="dropZone">
                 <span class="drop-zone-icon"><i class="fas fa-cloud-arrow-up"></i></span>
                 <h3>Drop PDF Here</h3>
                 <p class="text-muted">or click to browse</p>
-                <input type="file" id="file-input" accept="application/pdf" hidden>
+                <input type="file" id="fileInput" accept="application/pdf" hidden>
             </div>
 
-            <div class="pdf2img-action">
-                <button id="convert-btn" class="btn btn-primary pdf2img-convert-btn">Convert to Images</button>
-            </div>
+            <div class="status-area" id="statusText"></div>
 
-            <div id="output-area" class="output-area">
-                <div class="alert alert-info status-pill" id="status-text">
-                    Processing...
-                </div>
-                <div id="image-list" class="image-grid">
-                </div>
+            <div class="pdf2img-output" id="outputArea">
+                <div id="imageGrid" class="pdf2img-grid"></div>
             </div>
         </div>
     </main>
 
     <script src="../../js/vendor/pdf.min.js"></script>
     <script src="../../js/utils/common.js" type="module"></script>
+
     <script>
-        window.__pdf2imgReady = false;
-    </script>
-    <script src="pdf-to-img.app.js"></script>
-    <script>
-        setTimeout(function () {
-            if (!window.__pdf2imgReady) {
-                const fallback = document.createElement('script');
-                fallback.src = 'pdf-to-img.inline.js';
-                document.body.appendChild(fallback);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';
+
+        var dropZone = document.getElementById('dropZone');
+        var fileInput = document.getElementById('fileInput');
+        var statusText = document.getElementById('statusText');
+        var outputArea = document.getElementById('outputArea');
+        var imageGrid = document.getElementById('imageGrid');
+
+        dropZone.addEventListener('click', function () { fileInput.click(); });
+
+        dropZone.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dropZone.classList.add('highlight');
+        });
+
+        dropZone.addEventListener('dragleave', function (e) {
+            e.preventDefault();
+            dropZone.classList.remove('highlight');
+        });
+
+        dropZone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            dropZone.classList.remove('highlight');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
             }
-        }, 900);
+        });
+
+        fileInput.addEventListener('change', function (e) {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        async function handleFile(file) {
+            if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+                statusText.textContent = 'Please upload a valid PDF file.';
+                return;
+            }
+
+            outputArea.style.display = 'block';
+            imageGrid.innerHTML = '';
+            statusText.textContent = 'Reading PDF...';
+
+            try {
+                var arrayBuffer = await file.arrayBuffer();
+                var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                var totalPages = pdf.numPages;
+                var baseName = (file.name || 'document').replace(/\.pdf$/i, '');
+
+                statusText.textContent = 'Converting ' + totalPages + ' page(s)...';
+
+                for (var i = 1; i <= totalPages; i++) {
+                    statusText.textContent = 'Rendering page ' + i + ' of ' + totalPages + '...';
+
+                    var page = await pdf.getPage(i);
+                    var viewport = page.getViewport({ scale: 2 });
+                    var canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    var ctx = canvas.getContext('2d');
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                    var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+
+                    var card = document.createElement('div');
+                    card.className = 'pdf2img-card';
+
+                    var img = document.createElement('img');
+                    img.src = dataUrl;
+                    img.alt = 'Page ' + i;
+
+                    var link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = baseName + '-page-' + i + '.jpg';
+                    link.className = 'btn btn-primary';
+                    link.textContent = 'Download Page ' + i;
+
+                    card.appendChild(img);
+                    card.appendChild(link);
+                    imageGrid.appendChild(card);
+                }
+
+                statusText.textContent = 'Done! ' + totalPages + ' page(s) converted. Click to download.';
+
+            } catch (err) {
+                statusText.textContent = 'Error: ' + (err.message || err);
+            }
+        }
     </script>
 </body>
 
