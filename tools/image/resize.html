@@ -30,7 +30,7 @@
                     <span class="step">3. Download</span>
                 </div>
 
-                <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="resizer-head">
                     <h1>Image Resizer</h1>
                        <p class="text-muted">Resize by dimensions (px) or target file size (KB/MB), fully in-browser.</p>
                 </div>
@@ -42,38 +42,38 @@
                     <input type="file" id="file-input" multiple accept="image/*" hidden>
                 </div>
 
-                <div id="controls" style="display:none; max-width: 600px; margin: 0 auto;">
+                <div id="controls" class="controls-panel">
                     <div class="tool-card">
-                           <label style="display:block; margin-bottom:8px;">Resize Mode</label>
-                           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 15px;">
+                           <label class="label-block-md">Resize Mode</label>
+                           <div class="mode-row">
                                <button id="mode-dimensions" class="btn btn-primary" type="button">By Width / Height</button>
                                <button id="mode-size" class="btn btn-secondary" type="button">By File Size</button>
                            </div>
 
                            <div id="dimension-controls">
-                               <div style="display:flex; gap:15px;">
-                                   <div style="flex:1">
-                                       <label style="display:block; margin-bottom:5px;">Width (px)</label>
+                               <div class="dimension-row">
+                                   <div class="flex-1">
+                                       <label class="label-block-sm">Width (px)</label>
                                        <input type="number" id="width-input" class="form-control" placeholder="Width">
                                    </div>
-                                   <div style="flex:1">
-                                       <label style="display:block; margin-bottom:5px;">Height (px)</label>
+                                   <div class="flex-1">
+                                       <label class="label-block-sm">Height (px)</label>
                                        <input type="number" id="height-input" class="form-control" placeholder="Height">
                                    </div>
                                </div>
-                               <p style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">
+                               <p class="hint-text">
                                    * Leave one empty to maintain aspect ratio.
                                </p>
                            </div>
 
-                           <div id="size-controls" style="display:none;">
-                               <div style="display:flex; gap:15px; align-items:end; flex-wrap:wrap;">
-                                   <div style="flex:1; min-width: 180px;">
-                                       <label style="display:block; margin-bottom:5px;">Target Size</label>
+                           <div id="size-controls" class="size-controls-hidden">
+                               <div class="size-row">
+                                   <div class="size-target-col">
+                                       <label class="label-block-sm">Target Size</label>
                                        <input type="number" id="target-size-input" class="form-control" placeholder="e.g. 300">
                                    </div>
-                                   <div style="width:120px;">
-                                       <label style="display:block; margin-bottom:5px;">Unit</label>
+                                   <div class="size-unit-col">
+                                       <label class="label-block-sm">Unit</label>
                                        <select id="target-size-unit" class="form-control">
                                            <option value="KB">KB</option>
                                            <option value="MB">MB</option>
@@ -81,8 +81,8 @@
                                    </div>
                                </div>
 
-                               <div style="margin-top:12px;">
-                                   <label style="display:block; margin-bottom:5px;">Output Format</label>
+                               <div class="output-format-wrap">
+                                   <label class="label-block-sm">Output Format</label>
                                    <select id="size-format" class="form-control">
                                        <option value="image/jpeg" selected>JPEG (best for fixed size)</option>
                                        <option value="image/webp">WEBP</option>
@@ -90,25 +90,107 @@
                                    </select>
                                </div>
 
-                               <p style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">
+                               <p class="hint-text">
                                    * Fixed-size output is approximate and depends on image complexity.
                                </p>
                            </div>
                     </div>
 
-                    <div class="action-bar" style="text-align: center; margin-top: 2rem;">
-                        <button id="resize-btn" class="btn btn-primary" style="min-width: 200px;">
+                    <div class="action-bar action-bar-center">
+                        <button id="resize-btn" class="btn btn-primary resize-btn-wide">
                             Resize All Images
                         </button>
                     </div>
                 </div>
 
-                <div id="results" class="preview-grid"
-                    style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px; margin-top:20px;">
+                <div id="results" class="preview-grid results-grid">
                 </div>
             </div>
 
         <style>
+            .resizer-head {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+
+            .controls-panel {
+                display: none;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .label-block-md {
+                display: block;
+                margin-bottom: 8px;
+            }
+
+            .label-block-sm {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .mode-row {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-bottom: 15px;
+            }
+
+            .dimension-row {
+                display: flex;
+                gap: 15px;
+            }
+
+            .flex-1 {
+                flex: 1;
+            }
+
+            .hint-text {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                margin-top: 10px;
+            }
+
+            .size-controls-hidden {
+                display: none;
+            }
+
+            .size-row {
+                display: flex;
+                gap: 15px;
+                align-items: end;
+                flex-wrap: wrap;
+            }
+
+            .size-target-col {
+                flex: 1;
+                min-width: 180px;
+            }
+
+            .size-unit-col {
+                width: 120px;
+            }
+
+            .output-format-wrap {
+                margin-top: 12px;
+            }
+
+            .action-bar-center {
+                text-align: center;
+                margin-top: 2rem;
+            }
+
+            .resize-btn-wide {
+                min-width: 200px;
+            }
+
+            .results-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+                margin-top: 20px;
+            }
+
             .form-control {
                 width: 100%;
                 padding: 12px;

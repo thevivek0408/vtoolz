@@ -50,8 +50,136 @@
             transform: none;
         }
 
+        .sec-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .mb-30 {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .hash-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .hash-input {
+            flex: 1;
+            height: 80px;
+            background: var(--bg-secondary);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .hash-side {
+            flex: 0 0 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .algo-select {
+            background: var(--bg-secondary);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .hash-result {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            word-break: break-all;
+            border: 1px solid var(--border-color);
+        }
+
+        .pass-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .pass-col {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .label-row {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .gen-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .pass-output {
+            flex: 1;
+            background: var(--bg-secondary);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        .opt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .opt-length {
+            grid-column: span 2;
+        }
+
+        .opt-length-input {
+            width: 60px;
+            padding: 2px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-color);
+        }
+
+        .check-input {
+            width: 100%;
+            background: var(--bg-secondary);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .strength-text {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .strength-meter-alt {
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 5px;
+        }
+
         @media (max-width: 600px) {
-            [style*="flex:0 0 150px"] {
+            .hash-side {
                 flex: 1 1 100% !important;
             }
         }
@@ -72,22 +200,22 @@
 
     <main>
         <div class="tool-container" id="tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="sec-head">
                 <h1>Security Tools</h1>
                 <p class="text-muted">Generate secure passwords and hashes locally.</p>
             </div>
 
             <!-- Hashing -->
-            <div class="tool-card" style="margin-bottom: 30px;">
-                <h2 style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+            <div class="tool-card mb-30">
+                <h2 class="section-title">
                     Hash Generator</h2>
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <div class="hash-row">
                     <textarea id="hash-input" placeholder="Text to hash..."
-                        style="flex:1; height:80px; background: var(--bg-secondary); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;"></textarea>
-                    <div style="flex:0 0 150px; display: flex; flex-direction: column; gap: 5px;">
+                        class="hash-input"></textarea>
+                    <div class="hash-side">
                         <!-- <input type="file" id="hash-file" style="margin-bottom:10px;"> -->
                         <select id="algo" class="form-control"
-                            style="background: var(--bg-secondary); color: var(--text-color); border: 1px solid var(--border-color); padding: 5px; border-radius: 4px;">
+                            class="algo-select">
                             <option value="SHA-256">SHA-256</option>
                             <option value="SHA-1">SHA-1</option>
                             <option value="MD5">MD5 (Insecure)</option>
@@ -96,41 +224,40 @@
                     </div>
                 </div>
 
-                <div class="hash-output" id="hash-result"
-                    style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; font-family: monospace; word-break: break-all; border: 1px solid var(--border-color);">
+                <div class="hash-output hash-result" id="hash-result">
                     Hash will appear here...
                 </div>
             </div>
 
             <!-- Passwords -->
             <div class="tool-card">
-                <h2 style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                <h2 class="section-title">
                     Password Generator</h2>
-                <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap: wrap;">
-                    <div style="flex:1; min-width: 300px;">
-                        <label style="display:block; margin-bottom:5px;">Generated Password</label>
-                        <div style="display:flex; gap:10px; margin-bottom: 10px;">
+                <div class="pass-layout">
+                    <div class="pass-col">
+                        <label class="label-row">Generated Password</label>
+                        <div class="gen-row">
                             <input type="text" id="pass-gen-out" class="form-control" readonly
-                                style="flex:1; background: var(--bg-secondary); color: var(--text-color); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; font-family: monospace; font-size: 1.1rem;">
+                                class="pass-output">
                             <button class="btn btn-secondary" data-onclick="generate()">?</button>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="opt-grid">
                             <label><input type="checkbox" id="opt-upper" checked> A-Z</label>
                             <label><input type="checkbox" id="opt-lower" checked> a-z</label>
                             <label><input type="checkbox" id="opt-num" checked> 0-9</label>
                             <label><input type="checkbox" id="opt-sym" checked> !@#</label>
-                            <label style="grid-column: span 2;">Length: <input type="number" id="opt-len" value="16"
+                            <label class="opt-length">Length: <input type="number" id="opt-len" value="16"
                                     min="8" max="64"
-                                    style="width:60px; padding: 2px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-color);"></label>
+                                    class="opt-length-input"></label>
                         </div>
                     </div>
 
-                    <div style="flex:1; min-width: 300px;">
-                        <label style="display:block; margin-bottom:5px;">Check Strength</label>
+                    <div class="pass-col">
+                        <label class="label-row">Check Strength</label>
                         <input type="text" id="pass-check" class="form-control" placeholder="Type password..."
-                            style="width: 100%; background: var(--bg-secondary); color: var(--text-color); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px;">
-                        <div id="strength-text" style="font-size:0.9rem; margin-top:5px; font-weight: bold;"></div>
-                        <div class="strength-meter" style="background: rgba(255,255,255,0.1); margin-top: 5px;">
+                            class="check-input">
+                        <div id="strength-text" class="strength-text"></div>
+                        <div class="strength-meter strength-meter-alt">
                             <div id="strength-bar"></div>
                         </div>
                     </div>

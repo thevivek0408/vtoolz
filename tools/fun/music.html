@@ -98,6 +98,83 @@
             border-color: var(--primary-color);
         }
 
+        .back-link {
+            color: var(--text-color);
+        }
+
+        .tab-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .grow-center {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .preset-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .preset-select {
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 5px;
+        }
+
+        .record-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .record-btn {
+            justify-content: center;
+            color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        .stop-btn {
+            justify-content: center;
+            display: none;
+        }
+
+        .record-status {
+            font-size: 0.8rem;
+            color: #e74c3c;
+            text-align: center;
+            height: 20px;
+            margin-bottom: 10px;
+        }
+
+        .download-btn {
+            justify-content: center;
+            display: none;
+            background: #2ecc71;
+            color: #fff;
+            border: none;
+        }
+
+        .full-width {
+            width: 100%;
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .hidden-panel {
+            display: none;
+        }
+
         /* Main Stage */
         .stage {
             background: radial-gradient(circle at center, #1a1a1a, #000);
@@ -303,25 +380,25 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <a href="../../index.html" style="color:var(--text-color)"><i class="fas fa-chevron-left"></i></a>
+                <a href="../../index.html" class="back-link"><i class="fas fa-chevron-left"></i></a>
                 <span class="logo-text">Music Studio</span>
             </div>
 
             <div class="control-group">
                 <h3>Instruments</h3>
                 <!-- Tab Buttons -->
-                <div style="display:flex; gap:5px; margin-bottom:10px;">
-                    <button class="nav-btn active" id="btnPiano" style="flex:1; justify-content:center;"><i
+                <div class="tab-row">
+                    <button class="nav-btn active grow-center" id="btnPiano"><i
                             class="fas fa-music"></i> Piano</button>
-                    <button class="nav-btn" id="btnDrums" style="flex:1; justify-content:center;"><i
+                    <button class="nav-btn grow-center" id="btnDrums"><i
                             class="fas fa-drum"></i> Drums</button>
                 </div>
 
                 <!-- Preset Dropdown (Piano Only) -->
                 <div id="pianoControls">
-                    <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:5px;">Sound Preset</label>
+                    <label class="preset-label">Sound Preset</label>
                     <select id="pianoPreset"
-                        style="width:100%; padding:8px; background:var(--bg-color); border:1px solid var(--border-color); color:var(--text-color); border-radius:5px;">
+                        class="preset-select">
                         <option value="grand">Grand Piano</option>
                         <option value="synth">Synth Lead</option>
                         <option value="organ">Retro Organ</option>
@@ -332,19 +409,18 @@
 
             <div class="control-group">
                 <h3>Recording</h3>
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <div class="record-row">
                     <button id="btnRecord" class="nav-btn"
-                        style="justify-content:center; color:#e74c3c; border-color:#e74c3c;">
+                        class="record-btn">
                         <i class="fas fa-circle"></i> Rec
                     </button>
-                    <button id="btnStopRec" class="nav-btn" style="justify-content:center; display:none;">
+                    <button id="btnStopRec" class="nav-btn stop-btn">
                         <i class="fas fa-stop"></i> Stop
                     </button>
                 </div>
-                <div id="recordingStatus"
-                    style="font-size:0.8rem; color:#e74c3c; text-align:center; height:20px; margin-bottom:10px;"></div>
+                <div id="recordingStatus" class="record-status"></div>
                 <button id="btnDownload" class="nav-btn"
-                    style="justify-content:center; display:none; background:#2ecc71; color:#fff; border:none;">
+                    class="download-btn">
                     <i class="fas fa-download"></i> Save .webm
                 </button>
             </div>
@@ -353,10 +429,10 @@
                 <h3>Settings</h3>
                 <div class="control-item">
                     <label>Volume</label>
-                    <input type="range" id="volumeControl" min="0" max="100" value="80" style="width:100%">
+                    <input type="range" id="volumeControl" min="0" max="100" value="80" class="full-width">
                 </div>
                 <div class="control-item">
-                    <p style="font-size:0.8rem; color:var(--text-muted);">Keys: A-K (White), W-O (Black)</p>
+                    <p class="help-text">Keys: A-K (White), W-O (Black)</p>
                 </div>
             </div>
         </aside>
@@ -369,7 +445,7 @@
             </div>
 
             <!-- Drum Interface (Hidden initially) -->
-            <div class="drum-container" id="drumUI" style="display:none;">
+            <div class="drum-container hidden-panel" id="drumUI">
                 <!-- Pads will be generated by JS -->
             </div>
         </main>

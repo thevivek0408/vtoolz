@@ -46,6 +46,10 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        .back-link {
+            color: var(--text-color);
+        }
+
         .logo-text {
             font-size: 1.2rem;
             font-weight: 800;
@@ -162,6 +166,65 @@
             padding: 4px;
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .source-tabs {
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 5px;
+        }
+
+        .tab-grow {
+            flex: 1;
+        }
+
+        .compact-file-input {
+            font-size: 0.8rem;
+        }
+
+        .hidden-control {
+            display: none;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .space-between-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider-info {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .w-100 {
+            width: 100%;
+        }
+
+        .color-col {
+            flex: 1;
+        }
+
+        .tiny-label {
+            font-size: 0.7rem;
+        }
+
+        .matrix-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .label-zero {
+            margin: 0;
+        }
+
+        .dims-text {
+            font-size: 0.8rem;
+            margin-right: 10px;
         }
 
         .tabs button {
@@ -316,7 +379,7 @@
         <!-- Sidebar Controls -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <a href="../../index.html" style="color:var(--text-color)"><i class="fas fa-chevron-left"></i></a>
+                <a href="../../index.html" class="back-link"><i class="fas fa-chevron-left"></i></a>
                 <span class="logo-text">ASCII Studio</span>
             </div>
 
@@ -324,25 +387,24 @@
             <div class="control-group">
                 <h3>Source</h3>
                 <div class="control-item">
-                    <div class="tabs"
-                        style="display:flex; gap:5px; background:rgba(0,0,0,0.1); padding:5px; border-radius:8px;">
-                        <button class="btn btn-sm btn-primary" id="modeImg" style="flex:1;">Image</button>
-                        <button class="btn btn-sm btn-secondary" id="modeVid" style="flex:1;">Camera</button>
-                        <button class="btn btn-sm btn-secondary" id="modeText" style="flex:1;">Text</button>
+                    <div class="tabs source-tabs">
+                        <button class="btn btn-sm btn-primary tab-grow" id="modeImg">Image</button>
+                        <button class="btn btn-sm btn-secondary tab-grow" id="modeVid">Camera</button>
+                        <button class="btn btn-sm btn-secondary tab-grow" id="modeText">Text</button>
                     </div>
                 </div>
 
                 <!-- Image Controls -->
                 <div id="imgControls" class="control-item">
                     <label>Upload Image</label>
-                    <input type="file" id="fileInput" accept="image/*" class="form-control" style="font-size:0.8rem;">
+                    <input type="file" id="fileInput" accept="image/*" class="form-control compact-file-input">
                 </div>
 
                 <!-- Text Controls -->
-                <div id="textControls" class="control-item" style="display:none;">
+                <div id="textControls" class="control-item hidden-control">
                     <label>Enter Text</label>
                     <input type="text" id="textInput" class="form-control" placeholder="Type text..." value="VIBOX">
-                    <label style="margin-top:10px">Font Style</label>
+                    <label class="mt-10">Font Style</label>
                     <select id="fontSelect" class="form-control">
                         <option value="monospace">Monospace</option>
                         <option value="sans-serif">Sans Serif</option>
@@ -368,23 +430,23 @@
                         <option value="custom">Custom...</option>
                     </select>
                     <input type="text" id="customCharInput" class="form-control" placeholder="e.g. @#$%"
-                        style="display:none; margin-top:10px;" value="@#$%">
+                        class="hidden-control mt-10" value="@#$%">
                 </div>
 
                 <div class="control-item">
-                    <div style="display:flex; justify-content:space-between;">
+                    <div class="space-between-row">
                         <label>Resolution</label>
-                        <span id="resDisp" style="font-size:0.8rem; opacity:0.7;">100 chars</span>
+                        <span id="resDisp" class="slider-info">100 chars</span>
                     </div>
-                    <input type="range" id="resolution" min="20" max="300" value="100" style="width:100%">
+                    <input type="range" id="resolution" min="20" max="300" value="100" class="w-100">
                 </div>
 
                 <div class="control-item">
-                    <div style="display:flex; justify-content:space-between;">
+                    <div class="space-between-row">
                         <label>Font Size</label>
-                        <span id="sizeDisp" style="font-size:0.8rem; opacity:0.7;">10px</span>
+                        <span id="sizeDisp" class="slider-info">10px</span>
                     </div>
-                    <input type="range" id="fontSize" min="4" max="24" value="10" style="width:100%">
+                    <input type="range" id="fontSize" min="4" max="24" value="10" class="w-100">
                 </div>
             </div>
 
@@ -395,19 +457,19 @@
                 <div class="control-item">
                     <label>Colors</label>
                     <div class="color-picker-row">
-                        <div style="flex:1">
-                            <label style="font-size:0.7rem">Text</label>
+                        <div class="color-col">
+                            <label class="tiny-label">Text</label>
                             <input type="color" id="fgColor" class="color-input" value="#ffffff">
                         </div>
-                        <div style="flex:1">
-                            <label style="font-size:0.7rem">Bg</label>
+                        <div class="color-col">
+                            <label class="tiny-label">Bg</label>
                             <input type="color" id="bgColor" class="color-input" value="#000000">
                         </div>
                     </div>
                 </div>
 
-                <div class="control-item" style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="margin:0">Matrix Mode</label>
+                <div class="control-item matrix-row">
+                    <label class="label-zero">Matrix Mode</label>
                     <label class="toggle-switch">
                         <input type="checkbox" id="matrixToggle">
                         <span class="slider"></span>
@@ -424,7 +486,7 @@
             <div class="preview-toolbar">
                 <span>PREVIEW</span>
                 <div>
-                    <span id="dims" style="font-size:0.8rem; margin-right:10px;">0 x 0</span>
+                    <span id="dims" class="dims-text">0 x 0</span>
                     <button id="dlBtn" class="btn btn-sm btn-secondary"><i class="fas fa-download"></i> Save
                         PNG</button>
                 </div>
@@ -435,7 +497,7 @@
             </div>
 
             <!-- Hidden Video for Processing -->
-            <video id="videoFeed" style="display:none;" autoplay playsinline></video>
+            <video id="videoFeed" class="hidden-control" autoplay playsinline></video>
         </main>
     </div>
 
