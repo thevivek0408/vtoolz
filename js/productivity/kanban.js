@@ -158,6 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
         taskModal.showModal();
     };
 
+    window.closeTaskModal = () => {
+        taskModal.close();
+    };
+
     window.Math.uuid = () => { // Simple ID gen
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
     };

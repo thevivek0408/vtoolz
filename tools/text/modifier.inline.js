@@ -17,6 +17,10 @@ window.apply = (fn) => {
     // window.Utils.showToast('Transformation applied', 'success'); // Common utils
 };
 
+window.applyUpperCase = () => window.apply((text) => text.toUpperCase());
+window.applyLowerCase = () => window.apply((text) => text.toLowerCase());
+window.applyTrimText = () => window.apply((text) => text.trim());
+
 // Find & Replace
 document.getElementById('replace-btn').addEventListener('click', () => {
     const find = document.getElementById('find-text').value;
@@ -29,4 +33,4 @@ document.getElementById('replace-btn').addEventListener('click', () => {
 document.getElementById('copy-btn').addEventListener('click', () => {
     output.select();
     document.execCommand('copy');
-});
+});

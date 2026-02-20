@@ -1,4 +1,14 @@
-﻿document.addEventListener('DOMContentLoaded', async () => {
+﻿window.toggleThemeFromButton = (button) => {
+    const root = document.documentElement;
+    const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    if (button) {
+        button.textContent = nextTheme === 'dark' ? '☀️' : '🌙';
+    }
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
     const grid = document.getElementById('gamesGrid');
     const gameSearch = document.getElementById('gameSearch');
     const categoryTabs = document.getElementById('categoryTabs');

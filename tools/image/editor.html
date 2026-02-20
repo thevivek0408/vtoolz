@@ -19,9 +19,9 @@
         <a href="../../index.html" class="app-logo"><span>V</span> Photo Editor</a>
         <div class="menu-item" data-onclick="toggleDropdown('file-dd')">File
             <div class="dropdown-content" id="file-dd">
-                <div class="dropdown-item" data-onclick="document.getElementById('new-project-modal').style.display='flex'">
+                <div class="dropdown-item" data-onclick="showNewProjectModal()">
                     New Project...</div>
-                <div class="dropdown-item" data-onclick="document.getElementById('file-input-load').click()">Open Project...
+                <div class="dropdown-item" data-onclick="openProjectFilePicker()">Open Project...
                 </div>
                 <div class="dropdown-item" data-onclick="saveProject()">Save Project</div>
                 <div class="dropdown-item" data-onclick="exportImage()">Export as PNG...</div>
@@ -48,8 +48,8 @@
         </div>
         <div class="menu-item" data-onclick="toggleDropdown('select-dd')">Select
             <div class="dropdown-content" id="select-dd">
-                <div class="dropdown-item" data-onclick="state.selection={x:0,y:0,w:state.config.width,h:state.config.height};state.selectionPath=null;state.selectionMask=null;">All <span style='float:right;color:#888'>Ctrl+A</span></div>
-                <div class="dropdown-item" data-onclick="state.selection=null;state.selectionPath=null;state.selectionMask=null;">Deselect <span style='float:right;color:#888'>Ctrl+D</span></div>
+                <div class="dropdown-item" data-onclick="selectAllCanvas()">All <span style='float:right;color:#888'>Ctrl+A</span></div>
+                <div class="dropdown-item" data-onclick="clearSelection()">Deselect <span style='float:right;color:#888'>Ctrl+D</span></div>
             </div>
         </div>
         <div class="menu-item" data-onclick="toggleDropdown('filter-dd')">Filter
@@ -67,8 +67,8 @@
         </div>
         <div class="menu-item" data-onclick="toggleDropdown('view-dd')">View
             <div class="dropdown-content" id="view-dd">
-                <div class="dropdown-item" data-onclick="state.zoom += 0.1; updateZoom();">Zoom In</div>
-                <div class="dropdown-item" data-onclick="state.zoom -= 0.1; updateZoom();">Zoom Out</div>
+                <div class="dropdown-item" data-onclick="zoomInCanvas()">Zoom In</div>
+                <div class="dropdown-item" data-onclick="zoomOutCanvas()">Zoom Out</div>
                 <div class="dropdown-item" data-onclick="openCompareModal()">Compare (Before/After)</div>
             </div>
         </div>
@@ -80,7 +80,7 @@
         </div>
         <div class="menu-item" data-onclick="toggleDropdown('more-dd')">More
             <div class="dropdown-content" id="more-dd">
-                <div class="dropdown-item" data-onclick="document.getElementById('help-modal').style.display='flex'">Help
+                <div class="dropdown-item" data-onclick="showHelpModal()">Help
                 </div>
                 <div class="dropdown-item">About</div>
             </div>
@@ -138,7 +138,7 @@
                     <div class="home-btns">
                         <button class="home-btn" data-onclick="openNewProjectDialog()"><i class="fas fa-file"></i> New
                             Project</button>
-                        <button class="home-btn" data-onclick="document.getElementById('file-upload').click()"><i
+                        <button class="home-btn" data-onclick="openImageFilePicker()"><i
                                 class="fas fa-folder-open"></i> Open From Computer</button>
                     </div>
                     <div class="drop-zone-msg">
@@ -264,7 +264,7 @@
             </div>
             <div class="modal-btns">
                 <button class="btn btn-primary"
-                    data-onclick="document.getElementById('help-modal').style.display='none'">Close</button>
+                    data-onclick="closeHelpModal()">Close</button>
             </div>
         </div>
     </div>
@@ -275,7 +275,7 @@
             <div class="np-header">
                 <h3>New Project</h3>
                 <button class="np-close"
-                    data-onclick="document.getElementById('new-project-modal').style.display='none'">&times;</button>
+                    data-onclick="closeNewProjectModal()">&times;</button>
             </div>
             <div class="np-body">
                 <!-- Sidebar -->
@@ -365,7 +365,7 @@
             </div>
             <div class="modal-btns">
                 <button class="btn btn-secondary"
-                    data-onclick="document.getElementById('resize-modal').style.display='none'">Cancel</button>
+                    data-onclick="closeResizeModal()">Cancel</button>
                 <button class="btn btn-primary" id="btn-do-resize">Apply</button>
             </div>
         </div>
@@ -383,7 +383,7 @@
                     <option value="image/webp">WEBP</option>
                 </select>
                 <button class="btn btn-secondary"
-                    data-onclick="document.getElementById('export-modal').style.display='none'">Cancel</button>
+                    data-onclick="closeExportModal()">Cancel</button>
                 <button class="btn btn-primary" id="btn-do-export">Download</button>
                 <button class="btn" id="btn-share-export"
                     style="display:none; background:var(--accent-color); color:white;"><i
@@ -407,7 +407,7 @@
             </div>
             <div class="modal-btns">
                 <button class="btn btn-secondary"
-                    data-onclick="document.getElementById('huesat-modal').style.display='none'">Cancel</button>
+                    data-onclick="closeHueSatModal()">Cancel</button>
                 <button class="btn btn-primary" id="btn-apply-huesat">Apply</button>
             </div>
         </div>
@@ -418,7 +418,7 @@
         <div class="compare-container">
             <div class="compare-header">
                 <h3>Compare (Before / After)</h3>
-                <button class="icon-btn" data-onclick="document.getElementById('compare-modal').style.display='none'"><i
+                <button class="icon-btn" data-onclick="closeCompareModal()"><i
                         class="fas fa-times"></i></button>
             </div>
             <div class="compare-view" id="compare-view">

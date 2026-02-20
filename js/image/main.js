@@ -264,6 +264,66 @@ window.exportImage = () => {
 window.restoreHistory = restoreHistory;
 window.state = state;
 window.updateZoom = updateZoom;
+window.showNewProjectModal = () => {
+    const modal = document.getElementById('new-project-modal');
+    if (modal) modal.style.display = 'flex';
+};
+window.closeNewProjectModal = () => {
+    const modal = document.getElementById('new-project-modal');
+    if (modal) modal.style.display = 'none';
+};
+window.openProjectFilePicker = () => {
+    const input = document.getElementById('file-input-load');
+    if (input) input.click();
+};
+window.openImageFilePicker = () => {
+    const input = document.getElementById('file-upload');
+    if (input) input.click();
+};
+window.selectAllCanvas = () => {
+    state.selection = { x: 0, y: 0, w: state.config.width, h: state.config.height };
+    state.selectionPath = null;
+    state.selectionMask = null;
+    requestRender();
+};
+window.clearSelection = () => {
+    state.selection = null;
+    state.selectionPath = null;
+    state.selectionMask = null;
+    requestRender();
+};
+window.zoomInCanvas = () => {
+    state.zoom += 0.1;
+    updateZoom();
+};
+window.zoomOutCanvas = () => {
+    state.zoom -= 0.1;
+    updateZoom();
+};
+window.showHelpModal = () => {
+    const modal = document.getElementById('help-modal');
+    if (modal) modal.style.display = 'flex';
+};
+window.closeHelpModal = () => {
+    const modal = document.getElementById('help-modal');
+    if (modal) modal.style.display = 'none';
+};
+window.closeResizeModal = () => {
+    const modal = document.getElementById('resize-modal');
+    if (modal) modal.style.display = 'none';
+};
+window.closeExportModal = () => {
+    const modal = document.getElementById('export-modal');
+    if (modal) modal.style.display = 'none';
+};
+window.closeHueSatModal = () => {
+    const modal = document.getElementById('huesat-modal');
+    if (modal) modal.style.display = 'none';
+};
+window.closeCompareModal = () => {
+    const modal = document.getElementById('compare-modal');
+    if (modal) modal.style.display = 'none';
+};
 window.applyAutoFix = () => {
     // Auto Magic Fix: auto-levels, contrast, sharpening
     const layer = state.layers.find(l => l.id === state.activeLayerId);

@@ -94,9 +94,9 @@
                     <div class="control-group">
                         <h3>Case Converter</h3>
                         <button class="btn btn-secondary btn-block"
-                            data-onclick="apply(t => t.toUpperCase())">UPPERCASE</button>
+                            data-onclick="applyUpperCase()">UPPERCASE</button>
                         <button class="btn btn-secondary btn-block"
-                            data-onclick="apply(t => t.toLowerCase())">lowercase</button>
+                            data-onclick="applyLowerCase()">lowercase</button>
                         <button class="btn btn-secondary btn-block" data-onclick="apply(TextUtils.toTitleCase)">Title
                             Case</button>
                     </div>
@@ -115,7 +115,7 @@
                         <h3>Cleanup</h3>
                         <button class="btn btn-secondary btn-block" data-onclick="apply(TextUtils.removeExtraSpaces)">Fix
                             Spaces</button>
-                        <button class="btn btn-secondary btn-block" data-onclick="apply(t => t.trim())">Trim</button>
+                        <button class="btn btn-secondary btn-block" data-onclick="applyTrimText()">Trim</button>
                     </div>
                 </div>
 

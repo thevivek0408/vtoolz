@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedFiles = []; // Array of File objects
 
+    window.openJpgToPdfPicker = () => {
+        fileInput.click();
+    };
+
     // Handle File Selection
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {

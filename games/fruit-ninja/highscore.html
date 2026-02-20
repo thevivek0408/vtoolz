@@ -72,25 +72,7 @@
       <!-- High scores will be dynamically added here -->
     </tbody>
   </table>
-  <script>
-    // Fetch from LocalStorage instead of Server
-    const scores = JSON.parse(localStorage.getItem('fruitNinjaHighScores')) || [];
-    const highScoresList = document.getElementById("highScoresList");
-
-    if (scores.length === 0) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="2" style="text-align:center;">No high scores yet! Play a game first.</td>`;
-      tr.style.backgroundColor = "#d1ff19ae";
-      highScoresList.appendChild(tr);
-    } else {
-      scores.forEach((score) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${score.name}</td><td>${score.score}</td>`;
-        tr.style.backgroundColor = "#d1ff19ae";
-        highScoresList.appendChild(tr);
-      });
-    }
-  </script>
+  <script src="highscore.inline.js"></script>
 </body>
 
 </html>

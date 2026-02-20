@@ -1,0 +1,5 @@
+﻿HTML scoped: 125
+Inline <script> blocks: 2
+<style> blocks: 92
+style= attributes: 631
+Non-vendor/non-games eval/new Function refs: 1

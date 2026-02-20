@@ -100,6 +100,8 @@ function findInSlides() {
     if (results.length > 0) { selectSlide(results[0].si); }
 }
 
+function closeFindPanel() { _$('findPanel').classList.remove('open'); }
+
 // ── SLIDE PANEL ──
 function renderSlidePanel() {
     const p = _$('slidePanel'); p.innerHTML = '';
@@ -472,4 +474,4 @@ document.addEventListener('keydown', e => {
 function saveToStorage() { try { localStorage.setItem('vibox-ppt-doc', JSON.stringify({ s: slides, t: _$('docTitle').value })); } catch (e) { } }
 function loadFromStorage() { try { const d = JSON.parse(localStorage.getItem('vibox-ppt-doc')); if (d && d.s && d.s.length) { slides = d.s; curSlide = 0; if (d.t) _$('docTitle').value = d.t; renderSlidePanel(); renderSlide(); updateNotes(); return true; } } catch (e) { } return false; }
 
-init();
+init();

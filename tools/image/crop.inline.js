@@ -35,6 +35,12 @@ const checkCropper = setInterval(() => {
     if (cropper) window.cropper = cropper;
 }, 100);
 
+window.flipCropHorizontal = () => {
+    if (!cropper) return;
+    window.scaleXVal = (window.scaleXVal || 1) * -1;
+    cropper.scaleX(window.scaleXVal);
+};
+
 
 document.getElementById('crop-btn').addEventListener('click', () => {
     if (!cropper) return;
@@ -42,4 +48,4 @@ document.getElementById('crop-btn').addEventListener('click', () => {
     cropper.getCroppedCanvas().toBlob((blob) => {
         window.Utils.downloadBlob(blob, `cropped-${fileName}`);
     });
-});
+});

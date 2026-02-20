@@ -15,6 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let audioBuffer;
     let originalFile;
 
+    window.openAudioTrimmerPicker = () => {
+        fileInput.click();
+    };
+
     // Handle File Upload
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length) loadFile(e.target.files[0]);
