@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'vtoolz-v44';
+const CACHE_VERSION = 'vtoolz-v45';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const CDN_CACHE = `${CACHE_VERSION}-cdn`;
@@ -51,6 +51,10 @@ const SECONDARY_ASSETS = [
     './tools/math/index.html',
     './tools/time/index.html',
     './tools/utility/index.html',
+
+    // Hotfix-targeted page
+    './tools/pdf/pdf-to-img.html',
+    './tools/pdf/pdf-to-img.app.js',
 
     // Core tool scripts
     './js/pdf/pdf-main.js',
@@ -179,6 +183,23 @@ self.addEventListener('fetch', (event) => {
     // Skip non-GET, chrome-extension, etc.
     if (request.method !== 'GET') return;
     if (!url.protocol.startsWith('http')) return;
+
+    // Strategy 0: Always prefer network for PDF-to-Image page/scripts (hotfix path)
+    // This avoids stale cache serving older broken versions.
+    if (url.origin === self.location.origin &&
+        (url.pathname.endsWith('/tools/pdf/pdf-to-img.html') ||
+            url.pathname.endsWith('/tools/pdf/pdf-to-img.inline.js') ||
+            url.pathname.endsWith('/tools/pdf/pdf-to-img.app.js'))) {
+        event.respondWith(
+            fetch(request).then(response => {
+                if (response && response.ok) {
+                    caches.open(STATIC_CACHE).then(cache => cache.put(request, response.clone()));
+                }
+                return response;
+            }).catch(() => caches.match(request).then(cached => cached || caches.match('./offline.html')))
+        );
+        return;
+    }
 
     // Strategy 1: CDN resources (Font Awesome, Google Fonts, cdnjs, jsdelivr)
     // → Cache-First (these are versioned/immutable)
