@@ -70,6 +70,38 @@
         .check-mark::before {
             content: '?';
         }
+
+        .delete-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .delete-controls {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .warn-center {
+            text-align: center;
+        }
+
+        .delete-toolbar {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .delete-action {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .delete-btn {
+            min-width: 200px;
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
     </style>
 </head>
 
@@ -93,7 +125,7 @@
                 <span class="step">3. Download</span>
             </div>
 
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="delete-hero">
                 <h1>Delete Pages</h1>
                 <p class="text-muted">Select the pages you want to REMOVE from the document.</p>
             </div>
@@ -105,21 +137,20 @@
                 <input type="file" id="file-input" accept="application/pdf" hidden>
             </div>
 
-            <div id="controls" style="display:none; margin-top: 20px;">
-                <div class="alert alert-warning" style="text-align: center;">
+            <div id="controls" class="delete-controls">
+                <div class="alert alert-warning warn-center">
                     Selected pages will be <strong>permanently deleted</strong>.
                 </div>
 
-                <div class="toolbar" style="margin-bottom: 1rem; display: flex; gap: 10px; justify-content: center;">
+                <div class="toolbar delete-toolbar">
                     <button id="select-all-btn" class="btn btn-secondary">Select All</button>
                     <button id="deselect-all-btn" class="btn btn-secondary">Deselect All</button>
                 </div>
 
                 <div id="page-grid" class="page-grid"></div>
 
-                <div class="action-bar" style="text-align: center; margin-top: 2rem;">
-                    <button id="delete-btn" class="btn btn-primary"
-                        style="min-width: 200px; background-color: #e74c3c; border-color: #e74c3c;">
+                <div class="action-bar delete-action">
+                    <button id="delete-btn" class="btn btn-primary delete-btn">
                         Delete Selected Pages
                     </button>
                 </div>

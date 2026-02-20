@@ -415,6 +415,31 @@
             .find-panel input { width: 100px; }
             .formula-bar { flex-wrap: wrap; }
         }
+
+        .excel-tool-container {
+            padding-top: 20px;
+            max-width: 1200px;
+        }
+
+        .excel-color-input {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .find-close-btn {
+            margin-left: auto;
+        }
+
+        .excel-file-icon {
+            color: var(--xgl);
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
     </style>
 </head>
 
@@ -432,16 +457,16 @@
     </header>
 
     <main>
-        <div class="container tool-container" style="padding-top:20px;max-width:1200px;">
+        <div class="container tool-container excel-tool-container">
             <div class="excel-app">
                 <div class="excel-toolbar">
                     <div class="tg">
                         <button id="btnBold" title="Bold"><i class="fas fa-bold"></i></button>
                         <button id="btnItalic" title="Italic"><i class="fas fa-italic"></i></button>
                         <input type="color" id="cellBg" value="#ffffff" title="Cell Background"
-                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
+                            class="excel-color-input">
                         <input type="color" id="cellFg" value="#000000" title="Font Color"
-                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
+                            class="excel-color-input">
                     </div>
                     <div class="tg">
                         <button id="btnAlignL" title="Left"><i class="fas fa-align-left"></i></button>
@@ -492,11 +517,11 @@
                     <button data-onclick="replaceInSheet()">Replace</button>
                     <button data-onclick="replaceAllInSheet()">All</button>
                     <span class="count" id="findCount"></span>
-                    <button data-onclick="closeFindPanel()" style="margin-left:auto;">?</button>
+                    <button data-onclick="closeFindPanel()" class="find-close-btn">?</button>
                 </div>
 
                 <div class="doc-title-bar">
-                    <i class="fas fa-file-excel" style="color:var(--xgl);"></i>
+                    <i class="fas fa-file-excel excel-file-icon"></i>
                     <input type="text" id="docTitle" value="Untitled Spreadsheet" placeholder="Spreadsheet name...">
                 </div>
 
@@ -554,7 +579,7 @@
         </div>
     </div>
 
-    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="hidden-file-input">
 
     <footer>
         <div class="container">
