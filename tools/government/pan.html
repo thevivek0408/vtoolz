@@ -102,6 +102,49 @@
             cursor: pointer;
             z-index: 100;
         }
+
+        .pan-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .drop-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .result-hidden {
+            display: none;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .img-photo-preview {
+            max-width: 100%;
+            max-height: 200px;
+        }
+
+        .img-sign-preview {
+            max-width: 100%;
+            max-height: 150px;
+        }
+
+        .download-link {
+            margin-top: 10px;
+        }
+
+        .note-top {
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -120,7 +163,7 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="pan-head">
                 <h1>PAN Card Tools</h1>
                 <p class="text-muted">Prepare files for NSDL & UTIITSL Applications.</p>
             </div>
@@ -139,26 +182,25 @@
                     <p class="text-small text-muted">Auto-resize to 213x213px (approx) & Compress to under 50KB.</p>
 
                     <div class="drop-area" id="drop-photo">
-                        <i class="fas fa-image"
-                            style="font-size: 2rem; margin-bottom: 10px; color: var(--text-color);"></i>
+                        <i class="fas fa-image drop-icon"></i>
                         <p>Drop Photo Here</p>
-                        <input type="file" id="input-photo" accept="image/jpeg, image/jpg" style="display: none;">
+                        <input type="file" id="input-photo" accept="image/jpeg, image/jpg" class="hidden-input">
                     </div>
 
-                    <div id="result-photo" style="display: none;" class="preview-box">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div id="result-photo" class="preview-box result-hidden">
+                        <div class="result-grid">
                             <div>
                                 <h4>Original</h4>
-                                <img id="img-photo-orig" style="max-width: 100%; max-height: 200px;">
+                                <img id="img-photo-orig" class="img-photo-preview">
                                 <p id="info-photo-orig"></p>
                             </div>
                             <div>
                                 <h4>PAN Ready</h4>
-                                <img id="img-photo-new" style="max-width: 100%; max-height: 200px;">
+                                <img id="img-photo-new" class="img-photo-preview">
                                 <p id="info-photo-new"></p>
                                 <div id="badge-photo" class="status-badge"></div>
                                 <br>
-                                <a id="dl-photo" class="btn btn-primary btn-sm" style="margin-top: 10px;">Download</a>
+                                <a id="dl-photo" class="btn btn-primary btn-sm download-link">Download</a>
                             </div>
                         </div>
                     </div>
@@ -172,26 +214,25 @@
                     <p class="text-small text-muted">Compress to under 20KB (JPG).</p>
 
                     <div class="drop-area" id="drop-sig">
-                        <i class="fas fa-file-signature"
-                            style="font-size: 2rem; margin-bottom: 10px; color: var(--text-color);"></i>
+                        <i class="fas fa-file-signature drop-icon"></i>
                         <p>Drop Signature Scan Here</p>
-                        <input type="file" id="input-sig" accept="image/jpeg, image/jpg" style="display: none;">
+                        <input type="file" id="input-sig" accept="image/jpeg, image/jpg" class="hidden-input">
                     </div>
 
-                    <div id="result-sig" style="display: none;" class="preview-box">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div id="result-sig" class="preview-box result-hidden">
+                        <div class="result-grid">
                             <div>
                                 <h4>Original</h4>
-                                <img id="img-sig-orig" style="max-width: 100%; max-height: 150px;">
+                                <img id="img-sig-orig" class="img-sign-preview">
                                 <p id="info-sig-orig"></p>
                             </div>
                             <div>
                                 <h4>PAN Ready</h4>
-                                <img id="img-sig-new" style="max-width: 100%; max-height: 150px;">
+                                <img id="img-sig-new" class="img-sign-preview">
                                 <p id="info-sig-new"></p>
                                 <div id="badge-sig" class="status-badge"></div>
                                 <br>
-                                <a id="dl-sig" class="btn btn-primary btn-sm" style="margin-top: 10px;">Download</a>
+                                <a id="dl-sig" class="btn btn-primary btn-sm download-link">Download</a>
                             </div>
                         </div>
                     </div>
@@ -205,17 +246,16 @@
                     <p class="text-small text-muted">Ensure PDF is under 1MB.</p>
 
                     <div class="drop-area" id="drop-doc">
-                        <i class="fas fa-file-alt"
-                            style="font-size: 2rem; margin-bottom: 10px; color: var(--text-color);"></i>
+                        <i class="fas fa-file-alt drop-icon"></i>
                         <p>Drop PDF Document Here</p>
-                        <input type="file" id="input-doc" accept="application/pdf" style="display: none;">
+                        <input type="file" id="input-doc" accept="application/pdf" class="hidden-input">
                     </div>
 
-                    <div id="result-doc" style="display: none;" class="preview-box">
+                    <div id="result-doc" class="preview-box result-hidden">
                         <h4>File Analysis</h4>
                         <p id="info-doc"></p>
                         <div id="badge-doc" class="status-badge"></div>
-                        <p class="text-muted text-small" style="margin-top: 10px;">
+                        <p class="text-muted text-small note-top">
                             Note: If your PDF is mainly images and still too large, try converting pages to images,
                             compressing them, and re-making the PDF using our
                             <a href="../pdf/pdf-to-img.html">PDF Tools</a>.

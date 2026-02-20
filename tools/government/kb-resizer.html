@@ -47,6 +47,99 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .kb-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .privacy-top {
+            margin-top: 10px;
+        }
+
+        .drop-zone-panel {
+            border: 3px dashed var(--primary-color);
+            padding: 50px;
+            text-align: center;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .drop-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .workspace-hidden {
+            display: none;
+        }
+
+        .target-col {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .target-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .preset-wrap {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .preset-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .img-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+        }
+
+        .new-size-text {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .img-result {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            border: 2px solid var(--accent-color);
+        }
+
+        .loader-hidden {
+            display: none;
+            margin-top: 10px;
+            color: var(--text-muted);
+        }
+
+        .actions-row {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-new {
+            margin-left: 10px;
+        }
     </style>
 </head>
 
@@ -65,40 +158,37 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="kb-head">
                 <h1><i class="fas fa-compress-arrows-alt"></i> Image Size Reducer (KB)</h1>
                 <p class="text-muted">Reduce image size to exactly under 50KB, 20KB, etc. for Exam Uploads.</p>
-                <div class="privacy-badge" style="margin-top: 10px;">
+                <div class="privacy-badge privacy-top">
                     <i class="fas fa-shield-alt"></i> 100% Client-Side. No uploads.
                 </div>
             </div>
 
             <div class="tool-card">
-                <div id="drop-area"
-                    style="border: 3px dashed var(--primary-color); padding: 50px; text-align: center; border-radius: 16px; cursor: pointer; transition: 0.3s;">
-                    <i class="fas fa-file-image"
-                        style="font-size: 4rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                <div id="drop-area" class="drop-zone-panel">
+                    <i class="fas fa-file-image drop-icon"></i>
                     <h3>Drop Photo/Sign Here</h3>
                     <p class="text-muted">or click to browse</p>
                 </div>
                 <!-- Input outside dropzone for safety -->
-                <input type="file" id="file-input" accept="image/*" style="display: none;">
+                <input type="file" id="file-input" accept="image/*" class="hidden-input">
 
-                <div id="workspace" style="display: none;">
+                <div id="workspace" class="workspace-hidden">
                     <div class="kb-controls">
-                        <div style="flex: 1; min-width: 250px;">
+                        <div class="target-col">
                             <label>Target File Size (Max KB)</label>
-                            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                            <div class="target-row">
                                 <input type="number" id="target-kb" class="form-control" value="50" min="10" max="5000">
                                 <button id="btn-process" class="btn btn-primary">Compress</button>
                             </div>
                         </div>
                     </div>
 
-                    <div style="text-align: center; margin-bottom: 15px;">
+                    <div class="preset-wrap">
                         <span class="text-muted">Common Presets:</span>
-                        <div
-                            style="display: flex; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                        <div class="preset-row">
                             <div class="preset-chip active" data-kb="50">50 KB (Photo)</div>
                             <div class="preset-chip" data-kb="20">20 KB (Sign)</div>
                             <div class="preset-chip" data-kb="100">100 KB (Doc)</div>
@@ -107,27 +197,26 @@
                     </div>
 
                     <div class="comparison-view">
-                        <div style="text-align: center;">
+                        <div class="text-center">
                             <h4>Original</h4>
                             <p id="org-size" class="text-muted">-</p>
-                            <img id="img-original" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
+                            <img id="img-original" class="img-preview">
                         </div>
-                        <div style="text-align: center;">
+                        <div class="text-center">
                             <h4>Result</h4>
-                            <p id="new-size" style="color: var(--accent-color); font-weight: bold;">-</p>
-                            <img id="img-result"
-                                style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 2px solid var(--accent-color);">
-                            <div id="loader" style="display: none; margin-top: 10px; color: var(--text-muted);">
+                            <p id="new-size" class="new-size-text">-</p>
+                            <img id="img-result" class="img-result">
+                            <div id="loader" class="loader-hidden">
                                 <i class="fas fa-spinner fa-spin"></i> Compressing...
                             </div>
                         </div>
                     </div>
 
-                    <div style="text-align: center; margin-top: 30px;">
+                    <div class="actions-row">
                         <button id="btn-download" class="btn btn-primary btn-lg" disabled>
                             <i class="fas fa-download"></i> Download Image
                         </button>
-                        <button id="btn-new" class="btn btn-secondary btn-lg" style="margin-left: 10px;">
+                        <button id="btn-new" class="btn btn-secondary btn-lg btn-new">
                             New Image
                         </button>
                     </div>

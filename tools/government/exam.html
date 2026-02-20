@@ -20,6 +20,64 @@
             transform: none;
             box-shadow: none;
         }
+
+        .exam-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .exam-card {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .requirements-box {
+            background: var(--surface-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .requirements-title {
+            margin-top: 0;
+        }
+
+        .requirements-list {
+            padding-left: 20px;
+            font-size: 0.9rem;
+        }
+
+        .tab-panel {
+            margin-top: 20px;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .hidden-input,
+        .hidden-panel {
+            display: none;
+        }
+
+        .result-box {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .photo-preview {
+            max-height: 200px;
+            max-width: 100%;
+        }
+
+        .sig-preview {
+            max-height: 100px;
+            max-width: 100%;
+        }
     </style>
 </head>
 
@@ -38,12 +96,12 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="exam-head">
                 <h1>Exam & Education Tools</h1>
                 <p class="text-muted">Prepare files for SSC, UPSC, NEET, JEE, and other entrance exams.</p>
             </div>
 
-            <div class="tool-card" style="max-width: 600px; margin: 0 auto;">
+            <div class="tool-card exam-card">
                 <div class="form-group">
                     <label>Select Exam / Board</label>
                     <select id="exam-select" class="form-control">
@@ -55,10 +113,9 @@
                     </select>
                 </div>
 
-                <div id="requirements-box"
-                    style="background: var(--surface-color); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color);">
-                    <h4 style="margin-top:0;">Requirements for <span id="req-title">SSC</span></h4>
-                    <ul style="padding-left: 20px; font-size: 0.9rem;" id="req-list">
+                <div id="requirements-box" class="requirements-box">
+                    <h4 class="requirements-title">Requirements for <span id="req-title">SSC</span></h4>
+                    <ul class="requirements-list" id="req-list">
                         <!-- Populated by JS -->
                     </ul>
                 </div>
@@ -69,28 +126,26 @@
                 </div>
 
                 <!-- Photo Section -->
-                <div id="photo-section" class="tab-content active" style="margin-top: 20px;">
-                    <div id="drop-photo"
-                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
+                <div id="photo-section" class="tab-content active tab-panel">
+                    <div id="drop-photo" class="drop-zone">
                         <i class="fas fa-camera"></i> Upload Photo
-                        <input type="file" id="input-photo" accept="image/jpeg" style="display: none;">
+                        <input type="file" id="input-photo" accept="image/jpeg" class="hidden-input">
                     </div>
-                    <div id="result-photo" style="display: none; margin-top: 15px; text-align: center;">
-                        <img id="img-photo" style="max-height: 200px; max-width: 100%;">
+                    <div id="result-photo" class="hidden-panel result-box">
+                        <img id="img-photo" class="photo-preview">
                         <p id="info-photo"></p>
                         <button id="btn-dl-photo" class="btn btn-primary btn-sm">Download Ready Photo</button>
                     </div>
                 </div>
 
                 <!-- Signature Section -->
-                <div id="sig-section" class="tab-content" style="margin-top: 20px; display: none;">
-                    <div id="drop-sig"
-                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
+                <div id="sig-section" class="tab-content tab-panel hidden-panel">
+                    <div id="drop-sig" class="drop-zone">
                         <i class="fas fa-pen"></i> Upload Signature
-                        <input type="file" id="input-sig" accept="image/jpeg" style="display: none;">
+                        <input type="file" id="input-sig" accept="image/jpeg" class="hidden-input">
                     </div>
-                    <div id="result-sig" style="display: none; margin-top: 15px; text-align: center;">
-                        <img id="img-sig" style="max-height: 100px; max-width: 100%;">
+                    <div id="result-sig" class="hidden-panel result-box">
+                        <img id="img-sig" class="sig-preview">
                         <p id="info-sig"></p>
                         <button id="btn-dl-sig" class="btn btn-primary btn-sm">Download Ready Signature</button>
                     </div>

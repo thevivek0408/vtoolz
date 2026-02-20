@@ -47,6 +47,61 @@
             padding: 15px;
             border-radius: 8px;
         }
+
+        .passport-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .passport-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .drop-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hidden-input,
+        .hidden-panel {
+            display: none;
+        }
+
+        .photo-preview {
+            max-width: 100%;
+            max-height: 300px;
+        }
+
+        .sig-preview {
+            max-width: 100%;
+            max-height: 150px;
+        }
+
+        .action-row {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .status-top {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .passport-layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -65,35 +120,34 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="passport-head">
                 <h1>Passport Seva Tools</h1>
                 <p class="text-muted">Prepare Photo (3.5x4.5cm) and Signature for Indian Passport.</p>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div class="passport-layout">
                 <!-- Photo Tool -->
                 <div class="tool-card">
                     <h3><i class="fas fa-user-circle"></i> Passport Photo Maker</h3>
                     <p class="text-small text-muted">Resize to 3.5x4.5cm & Compress (20-50KB).</p>
 
-                    <div id="drop-photo"
-                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
-                        <i class="fas fa-camera" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <div id="drop-photo" class="drop-zone">
+                        <i class="fas fa-camera drop-icon"></i>
                         <p>Upload Photo</p>
-                        <input type="file" id="input-photo" accept="image/jpeg, image/jpg" style="display: none;">
+                        <input type="file" id="input-photo" accept="image/jpeg, image/jpg" class="hidden-input">
                     </div>
 
-                    <div id="result-photo" style="display: none; margin-top: 20px;">
+                    <div id="result-photo" class="hidden-panel preview-box">
                         <div class="passport-container">
-                            <img id="img-photo-preview" style="max-width: 100%; max-height: 300px;">
+                            <img id="img-photo-preview" class="photo-preview">
                             <div class="passport-grid-overlay" id="grid-overlay"></div>
                         </div>
 
-                        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                        <div class="action-row">
                             <button class="btn btn-secondary btn-sm" id="btn-toggle-grid">Toggle Grid</button>
                             <button class="btn btn-primary btn-sm" id="btn-process-photo">Compress & Download</button>
                         </div>
-                        <p id="photo-status" class="text-muted text-center" style="margin-top: 10px;"></p>
+                        <p id="photo-status" class="text-muted text-center status-top"></p>
                     </div>
                 </div>
 
@@ -102,15 +156,14 @@
                     <h3><i class="fas fa-signature"></i> Signature Compressor</h3>
                     <p class="text-small text-muted">Compress to under 20KB (JPG).</p>
 
-                    <div id="drop-sig"
-                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
-                        <i class="fas fa-pen-fancy" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <div id="drop-sig" class="drop-zone">
+                        <i class="fas fa-pen-fancy drop-icon"></i>
                         <p>Upload Signature</p>
-                        <input type="file" id="input-sig" accept="image/jpeg, image/jpg" style="display: none;">
+                        <input type="file" id="input-sig" accept="image/jpeg, image/jpg" class="hidden-input">
                     </div>
 
-                    <div id="result-sig" style="display: none; margin-top: 20px;">
-                        <img id="img-sig-preview" style="max-width: 100%; max-height: 150px;">
+                    <div id="result-sig" class="hidden-panel preview-box">
+                        <img id="img-sig-preview" class="sig-preview">
                         <p id="sig-info"></p>
                         <button class="btn btn-primary btn-sm btn-block" id="btn-process-sig">Compress &
                             Download</button>

@@ -52,6 +52,75 @@
             border-radius: 50%;
             overflow: hidden;
         }
+
+        .signature-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .toolbar-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--border-color);
+        }
+
+        .control-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .pen-color-input {
+            border: 2px solid var(--border-color);
+        }
+
+        .width-slider {
+            accent-color: var(--primary-color);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .compact-btn {
+            padding: 8px 15px;
+        }
+
+        .canvas-wrapper {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 10px;
+        }
+
+        .signature-canvas {
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .actions-row {
+            text-align: center;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .footer-meta {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .stats-widget {
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 
@@ -71,41 +140,35 @@
 
     <main class="fade-in-up">
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="signature-head">
                 <h1>Signature Pad</h1>
                 <p class="text-muted">Draw your signature digitally. Private & Client-side only.</p>
             </div>
 
-            <div class="toolbar"
-                style="background: rgba(255,255,255,0.05); backdrop-filter: blur(5px); border: 1px solid var(--border-color);">
+            <div class="toolbar toolbar-glass">
                 <div>
-                    <label style="color:var(--text-muted); font-size:0.9rem; margin-bottom:5px; display:block;">Ink
+                    <label class="control-label">Ink
                         Color</label>
-                    <input type="color" id="penColor" value="#000000" class="color-picker"
-                        style="border: 2px solid var(--border-color);">
+                    <input type="color" id="penColor" value="#000000" class="color-picker pen-color-input">
                 </div>
                 <div>
-                    <label
-                        style="color:var(--text-muted); font-size:0.9rem; margin-bottom:5px; display:block;">Thickness</label>
+                    <label class="control-label">Thickness</label>
                     <input type="range" id="penWidth" min="1" max="10" value="2"
-                        style="accent-color: var(--primary-color);">
+                        class="width-slider">
                 </div>
-                <div style="display:flex; gap:10px; align-items:end;">
-                    <button id="clearBtn" class="btn btn-danger" style="padding: 8px 15px;"><i class="fas fa-trash"></i>
+                <div class="btn-row">
+                    <button id="clearBtn" class="btn btn-danger compact-btn"><i class="fas fa-trash"></i>
                         Clear</button>
-                    <button id="undoBtn" class="btn btn-secondary" style="padding: 8px 15px;"><i
+                    <button id="undoBtn" class="btn btn-secondary compact-btn"><i
                             class="fas fa-undo"></i> Undo</button>
                 </div>
             </div>
 
-            <div class="canvas-wrapper"
-                style="text-align:center; padding: 20px; background: rgba(0,0,0,0.02); border-radius: 10px;">
-                <canvas id="sigCanvas" width="600" height="300" class="canvas-container"
-                    style="background:#fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);" id="sigCanvasEl"></canvas>
+            <div class="canvas-wrapper">
+                <canvas id="sigCanvas" width="600" height="300" class="canvas-container signature-canvas"></canvas>
             </div>
 
-            <div class="actions"
-                style="text-align: center; margin-top: 30px; display:flex; justify-content:center; gap:15px; flex-wrap:wrap;">
+            <div class="actions actions-row">
                 <button id="downloadPngBtn" class="btn btn-primary btn-lg"><i class="fas fa-download"></i> Download PNG
                     (Transparent)</button>
                 <button id="downloadJpgBtn" class="btn btn-secondary btn-lg"><i class="fas fa-file-image"></i> Download
@@ -116,9 +179,9 @@
 
     <footer>
         <div class="container">
-            <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">
+            <div class="footer-meta">
                 &copy; 2024 VtoolZ. Privacy First.
-                <div id="stats-widget" style="margin-top: 10px; font-size: 0.8rem;"></div>
+                <div id="stats-widget" class="stats-widget"></div>
             </div>
         </div>
     </footer>
