@@ -52,6 +52,30 @@
             cursor: pointer;
             padding: 5px;
         }
+
+        .jpg2pdf-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .jpg2pdf-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .add-icon {
+            font-size: 1.2rem;
+        }
+
+        .empty-hint {
+            margin-top: 70px;
+        }
+
+        .tip-alert {
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -70,15 +94,15 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="jpg2pdf-hero">
                 <h1>Document Compiler (JPG to PDF)</h1>
                 <p class="text-muted">Combine photos of documents into a single PDF for application uploads.</p>
             </div>
 
             <div class="tool-card">
-                <div class="action-bar" style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
+                <div class="action-bar jpg2pdf-actions">
                     <button class="btn btn-primary" data-onclick="openJpgToPdfPicker()">
-                        <span style="font-size:1.2rem;">+</span> Add Photos
+                        <span class="add-icon">+</span> Add Photos
                     </button>
                     <button id="btn-create-pdf" class="btn btn-success" disabled>
                         Create PDF
@@ -89,14 +113,14 @@
                 <p class="text-center text-muted">A4 Paper Size � Standard Margins � Optimized for Uploads</p>
 
                 <div id="file-list" class="file-list-area">
-                    <p class="text-center text-muted" style="margin-top: 70px;">
+                    <p class="text-center text-muted empty-hint">
                         No pages yet. Click 'Add Photos' to start.<br>
                         Drag items to reorder pages.
                     </p>
                 </div>
             </div>
 
-            <div class="alert alert-info" style="margin-top: 20px;">
+            <div class="alert alert-info tip-alert">
                 <strong>Tip:</strong> Ensure your photos are clear and legible. This tool automatically centers them on
                 A4
                 pages.

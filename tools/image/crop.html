@@ -31,6 +31,32 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+
+        .crop-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .editor-hidden {
+            display: none;
+        }
+
+        .cropper-wrapper-styled {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .crop-preview-tight {
+            margin-top: 0;
+        }
+
+        .crop-controls {
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 15px;
+        }
     </style>
 </head>
 
@@ -54,7 +80,7 @@
                     <span class="step">3. Download</span>
                 </div>
 
-                <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="crop-hero">
                     <h1>Image Cropper</h1>
                     <p class="text-muted">Crop, rotate, and adjust your images.</p>
                 </div>
@@ -66,15 +92,14 @@
                     <input type="file" id="file-input" accept="image/*" hidden>
                 </div>
 
-                <div id="editor-area" style="display:none;">
-                    <div class="cropper-wrapper"
-                        style="border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #000;">
-                        <div class="crop-preview" style="margin-top:0;">
+                <div id="editor-area" class="editor-hidden">
+                    <div class="cropper-wrapper cropper-wrapper-styled">
+                        <div class="crop-preview crop-preview-tight">
                             <img id="image-to-crop" src="">
                         </div>
                     </div>
 
-                    <div class="controls" style="justify-content: center; margin-top: 2rem; gap: 15px;">
+                    <div class="controls crop-controls">
                         <button id="crop-btn" class="btn btn-primary">Crop & Download</button>
                         <button class="btn btn-secondary" data-onclick="cropper.rotate(90)">Rotate ?</button>
                         <button class="btn btn-secondary"
