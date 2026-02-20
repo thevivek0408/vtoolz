@@ -152,6 +152,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     document.addEventListener("keydown", control)
 
+    // Touch / swipe support
+    let touchStartX = 0
+    let touchStartY = 0
+    let touchEndX = 0
+    let touchEndY = 0
+    const minSwipeDistance = 30
+
+    gridDisplay.addEventListener("touchstart", function (e) {
+        touchStartX = e.changedTouches[0].screenX
+        touchStartY = e.changedTouches[0].screenY
+    }, { passive: true })
+
+    gridDisplay.addEventListener("touchmove", function (e) {
+        e.preventDefault()
+    }, { passive: false })
+
+    gridDisplay.addEventListener("touchend", function (e) {
+        touchEndX = e.changedTouches[0].screenX
+        touchEndY = e.changedTouches[0].screenY
+        handleSwipe()
+    }, { passive: true })
+
+    function handleSwipe() {
+        let dx = touchEndX - touchStartX
+        let dy = touchEndY - touchStartY
+        let absDx = Math.abs(dx)
+        let absDy = Math.abs(dy)
+
+        if (Math.max(absDx, absDy) < minSwipeDistance) return
+
+        if (absDx > absDy) {
+            dx > 0 ? keyRight() : keyLeft()
+        } else {
+            dy > 0 ? keyDown() : keyUp()
+        }
+    }
+
     function keyLeft() {
         moveLeft()
         combineRow()
