@@ -40,6 +40,49 @@
             color: var(--text-muted);
             font-size: 0.9rem;
         }
+
+        .age-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .age-form-card {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .mt-15 {
+            margin-top: 15px;
+        }
+
+        .mt-25 {
+            margin-top: 25px;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .age-unit {
+            font-size: 1rem;
+        }
+
+        .eligibility-wrap {
+            margin-top: 20px;
+        }
+
+        .footer-note {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .stats-widget {
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 
@@ -59,38 +102,38 @@
 
     <main class="fade-in-up">
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="age-hero">
                 <h1>Age Calculator</h1>
                 <p class="text-muted">Calculate your exact age for Government Exam Eligibility (SSC, UPSC, Banking).</p>
             </div>
 
-            <div class="tool-card" style="max-width: 500px; margin: 0 auto; background: rgba(255,255,255,0.02);">
+            <div class="tool-card age-form-card">
                 <div class="form-group">
                     <label>Date of Birth</label>
                     <input type="date" id="dob" class="form-control" required>
                 </div>
 
-                <div class="form-group" style="margin-top: 15px;">
+                <div class="form-group mt-15">
                     <label>Age at the Date of</label>
                     <input type="date" id="ref-date" class="form-control">
                     <small class="text-muted">Default is today.</small>
                 </div>
 
-                <div class="action-bar" style="margin-top: 25px;">
+                <div class="action-bar mt-25">
                     <button id="btn-calc" class="btn btn-primary btn-block">Calculate Age</button>
-                    <button id="btn-reset" class="btn btn-secondary btn-block" style="margin-top: 10px;">Reset</button>
+                    <button id="btn-reset" class="btn btn-secondary btn-block mt-10">Reset</button>
                 </div>
             </div>
 
             <div id="result" class="result-card fade-in-up">
                 <div class="age-big">
-                    <span id="res-years">0</span><span style="font-size:1rem;"> Years</span>
+                    <span id="res-years">0</span><span class="age-unit"> Years</span>
                 </div>
                 <div class="age-details">
                     <span id="res-months">0</span> Months, <span id="res-days">0</span> Days
                 </div>
 
-                <div id="eligibility-box" style="margin-top: 20px;">
+                <div id="eligibility-box" class="eligibility-wrap">
                     <!-- Populated by JS -->
                 </div>
 
@@ -104,9 +147,9 @@
 
     <footer>
         <div class="container">
-            <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">
+            <div class="footer-note">
                 &copy; 2024 VtoolZ. Privacy First.
-                <div id="stats-widget" style="margin-top: 10px; font-size: 0.8rem;"></div>
+                <div id="stats-widget" class="stats-widget"></div>
             </div>
         </div>
     </footer>
