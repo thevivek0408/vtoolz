@@ -13,15 +13,15 @@ h1{font-size:1.5rem;margin-bottom:6px;background:linear-gradient(135deg,#fd79a8,
 .controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
 .controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
 .controls button:hover,.controls button.active{background:#e84393;border-color:#e84393;color:#fff}
-.board{display:grid;gap:8px;max-width:min(95vw,520px);margin:0 auto}
-.card{aspect-ratio:1;border-radius:10px;cursor:pointer;position:relative;transform-style:preserve-3d;transition:transform .4s;perspective:600px}
+.board{display:grid;gap:8px;max-width:min(95vw,560px);margin:0 auto}
+.card{aspect-ratio:1;border-radius:10px;cursor:pointer;position:relative;transform-style:preserve-3d;transition:transform .4s;perspective:600px;min-width:0;min-height:40px}
 .card.flipped{transform:rotateY(180deg)}
 .card.matched{transform:rotateY(180deg)}
 .card.matched .front{box-shadow:0 0 15px #fd79a844}
 .card .front,.card .back{position:absolute;width:100%;height:100%;border-radius:10px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center}
 .card .back{background:linear-gradient(135deg,#2a1a3e,#1e1e3a);border:2px solid #444;font-size:1.5rem;color:#666}
 .card .back::after{content:'?';font-size:clamp(18px,5vw,32px);color:#555}
-.card .front{background:linear-gradient(135deg,#2a1a4e,#1a1a2e);border:2px solid #fd79a844;transform:rotateY(180deg);font-size:clamp(24px,7vw,48px)}
+.card .front{background:linear-gradient(135deg,#2a1a4e,#1a1a2e);border:2px solid #fd79a844;transform:rotateY(180deg);font-size:clamp(22px,6vw,48px)}
 .card.matched .front{border-color:#fd79a8;background:linear-gradient(135deg,#3a1a4e,#2a1a3e)}
 .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:10}
 .modal.show{display:flex}
@@ -29,6 +29,7 @@ h1{font-size:1.5rem;margin-bottom:6px;background:linear-gradient(135deg,#fd79a8,
 .modal-content h2{color:#fd79a8;margin-bottom:8px}
 .modal-content p{color:#aaa;margin-bottom:16px}
 .modal-content button{background:#e84393;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:1rem}
+@media(max-width:400px){.board{gap:5px}}
 </style>
 </head>
 <body>
@@ -63,7 +64,10 @@ function startGame(size){
   let cols,rows;
   if(size===4){cols=4;rows=4}
   else if(size===6){cols=6;rows=6}
-  else{cols=8;rows=4}
+  else{
+    // 8x4: use 4 cols x 8 rows on narrow screens for bigger cards
+    if(window.innerWidth<500){cols=4;rows=8}else{cols=8;rows=4}
+  }
   totalPairs=(cols*rows)/2;
   let emojis=shuffle([...EMOJIS]).slice(0,totalPairs);
   let pairs=[...emojis,...emojis];

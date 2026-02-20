@@ -194,6 +194,11 @@ function recycleWaste(){
 
 function selectCard(source,col,row){
   if(selected){
+    // If tapping the same card, try auto-move to foundation or another tableau pile
+    if(selected.source===source&&selected.col===col&&selected.row===row){
+      if(tryAutoMove(source,col,row))return;
+      selected=null;render();return;
+    }
     // Try to place
     if(source==='tableau'){
       if(placeOnTableau(col))return;
@@ -201,6 +206,34 @@ function selectCard(source,col,row){
     // Try foundation auto
   }
   selected={source,col,row};render();
+}
+
+function tryAutoMove(source,col,row){
+  let card;
+  if(source==='waste')card=waste[waste.length-1];
+  else if(source==='tableau'){
+    let c2=tableau[col];
+    if(row!==c2.length-1)return false;
+    card=c2[c2.length-1];
+  }
+  if(!card)return false;
+  // Try foundations first
+  for(let fi=0;fi<4;fi++){
+    let f=foundations[fi];
+    if(f.length===0&&card.value===1&&card.suit===SUITS[fi]){placeOnFoundation(fi);return true}
+    if(f.length&&card.suit===f[f.length-1].suit&&card.value===f[f.length-1].value+1){placeOnFoundation(fi);return true}
+  }
+  // Try tableau
+  for(let ci=0;ci<7;ci++){
+    if(source==='tableau'&&ci===col)continue;
+    let target=tableau[ci];
+    if(target.length===0&&card.value===13){if(placeOnTableau(ci))return true}
+    else if(target.length){
+      let top=target[target.length-1];
+      if(top.faceUp&&top.red!==card.red&&top.value===card.value+1){if(placeOnTableau(ci))return true}
+    }
+  }
+  return false;
 }
 
 function placeOnTableau(ci){
@@ -275,9 +308,11 @@ function undoMove(){
   if(!history.length)return;
   let h=history.pop();
   if(h.type==='draw'){
-    if(waste.length)waste.pop();
-    // The drawn card goes back to stock (faceDown)
-    // We stored waste snapshot and stock length for reference
+    if(waste.length){
+      let card=waste.pop();
+      card.faceUp=false;
+      stock.push(card);
+    }
   } else if(h.type==='recycle'){
     waste=h.waste.map(c=>{c.faceUp=true;return c});
     stock=[];

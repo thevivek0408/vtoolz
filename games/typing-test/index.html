@@ -180,7 +180,23 @@ $('input').addEventListener('input',e=>{
   if(finished)return;
   if(!startTime)startTimer();
   setTyping();
-  const val=$('input').value;
+  let val=$('input').value;
+  // Mobile space: detect space character in input and treat as word submit
+  if(val.includes(' ')){
+    val=val.replace(/\s/g,'');
+    $('input').value=val;
+    if(val.length>0){
+      // Update letters for current word before submitting
+      lIdx=val.length;
+      const wordEl2=wordEls[wIdx],wordStr2=words[wIdx];
+      wordEl2.querySelectorAll('.letter.extra').forEach(el=>el.remove());
+      const bl=wordEl2.querySelectorAll('.letter:not(.extra)');
+      for(let i=0;i<bl.length;i++){bl[i].className='letter';if(i<val.length)bl[i].classList.add(val[i]===wordStr2[i]?'correct':'wrong')}
+      if(val.length>wordStr2.length){for(let i=wordStr2.length;i<val.length;i++){const ex=document.createElement('span');ex.className='letter extra wrong';ex.textContent=val[i];wordEl2.appendChild(ex)}}
+      submitWord();
+    }
+    return;
+  }
   lIdx=val.length;
   const wordEl=wordEls[wIdx],wordStr=words[wIdx];
   wordEl.querySelectorAll('.letter.extra').forEach(el=>el.remove());
