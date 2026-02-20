@@ -45,21 +45,31 @@
     th {
       background-color: #8cff19ae;
     }
+
+    .title-wrap {
+      padding-left: 10px;
+    }
+
+    .back-link {
+      margin-left: 20px;
+      font-size: larger;
+      text-decoration: none;
+      position: relative;
+      top: 52px;
+      right: 250px;
+      color: white;
+    }
+
+    .title {
+      color: white;
+    }
   </style>
 </head>
 
 <body>
-  <div style="padding-left: 10px">
-    <a href="javascript:window.history.back()" style="
-          margin-left: 20px;
-          font-size: larger;
-          text-decoration: none;
-          position: relative;
-          top: 52px;
-          right: 250px;
-          color: white;
-        ">&#8592;Back</a>
-    <h1 style="color: white">High Scores</h1>
+  <div class="title-wrap">
+    <a href="javascript:window.history.back()" class="back-link">&#8592;Back</a>
+    <h1 class="title">High Scores</h1>
   </div>
   <table>
     <thead>

@@ -70,6 +70,15 @@
             font-size: 0.9rem;
             margin-top: 5px;
         }
+
+        .regex-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .regex-delimiter {
+            color: var(--text-muted);
+        }
     </style>
 </head>
 
@@ -88,7 +97,7 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="regex-hero">
                 <h1><i class="fas fa-code"></i> Regex Tester</h1>
                 <p class="text-muted">Test regular expressions in real-time.</p>
             </div>
@@ -96,9 +105,9 @@
             <div class="tool-card">
                 <label>Regular Expression</label>
                 <div class="regex-input-group">
-                    <span style="color: var(--text-muted);">/</span>
+                    <span class="regex-delimiter">/</span>
                     <input type="text" id="regex-input" placeholder="Pattern (e.g. \d+)">
-                    <span style="color: var(--text-muted);">/</span>
+                    <span class="regex-delimiter">/</span>
                     <input type="text" id="flags-input" class="flags-input" placeholder="gmi" value="gm">
                 </div>
                 <div id="regex-error" class="error-msg"></div>
