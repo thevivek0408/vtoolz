@@ -37,6 +37,52 @@
             gap: 10px;
         }
 
+        .json-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 150px 1fr;
+            gap: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .json-textarea {
+            background: var(--bg-secondary);
+            color: var(--text-color);
+            height: 500px;
+            resize: none;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .output-head {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .copy-btn {
+            padding: 4px 12px;
+            font-size: 0.8rem;
+        }
+
+        .json-output {
+            opacity: 0.8;
+        }
+
         @media (max-width: 768px) {
             .layout {
                 grid-template-columns: 1fr !important;
@@ -67,33 +113,31 @@
 
     <main>
         <div class="tool-container" id="tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="json-hero">
                 <h1>JSON Formatter & Validator</h1>
                 <p class="text-muted">Minify, prettify, and validate your JSON data.</p>
             </div>
 
-            <div class="layout" style="display: grid; grid-template-columns: 1fr 150px 1fr; gap: 20px;">
+            <div class="layout">
                 <div class="input-area">
-                    <label style="display:block; margin-bottom:0.5rem;">Input JSON</label>
+                    <label class="input-label">Input JSON</label>
                     <textarea id="json-input" placeholder="Paste JSON here..."
-                        style="background: var(--bg-secondary); color: var(--text-color); height: 500px; resize: none;"></textarea>
+                        class="json-textarea"></textarea>
                 </div>
 
-                <div class="controls"
-                    style="display: flex; flex-direction: column; justify-content: center; gap: 10px;">
+                <div class="controls">
                     <button class="btn btn-primary btn-block" id="beautify-btn">Beautify ?</button>
                     <button class="btn btn-secondary btn-block" id="minify-btn">Minify ?</button>
                     <button class="btn btn-secondary btn-block" id="clear-btn">Clear ?</button>
                 </div>
 
                 <div class="output-area">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; align-items:center;">
+                    <div class="output-head">
                         <label>Output</label>
-                        <button class="btn btn-primary" id="copy-btn"
-                            style="padding:4px 12px; font-size:0.8rem;">Copy</button>
+                        <button class="btn btn-primary copy-btn" id="copy-btn">Copy</button>
                     </div>
                     <textarea id="json-output" readonly
-                        style="background: var(--bg-secondary); color: var(--text-color); height: 500px; resize: none; opacity: 0.8;"></textarea>
+                        class="json-textarea json-output"></textarea>
                 </div>
             </div>
         </div>

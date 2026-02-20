@@ -49,6 +49,40 @@
             border-radius: 50%;
             border: 2px solid var(--border-color);
         }
+
+        .screen-icon {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .dot-black {
+            background: black;
+        }
+
+        .dot-white {
+            background: white;
+        }
+
+        .dot-red {
+            background: red;
+        }
+
+        .dot-green {
+            background: green;
+        }
+
+        .dot-blue {
+            background: blue;
+        }
+
+        .screen-instructions {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .btn-start {
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -73,23 +107,23 @@
         </div>
 
         <div class="instruction-box">
-            <i class="fas fa-desktop fa-4x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+            <i class="fas fa-desktop fa-4x screen-icon"></i>
             <h2>Dead Pixel Check</h2>
             <p>This test cycles through full-screen solid colors.</p>
             <div class="color-list">
-                <div class="color-dot" style="background: black;"></div>
-                <div class="color-dot" style="background: white;"></div>
-                <div class="color-dot" style="background: red;"></div>
-                <div class="color-dot" style="background: green;"></div>
-                <div class="color-dot" style="background: blue;"></div>
+                <div class="color-dot dot-black"></div>
+                <div class="color-dot dot-white"></div>
+                <div class="color-dot dot-red"></div>
+                <div class="color-dot dot-green"></div>
+                <div class="color-dot dot-blue"></div>
             </div>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">
+            <p class="screen-instructions">
                 Instructions:<br>
                 1. Click "Start Test" below.<br>
                 2. Click anywhere or press Space/Arrow keys to cycle colors.<br>
                 3. Press <strong>Esc</strong> to exit.
             </p>
-            <button class="btn btn-primary" id="btnStart" style="margin-top: 20px;">
+            <button class="btn btn-primary btn-start" id="btnStart">
                 <i class="fas fa-play"></i> Start Test
             </button>
         </div>
