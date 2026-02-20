@@ -97,7 +97,7 @@
                     <input type="number" id="tsInput" placeholder="Enter Unix Timestamp (Seconds)">
                     <button id="convertTsBtn" class="btn btn-primary">Convert</button>
                 </div>
-                <table class="result-table" id="tsResult" style="display:none;">
+                <table class="result-table u-hidden" id="tsResult">
                     <tr>
                         <td>GMT</td>
                         <td id="resGmt"></td>
@@ -119,10 +119,9 @@
                     <input type="datetime-local" id="dateInput">
                     <button id="convertDateBtn" class="btn btn-primary">Convert</button>
                 </div>
-                <div id="dateResult"
-                    style="display:none; padding: 10px; background: var(--bg-color); border-radius: 4px; text-align: center;">
+                <div id="dateResult" class="u-hidden-panel">
                     <strong>Timestamp:</strong> <span id="resTimestamp"
-                        style="font-family: monospace; font-size: 1.2rem;"></span>
+                        class="u-mono-lg"></span>
                 </div>
             </div>
         </div>
