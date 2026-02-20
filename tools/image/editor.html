@@ -11,6 +11,153 @@
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="./editor.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .shortcut-hint {
+            float: right;
+            color: #888;
+        }
+
+        .menu-status {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-meta {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .options-title {
+            color: #aaa;
+            font-style: italic;
+            margin-left: 10px;
+        }
+
+        .is-hidden {
+            display: none;
+        }
+
+        .project-viewport {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-wrapper-centered {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .text-editor-overlay {
+            display: none;
+            position: absolute;
+            z-index: 200;
+        }
+
+        .text-input-ui {
+            font-size: 20px;
+            padding: 5px;
+        }
+
+        .layer-prop-row {
+            background: var(--bg-panel);
+            padding: 5px 10px;
+            border-bottom: 1px solid #444;
+        }
+
+        .layer-blend-select {
+            width: 80px;
+            background: #444;
+            border: none;
+            color: #ddd;
+        }
+
+        .layer-slider-group {
+            margin-left: 10px;
+        }
+
+        .opacity-label {
+            font-size: 0.7rem;
+        }
+
+        .layer-list-panel {
+            flex: 1;
+            border-bottom: 1px solid #444;
+        }
+
+        .help-modal-wide {
+            width: 500px;
+        }
+
+        .overlay-centered {
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .np-unit-select {
+            width: 70px;
+            margin-top: 18px;
+        }
+
+        .np-dpi-unit-select {
+            width: 100px;
+            margin-top: 18px;
+        }
+
+        .np-bg-color {
+            display: none;
+            width: 30px;
+            height: 30px;
+            border: none;
+            padding: 0;
+        }
+
+        .input-full {
+            width: 100%;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .mt-5 {
+            margin-top: 5px;
+        }
+
+        .inline-label {
+            display: inline;
+        }
+
+        .export-format-select {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        .share-btn {
+            display: none;
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .save-as-btn {
+            display: none;
+            background: #9b59b6;
+            color: white;
+        }
+
+        .compare-help-text {
+            text-align: center;
+            color: #aaa;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -30,8 +177,8 @@
         </div>
         <div class="menu-item" data-onclick="toggleDropdown('edit-dd')">Edit
             <div class="dropdown-content" id="edit-dd">
-                <div class="dropdown-item" data-onclick="restoreHistory(state.historyIndex-1)">Undo <span style='float:right;color:#888'>Ctrl+Z</span></div>
-                <div class="dropdown-item" data-onclick="restoreHistory(state.historyIndex+1)">Redo <span style='float:right;color:#888'>Ctrl+Y</span></div>
+                <div class="dropdown-item" data-onclick="restoreHistory(state.historyIndex-1)">Undo <span class="shortcut-hint">Ctrl+Z</span></div>
+                <div class="dropdown-item" data-onclick="restoreHistory(state.historyIndex+1)">Redo <span class="shortcut-hint">Ctrl+Y</span></div>
             </div>
         </div>
         <div class="menu-item" data-onclick="toggleDropdown('image-dd')">Image
@@ -48,8 +195,8 @@
         </div>
         <div class="menu-item" data-onclick="toggleDropdown('select-dd')">Select
             <div class="dropdown-content" id="select-dd">
-                <div class="dropdown-item" data-onclick="selectAllCanvas()">All <span style='float:right;color:#888'>Ctrl+A</span></div>
-                <div class="dropdown-item" data-onclick="clearSelection()">Deselect <span style='float:right;color:#888'>Ctrl+D</span></div>
+                <div class="dropdown-item" data-onclick="selectAllCanvas()">All <span class="shortcut-hint">Ctrl+A</span></div>
+                <div class="dropdown-item" data-onclick="clearSelection()">Deselect <span class="shortcut-hint">Ctrl+D</span></div>
             </div>
         </div>
         <div class="menu-item" data-onclick="toggleDropdown('filter-dd')">Filter
@@ -86,16 +233,16 @@
             </div>
         </div>
 
-        <div style="margin-left:auto; display:flex; gap:10px;">
+        <div class="menu-status">
             <!-- Zoom/Dims -->
-            <span id="canvas-dims" style="font-size:0.8rem; color:#aaa;">1080x720</span>
-            <span id="zoom-level" style="font-size:0.8rem; color:#aaa;">100%</span>
+            <span id="canvas-dims" class="status-meta">1080x720</span>
+            <span id="zoom-level" class="status-meta">100%</span>
         </div>
     </div>
 
     <!-- Options Bar -->
     <div class="options-bar" id="options-bar">
-        <span style="color:#aaa; font-style:italic; margin-left:10px;">Tool Options</span>
+        <span class="options-title">Tool Options</span>
     </div>
 
     <!-- Toolbar -->
@@ -123,14 +270,14 @@
     <!-- Workspace -->
     <div class="workspace" id="workspace">
         <!-- Project Tabs -->
-        <div class="project-bar" id="project-bar" style="display:none;">
+        <div class="project-bar is-hidden" id="project-bar">
             <div class="project-tab active">
                 <span id="project-name-display">New Project.psd</span>
                 <span class="project-close" data-onclick="closeProject()">&times;</span>
             </div>
         </div>
 
-        <div id="viewport" style="width:100%; height:100%; position:relative; overflow:hidden;">
+        <div id="viewport" class="project-viewport">
             <!-- Home Screen Overlay -->
             <div id="home-screen" class="home-screen">
                 <div class="home-content">
@@ -154,8 +301,7 @@
                 </div>
             </div>
 
-            <div id="canvas-wrapper" class="hidden"
-                style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+            <div id="canvas-wrapper" class="hidden canvas-wrapper-centered">
                 <canvas id="canvas-stage"></canvas>
                 <div id="transform-controls" class="transform-layer">
                     <div class="handle tl" data-handle="tl"></div>
@@ -166,8 +312,8 @@
                     <div class="handle rot" data-handle="rot" title="Rotate"></div>
                 </div>
                 <!-- Text Editor Overlay -->
-                <div id="text-editor-overlay" style="display:none; position:absolute; z-index:200;">
-                    <input type="text" id="text-input" style="font-size:20px; padding:5px;">
+                <div id="text-editor-overlay" class="text-editor-overlay">
+                    <input type="text" id="text-input" class="text-input-ui">
                     <button id="text-ok">OK</button>
                 </div>
             </div>
@@ -195,8 +341,8 @@
                     class="fas fa-exchange-alt"></i></div>
 
             <!-- Hidden Inputs for logic -->
-            <input type="color" id="fg-color-picker" style="display:none;">
-            <input type="color" id="bg-color-picker" style="display:none;">
+            <input type="color" id="fg-color-picker" class="is-hidden">
+            <input type="color" id="bg-color-picker" class="is-hidden">
         </div>
         <!-- Bottom Panel (Layers / Paths) -->
         <div class="panel-bottom">
@@ -206,20 +352,20 @@
                 <div class="panel-tab">Paths</div>
             </div>
 
-            <div class="prop-row" style="background:var(--bg-panel); padding:5px 10px; border-bottom:1px solid #444;">
-                <select id="layer-blend" style="width:80px; background:#444; border:none; color:#ddd;">
+            <div class="prop-row layer-prop-row">
+                <select id="layer-blend" class="layer-blend-select">
                     <option value="source-over">Normal</option>
                     <option value="multiply">Multiply</option>
                     <option value="screen">Screen</option>
                     <option value="overlay">Overlay</option>
                 </select>
-                <div class="slider-group" style="margin-left:10px;">
-                    <span style="font-size:0.7rem;">Op:</span>
+                <div class="slider-group layer-slider-group">
+                    <span class="opacity-label">Op:</span>
                     <input type="range" id="layer-opacity" min="0" max="100" value="100">
                 </div>
             </div>
 
-            <div class="layer-list" id="layer-list" style="flex:1; border-bottom:1px solid #444;"></div>
+            <div class="layer-list layer-list-panel" id="layer-list"></div>
 
             <div class="layer-controls">
                 <button class="layer-btn" id="btn-add-layer" title="New Layer"><i class="fas fa-plus"></i></button>
@@ -232,11 +378,11 @@
     </div>
 
     <!-- Hidden Inputs -->
-    <input type="file" id="file-upload" accept="image/*" style="display:none">
+    <input type="file" id="file-upload" accept="image/*" class="is-hidden">
 
     <!-- Modals -->
     <div class="modal-overlay" id="help-modal">
-        <div class="modal" style="width: 500px;">
+        <div class="modal help-modal-wide">
             <h3>Keyboard Shortcuts</h3>
             <div class="shortcut-list">
                 <div class="shortcut-item"><span>Move Tool</span> <span>V</span></div>
@@ -270,7 +416,7 @@
     </div>
 
     <!-- Advanced New Project Modal -->
-    <div class="modal-overlay" id="new-project-modal" style="display:none; align-items:center; justify-content:center;">
+    <div class="modal-overlay overlay-centered" id="new-project-modal">
         <div class="np-modal">
             <div class="np-header">
                 <h3>New Project</h3>
@@ -310,7 +456,7 @@
                             <label>Height</label>
                             <input type="number" id="np-height" value="720">
                         </div>
-                        <select id="np-unit" style="width:70px; margin-top:18px;">
+                        <select id="np-unit" class="np-unit-select">
                             <option value="px">px</option>
                             <option value="in">in</option>
                             <option value="mm">mm</option>
@@ -321,7 +467,7 @@
                             <label>DPI</label>
                             <input type="number" id="np-dpi" value="72">
                         </div>
-                        <select style="width:100px; margin-top:18px;">
+                        <select class="np-dpi-unit-select">
                             <option>Pixels/Inch</option>
                         </select>
                     </div>
@@ -334,8 +480,7 @@
                                 <option value="transparent">Transparent</option>
                                 <option value="custom">Custom</option>
                             </select>
-                            <input type="color" id="np-bg-color" value="#ffffff"
-                                style="display:none; width:30px; height:30px; border:none; padding:0;">
+                            <input type="color" id="np-bg-color" value="#ffffff" class="np-bg-color">
                         </div>
                     </div>
                     <div class="np-spacer"></div>
@@ -351,15 +496,15 @@
             <h3 id="resize-title">Resize</h3>
             <div class="control-group">
                 <label>Width (px)</label>
-                <input type="number" id="resize-w" value="800" style="width:100%">
+                <input type="number" id="resize-w" value="800" class="input-full">
                 <label>Height (px)</label>
-                <input type="number" id="resize-h" value="600" style="width:100%">
-                <div style="margin-top:10px;">
+                <input type="number" id="resize-h" value="600" class="input-full">
+                <div class="mt-10">
                     <input type="checkbox" id="resize-aspect" checked> <label for="resize-aspect"
-                        style="display:inline;">Maintain Aspect Ratio</label>
+                        class="inline-label">Maintain Aspect Ratio</label>
                 </div>
-                <div style="margin-top:5px;">
-                    <input type="checkbox" id="resize-hq"> <label for="resize-hq" style="display:inline;">High Quality
+                <div class="mt-5">
+                    <input type="checkbox" id="resize-hq"> <label for="resize-hq" class="inline-label">High Quality
                         (Slower)</label>
                 </div>
             </div>
@@ -377,7 +522,7 @@
             <!-- (Content same as before) -->
             <div class="control-group">
                 <label>Format</label>
-                <select id="export-format" style="width:100%; padding:5px; margin-bottom:10px;">
+                <select id="export-format" class="export-format-select">
                     <option value="image/png">PNG</option>
                     <option value="image/jpeg">JPG</option>
                     <option value="image/webp">WEBP</option>
@@ -385,10 +530,9 @@
                 <button class="btn btn-secondary"
                     data-onclick="closeExportModal()">Cancel</button>
                 <button class="btn btn-primary" id="btn-do-export">Download</button>
-                <button class="btn" id="btn-share-export"
-                    style="display:none; background:var(--accent-color); color:white;"><i
+                <button class="btn share-btn" id="btn-share-export"><i
                         class="fas fa-share-alt"></i></button>
-                <button class="btn" id="btn-save-as-export" style="display:none; background:#9b59b6; color:white;"><i
+                <button class="btn save-as-btn" id="btn-save-as-export"><i
                         class="fas fa-save"></i></button>
             </div>
         </div>
@@ -414,7 +558,7 @@
     </div>
 
     <!-- Compare Modal -->
-    <div class="modal-overlay" id="compare-modal" style="display:none; align-items:center; justify-content:center;">
+    <div class="modal-overlay overlay-centered" id="compare-modal">
         <div class="compare-container">
             <div class="compare-header">
                 <h3>Compare (Before / After)</h3>
@@ -428,12 +572,12 @@
                     <div class="compare-handle"><i class="fas fa-arrows-alt-h"></i></div>
                 </div>
             </div>
-            <p style="text-align:center; color:#aaa; margin-top:10px; font-size:0.9rem;">Drag slider to compare</p>
+            <p class="compare-help-text">Drag slider to compare</p>
         </div>
     </div>
 
     <!-- Hidden File Input -->
-    <input type="file" id="file-input-load" style="display:none" accept=".vtz,.json"
+    <input type="file" id="file-input-load" class="is-hidden" accept=".vtz,.json"
         data-onchange="handleFileLoad(this.files[0])">
 
     <script src="../../js/utils/data-events.js"></script>
