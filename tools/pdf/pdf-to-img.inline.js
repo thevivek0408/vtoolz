@@ -45,27 +45,20 @@ async function processPdf(file) {
 
             // Create Download Link
             const wrapper = document.createElement('div');
-            wrapper.className = 'tool-card';
-            wrapper.style.alignItems = 'center';
+            wrapper.className = 'tool-card pdf2img-card';
 
             const img = document.createElement('img');
             img.src = canvas.toDataURL('image/jpeg', 0.8);
-            img.style.maxWidth = '100%';
-            img.style.border = '1px solid #ddd';
+            img.alt = `Converted page ${i}`;
 
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-primary';
-            btn.textContent = `Download Page ${i} (JPG)`;
-            btn.style.marginTop = '10px';
-            btn.onclick = () => {
-                const a = document.createElement('a');
-                a.href = img.src;
-                a.download = `page-${i}.jpg`;
-                a.click();
-            };
+            const link = document.createElement('a');
+            link.className = 'btn btn-primary';
+            link.textContent = `Download Page ${i} (JPG)`;
+            link.href = img.src;
+            link.download = `${file.name.replace(/\.pdf$/i, '') || 'document'}-page-${i}.jpg`;
 
             wrapper.appendChild(img);
-            wrapper.appendChild(btn);
+            wrapper.appendChild(link);
             list.appendChild(wrapper);
         }
 
@@ -76,4 +69,4 @@ async function processPdf(file) {
         console.error(err);
         window.Utils.showToast('Error: ' + err.message, 'error');
     }
-}
+}
