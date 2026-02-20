@@ -1,8 +1,11 @@
 ﻿const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
+const convertBtn = document.getElementById('convert-btn');
 const outputArea = document.getElementById('output-area');
 const statusText = document.getElementById('status-text');
 const imageList = document.getElementById('image-list');
+
+let selectedPdfFile = null;
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';
 
@@ -23,32 +26,52 @@ dropZone.addEventListener('drop', (event) => {
     dropZone.classList.remove('dragover');
     const file = event.dataTransfer?.files?.[0];
     if (file) {
-        processPdf(file);
+        handleSelectedFile(file);
     }
 });
 
 fileInput.addEventListener('change', (event) => {
     const file = event.target.files?.[0];
     if (file) {
-        processPdf(file);
+        handleSelectedFile(file);
     }
 });
 
-async function processPdf(file) {
-    if (!file || file.type !== 'application/pdf') {
-        statusText.textContent = 'Please upload a valid PDF file.';
+convertBtn.addEventListener('click', async () => {
+    if (!selectedPdfFile) {
+        return;
+    }
+    await convertPdfToImages(selectedPdfFile);
+});
+
+function handleSelectedFile(file) {
+    const fileName = file?.name || '';
+    const isPdf = file?.type === 'application/pdf' || /\.pdf$/i.test(fileName);
+
+    if (!isPdf) {
+        selectedPdfFile = null;
+        convertBtn.style.display = 'none';
         outputArea.style.display = 'block';
+        statusText.textContent = 'Please upload a valid PDF file.';
+        imageList.innerHTML = '';
         return;
     }
 
-    dropZone.style.display = 'none';
+    selectedPdfFile = file;
     outputArea.style.display = 'block';
+    imageList.innerHTML = '';
+    statusText.textContent = `Selected: ${fileName}. Click "Convert to Images".`;
+    convertBtn.style.display = 'inline-block';
+}
+
+async function convertPdfToImages(file) {
+    convertBtn.disabled = true;
     imageList.innerHTML = '';
     statusText.textContent = 'Reading PDF...';
 
     try {
         const fileBuffer = await file.arrayBuffer();
-        const loadingTask = pdfjsLib.getDocument({ data: fileBuffer });
+        const loadingTask = pdfjsLib.getDocument({ data: fileBuffer, disableWorker: true });
         const pdfDocument = await loadingTask.promise;
         const totalPages = pdfDocument.numPages;
         const baseName = (file.name || 'document').replace(/\.pdf$/i, '');
@@ -65,23 +88,34 @@ async function processPdf(file) {
             const context = canvas.getContext('2d', { alpha: false });
             await page.render({ canvasContext: context, viewport }).promise;
 
-            const imageUrl = canvas.toDataURL('image/jpeg', 0.9);
+            const pageBlob = await new Promise((resolve, reject) => {
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error(`Failed to encode page ${pageNum}`));
+                    }
+                }, 'image/jpeg', 0.9);
+            });
+
+            const previewUrl = URL.createObjectURL(pageBlob);
 
             const card = document.createElement('div');
             card.className = 'tool-card pdf2img-card';
 
             const image = document.createElement('img');
-            image.src = imageUrl;
+            image.src = previewUrl;
             image.alt = `Converted page ${pageNum}`;
 
-            const downloadLink = document.createElement('a');
-            downloadLink.className = 'btn btn-primary';
-            downloadLink.textContent = `Download Page ${pageNum} (JPG)`;
-            downloadLink.href = imageUrl;
-            downloadLink.download = `${baseName}-page-${pageNum}.jpg`;
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'btn btn-primary';
+            downloadBtn.textContent = `Download Page ${pageNum} (JPG)`;
+            downloadBtn.addEventListener('click', () => {
+                downloadBlob(pageBlob, `${baseName}-page-${pageNum}.jpg`);
+            });
 
             card.appendChild(image);
-            card.appendChild(downloadLink);
+            card.appendChild(downloadBtn);
             imageList.appendChild(card);
         }
 
@@ -89,6 +123,18 @@ async function processPdf(file) {
     } catch (error) {
         console.error(error);
         statusText.textContent = `Conversion failed: ${error.message || 'Unknown error'}`;
-        dropZone.style.display = 'block';
+    } finally {
+        convertBtn.disabled = false;
     }
+}
+
+function downloadBlob(blob, fileName) {
+    const blobUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = blobUrl;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
 }

@@ -43,6 +43,16 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
         }
+
+        .pdf2img-action {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pdf2img-convert-btn {
+            min-width: 200px;
+            display: none;
+        }
     </style>
 </head>
 
@@ -76,6 +86,10 @@
                 <h3>Drop PDF Here</h3>
                 <p class="text-muted">or click to browse</p>
                 <input type="file" id="file-input" accept="application/pdf" hidden>
+            </div>
+
+            <div class="pdf2img-action">
+                <button id="convert-btn" class="btn btn-primary pdf2img-convert-btn">Convert to Images</button>
             </div>
 
             <div id="output-area" class="output-area">
