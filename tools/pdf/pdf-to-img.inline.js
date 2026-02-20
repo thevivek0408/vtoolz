@@ -4,10 +4,17 @@ const convertBtn = document.getElementById('convert-btn');
 const outputArea = document.getElementById('output-area');
 const statusText = document.getElementById('status-text');
 const imageList = document.getElementById('image-list');
+const pdfjs = window.pdfjsLib || globalThis.pdfjsLib;
 
 let selectedPdfFile = null;
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';
+if (!pdfjs) {
+    outputArea.style.display = 'block';
+    statusText.textContent = 'PDF engine failed to load. Please refresh and try again.';
+    throw new Error('pdfjsLib is not available');
+}
+
+pdfjs.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';
 
 dropZone.addEventListener('click', () => fileInput.click());
 
@@ -71,7 +78,7 @@ async function convertPdfToImages(file) {
 
     try {
         const fileBuffer = await file.arrayBuffer();
-        const loadingTask = pdfjsLib.getDocument({ data: fileBuffer, disableWorker: true });
+        const loadingTask = pdfjs.getDocument({ data: fileBuffer, disableWorker: true });
         const pdfDocument = await loadingTask.promise;
         const totalPages = pdfDocument.numPages;
         const baseName = (file.name || 'document').replace(/\.pdf$/i, '');
