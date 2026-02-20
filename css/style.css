@@ -1207,6 +1207,15 @@ body.neon-mode h3 {
 
 
 
+/* Section heading */
+.section-heading {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
 /* Filter Tabs - Horizontal Scrollbar Style */
 .filter-tabs {
     display: flex;
