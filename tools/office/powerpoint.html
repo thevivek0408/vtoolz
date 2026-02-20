@@ -604,6 +604,37 @@
                 width: 100%;
             }
         }
+
+        .ppt-tool-container {
+            padding-top: 20px;
+            max-width: 1200px;
+        }
+
+        .ppt-color-input {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .find-close-btn {
+            margin-left: auto;
+        }
+
+        .ppt-file-icon {
+            color: var(--pol);
+        }
+
+        .props-placeholder {
+            font-size: 12px;
+            opacity: .5;
+        }
+
+        .present-num {
+            color: #fff;
+            padding: 8px;
+        }
     </style>
 </head>
 
@@ -621,7 +652,7 @@
     </header>
 
     <main>
-        <div class="container tool-container" style="padding-top:20px;max-width:1200px;">
+        <div class="container tool-container ppt-tool-container">
             <div class="ppt-app">
                 <div class="ppt-toolbar">
                     <div class="tg">
@@ -650,9 +681,9 @@
                         </select>
                         <input type="color" id="slideBg" value="#ffffff" title="Slide BG"
                             data-onchange="changeSlideBg(this.value)"
-                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
+                            class="ppt-color-input">
                         <input type="color" id="slideBg2" value="#000000" title="Gradient End Color"
-                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
+                            class="ppt-color-input">
                         <button data-onclick="applyGradientBg()" title="Apply Gradient BG"><i
                                 class="fas fa-fill-drip"></i></button>
                     </div>
@@ -677,12 +708,11 @@
                     <input type="text" id="findInput" placeholder="Find text across slides...">
                     <button data-onclick="findInSlides()">Find</button>
                     <span class="count" id="findCount"></span>
-                    <button data-onclick="closeFindPanel()"
-                        style="margin-left:auto;">?</button>
+                    <button data-onclick="closeFindPanel()" class="find-close-btn">?</button>
                 </div>
 
                 <div class="doc-title-bar">
-                    <i class="fas fa-file-powerpoint" style="color:var(--pol);"></i>
+                    <i class="fas fa-file-powerpoint ppt-file-icon"></i>
                     <input type="text" id="docTitle" value="Untitled Presentation" placeholder="Presentation title...">
                 </div>
 
@@ -692,7 +722,7 @@
                     <div class="props-panel" id="propsPanel">
                         <h4>Properties</h4>
                         <div id="propContents">
-                            <p style="font-size:12px;opacity:.5;">Select an element to edit.</p>
+                            <p class="props-placeholder">Select an element to edit.</p>
                         </div>
                     </div>
                 </div>
@@ -728,7 +758,7 @@
         <canvas id="presentCanvas"></canvas>
         <div class="controls">
             <button data-onclick="prevSlideP()"><i class="fas fa-chevron-left"></i> Prev</button>
-            <span id="presentNum" style="color:#fff;padding:8px;">1/1</span>
+            <span id="presentNum" class="present-num">1/1</span>
             <button data-onclick="nextSlideP()">Next <i class="fas fa-chevron-right"></i></button>
             <button data-onclick="exitPresentation()"><i class="fas fa-times"></i> Exit</button>
         </div>
