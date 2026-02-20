@@ -8,6 +8,59 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Watermark PDF - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .wm-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .wm-controls {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .wm-group-text {
+            margin-bottom: 1.5rem;
+        }
+
+        .wm-group-opacity {
+            margin-bottom: 2rem;
+        }
+
+        .wm-label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .wm-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-color);
+        }
+
+        .wm-range {
+            width: 100%;
+        }
+
+        .wm-range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .wm-actions {
+            text-align: center;
+        }
+
+        .wm-apply {
+            min-width: 200px;
+        }
+    </style>
 </head>
 
 <body>
@@ -30,7 +83,7 @@
                 <span class="step">3. Apply</span>
             </div>
 
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="wm-head">
                 <h1>Watermark PDF</h1>
                 <p class="text-muted">Add text watermarks to your document pages.</p>
             </div>
@@ -42,27 +95,25 @@
                 <input type="file" id="file-input" accept="application/pdf" hidden>
             </div>
 
-            <div id="controls" style="display:none; max-width: 500px; margin: 0 auto;">
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label style="display:block; margin-bottom: 0.5rem;">Watermark Text</label>
-                    <input type="text" id="watermark-text" class="form-control" placeholder="e.g. CONFIDENTIAL"
-                        value="CONFIDENTIAL"
-                        style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-color);">
+            <div id="controls" class="wm-controls">
+                <div class="form-group wm-group-text">
+                    <label class="wm-label">Watermark Text</label>
+                    <input type="text" id="watermark-text" class="form-control wm-input" placeholder="e.g. CONFIDENTIAL"
+                        value="CONFIDENTIAL">
                 </div>
 
-                <div class="form-group" style="margin-bottom: 2rem;">
-                    <label style="display:block; margin-bottom: 0.5rem;">Opacity</label>
+                <div class="form-group wm-group-opacity">
+                    <label class="wm-label">Opacity</label>
                     <input type="range" id="opacity-range" min="0.1" max="1" step="0.1" value="0.5"
-                        style="width: 100%;">
-                    <div
-                        style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted);">
+                        class="wm-range">
+                    <div class="wm-range-labels">
                         <span>Light</span>
                         <span>Heavy</span>
                     </div>
                 </div>
 
-                <div class="action-bar" style="text-align: center;">
-                    <button id="apply-btn" class="btn btn-primary" style="min-width: 200px;">
+                <div class="action-bar wm-actions">
+                    <button id="apply-btn" class="btn btn-primary wm-apply">
                         Apply Watermark
                     </button>
                 </div>

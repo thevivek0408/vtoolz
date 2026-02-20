@@ -67,6 +67,71 @@
             border-color: var(--primary-color);
             background: rgba(var(--primary-rgb), 0.05);
         }
+
+        .qr-scanner-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .qr-scanner-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .camera-hint {
+            margin-top: 10px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .hidden-input,
+        .hidden-link {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .match-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .result-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .waiting-box {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .footer-qr {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+        }
+
+        .footer-version {
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .qr-scanner-layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -84,12 +149,12 @@
 
     <main>
         <div class="tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="qr-scanner-head">
                 <h1>QR Code Scanner</h1>
                 <p class="text-muted">Scan QR codes from your camera or upload an image. Secure & Client-Side.</p>
             </div>
 
-            <div class="layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div class="layout qr-scanner-layout">
                 <!-- Scanner Section -->
                 <div class="controls-area">
                     <div class="tab-group">
@@ -99,14 +164,13 @@
 
                     <div id="camera-area">
                         <div id="reader"></div>
-                        <p class="text-muted" style="margin-top: 10px; font-size: 0.9em; text-align: center;">Permission
+                        <p class="text-muted camera-hint">Permission
                             will be requested to access your camera.</p>
                     </div>
 
                     <div id="file-input-area">
-                        <input type="file" id="qr-input-file" accept="image/*" style="display: none;">
-                        <i class="fas fa-cloud-upload-alt"
-                            style="font-size: 2rem; margin-bottom: 10px; color: var(--primary-color);"></i>
+                        <input type="file" id="qr-input-file" accept="image/*" class="hidden-input">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
                         <p>Click or Drag image here to scan</p>
                     </div>
                 </div>
@@ -116,17 +180,16 @@
                     <div class="tool-card">
                         <h3>Scan Result</h3>
                         <div id="result-container" class="scan-result-area">
-                            <p style="margin-bottom: 10px; font-weight: bold; color: var(--success-color);">Match Found!
+                            <p class="match-title">Match Found!
                             </p>
                             <textarea id="result-text" class="form-control" rows="6" readonly></textarea>
 
-                            <div class="actions" style="margin-top: 15px; display: flex; gap: 10px;">
+                            <div class="actions result-actions">
                                 <button class="btn btn-secondary" id="copy-btn">Copy Text</button>
-                                <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary" id="open-link-btn"
-                                    style="display: none;">Open Link</a>
+                                <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary hidden-link" id="open-link-btn">Open Link</a>
                             </div>
                         </div>
-                        <div id="no-result" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <div id="no-result" class="waiting-box">
                             <p>Waiting for scan...</p>
                         </div>
                     </div>
@@ -135,10 +198,9 @@
         </div>
     </main>
 
-    <footer
-        style="text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top:50px;">
+    <footer class="footer-qr">
         <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
-        <p style="font-size: 0.8rem; opacity: 0.5;">v22.0 (QR Tools)</p>
+        <p class="footer-version">v22.0 (QR Tools)</p>
     </footer>
 
     <script type="module" src="../../js/qr/qr-scanner.js"></script>
