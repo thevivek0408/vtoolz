@@ -144,12 +144,11 @@
         document.addEventListener('keydown', e => {
             if (!running) return;
             switch(e.key) {
-                case 'ArrowUp': case 'w': if (dir.y !== 1) nextDir = {x:0, y:-1}; break;
-                case 'ArrowDown': case 's': if (dir.y !== -1) nextDir = {x:0, y:1}; break;
-                case 'ArrowLeft': case 'a': if (dir.x !== 1) nextDir = {x:-1, y:0}; break;
-                case 'ArrowRight': case 'd': if (dir.x !== -1) nextDir = {x:1, y:0}; break;
+                case 'ArrowUp': case 'w': e.preventDefault(); if (dir.y !== 1) nextDir = {x:0, y:-1}; break;
+                case 'ArrowDown': case 's': e.preventDefault(); if (dir.y !== -1) nextDir = {x:0, y:1}; break;
+                case 'ArrowLeft': case 'a': e.preventDefault(); if (dir.x !== 1) nextDir = {x:-1, y:0}; break;
+                case 'ArrowRight': case 'd': e.preventDefault(); if (dir.x !== -1) nextDir = {x:1, y:0}; break;
             }
-            e.preventDefault();
         });
 
         // Touch swipe

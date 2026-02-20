@@ -141,13 +141,13 @@ document.addEventListener("DOMContentLoaded", () => {
     ///assign functions to keys
     function control(e) {
         if (e.key === "ArrowLeft") {
-            keyLeft()
+            e.preventDefault(); keyLeft()
         } else if (e.key === "ArrowRight") {
-            keyRight()
+            e.preventDefault(); keyRight()
         } else if (e.key === "ArrowUp") {
-            keyUp()
+            e.preventDefault(); keyUp()
         } else if (e.key === "ArrowDown") {
-            keyDown()
+            e.preventDefault(); keyDown()
         }
     }
     document.addEventListener("keydown", control)

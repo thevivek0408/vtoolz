@@ -250,13 +250,13 @@
         document.addEventListener('keydown', e => {
             if (!running) return;
             switch(e.key) {
-                case 'ArrowLeft': if (valid(piece.shape, piece.x-1, piece.y)) piece.x--; break;
-                case 'ArrowRight': if (valid(piece.shape, piece.x+1, piece.y)) piece.x++; break;
-                case 'ArrowDown': drop(); lastTime = performance.now(); break;
-                case 'ArrowUp': tryRotate(); break;
-                case ' ': hardDrop(); break;
+                case 'ArrowLeft': e.preventDefault(); if (valid(piece.shape, piece.x-1, piece.y)) piece.x--; break;
+                case 'ArrowRight': e.preventDefault(); if (valid(piece.shape, piece.x+1, piece.y)) piece.x++; break;
+                case 'ArrowDown': e.preventDefault(); drop(); lastTime = performance.now(); break;
+                case 'ArrowUp': e.preventDefault(); tryRotate(); break;
+                case ' ': e.preventDefault(); hardDrop(); break;
+                default: return;
             }
-            e.preventDefault();
             draw();
         });
 

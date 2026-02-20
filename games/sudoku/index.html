@@ -180,11 +180,11 @@ let eb=document.createElement('button');eb.textContent='Erase';eb.className='era
 // Keyboard
 document.addEventListener('keydown',e=>{
   if(e.key>='1'&&e.key<='9')placeNumber(+e.key);
-  else if(e.key==='Backspace'||e.key==='Delete')placeNumber(0);
-  else if(e.key==='ArrowUp'&&selected)selected=[Math.max(0,selected[0]-1),selected[1]],render();
-  else if(e.key==='ArrowDown'&&selected)selected=[Math.min(8,selected[0]+1),selected[1]],render();
-  else if(e.key==='ArrowLeft'&&selected)selected=[selected[0],Math.max(0,selected[1]-1)],render();
-  else if(e.key==='ArrowRight'&&selected)selected=[selected[0],Math.min(8,selected[1]+1)],render();
+  else if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();placeNumber(0)}
+  else if(e.key==='ArrowUp'){e.preventDefault();if(selected)selected=[Math.max(0,selected[0]-1),selected[1]];else selected=[0,0];render()}
+  else if(e.key==='ArrowDown'){e.preventDefault();if(selected)selected=[Math.min(8,selected[0]+1),selected[1]];else selected=[0,0];render()}
+  else if(e.key==='ArrowLeft'){e.preventDefault();if(selected)selected=[selected[0],Math.max(0,selected[1]-1)];else selected=[0,0];render()}
+  else if(e.key==='ArrowRight'){e.preventDefault();if(selected)selected=[selected[0],Math.min(8,selected[1]+1)];else selected=[0,0];render()}
 });
 newGame('medium');
 </script>

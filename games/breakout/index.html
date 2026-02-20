@@ -160,8 +160,8 @@ function endGame(){
   ctx.fillText('Click New Game to play again',W/2,H/2+45);
 }
 // Input
-document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='a')keys.left=true;if(e.key==='ArrowRight'||e.key==='d')keys.right=true});
-document.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='a')keys.left=false;if(e.key==='ArrowRight'||e.key==='d')keys.right=false});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='a'){e.preventDefault();keys.left=true}if(e.key==='ArrowRight'||e.key==='d'){e.preventDefault();keys.right=true}});
+document.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='a'){e.preventDefault();keys.left=false}if(e.key==='ArrowRight'||e.key==='d'){e.preventDefault();keys.right=false}});
 // Mouse
 canvas.addEventListener('mousemove',e=>{let r=canvas.getBoundingClientRect();paddle.x=e.clientX-r.left-paddle.w/2});
 // Touch on canvas

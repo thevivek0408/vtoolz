@@ -25,6 +25,9 @@ h1{font-size:1.5rem;margin-bottom:6px;background:linear-gradient(135deg,#fdcb6e,
 .controls{margin-top:8px}
 .controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:.85rem}
 .controls button:hover{background:#e17055;border-color:#e17055;color:#fff}
+.col-btns{display:flex;gap:6px;margin-top:8px}
+.col-btn{background:#1e1e3a;border:2px solid #444;color:#fdcb6e;width:clamp(48px,12vw,68px);height:40px;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.col-btn:active{background:#fdcb6e;color:#0f0f1a}
 </style>
 </head>
 <body>
@@ -39,6 +42,7 @@ h1{font-size:1.5rem;margin-bottom:6px;background:linear-gradient(135deg,#fdcb6e,
   <div>Next: <span class="next-card" id="next">2</span></div>
   <div class="columns" id="cols"></div>
   <div class="discard" id="discard" onclick="discardCard()">🗑️ Discard</div>
+  <div class="col-btns" id="colbtns"></div>
 </div>
 <div class="msg" id="msg"></div>
 <div class="controls"><button onclick="newGame()">New Game</button></div>
@@ -150,6 +154,17 @@ document.addEventListener('keydown',e=>{
   if(n>=1&&n<=NUM_COLS)dropCard(n-1);
   if(e.key==='d'||e.key==='D')discardCard();
 });
+
+// Mobile column buttons
+(function(){
+  const btns=document.getElementById('colbtns');
+  for(let i=0;i<NUM_COLS;i++){
+    const b=document.createElement('button');b.className='col-btn';
+    b.textContent=i+1;
+    b.addEventListener('click',()=>dropCard(i));
+    btns.appendChild(b);
+  }
+})();
 
 newGame();
 </script>

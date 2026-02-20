@@ -179,6 +179,26 @@ canvas.addEventListener('touchmove',e=>{
 canvas.addEventListener('click',()=>{if(gameOver)init()});
 canvas.addEventListener('touchend',()=>{if(gameOver)init()});
 
+// Keyboard controls
+let keys={};
+document.addEventListener('keydown',e=>{
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)){e.preventDefault();keys[e.key]=true}
+  if(gameOver&&(e.key==='Enter'||e.key===' '))init();
+});
+document.addEventListener('keyup',e=>{keys[e.key]=false});
+function keyboardMove(){
+  if(gameOver)return;
+  const speed=6;
+  let dx=0,dy=0;
+  if(keys['ArrowLeft']||keys['a'])dx=-speed;
+  if(keys['ArrowRight']||keys['d'])dx=speed;
+  if(keys['ArrowUp']||keys['w'])dy=-speed;
+  if(keys['ArrowDown']||keys['s'])dy=speed;
+  if(dx||dy)movePlayer(player.x+dx,player.y+dy);
+  requestAnimationFrame(keyboardMove);
+}
+keyboardMove();
+
 init();
 </script>
 </body>
