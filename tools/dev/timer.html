@@ -145,6 +145,18 @@
             width: 0%;
             transition: width 0.1s linear;
         }
+
+        .timer-separator {
+            font-size: 1.5rem;
+        }
+
+        .timer-display-hidden {
+            display: none;
+        }
+
+        .timer-pause-hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -181,19 +193,19 @@
                                 <input type="number" id="tHours" min="0" max="99" value="00">
                                 <label>Hr</label>
                             </div>
-                            <span style="font-size:1.5rem">:</span>
+                            <span class="timer-separator">:</span>
                             <div class="time-group">
                                 <input type="number" id="tMins" min="0" max="59" value="05">
                                 <label>Min</label>
                             </div>
-                            <span style="font-size:1.5rem">:</span>
+                            <span class="timer-separator">:</span>
                             <div class="time-group">
                                 <input type="number" id="tSecs" min="0" max="59" value="00">
                                 <label>Sec</label>
                             </div>
                         </div>
 
-                        <div class="time-display" id="tDisplay" style="display:none;">00:00:00</div>
+                        <div class="time-display timer-display-hidden" id="tDisplay">00:00:00</div>
 
                         <div class="timer-progress">
                             <div class="progress-bar" id="tProgress"></div>
@@ -201,7 +213,7 @@
 
                         <div class="controls">
                             <button class="btn btn-start" id="tStart">Start</button>
-                            <button class="btn btn-stop" id="tStop" style="display:none;">Pause</button>
+                            <button class="btn btn-stop timer-pause-hidden" id="tStop">Pause</button>
                             <button class="btn btn-reset" id="tReset">Reset</button>
                         </div>
                     </div>
