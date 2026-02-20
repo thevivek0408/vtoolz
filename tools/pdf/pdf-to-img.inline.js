@@ -1,72 +1,94 @@
-﻿import '../../js/pdf/pdf-main.js';
+﻿const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const outputArea = document.getElementById('output-area');
+const statusText = document.getElementById('status-text');
+const imageList = document.getElementById('image-list');
 
-// Use main thread PDF.js for rendering to canvas
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';
 
-window.Utils.initDragAndDrop('#drop-zone', (files) => {
-    if (files.length > 0) processPdf(files[0]);
+dropZone.addEventListener('click', () => fileInput.click());
+
+dropZone.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    dropZone.classList.add('dragover');
 });
 
-document.getElementById('file-input').addEventListener('change', (e) => {
-    if (e.target.files.length > 0) processPdf(e.target.files[0]);
+dropZone.addEventListener('dragleave', (event) => {
+    event.preventDefault();
+    dropZone.classList.remove('dragover');
+});
+
+dropZone.addEventListener('drop', (event) => {
+    event.preventDefault();
+    dropZone.classList.remove('dragover');
+    const file = event.dataTransfer?.files?.[0];
+    if (file) {
+        processPdf(file);
+    }
+});
+
+fileInput.addEventListener('change', (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        processPdf(file);
+    }
 });
 
 async function processPdf(file) {
-    if (file.type !== 'application/pdf') {
-        window.Utils.showToast('Please upload a PDF file.', 'error');
+    if (!file || file.type !== 'application/pdf') {
+        statusText.textContent = 'Please upload a valid PDF file.';
+        outputArea.style.display = 'block';
         return;
     }
 
-    document.getElementById('drop-zone').style.display = 'none';
-    const output = document.getElementById('output-area');
-    output.style.display = 'block';
-    const list = document.getElementById('image-list');
-    list.innerHTML = '';
+    dropZone.style.display = 'none';
+    outputArea.style.display = 'block';
+    imageList.innerHTML = '';
+    statusText.textContent = 'Reading PDF...';
 
     try {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-        const total = pdf.numPages;
+        const fileBuffer = await file.arrayBuffer();
+        const loadingTask = pdfjsLib.getDocument({ data: fileBuffer });
+        const pdfDocument = await loadingTask.promise;
+        const totalPages = pdfDocument.numPages;
+        const baseName = (file.name || 'document').replace(/\.pdf$/i, '');
 
-        for (let i = 1; i <= total; i++) {
-            const statusVal = document.getElementById('status-text');
-            statusVal.textContent = `Rendering page ${i} of ${total}...`;
+        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+            statusText.textContent = `Rendering page ${pageNum} of ${totalPages}...`;
 
-            const page = await pdf.getPage(i);
-            const scale = 2.0; // High quality
-            const viewport = page.getViewport({ scale });
-
+            const page = await pdfDocument.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 2 });
             const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            const ctx = canvas.getContext('2d');
+            canvas.width = Math.ceil(viewport.width);
+            canvas.height = Math.ceil(viewport.height);
 
-            await page.render({ canvasContext: ctx, viewport }).promise;
+            const context = canvas.getContext('2d', { alpha: false });
+            await page.render({ canvasContext: context, viewport }).promise;
 
-            // Create Download Link
-            const wrapper = document.createElement('div');
-            wrapper.className = 'tool-card pdf2img-card';
+            const imageUrl = canvas.toDataURL('image/jpeg', 0.9);
 
-            const img = document.createElement('img');
-            img.src = canvas.toDataURL('image/jpeg', 0.8);
-            img.alt = `Converted page ${i}`;
+            const card = document.createElement('div');
+            card.className = 'tool-card pdf2img-card';
 
-            const link = document.createElement('a');
-            link.className = 'btn btn-primary';
-            link.textContent = `Download Page ${i} (JPG)`;
-            link.href = img.src;
-            link.download = `${file.name.replace(/\.pdf$/i, '') || 'document'}-page-${i}.jpg`;
+            const image = document.createElement('img');
+            image.src = imageUrl;
+            image.alt = `Converted page ${pageNum}`;
 
-            wrapper.appendChild(img);
-            wrapper.appendChild(link);
-            list.appendChild(wrapper);
+            const downloadLink = document.createElement('a');
+            downloadLink.className = 'btn btn-primary';
+            downloadLink.textContent = `Download Page ${pageNum} (JPG)`;
+            downloadLink.href = imageUrl;
+            downloadLink.download = `${baseName}-page-${pageNum}.jpg`;
+
+            card.appendChild(image);
+            card.appendChild(downloadLink);
+            imageList.appendChild(card);
         }
 
-        document.getElementById('status-text').textContent = "Conversion Complete!";
-        window.Utils.showToast('All pages rendered.', 'success');
-
-    } catch (err) {
-        console.error(err);
-        window.Utils.showToast('Error: ' + err.message, 'error');
+        statusText.textContent = `Conversion complete. ${totalPages} page(s) ready for download.`;
+    } catch (error) {
+        console.error(error);
+        statusText.textContent = `Conversion failed: ${error.message || 'Unknown error'}`;
+        dropZone.style.display = 'block';
     }
 }
