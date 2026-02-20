@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'vtoolz-v47';
+const CACHE_VERSION = 'vtoolz-v48';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const CDN_CACHE = `${CACHE_VERSION}-cdn`;
@@ -18,7 +18,10 @@ const CRITICAL_ASSETS = [
     './js/utils/common.js',
     './js/utils/tools.js',
     './manifest.json',
-    './favicon.png',
+    './favicon.ico',
+    './favicon.svg',
+    './favicon-48.png',
+    './apple-touch-icon.png',
     './assets/icon.png'
 ];
 

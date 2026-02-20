@@ -21,3 +21,14 @@
 
 /tools/hardware/audio.html
   Permissions-Policy: camera=(), microphone=(self), geolocation=(), payment=(), usb=()
+
+/favicon.ico
+  Cache-Control: public, max-age=604800
+  Content-Type: image/x-icon
+
+/favicon.svg
+  Cache-Control: public, max-age=604800
+  Content-Type: image/svg+xml
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=604800

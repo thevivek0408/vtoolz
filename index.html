@@ -6,22 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <meta name="description"
-        content="Free, private, client-side tools for PDF, Images, Text, and Developers. No file uploads, no tracking. Merge PDF, Compress Images, Format JSON, and more.">
+        content="Vibox is a free collection of 90+ private, browser-based tools for PDF, Images, Text, QR codes, and Developers. No file uploads, no tracking, works offline. Merge PDF, compress images, format JSON, and more — all on vibox.app.">
+    <meta name="keywords" content="Vibox, vibox.app, free online tools, private tools, PDF tools, image tools, developer tools, browser tools, offline tools, no upload tools">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
-    <title>Vibox - Privacy-First Tools</title>
+    <title>Vibox - Free Private Online Tools | PDF, Image, Text & Developer Utilities</title>
     <meta name="theme-color" content="#0f172a">
+    <link rel="canonical" href="https://vibox.app/">
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Vibox - Privacy-First Tools">
+    <meta property="og:site_name" content="Vibox">
+    <meta property="og:url" content="https://vibox.app/">
+    <meta property="og:title" content="Vibox - Free Private Online Tools">
     <meta property="og:description" content="Free, private, client-side tools for PDF, Images, Text, and Developers. No uploads, no tracking.">
-    <meta property="og:image" content="/assets/og-image.png">
+    <meta property="og:image" content="https://vibox.app/assets/og-image.png">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Vibox - Privacy-First Tools">
+    <meta name="twitter:title" content="Vibox - Free Private Online Tools">
     <meta name="twitter:description" content="Free, private browser tools. No uploads, no servers.">
-    <meta name="twitter:image" content="/assets/og-image.png">
+    <meta name="twitter:image" content="https://vibox.app/assets/og-image.png">
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="favicon.png" type="image/png">
     <!-- Preconnect to CDNs for zero-latency font/icon loading -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -36,6 +44,32 @@
     <link rel="modulepreload" href="js/utils/tools.js">
     <link rel="modulepreload" href="js/home.js">
     <script src="js/loader.js" defer></script>
+    <!-- Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Vibox",
+        "alternateName": "Vibox Tools",
+        "url": "https://vibox.app/",
+        "description": "Free, private, client-side tools for PDF, Images, Text, and Developers. No file uploads, no tracking.",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://vibox.app/tools/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Vibox",
+        "url": "https://vibox.app/",
+        "logo": "https://vibox.app/assets/icon.png",
+        "sameAs": []
+    }
+    </script>
 </head>
 
 <body>
@@ -82,8 +116,8 @@
                 <div class="cube-shadow"></div>
                 <div class="cube-hint">Drag me! <i class="fas fa-hand-pointer"></i></div>
             </div>
-            <h1>Your Data, Your Tools.</h1>
-            <p>Powerful utilities that run entirely in your browser. <br>No uploads. No servers. 100% Private.</p>
+            <h1>Vibox — Your Data, Your Tools.</h1>
+            <p>90+ powerful utilities that run entirely in your browser. <br>No uploads. No servers. 100% Private.</p>
 
             <!-- Search Bar -->
             <div class="search-container">
