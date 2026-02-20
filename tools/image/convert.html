@@ -35,6 +35,39 @@
             flex-wrap: wrap;
             gap: 8px;
         }
+
+        .convert-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .convert-controls {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .convert-card-center {
+            text-align: center;
+        }
+
+        .convert-label {
+            margin-right: 10px;
+        }
+
+        .convert-select {
+            width: auto;
+            display: inline-block;
+        }
+
+        .convert-action {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .convert-btn-wide {
+            min-width: 200px;
+        }
     </style>
 </head>
 
@@ -58,7 +91,7 @@
                     <span class="step">3. Download</span>
                 </div>
 
-                <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="convert-hero">
                     <h1>Image Converter</h1>
                     <p class="text-muted">Convert images between JPG, PNG, and WEBP formats instantly.</p>
                 </div>
@@ -70,18 +103,18 @@
                     <input type="file" id="file-input" multiple accept="image/*" hidden>
                 </div>
 
-                <div id="controls" style="display:none; max-width: 600px; margin: 0 auto;">
-                    <div class="tool-card" style="text-align:center;">
-                        <label for="format-select" style="margin-right:10px;">Convert all to:</label>
-                        <select id="format-select" class="form-control" style="width: auto; display: inline-block;">
+                <div id="controls" class="convert-controls">
+                    <div class="tool-card convert-card-center">
+                        <label for="format-select" class="convert-label">Convert all to:</label>
+                        <select id="format-select" class="form-control convert-select">
                             <option value="image/webp">WEBP (Best)</option>
                             <option value="image/jpeg">JPG</option>
                             <option value="image/png">PNG</option>
                         </select>
                     </div>
 
-                    <div class="action-bar" style="text-align: center; margin-top: 2rem;">
-                        <button id="convert-btn" class="btn btn-primary" style="min-width: 200px;">
+                    <div class="action-bar convert-action">
+                        <button id="convert-btn" class="btn btn-primary convert-btn-wide">
                             Convert All
                         </button>
                     </div>

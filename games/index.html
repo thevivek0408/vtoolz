@@ -13,20 +13,66 @@
     <link rel="stylesheet" href="style.css?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .arcade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .arcade-logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+
+        .arcade-logo-dot {
+            color: #FF6B6B;
+        }
+
+        .arcade-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .arcade-back-link {
+            font-weight: 600;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .arcade-theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3rem;
+            padding: 5px;
+        }
+
+        .search-icon {
+            color: #ccc;
+            margin-left: 10px;
+        }
+
+        .game-count {
+            color: #888;
+            font-size: 0.9rem;
+        }
+    </style>
     <script src="../js/utils/theme-preload.js"></script>
 </head>
 
 <body>
     <header>
-        <div class="container"
-            style="display: flex; justify-content: space-between; align-items: center; padding: 20px;">
-            <a href="../index.html" class="logo"
-                style="font-weight: 800; font-size: 1.5rem; color: var(--text-dark); text-decoration:none;">Vibox<span
-                    style="color:#FF6B6B">.</span></a>
-            <nav style="display:flex; align-items:center; gap:15px;">
-                <a href="../index.html" style="font-weight: 600; color: var(--text-light); text-decoration:none;"><i
+        <div class="container arcade-header">
+            <a href="../index.html" class="logo arcade-logo">Vibox<span class="arcade-logo-dot">.</span></a>
+            <nav class="arcade-nav">
+                <a href="../index.html" class="arcade-back-link"><i
                         class="fas fa-arrow-left"></i> Back to Tools</a>
-                <button data-onclick="toggleThemeFromButton(this)" style="background:none;border:none;cursor:pointer;font-size:1.3rem;padding:5px;">🌓</button>
+                <button data-onclick="toggleThemeFromButton(this)" class="arcade-theme-btn">🌓</button>
             </nav>
         </div>
     </header>
@@ -42,7 +88,7 @@
     <!-- Search Bar -->
     <div class="search-wrapper">
         <div class="search-box">
-            <i class="fas fa-search" style="color:#ccc; margin-left: 10px;"></i>
+            <i class="fas fa-search search-icon"></i>
             <input type="text" class="search-input" id="gameSearch"
                 placeholder="Search for games (e.g. Subway Surfers)...">
             <button class="search-btn"><i class="fas fa-arrow-right"></i></button>
@@ -65,7 +111,7 @@
     <div class="container">
         <div class="section-header">
             <div class="section-title">All Games</div>
-            <div style="color: #888; font-size: 0.9rem;" id="gameCount">0 Games</div>
+            <div class="game-count" id="gameCount">0 Games</div>
         </div>
 
         <div id="gamesGrid" class="games-grid">
