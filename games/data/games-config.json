@@ -75,5 +75,71 @@
         "mode": "single",
         "mobileOptimized": true,
         "image": "assets/covers/g7.png"
+    },
+    {
+        "id": 8,
+        "name": "Snake",
+        "description": "Classic snake game — eat food, grow longer, don't hit yourself or the walls!",
+        "engine": "iframe",
+        "url": "snake/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g8.png"
+    },
+    {
+        "id": 9,
+        "name": "Tetris",
+        "description": "Arrange falling blocks to clear lines. The classic tile-matching puzzle game!",
+        "engine": "iframe",
+        "url": "tetris/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g9.png"
+    },
+    {
+        "id": 10,
+        "name": "Minesweeper",
+        "description": "Clear the minefield without hitting a mine. A timeless logic game with 3 difficulty levels.",
+        "engine": "iframe",
+        "url": "minesweeper/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g10.png"
+    },
+    {
+        "id": 11,
+        "name": "Tic Tac Toe",
+        "description": "Play X and O against AI or a friend. Choose easy, medium, hard, or 2-player mode!",
+        "engine": "iframe",
+        "url": "tic-tac-toe/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g11.png"
+    },
+    {
+        "id": 12,
+        "name": "Wordle",
+        "description": "Guess the 5-letter word in 6 tries. Green = correct, yellow = wrong spot!",
+        "engine": "iframe",
+        "url": "wordle/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g12.png"
+    },
+    {
+        "id": 13,
+        "name": "Chess",
+        "description": "Play chess against a friend or the AI. Full rules with castling, en passant & promotion.",
+        "engine": "iframe",
+        "url": "chess/index.html",
+        "category": "strategy",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g13.png"
     }
 ]
