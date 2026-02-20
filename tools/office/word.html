@@ -202,6 +202,45 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
         }
 
+        .word-container {
+            padding-top: 20px;
+            max-width: 960px;
+        }
+
+        .word-color-input {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .find-close-btn {
+            margin-left: auto;
+        }
+
+        .word-icon-accent {
+            color: var(--word-blue-light);
+        }
+
+        .hf-hidden {
+            display: none;
+        }
+
+        .modal-relative {
+            position: relative;
+        }
+
+        .version-note {
+            font-size: 12px;
+            opacity: .5;
+            margin-bottom: 12px;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
         /* Find & Replace */
         .find-panel {
             display: none;
@@ -523,7 +562,7 @@
     </header>
 
     <main>
-        <div class="container tool-container" style="padding-top:20px;max-width:960px;">
+        <div class="container tool-container word-container">
             <div class="word-app">
                 <div class="word-toolbar" id="customToolbar">
                     <div class="tg">
@@ -562,10 +601,8 @@
                             <option value="2">H2</option>
                             <option value="3">H3</option>
                         </select>
-                        <input type="color" id="textColor" value="#1a1a2e" title="Text Color"
-                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
-                        <input type="color" id="bgColor" value="#ffffff" title="Highlight"
-                            style="width:34px;height:34px;border:none;border-radius:7px;cursor:pointer;">
+                        <input type="color" id="textColor" value="#1a1a2e" title="Text Color" class="word-color-input">
+                        <input type="color" id="bgColor" value="#ffffff" title="Highlight" class="word-color-input">
                     </div>
                     <div class="tg">
                         <button id="btnAlignL" title="Left"><i class="fas fa-align-left"></i></button>
@@ -610,19 +647,19 @@
                     <button data-onclick="replaceOne()">Replace</button>
                     <button data-onclick="replaceAll()">All</button>
                     <span class="count" id="findCount"></span>
-                    <button data-onclick="closeFind()" style="margin-left:auto;">?</button>
+                    <button data-onclick="closeFind()" class="find-close-btn">?</button>
                 </div>
 
                 <div class="doc-title-bar">
-                    <i class="fas fa-file-word" style="color:var(--word-blue-light);"></i>
+                    <i class="fas fa-file-word word-icon-accent"></i>
                     <input type="text" id="docTitle" value="Untitled Document" placeholder="Document title...">
                 </div>
 
                 <div class="editor-container" id="editorWrap">
-                    <div class="hf-bar" id="headerBar" style="display:none;"><input type="text" id="headerInput"
+                        <div class="hf-bar hf-hidden" id="headerBar"><input type="text" id="headerInput"
                             placeholder="Header text (shown on print/export)..."></div>
                     <div id="editor"></div>
-                    <div class="hf-bar footer" id="footerBar" style="display:none;"><input type="text" id="footerInput"
+                        <div class="hf-bar footer hf-hidden" id="footerBar"><input type="text" id="footerInput"
                             placeholder="Footer text (shown on print/export)..."></div>
                 </div>
 
@@ -647,7 +684,7 @@
 
     <!-- Templates Modal -->
     <div class="modal-overlay" id="templateModal">
-        <div class="modal" style="position:relative;">
+        <div class="modal modal-relative">
             <button class="close-modal" data-onclick="closeTemplateModal()">?</button>
             <h2>?? Document Templates</h2>
             <div class="tpl-grid" id="tplGrid"></div>
@@ -665,13 +702,13 @@
         <div class="vm-inner">
             <button class="close-modal" data-onclick="closeVersions()">?</button>
             <h2>?? Version History</h2>
-            <p style="font-size:12px;opacity:.5;margin-bottom:12px;">Auto-saved every 30 seconds. Up to 10 versions
+            <p class="version-note">Auto-saved every 30 seconds. Up to 10 versions
                 kept.</p>
             <div id="versionsList"></div>
         </div>
     </div>
 
-    <input type="file" id="fileInput" accept=".txt,.docx,.doc" style="display:none;">
+    <input type="file" id="fileInput" accept=".txt,.docx,.doc" class="hidden-file-input">
 
     <script src="../../js/vendor/purify.min.js"></script>
     <script src="../../js/vendor/quill.min.js"></script>

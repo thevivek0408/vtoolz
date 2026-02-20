@@ -52,6 +52,50 @@
         input[type=range] {
             width: 100%;
         }
+
+        .aadhaar-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .scan-upload-box {
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .editor-hidden {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .doc-drop-box {
+            border: 2px dashed var(--border-color);
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .doc-drop-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .result-hidden {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .status-spacing {
+            margin: 15px 0;
+        }
     </style>
 </head>
 
@@ -70,7 +114,7 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="aadhaar-hero">
                 <h1>Aadhaar Tools</h1>
                 <p class="text-muted">Prepare documents for Aadhaar Update (2MB Limit) or Clean Scans.</p>
             </div>
@@ -81,13 +125,12 @@
                     <h3><i class="fas fa-magic"></i> Scan Cleaner</h3>
                     <p class="text-small text-muted">Enhance scanned documents (Brightness/Contrast).</p>
 
-                    <div id="cleaner-upload"
-                        style="border: 2px dashed var(--border-color); padding: 20px; text-align: center; cursor: pointer;">
+                    <div id="cleaner-upload" class="scan-upload-box">
                         <i class="fas fa-image"></i> Click to Upload Scan
-                        <input type="file" id="input-scan" accept="image/*" style="display: none;">
+                        <input type="file" id="input-scan" accept="image/*" class="hidden-input">
                     </div>
 
-                    <div id="cleaner-editor" style="display: none; margin-top: 20px;">
+                    <div id="cleaner-editor" class="editor-hidden">
                         <div class="canvas-container">
                             <canvas id="scan-canvas"></canvas>
                         </div>
@@ -113,19 +156,18 @@
                     <h3><i class="fas fa-compress-arrows-alt"></i> Document Compressor</h3>
                     <p class="text-small text-muted">Ensure your Proof of Identity/Address is &lt; 2MB.</p>
 
-                    <div id="drop-doc"
-                        style="border: 2px dashed var(--border-color); padding: 40px; text-align: center; border-radius: 12px; cursor: pointer;">
-                        <i class="fas fa-file-pdf" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <div id="drop-doc" class="doc-drop-box">
+                        <i class="fas fa-file-pdf doc-drop-icon"></i>
                         <p>Drop Document Here</p>
                         <input type="file" id="input-doc" accept="application/pdf, image/jpeg, image/png"
-                            style="display: none;">
+                            class="hidden-input">
                     </div>
 
-                    <div id="result-doc" style="display: none; margin-top: 20px; text-align: center;">
+                    <div id="result-doc" class="result-hidden">
                         <h4 id="doc-name"></h4>
                         <p id="doc-size" class="text-muted"></p>
 
-                        <div id="status-container" style="margin: 15px 0;"></div>
+                        <div id="status-container" class="status-spacing"></div>
 
                         <!-- Simple visual logic for now, PDF compression is complex -->
                         <p class="text-small text-muted">
