@@ -70,12 +70,13 @@ document.getElementById('compress-btn').addEventListener('click', async () => {
             img.src = url;
             card.insertBefore(img, card.querySelector('.stats')); // Insert before stats
 
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-primary btn-block';
-            btn.style.marginTop = '10px';
-            btn.textContent = 'Download';
-            btn.onclick = () => window.Utils.downloadBlob(blob, `compressed-${file.name}`);
-            card.appendChild(btn);
+            const link = document.createElement('a');
+            link.className = 'btn btn-primary btn-block';
+            link.style.marginTop = '10px';
+            link.textContent = 'Download';
+            link.href = URL.createObjectURL(blob);
+            link.download = `compressed-${file.name}`;
+            card.appendChild(link);
 
         } catch (err) {
             console.error(err);
@@ -84,4 +85,4 @@ document.getElementById('compress-btn').addEventListener('click', async () => {
         }
     }
     window.Utils.showToast('Batch compression complete!', 'success');
-});
+});

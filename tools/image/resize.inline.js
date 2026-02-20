@@ -81,9 +81,9 @@ document.getElementById('resize-btn').addEventListener('click', async () => {
         const status = file.uiElement.querySelector('.status');
            status.textContent = resizeMode === 'dimensions' ? 'Resizing...' : 'Optimizing to target size...';
 
-           // Remove previous download button if user runs again
-           const oldBtn = file.uiElement.querySelector('button');
-           if (oldBtn) oldBtn.remove();
+           // Remove previous download control if user runs again
+           const oldDownload = file.uiElement.querySelector('.download-link');
+           if (oldDownload) oldDownload.remove();
 
         try {
                const options = resizeMode === 'size'
@@ -102,16 +102,17 @@ document.getElementById('resize-btn').addEventListener('click', async () => {
            status.textContent = `Done! ${window.Utils.formatBytes(blob.size)} (${deltaPct >= 0 ? '-' : '+'}${Math.abs(deltaPct)}%)`;
             status.style.color = 'var(--accent-color)';
 
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-primary btn-block';
-            btn.style.marginTop = '10px';
-            btn.textContent = 'Download';
-            btn.onclick = () => window.Utils.downloadBlob(blob, `resized-${file.name}`);
-            file.uiElement.appendChild(btn);
+            const link = document.createElement('a');
+            link.className = 'btn btn-primary btn-block download-link';
+            link.style.marginTop = '10px';
+            link.textContent = 'Download';
+            link.href = URL.createObjectURL(blob);
+            link.download = `resized-${file.name}`;
+            file.uiElement.appendChild(link);
 
         } catch (err) {
             console.error(err);
             status.textContent = 'Error';
         }
     }
-});
+});
