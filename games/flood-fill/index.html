@@ -15,8 +15,8 @@ h1{font-size:1.5rem;margin-bottom:8px;background:linear-gradient(135deg,#6c5ce7,
 .size-sel{display:flex;gap:6px;margin-bottom:10px}
 .size-sel button{background:#1e1e3a;border:1px solid #444;color:#aaa;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:.8rem}
 .size-sel button.active{border-color:#a29bfe;color:#a29bfe}
-.board{display:inline-grid;gap:2px;border-radius:8px;overflow:hidden}
-.cell{width:clamp(28px,7vw,42px);height:clamp(28px,7vw,42px);transition:background .15s;border-radius:3px}
+.board{display:inline-grid;gap:2px;border-radius:8px;overflow:hidden;max-width:calc(100vw - 40px)}
+.cell{width:clamp(20px,calc((100vw - 72px)/var(--cols)),42px);height:clamp(20px,calc((100vw - 72px)/var(--cols)),42px);transition:background .15s;border-radius:3px}
 .color-picker{display:flex;gap:8px;margin-top:14px}
 .color-btn{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s}
 .color-btn:hover{transform:scale(1.15)}
@@ -130,7 +130,8 @@ function updateFilled(){
 
 function render(){
   const board=document.getElementById('board');board.innerHTML='';
-  board.style.gridTemplateColumns=`repeat(${gridSize},clamp(28px,7vw,42px))`;
+  document.documentElement.style.setProperty('--cols',gridSize);
+  board.style.gridTemplateColumns=`repeat(${gridSize},1fr)`;
   for(let r=0;r<gridSize;r++){
     for(let c=0;c<gridSize;c++){
       const cell=document.createElement('div');cell.className='cell';

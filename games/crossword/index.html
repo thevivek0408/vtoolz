@@ -34,6 +34,11 @@ h1{font-size:1.5rem;margin-bottom:10px;background:linear-gradient(135deg,#00b894
 .controls button:hover{background:#00b894;border-color:#00b894;color:#fff}
 .win-msg{display:none;font-size:1.2rem;color:#55efc4;margin-top:12px;text-align:center}
 .win-msg.show{display:block}
+.mobile-kb{display:none;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:10px;max-width:350px}
+.mobile-kb button{width:36px;height:36px;background:#1e1e3a;border:1px solid #444;color:#e0e0e0;border-radius:6px;font-size:1rem;cursor:pointer;font-weight:700}
+.mobile-kb button:active{background:#00b894;color:#fff}
+.mobile-kb button.wide{width:76px;font-size:.75rem}
+@media(hover:none)and (pointer:coarse){.mobile-kb{display:flex}}
 </style>
 </head>
 <body>
@@ -53,6 +58,7 @@ h1{font-size:1.5rem;margin-bottom:10px;background:linear-gradient(135deg,#00b894
   <button onclick="clearPuzzle()">Clear</button>
 </div>
 <div class="win-msg" id="win">🎉 Puzzle Complete!</div>
+<div class="mobile-kb" id="mobileKb"></div>
 <script>
 const PUZZLES=[
   {
@@ -373,6 +379,24 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Tab'){e.preventDefault();selectedDir=selectedDir==='across'?'down':'across';highlightCells()}
 });
 
+// Build mobile keyboard
+(function(){
+  const kb=$('mobileKb');
+  const rows=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'];
+  rows.forEach((row,ri)=>{
+    if(ri===2){
+      const del=document.createElement('button');del.className='wide';del.textContent='⌫';
+      del.addEventListener('click',()=>{if(!selectedCell)return;if(!gridData[selectedCell.r][selectedCell.c])movePrev();gridData[selectedCell.r][selectedCell.c]='';renderCells()});
+      kb.appendChild(del);
+    }
+    [...row].forEach(ch=>{
+      const b=document.createElement('button');b.textContent=ch;
+      b.addEventListener('click',()=>{if(!selectedCell)return;gridData[selectedCell.r][selectedCell.c]=ch;renderCells();moveNext()});
+      kb.appendChild(b);
+    });
+  });
+  function $(id){return document.getElementById(id)}
+})();
 initPuzzle(0);
 </script>
 </body>

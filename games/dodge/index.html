@@ -176,18 +176,19 @@ canvas.addEventListener('touchmove',e=>{
   let r=canvas.getBoundingClientRect();let t=e.touches[0];
   movePlayer((t.clientX-r.left)*(W/r.width),(t.clientY-r.top)*(H/r.height));
 },{passive:false});
-canvas.addEventListener('click',()=>{if(gameOver)init()});
-canvas.addEventListener('touchend',()=>{if(gameOver)init()});
+canvas.addEventListener('click',()=>{if(gameOver){init();startKbLoop()}});
+canvas.addEventListener('touchend',()=>{if(gameOver){init();startKbLoop()}});
 
 // Keyboard controls
 let keys={};
 document.addEventListener('keydown',e=>{
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)){e.preventDefault();keys[e.key]=true}
-  if(gameOver&&(e.key==='Enter'||e.key===' '))init();
+  if(gameOver&&(e.key==='Enter'||e.key===' ')){init();startKbLoop()}
 });
 document.addEventListener('keyup',e=>{keys[e.key]=false});
+let kbLoopId=null;
 function keyboardMove(){
-  if(gameOver)return;
+  if(gameOver){kbLoopId=null;return;}
   const speed=6;
   let dx=0,dy=0;
   if(keys['ArrowLeft']||keys['a'])dx=-speed;
@@ -195,9 +196,10 @@ function keyboardMove(){
   if(keys['ArrowUp']||keys['w'])dy=-speed;
   if(keys['ArrowDown']||keys['s'])dy=speed;
   if(dx||dy)movePlayer(player.x+dx,player.y+dy);
-  requestAnimationFrame(keyboardMove);
+  kbLoopId=requestAnimationFrame(keyboardMove);
 }
-keyboardMove();
+function startKbLoop(){if(!kbLoopId)keyboardMove();}
+startKbLoop();
 
 init();
 </script>

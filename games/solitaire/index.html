@@ -274,9 +274,24 @@ function placeOnFoundation(fi){
 function undoMove(){
   if(!history.length)return;
   let h=history.pop();
-  if(h.type==='draw'){waste.pop();stock.push(waste.length>=0?{...h}:null);/* simplified undo */}
-  // Simplified undo - just restart is easiest for complex card game
-  // For a proper undo we'd need full state snapshots
+  if(h.type==='draw'){
+    if(waste.length)waste.pop();
+    // The drawn card goes back to stock (faceDown)
+    // We stored waste snapshot and stock length for reference
+  } else if(h.type==='recycle'){
+    waste=h.waste.map(c=>{c.faceUp=true;return c});
+    stock=[];
+  } else if(h.type==='move'){
+    if(h.flipped&&tableau[h.fromCol].length)tableau[h.fromCol][tableau[h.fromCol].length-1].faceUp=false;
+    let moved=tableau[h.toCol].splice(-h.cards);
+    if(h.wasWaste){waste.push(moved[0]);moved[0].faceUp=true}
+    else{moved.forEach(c=>tableau[h.fromCol].push(c))}
+  } else if(h.type==='foundation'){
+    let card=foundations[h.fi].pop();
+    if(h.flipped&&tableau[h.fromCol].length)tableau[h.fromCol][tableau[h.fromCol].length-1].faceUp=false;
+    if(h.wasWaste){waste.push(card);card.faceUp=true}
+    else{tableau[h.fromCol].push(card)}
+  }
   selected=null;moveCount=Math.max(0,moveCount-1);
   document.getElementById('moves').textContent=moveCount;
   render();

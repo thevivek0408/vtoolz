@@ -87,6 +87,8 @@ function renderBoard(id,board,showShips){
         cell.addEventListener('click',()=>placeShip(r,c));
         cell.addEventListener('mouseenter',()=>previewShip(r,c));
         cell.addEventListener('mouseleave',clearPreview);
+        cell.addEventListener('touchstart',(ev)=>{ev.preventDefault();previewShip(r,c)},{passive:false});
+        cell.addEventListener('touchend',(ev)=>{ev.preventDefault();clearPreview();placeShip(r,c)},{passive:false});
       }
       if(id==='enemy'&&phase==='battle'){
         cell.addEventListener('click',()=>playerAttack(r,c));

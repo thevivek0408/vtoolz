@@ -80,7 +80,7 @@
             const maxH = window.innerHeight - 120;
             const cellW = Math.floor(maxW / config.cols);
             const cellH = Math.floor(maxH / config.rows);
-            const cell = Math.max(20, Math.min(36, cellW, cellH));
+            const cell = Math.max(14, Math.min(36, cellW, cellH));
             document.documentElement.style.setProperty('--cell', cell + 'px');
             document.documentElement.style.setProperty('--font', Math.floor(cell * 0.55) + 'px');
 
