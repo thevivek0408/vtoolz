@@ -88,6 +88,55 @@
                 transform: rotate(360deg);
             }
         }
+
+        .bg-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .privacy-top {
+            margin-top: 10px;
+        }
+
+        .drop-area {
+            border: 3px dashed var(--primary-color);
+            padding: 50px;
+            text-align: center;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .drop-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .hidden-input,
+        .result-hidden,
+        .loader-hidden {
+            display: none;
+        }
+
+        .loader-note {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .actions-row {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .new-btn {
+            margin-left: 10px;
+        }
+
+        .info-alert {
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 
@@ -106,25 +155,23 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="bg-head">
                 <h1><i class="fas fa-magic"></i> AI Background Remover</h1>
                 <p class="text-muted">Remove image backgrounds automatically in your browser. Powered by AI.</p>
-                <div class="privacy-badge" style="margin-top: 10px;">
+                <div class="privacy-badge privacy-top">
                     <i class="fas fa-shield-alt"></i> 100% Client-Side. No uploads.
                 </div>
             </div>
 
             <div class="tool-card">
-                <div id="drop-area"
-                    style="border: 3px dashed var(--primary-color); padding: 50px; text-align: center; border-radius: 16px; cursor: pointer; transition: 0.3s;">
-                    <i class="fas fa-cloud-upload-alt"
-                        style="font-size: 4rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                <div id="drop-area" class="drop-area">
+                    <i class="fas fa-cloud-upload-alt drop-icon"></i>
                     <h3>Drop Image Here</h3>
                     <p class="text-muted">or click to browse (JPG, PNG, WebP)</p>
                 </div>
-                <input type="file" id="file-input" accept="image/*" style="display: none;">
+                <input type="file" id="file-input" accept="image/*" class="hidden-input">
 
-                <div id="result-area" style="display: none;">
+                <div id="result-area" class="result-hidden">
                     <div class="comparison-view">
                         <div>
                             <h4>Original</h4>
@@ -136,26 +183,26 @@
                             <h4>Background Removed</h4>
                             <div class="img-box transparent-bg" id="result-box">
                                 <img id="img-result">
-                                <div id="loader" class="loading-overlay" style="display: none;">
+                                <div id="loader" class="loading-overlay loader-hidden">
                                     <div class="spinner"></div>
-                                    <p>Processing AI Model...<br><span style="font-size:0.8em; opacity:0.8;">(First run
+                                    <p>Processing AI Model...<br><span class="loader-note">(First run
                                             may take a moment)</span></p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div style="text-align: center; margin-top: 30px;">
+                    <div class="actions-row">
                         <button id="btn-download" class="btn btn-primary btn-lg" disabled>
                             <i class="fas fa-download"></i> Download PNG
                         </button>
-                        <button id="btn-new" class="btn btn-secondary btn-lg" style="margin-left: 10px;">
+                        <button id="btn-new" class="btn btn-secondary btn-lg new-btn">
                             New Image
                         </button>
                     </div>
                 </div>
 
-                <div class="alert alert-info" style="margin-top: 30px; font-size: 0.9em;">
+                <div class="alert alert-info info-alert">
                     <i class="fas fa-info-circle"></i> <strong>Note:</strong> This tool downloads a ~50MB AI model on
                     the first run. It is cached for subsequent uses.
                 </div>

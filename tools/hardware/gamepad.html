@@ -208,6 +208,29 @@
             display: flex;
             gap: 30px;
         }
+
+        .ga-u { grid-area: U; }
+        .ga-l { grid-area: L; }
+        .ga-r { grid-area: R; }
+        .ga-d { grid-area: D; }
+        .ga-a { grid-area: A; }
+        .ga-b { grid-area: B; }
+        .ga-x { grid-area: X; }
+        .ga-y { grid-area: Y; }
+
+        .stick-press-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            opacity: 0;
+            width: 40px;
+        }
+
+        .debug-panel {
+            margin-top: 20px;
+            font-family: monospace;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 
@@ -249,29 +272,29 @@
 
                 <!-- D-Pad -->
                 <div class="btn-group dpad">
-                    <div class="btn" id="btn-12" style="grid-area: U">?</div>
-                    <div class="btn" id="btn-14" style="grid-area: L">?</div>
-                    <div class="btn" id="btn-15" style="grid-area: R">?</div>
-                    <div class="btn" id="btn-13" style="grid-area: D">?</div>
+                    <div class="btn ga-u" id="btn-12">?</div>
+                    <div class="btn ga-l" id="btn-14">?</div>
+                    <div class="btn ga-r" id="btn-15">?</div>
+                    <div class="btn ga-d" id="btn-13">?</div>
                 </div>
 
                 <!-- Face Buttons -->
                 <div class="btn-group face-buttons">
-                    <div class="btn btn-y" id="btn-3" style="grid-area: Y">Y</div>
-                    <div class="btn btn-x" id="btn-2" style="grid-area: X">X</div>
-                    <div class="btn btn-b" id="btn-1" style="grid-area: B">B</div>
-                    <div class="btn btn-a" id="btn-0" style="grid-area: A">A</div>
+                    <div class="btn btn-y ga-y" id="btn-3">Y</div>
+                    <div class="btn btn-x ga-x" id="btn-2">X</div>
+                    <div class="btn btn-b ga-b" id="btn-1">B</div>
+                    <div class="btn btn-a ga-a" id="btn-0">A</div>
                 </div>
 
                 <!-- Joysticks -->
                 <div class="stick left">
                     <div class="stick-dot" id="stick-l"></div>
-                    <div class="btn" id="btn-10" style="position:absolute; top:20px; left:20px; opacity:0; width:40px;">
+                    <div class="btn stick-press-btn" id="btn-10">
                         L3</div>
                 </div>
                 <div class="stick right">
                     <div class="stick-dot" id="stick-r"></div>
-                    <div class="btn" id="btn-11" style="position:absolute; top:20px; left:20px; opacity:0; width:40px;">
+                    <div class="btn stick-press-btn" id="btn-11">
                         R3</div>
                 </div>
 
@@ -288,7 +311,7 @@
                 </button>
             </div>
 
-            <div id="debug" style="margin-top: 20px; font-family: monospace; color: var(--text-muted);"></div>
+            <div id="debug" class="debug-panel"></div>
         </div>
     </main>
 
