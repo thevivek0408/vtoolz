@@ -8,6 +8,31 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>Flatten PDF - Privacy-First Tools</title>
     <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .flatten-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .file-info {
+            display: none;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .file-pill {
+            display: inline-block;
+        }
+
+        .flatten-action {
+            text-align: center;
+        }
+
+        .flatten-btn {
+            display: none;
+            min-width: 200px;
+        }
+    </style>
 </head>
 
 <body>
@@ -30,7 +55,7 @@
                 <span class="step">3. Download</span>
             </div>
 
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="flatten-hero">
                 <h1>Flatten PDF</h1>
                 <p class="text-muted">Make form fields uneditable and merge layers.</p>
             </div>
@@ -42,12 +67,12 @@
                 <input type="file" id="file-input" accept="application/pdf" hidden>
             </div>
 
-            <div id="file-info" style="display:none; text-align: center; margin-bottom: 2rem;">
-                <p id="file-name" class="alert alert-info" style="display:inline-block;"></p>
+            <div id="file-info" class="file-info">
+                <p id="file-name" class="alert alert-info file-pill"></p>
             </div>
 
-            <div class="action-bar" style="text-align: center;">
-                <button id="flatten-btn" class="btn btn-primary" style="display:none; min-width: 200px;">
+            <div class="action-bar flatten-action">
+                <button id="flatten-btn" class="btn btn-primary flatten-btn">
                     Flatten PDF
                 </button>
             </div>
