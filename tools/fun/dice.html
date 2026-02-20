@@ -352,6 +352,23 @@
             cursor: pointer;
         }
 
+        .back-link {
+            color: var(--text-color);
+        }
+
+        .color-input {
+            width: 100%;
+            height: 40px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .roll-btn {
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 1.2rem;
+        }
+
         @media (max-width: 768px) {
             .studio-container {
                 grid-template-columns: 1fr;
@@ -374,7 +391,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <a href="../../index.html" style="color:var(--text-color)"><i class="fas fa-chevron-left"></i></a>
+                <a href="../../index.html" class="back-link"><i class="fas fa-chevron-left"></i></a>
                 <span class="logo-text">Dice Studio</span>
             </div>
 
@@ -391,17 +408,16 @@
                 <div class="control-item">
                     <label>Dice Color</label>
                     <input type="color" id="diceColor" value="#ffffff"
-                        style="width:100%; height:40px; border:none; cursor:pointer;">
+                        class="color-input">
                 </div>
                 <div class="control-item">
                     <label>Dot Color</label>
                     <input type="color" id="dotColor" value="#333333"
-                        style="width:100%; height:40px; border:none; cursor:pointer;">
+                        class="color-input">
                 </div>
             </div>
 
-            <button id="rollBtn" class="btn btn-primary btn-block"
-                style="margin-top:20px; padding:15px; font-size:1.2rem;">
+            <button id="rollBtn" class="btn btn-primary btn-block roll-btn">
                 <i class="fas fa-dice"></i> ROLL ALL
             </button>
         </aside>

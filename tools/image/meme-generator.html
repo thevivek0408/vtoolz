@@ -79,6 +79,23 @@
         .template-thumb.active {
             border-color: var(--primary-color);
         }
+
+        .meme-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .upload-wrap {
+            margin-bottom: 15px;
+        }
+
+        .upload-note {
+            font-size: 0.9rem;
+        }
+
+        .text-step {
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -97,7 +114,7 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="meme-hero">
                 <h1>Meme Generator</h1>
                 <p class="text-muted">Create viral memes instantly. No watermarks.</p>
             </div>
@@ -109,14 +126,14 @@
 
                 <div class="controls-area">
                     <h3>1. Choose Image</h3>
-                    <div style="margin-bottom: 15px;">
+                    <div class="upload-wrap">
                         <input type="file" id="image-input" accept="image/*">
                     </div>
 
                     <!-- Templates (Using placeholders or base64 if available, simple colors for now) -->
-                    <p class="text-muted" style="font-size:0.9rem;">Or upload your own.</p>
+                    <p class="text-muted upload-note">Or upload your own.</p>
 
-                    <h3 style="margin-top:20px;">2. Add Text</h3>
+                    <h3 class="text-step">2. Add Text</h3>
                     <div class="input-group">
                         <label>Top Text</label>
                         <input type="text" id="top-text" placeholder="TOP TEXT">
