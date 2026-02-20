@@ -4,7 +4,6 @@
  */
 
 self.onmessage = function (e) {
-    console.log('Worker: Message received from main script');
     const { type, data } = e.data;
 
     switch (type) {

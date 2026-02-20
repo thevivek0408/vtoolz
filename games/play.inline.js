@@ -16,13 +16,42 @@ fetch('data/games-config.json')
             iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups');
             iframe.setAttribute('loading', 'lazy');
             gameContainerDiv.appendChild(iframe);
-            iframe.onload = () => document.getElementById('loading').style.display = 'none';
+
+            // Timeout fallback — if game doesn't signal readiness in 15s, hide spinner anyway
+            const loadTimeout = setTimeout(() => {
+                const loadEl = document.getElementById('loading');
+                if (loadEl) loadEl.style.display = 'none';
+            }, 15000);
+
+            iframe.onload = () => {
+                clearTimeout(loadTimeout);
+                const loadEl = document.getElementById('loading');
+                if (loadEl) loadEl.style.display = 'none';
+                // Check if iframe loaded an error page (same-origin only)
+                try {
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (doc && doc.title && doc.title.toLowerCase().includes('404')) {
+                        showError('Game failed to load. It may have been removed.');
+                    }
+                } catch (e) { /* cross-origin — ignore */ }
+            };
+
+            iframe.onerror = () => {
+                clearTimeout(loadTimeout);
+                showError('Game failed to load. Please try again later.');
+            };
+
             document.getElementById('game-container').appendChild(gameContainerDiv);
         } else {
-            document.getElementById('loading').innerHTML = '<p>Game not found.</p>';
+            showError('Game not found.');
         }
     })
     .catch(e => {
         console.error(e);
-        document.getElementById('loading').innerHTML = '<p>Error loading configuration.</p>';
-    });
+        showError('Error loading configuration.');
+    });
+
+function showError(msg) {
+    const loadEl = document.getElementById('loading');
+    if (loadEl) loadEl.innerHTML = '<p style="color:#ef4444;padding:40px;font-size:1.1rem;">' + msg + '</p>';
+}

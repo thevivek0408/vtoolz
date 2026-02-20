@@ -283,16 +283,12 @@ function gameOver() {
   );
   lives = 0;
   document.getElementById("highscores").style.display = "block";
-  console.log("lost");
 
   retryButton.show();
-  console.log(`Sending score to server: ${score}`);
   sendScoreToServer(score);
 }
 
 function sendScoreToServer(score) {
-  console.log("Score:", score);
-
   // LocalStorage Logic
   let scores = JSON.parse(localStorage.getItem('fruitNinjaHighScores')) || [];
   let name = prompt("Game Over! Enter your name for the leaderboard:", "Ninja");
