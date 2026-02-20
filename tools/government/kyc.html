@@ -9,6 +9,37 @@
     <title>Job & KYC Tools - Vibox</title>
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .kyc-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .kyc-drop-zone {
+            border: 2px dashed var(--border-color);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .kyc-hidden-input {
+            display: none;
+        }
+
+        .kyc-result {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .kyc-status-badge {
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .kyc-photo-preview {
+            max-height: 150px;
+        }
+    </style>
 </head>
 
 <body>
@@ -26,7 +57,7 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="kyc-hero">
                 <h1>Job Application & KYC Tools</h1>
                 <p class="text-muted">Optimize Resume PDFs and prepare KYC documents.</p>
             </div>
@@ -37,15 +68,14 @@
                     <h3><i class="fas fa-file-contract"></i> Resume Optimizer</h3>
                     <p class="text-small text-muted">Ensure Resume PDF is &lt; 1MB or 2MB.</p>
 
-                    <div id="drop-resume"
-                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
+                    <div id="drop-resume" class="kyc-drop-zone">
                         <i class="fas fa-upload"></i> Upload Resume
-                        <input type="file" id="input-resume" accept="application/pdf" style="display: none;">
+                        <input type="file" id="input-resume" accept="application/pdf" class="kyc-hidden-input">
                     </div>
 
-                    <div id="result-resume" style="display: none; margin-top: 15px;">
+                    <div id="result-resume" class="kyc-result">
                         <p id="resume-info"></p>
-                        <div id="resume-status" class="status-badge" style="display:inline-block; margin-bottom: 10px;">
+                        <div id="resume-status" class="status-badge kyc-status-badge">
                         </div>
                         <p class="text-small text-muted">
                             For PDF compression, we check size. If too large, use our <a
@@ -59,14 +89,13 @@
                     <h3><i class="fas fa-user-tie"></i> Job Photo</h3>
                     <p class="text-small text-muted">Standard 100KB Formal Photo.</p>
 
-                    <div id="drop-job-photo"
-                        style="border: 2px dashed var(--border-color); padding: 30px; text-align: center; cursor: pointer;">
+                    <div id="drop-job-photo" class="kyc-drop-zone">
                         <i class="fas fa-camera"></i> Upload Photo
-                        <input type="file" id="input-job-photo" accept="image/jpeg" style="display: none;">
+                        <input type="file" id="input-job-photo" accept="image/jpeg" class="kyc-hidden-input">
                     </div>
 
-                    <div id="result-job-photo" style="display: none; margin-top: 15px;">
-                        <img id="img-job-photo" style="max-height: 150px;">
+                    <div id="result-job-photo" class="kyc-result">
+                        <img id="img-job-photo" class="kyc-photo-preview">
                         <p id="info-job-photo"></p>
                         <button id="btn-dl-job-photo" class="btn btn-primary btn-sm">Download</button>
                     </div>

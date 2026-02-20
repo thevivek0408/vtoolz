@@ -41,6 +41,51 @@
             width: 100%;
             margin: 15px 0;
         }
+
+        .compress-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .compress-controls {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .compress-card-center {
+            text-align: center;
+        }
+
+        .quality-label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .quality-value {
+            color: var(--primary-color);
+        }
+
+        .quality-range-full {
+            width: 100%;
+        }
+
+        .quality-range-hints {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .compress-action {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .compress-btn-wide {
+            min-width: 200px;
+        }
     </style>
 </head>
 
@@ -64,7 +109,7 @@
                 <span class="step">3. Download</span>
             </div>
 
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="compress-hero">
                 <h1>Image Compressor</h1>
                 <p class="text-muted">Reduce file size of JPG, PNG, and WEBP images without losing quality.</p>
             </div>
@@ -76,21 +121,20 @@
                 <input type="file" id="file-input" multiple accept="image/*" hidden>
             </div>
 
-            <div id="controls" style="display:none; max-width: 600px; margin: 0 auto;">
-                <div class="tool-card" style="text-align:center;">
-                    <label for="quality" style="display:block; margin-bottom:10px;">Compression Level: <strong
-                            id="quality-val" style="color:var(--primary-color);">80%</strong></label>
+            <div id="controls" class="compress-controls">
+                <div class="tool-card compress-card-center">
+                    <label for="quality" class="quality-label">Compression Level: <strong
+                            id="quality-val" class="quality-value">80%</strong></label>
                     <input type="range" id="quality" class="quality-slider" min="0.1" max="1.0" step="0.1" value="0.8"
-                        style="width:100%;">
-                    <div
-                        style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted); margin-top:5px;">
+                        class="quality-range-full">
+                    <div class="quality-range-hints">
                         <span>Max Compression</span>
                         <span>Best Quality</span>
                     </div>
                 </div>
 
-                <div class="action-bar" style="text-align: center; margin-top: 2rem;">
-                    <button id="compress-btn" class="btn btn-primary" style="min-width: 200px;">
+                <div class="action-bar compress-action">
+                    <button id="compress-btn" class="btn btn-primary compress-btn-wide">
                         Compress All Images
                     </button>
                 </div>
