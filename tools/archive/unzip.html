@@ -74,6 +74,39 @@
             border-color: var(--primary-color);
             background: rgba(var(--primary-rgb), 0.05);
         }
+
+        .unzip-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .unzip-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .archive-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            margin-top: 80px;
+        }
     </style>
 </head>
 
@@ -91,35 +124,33 @@
 
     <main>
         <div class="tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="unzip-hero">
                 <h1>Unzip Utility</h1>
                 <p class="text-muted">Extract files from Zip archives immediately.</p>
             </div>
 
-            <div class="layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div class="layout unzip-layout">
                 <!-- Input Area -->
                 <div class="controls-area">
                     <div id="drop-zone">
-                        <i class="fas fa-file-archive"
-                            style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <i class="fas fa-file-archive archive-icon"></i>
                         <h3 id="drop-text">Drag & Drop Zip Here</h3>
                         <p class="text-muted">or click to browse</p>
-                        <input type="file" id="file-input" accept=".zip,application/zip" style="display: none;">
+                        <input type="file" id="file-input" accept=".zip,application/zip" class="hidden-file-input">
                     </div>
                 </div>
 
                 <!-- List Area -->
                 <div class="preview-area">
                     <div class="tool-card">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div class="content-header">
                             <h3>Archive Content</h3>
                             <!-- <button class="btn btn-sm btn-primary" id="extract-all-btn" disabled>Extract All</button> -->
                             <!-- Extract all can be complex with blob handling for many files, let's keep it simple for now or implement if easy -->
                         </div>
 
                         <div id="file-list" class="file-list-area">
-                            <p class="text-muted" style="text-align: center; margin-top: 80px;">No archive loaded.</p>
+                            <p class="text-muted empty-state">No archive loaded.</p>
                         </div>
                     </div>
                 </div>
