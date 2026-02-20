@@ -41,6 +41,67 @@
         .tool-card:hover {
             transform: none;
         }
+
+        .qr-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .qr-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .content-card {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            margin-bottom: 15px;
+        }
+
+        .size-group {
+            margin-top: 15px;
+        }
+
+        .range-full {
+            width: 100%;
+        }
+
+        .generate-btn {
+            margin-top: 20px;
+        }
+
+        .preview-center {
+            text-align: center;
+        }
+
+        .actions-row {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .footer-qr {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+        }
+
+        .footer-version {
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .qr-layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -58,16 +119,16 @@
 
     <main>
         <div class="tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="qr-head">
                 <h1>QR Code Generator</h1>
                 <p class="text-muted">Create custom QR codes instantly. Offline & Private.</p>
             </div>
 
-            <div class="layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div class="layout qr-layout">
                 <!-- Controls -->
                 <div class="controls-area">
-                    <div class="tool-card" style="margin-bottom: 20px;">
-                        <h3 style="margin-bottom: 15px;">Content</h3>
+                    <div class="tool-card content-card">
+                        <h3 class="section-title">Content</h3>
                         <div class="form-group">
                             <label>Text or URL</label>
                             <textarea id="qr-text" class="form-control" rows="4"
@@ -76,7 +137,7 @@
                     </div>
 
                     <div class="tool-card">
-                        <h3 style="margin-bottom: 15px;">Customization</h3>
+                        <h3 class="section-title">Customization</h3>
 
                         <div class="color-picker-group">
                             <input type="color" id="color-dark" value="#000000">
@@ -87,10 +148,10 @@
                             <label>Background Color</label>
                         </div>
 
-                        <div class="form-group" style="margin-top: 15px;">
+                        <div class="form-group size-group">
                             <label>Size: <span id="size-val">256</span>px</label>
                             <input type="range" id="size-range" min="128" max="1024" step="32" value="256"
-                                style="width: 100%;">
+                            class="range-full">
                         </div>
 
                         <div class="form-group">
@@ -104,16 +165,16 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-primary btn-block" id="generate-btn" style="margin-top: 20px;">Generate QR
+                    <button class="btn btn-primary btn-block generate-btn" id="generate-btn">Generate QR
                         Code</button>
                     <!-- Auto-generate typically better, but button is good for explicit action -->
                 </div>
 
                 <!-- Preview -->
-                <div class="preview-area" style="text-align: center;">
+                <div class="preview-area preview-center">
                     <div id="qrcode" class="qr-preview"></div>
 
-                    <div class="actions" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                    <div class="actions actions-row">
                         <button class="btn btn-secondary" id="download-png">Download PNG</button>
                         <!-- <button class="btn btn-secondary" id="download-svg">Download SVG</button> -->
                     </div>
@@ -122,10 +183,9 @@
         </div>
     </main>
 
-    <footer
-        style="text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top:50px;">
+    <footer class="footer-qr">
         <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
-        <p style="font-size: 0.8rem; opacity: 0.5;">v22.0 (QR Tools)</p>
+        <p class="footer-version">v22.0 (QR Tools)</p>
     </footer>
 
     <script type="module" src="../../js/qr/qr-generator.js"></script>

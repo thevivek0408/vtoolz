@@ -38,6 +38,69 @@
             gap: 10px;
         }
 
+        .modifier-container {
+            max-width: 1200px;
+        }
+
+        .modifier-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modifier-grid {
+            display: grid;
+            grid-template-columns: 1fr 250px 1fr;
+            gap: 20px;
+        }
+
+        .label-input {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .text-input,
+        .text-output {
+            background: var(--bg-secondary);
+            color: var(--text-color);
+            height: 500px;
+            resize: none;
+        }
+
+        .text-output {
+            opacity: 0.8;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .copy-btn {
+            padding: 4px 12px;
+            font-size: 0.8rem;
+        }
+
+        .replace-card {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .replace-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .replace-input {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+        }
+
         .control-group {
             background: var(--surface-color);
             padding: 15px;
@@ -77,20 +140,20 @@
     </header>
 
     <main>
-        <div class="tool-container" id="tool-container" style="max-width: 1200px;">
-            <div style="text-align: center; margin-bottom: 2rem;">
+        <div class="tool-container modifier-container" id="tool-container">
+            <div class="modifier-head">
                 <h1>Text Modifier & Converter</h1>
                 <p class="text-muted">Modify case, sort lines, clean up text, and more.</p>
             </div>
 
-            <div class="layout" style="display: grid; grid-template-columns: 1fr 250px 1fr; gap: 20px;">
+            <div class="layout modifier-grid">
                 <div class="input-area">
-                    <label style="display:block; margin-bottom:0.5rem;">Input Text</label>
+                    <label class="label-input">Input Text</label>
                     <textarea id="input" placeholder="Enter text here..."
-                        style="background: var(--bg-secondary); color: var(--text-color); height: 500px; resize: none;"></textarea>
+                        class="text-input"></textarea>
                 </div>
 
-                <div class="controls" style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="controls">
                     <div class="control-group">
                         <h3>Case Converter</h3>
                         <button class="btn btn-secondary btn-block"
@@ -120,24 +183,20 @@
                 </div>
 
                 <div class="output-area">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; align-items:center;">
+                    <div class="output-header">
                         <label>Output Result</label>
-                        <button class="btn btn-primary" id="copy-btn"
-                            style="padding:4px 12px; font-size:0.8rem;">Copy</button>
+                        <button class="btn btn-primary copy-btn" id="copy-btn">Copy</button>
                     </div>
-                    <textarea id="output" readonly
-                        style="background: var(--bg-secondary); color: var(--text-color); height: 500px; resize: none; opacity: 0.8;"></textarea>
+                    <textarea id="output" readonly class="text-output"></textarea>
                 </div>
             </div>
 
             <!-- Find & Replace Section -->
-            <div class="control-group" style="margin-top: 20px; background: rgba(0,0,0,0.2);">
+            <div class="control-group replace-card">
                 <h3>Find & Replace</h3>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="find-text" placeholder="Find..." class="form-control"
-                        style="flex:1; padding:10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px;">
-                    <input type="text" id="replace-text" placeholder="Replace with..." class="form-control"
-                        style="flex:1; padding:10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px;">
+                <div class="replace-row">
+                    <input type="text" id="find-text" placeholder="Find..." class="form-control replace-input">
+                    <input type="text" id="replace-text" placeholder="Replace with..." class="form-control replace-input">
                     <button class="btn btn-primary" id="replace-btn">Replace All</button>
                 </div>
             </div>
