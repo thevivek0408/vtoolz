@@ -141,5 +141,192 @@
         "mode": "single",
         "mobileOptimized": true,
         "image": "assets/covers/g13.png"
+    },
+    {
+        "id": 14,
+        "name": "Sudoku",
+        "description": "Fill the 9×9 grid so every row, column, and 3×3 box contains 1-9. Three difficulty levels!",
+        "engine": "iframe",
+        "url": "sudoku/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g14.png"
+    },
+    {
+        "id": 15,
+        "name": "Sliding Puzzle",
+        "description": "Rearrange numbered tiles into order by sliding them into the empty space. 3×3, 4×4 & 5×5 grids!",
+        "engine": "iframe",
+        "url": "sliding-puzzle/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g15.png"
+    },
+    {
+        "id": 16,
+        "name": "Connect Four",
+        "description": "Drop discs to get four in a row — horizontally, vertically, or diagonally. Play vs AI or a friend!",
+        "engine": "iframe",
+        "url": "connect-four/index.html",
+        "category": "strategy",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g16.png"
+    },
+    {
+        "id": 17,
+        "name": "Sokoban",
+        "description": "Push all boxes onto the target spots in this classic warehouse puzzle. 15 challenging levels!",
+        "engine": "iframe",
+        "url": "sokoban/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g17.png"
+    },
+    {
+        "id": 18,
+        "name": "Breakout",
+        "description": "Smash bricks with a bouncing ball! Progressive levels with multi-hit bricks and increasing speed.",
+        "engine": "iframe",
+        "url": "breakout/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g18.png"
+    },
+    {
+        "id": 19,
+        "name": "Space Invaders",
+        "description": "Defend Earth from waves of alien invaders! Shoot them down before they reach the bottom.",
+        "engine": "iframe",
+        "url": "space-invaders/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g19.png"
+    },
+    {
+        "id": 20,
+        "name": "Pac-Man",
+        "description": "Navigate the maze, eat all dots, and avoid the ghosts! Grab power pellets to turn the tables.",
+        "engine": "iframe",
+        "url": "pac-man/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g20.png"
+    },
+    {
+        "id": 21,
+        "name": "Pong",
+        "description": "The original arcade game! Bounce the ball past your opponent's paddle. Play vs AI or a friend.",
+        "engine": "iframe",
+        "url": "pong/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g21.png"
+    },
+    {
+        "id": 22,
+        "name": "Solitaire",
+        "description": "Classic Klondike solitaire — build foundations from Ace to King. Undo, timer & move counter.",
+        "engine": "iframe",
+        "url": "solitaire/index.html",
+        "category": "strategy",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g22.png"
+    },
+    {
+        "id": 23,
+        "name": "Memory Match",
+        "description": "Flip cards and find matching pairs! Test your memory with 4×4, 6×6, or 8×4 grids.",
+        "engine": "iframe",
+        "url": "memory-match/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g23.png"
+    },
+    {
+        "id": 24,
+        "name": "Checkers",
+        "description": "Jump and capture your opponent's pieces. Mandatory jumps, multi-jumps & king promotion!",
+        "engine": "iframe",
+        "url": "checkers/index.html",
+        "category": "strategy",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g24.png"
+    },
+    {
+        "id": 25,
+        "name": "Hangman",
+        "description": "Guess the word letter by letter before the hangman is drawn! Hints available for each word.",
+        "engine": "iframe",
+        "url": "hangman/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g25.png"
+    },
+    {
+        "id": 26,
+        "name": "Typing Test",
+        "description": "How fast can you type? Measure your WPM and accuracy with 30s, 60s, or 120s tests.",
+        "engine": "iframe",
+        "url": "typing-test/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g26.png"
+    },
+    {
+        "id": 27,
+        "name": "Quiz Game",
+        "description": "Test your knowledge across General, Science, Technology & History categories. 10 questions per round!",
+        "engine": "iframe",
+        "url": "quiz/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g27.png"
+    },
+    {
+        "id": 28,
+        "name": "Simon",
+        "description": "Watch the color pattern, then repeat it! How many rounds can you remember? 3 speed modes.",
+        "engine": "iframe",
+        "url": "simon/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g28.png"
+    },
+    {
+        "id": 29,
+        "name": "Crossword",
+        "description": "Solve mini crossword puzzles with tech-themed clues. Navigate with keyboard or click!",
+        "engine": "iframe",
+        "url": "crossword/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g29.png"
+    },
+    {
+        "id": 30,
+        "name": "Tower of Hanoi",
+        "description": "Move all discs from the first peg to the last, one at a time. Never place a larger disc on a smaller one!",
+        "engine": "iframe",
+        "url": "tower-of-hanoi/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g30.png"
     }
 ]

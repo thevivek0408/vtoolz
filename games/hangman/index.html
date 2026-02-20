@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Hangman</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:8px;background:linear-gradient(135deg,#74b9ff,#0984e3);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.info{display:flex;gap:16px;margin-bottom:12px;font-size:.85rem;color:#aaa}
+.info b{color:#74b9ff}
+.category{color:#74b9ff;font-size:.85rem;margin-bottom:8px;padding:4px 16px;background:#74b9ff15;border-radius:20px}
+canvas{border-radius:8px;margin-bottom:12px}
+.word{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;justify-content:center}
+.letter-slot{width:clamp(28px,8vw,42px);height:clamp(36px,10vw,52px);border-bottom:3px solid #444;display:flex;align-items:center;justify-content:center;font-size:clamp(20px,5vw,30px);font-weight:700;color:#fff;transition:all .3s}
+.letter-slot.revealed{border-color:#74b9ff;color:#74b9ff}
+.letter-slot.wrong{border-color:#ff6b6b;color:#ff6b6b}
+.letter-slot.space{border:none;width:16px}
+.keyboard{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;max-width:520px}
+.keyboard button{width:clamp(28px,8vw,42px);height:clamp(34px,9vw,46px);background:#1e1e3a;border:1px solid #444;color:#e0e0e0;border-radius:8px;cursor:pointer;font-size:clamp(12px,3vw,16px);font-weight:600;transition:all .15s}
+.keyboard button:hover:not(:disabled){background:#0984e3;border-color:#0984e3;color:#fff}
+.keyboard button:disabled{opacity:.3;cursor:default}
+.keyboard button.correct{background:#27ae60;border-color:#27ae60;color:#fff}
+.keyboard button.wrong{background:#c0392b;border-color:#c0392b;color:#fff}
+.controls{margin-top:12px;display:flex;gap:8px}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.controls button:hover{background:#0984e3;border-color:#0984e3;color:#fff}
+.hint-text{color:#888;font-size:.8rem;margin-bottom:10px;min-height:20px}
+</style>
+</head>
+<body>
+<h1>Hangman</h1>
+<div class="info">
+  <span>Won: <b id="wins">0</b></span>
+  <span>Lost: <b id="losses">0</b></span>
+  <span>Streak: <b id="streak">0</b></span>
+</div>
+<div class="category" id="category"></div>
+<canvas id="canvas" width="200" height="200"></canvas>
+<div class="hint-text" id="hint"></div>
+<div class="word" id="word"></div>
+<div class="keyboard" id="keyboard"></div>
+<div class="controls">
+  <button onclick="getHint()">Hint</button>
+  <button onclick="newGame()">New Word</button>
+</div>
+<script>
+const WORDS=[
+  {word:'JAVASCRIPT',category:'Programming',hint:'Web scripting language'},
+  {word:'PYTHON',category:'Programming',hint:'Named after a British comedy group'},
+  {word:'ALGORITHM',category:'Computer Science',hint:'Step-by-step problem solving'},
+  {word:'ELEPHANT',category:'Animals',hint:'Largest land animal'},
+  {word:'GUITAR',category:'Music',hint:'Six-stringed instrument'},
+  {word:'UNIVERSE',category:'Science',hint:'Everything that exists'},
+  {word:'CHOCOLATE',category:'Food',hint:'Made from cacao beans'},
+  {word:'MOUNTAIN',category:'Nature',hint:'Tall landform'},
+  {word:'BUTTERFLY',category:'Animals',hint:'Beautiful winged insect'},
+  {word:'DIAMOND',category:'Gems',hint:'Hardest natural material'},
+  {word:'VOLCANO',category:'Nature',hint:'Erupts with lava'},
+  {word:'PENGUIN',category:'Animals',hint:'Flightless bird in tuxedo'},
+  {word:'HOSPITAL',category:'Places',hint:'Where doctors work'},
+  {word:'ADVENTURE',category:'Words',hint:'Exciting experience'},
+  {word:'KEYBOARD',category:'Technology',hint:'Used for typing'},
+  {word:'JUPITER',category:'Space',hint:'Largest planet'},
+  {word:'SYMPHONY',category:'Music',hint:'Orchestral composition'},
+  {word:'TREASURE',category:'Words',hint:'Hidden valuable items'},
+  {word:'DINOSAUR',category:'History',hint:'Extinct giant reptile'},
+  {word:'RAINBOW',category:'Nature',hint:'Colorful arch in the sky'},
+  {word:'ASTRONAUT',category:'Space',hint:'Space traveler'},
+  {word:'UMBRELLA',category:'Objects',hint:'Rain protection'},
+  {word:'SANDWICH',category:'Food',hint:'Named after an Earl'},
+  {word:'KANGAROO',category:'Animals',hint:'Australian hopping marsupial'},
+  {word:'DEMOCRACY',category:'Politics',hint:'Rule by the people'},
+  {word:'TELESCOPE',category:'Science',hint:'Used to see distant stars'},
+  {word:'LIBRARIAN',category:'Jobs',hint:'Works with books'},
+  {word:'CROCODILE',category:'Animals',hint:'Scaly river predator'},
+  {word:'CHEMISTRY',category:'Science',hint:'Study of matter and reactions'},
+  {word:'MARATHON',category:'Sports',hint:'26.2 mile race'},
+  {word:'BLUEPRINT',category:'Design',hint:'Technical drawing plan'},
+  {word:'CINNAMON',category:'Food',hint:'Sweet spice from bark'},
+  {word:'LABYRINTH',category:'Words',hint:'Complex maze'},
+  {word:'ORCHESTRA',category:'Music',hint:'Large group of musicians'},
+  {word:'RASPBERRY',category:'Food',hint:'Small red berry'},
+  {word:'SCULPTURE',category:'Art',hint:'3D art form'},
+  {word:'WATERFALL',category:'Nature',hint:'Water cascading down rocks'},
+  {word:'XYLOPHONE',category:'Music',hint:'Hit wooden bars to play'},
+  {word:'PINEAPPLE',category:'Food',hint:'Tropical spiky fruit'},
+  {word:'CHAMELEON',category:'Animals',hint:'Color-changing lizard'}
+];
+let currentWord,guessed,wrongGuesses,maxWrong=6,wins=0,losses=0,streak=0,hintUsed;
+const ctx=document.getElementById('canvas').getContext('2d');
+
+function newGame(){
+  let w=WORDS[Math.floor(Math.random()*WORDS.length)];
+  currentWord=w.word;
+  document.getElementById('category').textContent=w.category;
+  document.getElementById('hint').textContent='';
+  guessed=new Set();wrongGuesses=0;hintUsed=false;
+  renderWord();renderKeyboard();drawHangman();
+}
+function renderWord(){
+  const el=document.getElementById('word');el.innerHTML='';
+  [...currentWord].forEach((ch,i)=>{
+    let d=document.createElement('div');
+    d.className='letter-slot';
+    if(ch===' '){d.className='letter-slot space'}
+    else if(guessed.has(ch)){d.textContent=ch;d.classList.add('revealed')}
+    el.appendChild(d);
+  });
+}
+function renderKeyboard(){
+  const el=document.getElementById('keyboard');el.innerHTML='';
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(ch=>{
+    let b=document.createElement('button');b.textContent=ch;
+    if(guessed.has(ch)){
+      b.disabled=true;
+      b.classList.add(currentWord.includes(ch)?'correct':'wrong');
+    }
+    b.addEventListener('click',()=>guess(ch));
+    el.appendChild(b);
+  });
+}
+function guess(ch){
+  if(guessed.has(ch)||wrongGuesses>=maxWrong)return;
+  guessed.add(ch);
+  if(!currentWord.includes(ch)){wrongGuesses++;drawHangman();
+    if(wrongGuesses>=maxWrong){
+      losses++;streak=0;updateStats();
+      // Reveal word
+      [...currentWord].forEach(c=>guessed.add(c));
+      renderWord();renderKeyboard();
+      document.querySelectorAll('.letter-slot').forEach(s=>{if(!s.classList.contains('space')&&!s.classList.contains('revealed'))s.classList.add('wrong')});
+      document.getElementById('hint').textContent='The word was: '+currentWord;
+      return;
+    }
+  }
+  renderWord();renderKeyboard();
+  // Check win
+  if([...currentWord].every(c=>c===' '||guessed.has(c))){
+    wins++;streak++;updateStats();
+    document.getElementById('hint').textContent='🎉 Correct! Well done!';
+  }
+}
+function getHint(){
+  if(hintUsed)return;hintUsed=true;
+  let w=WORDS.find(w=>w.word===currentWord);
+  if(w)document.getElementById('hint').textContent='Hint: '+w.hint;
+}
+function updateStats(){
+  document.getElementById('wins').textContent=wins;
+  document.getElementById('losses').textContent=losses;
+  document.getElementById('streak').textContent=streak;
+}
+function drawHangman(){
+  ctx.clearRect(0,0,200,200);
+  ctx.strokeStyle='#444';ctx.lineWidth=3;ctx.lineCap='round';
+  // Base
+  ctx.beginPath();ctx.moveTo(20,180);ctx.lineTo(80,180);ctx.stroke();
+  // Pole
+  ctx.beginPath();ctx.moveTo(50,180);ctx.lineTo(50,20);ctx.stroke();
+  // Top
+  ctx.beginPath();ctx.moveTo(50,20);ctx.lineTo(140,20);ctx.stroke();
+  // Rope
+  ctx.beginPath();ctx.moveTo(140,20);ctx.lineTo(140,40);ctx.stroke();
+  ctx.strokeStyle='#74b9ff';ctx.lineWidth=3;
+  if(wrongGuesses>=1){// Head
+    ctx.beginPath();ctx.arc(140,55,15,0,Math.PI*2);ctx.stroke();
+    // Face
+    if(wrongGuesses>=6){
+      ctx.fillStyle='#74b9ff';
+      ctx.beginPath();ctx.arc(135,52,2,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(145,52,2,0,Math.PI*2);ctx.fill();
+      // Sad mouth
+      ctx.beginPath();ctx.arc(140,63,6,Math.PI+.3,-.3);ctx.stroke();
+    } else {
+      ctx.fillStyle='#74b9ff';
+      ctx.beginPath();ctx.arc(135,52,2,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(145,52,2,0,Math.PI*2);ctx.fill();
+    }
+  }
+  if(wrongGuesses>=2){// Body
+    ctx.beginPath();ctx.moveTo(140,70);ctx.lineTo(140,120);ctx.stroke();
+  }
+  if(wrongGuesses>=3){// Left arm
+    ctx.beginPath();ctx.moveTo(140,85);ctx.lineTo(115,100);ctx.stroke();
+  }
+  if(wrongGuesses>=4){// Right arm
+    ctx.beginPath();ctx.moveTo(140,85);ctx.lineTo(165,100);ctx.stroke();
+  }
+  if(wrongGuesses>=5){// Left leg
+    ctx.beginPath();ctx.moveTo(140,120);ctx.lineTo(115,150);ctx.stroke();
+  }
+  if(wrongGuesses>=6){// Right leg
+    ctx.beginPath();ctx.moveTo(140,120);ctx.lineTo(165,150);ctx.stroke();
+  }
+}
+// Physical keyboard
+document.addEventListener('keydown',e=>{
+  let k=e.key.toUpperCase();
+  if(k.length===1&&k>='A'&&k<='Z')guess(k);
+});
+newGame();
+</script>
+</body>
+</html>

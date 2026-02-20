@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Connect Four</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.6rem;margin-bottom:8px;background:linear-gradient(135deg,#ff6b6b,#ffd93d);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.info{display:flex;gap:24px;margin-bottom:12px;font-size:.9rem}
+.score{color:#aaa}
+.score b{color:#ffd93d}
+.turn{padding:4px 16px;border-radius:20px;font-weight:600}
+.turn.red{background:#ff6b6b33;color:#ff6b6b}
+.turn.yellow{background:#ffd93d33;color:#ffd93d}
+.controls{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;justify-content:center}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.controls button:hover,.controls button.active{background:#ff6b6b;border-color:#ff6b6b;color:#fff}
+.board-wrap{background:linear-gradient(145deg,#1a3a8a,#143070);border-radius:16px;padding:12px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.board{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cell{width:clamp(36px,10vw,60px);height:clamp(36px,10vw,60px);border-radius:50%;background:#0a1a4a;cursor:pointer;transition:all .2s;border:2px solid #0d2060;position:relative;overflow:hidden}
+.cell:hover{background:#1a2a6a}
+.cell.red{background:radial-gradient(circle at 35% 35%,#ff8a8a,#e74c3c,#c0392b);border-color:#c0392b;box-shadow:0 0 12px #ff6b6b44}
+.cell.yellow{background:radial-gradient(circle at 35% 35%,#ffe66d,#ffd93d,#e6b800);border-color:#e6b800;box-shadow:0 0 12px #ffd93d44}
+.cell.win{animation:pulse .5s infinite alternate}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.1);box-shadow:0 0 20px currentColor}}
+.cell.win.red{color:#ff6b6b}
+.cell.win.yellow{color:#ffd93d}
+.col-indicator{display:flex;gap:6px;margin-bottom:4px}
+.col-indicator div{width:clamp(36px,10vw,60px);height:8px;border-radius:4px;background:transparent;transition:background .2s}
+.col-indicator div:hover{background:#ffffff22}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:10}
+.modal.show{display:flex}
+.modal-content{background:#1a1a2e;border:1px solid #ff6b6b;border-radius:16px;padding:32px;text-align:center}
+.modal-content h2{margin-bottom:8px}
+.modal-content h2.red{color:#ff6b6b}
+.modal-content h2.yellow{color:#ffd93d}
+.modal-content h2.draw{color:#aaa}
+.modal-content p{color:#888;margin-bottom:16px}
+.modal-content button{background:#ff6b6b;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:1rem;margin:4px}
+</style>
+</head>
+<body>
+<h1>Connect Four</h1>
+<div class="info">
+  <span class="score">Red: <b id="s-red">0</b></span>
+  <span class="turn red" id="turn">Red's Turn</span>
+  <span class="score">Yellow: <b id="s-yellow">0</b></span>
+</div>
+<div class="controls">
+  <button onclick="setMode('pvp')" id="m-pvp">2 Player</button>
+  <button onclick="setMode('easy')" id="m-easy">Easy AI</button>
+  <button onclick="setMode('medium')" id="m-medium" class="active">Med AI</button>
+  <button onclick="setMode('hard')" id="m-hard">Hard AI</button>
+</div>
+<div class="board-wrap">
+  <div class="col-indicator" id="indicators"></div>
+  <div class="board" id="board"></div>
+</div>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2 id="modal-title">Game Over</h2>
+    <p id="modal-msg"></p>
+    <button onclick="closeModal();resetBoard()">Play Again</button>
+  </div>
+</div>
+<script>
+const ROWS=6,COLS=7;
+let grid,currentPlayer,gameOver,mode='medium',scores={red:0,yellow:0},animating=false;
+const boardEl=document.getElementById('board'),indicatorsEl=document.getElementById('indicators');
+
+function setMode(m){
+  mode=m;document.querySelectorAll('.controls button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('m-'+m).classList.add('active');resetBoard();
+}
+function resetBoard(){
+  grid=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+  currentPlayer='red';gameOver=false;animating=false;updateTurn();render();
+}
+function updateTurn(){
+  let t=document.getElementById('turn');
+  t.textContent=currentPlayer==='red'?"Red's Turn":"Yellow's Turn";
+  t.className='turn '+currentPlayer;
+}
+function render(){
+  boardEl.innerHTML='';indicatorsEl.innerHTML='';
+  for(let c=0;c<COLS;c++){let d=document.createElement('div');d.addEventListener('click',()=>dropPiece(c));indicatorsEl.appendChild(d)}
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    let cell=document.createElement('div');cell.className='cell';
+    if(grid[r][c])cell.classList.add(grid[r][c]);
+    cell.addEventListener('click',()=>dropPiece(c));
+    cell.dataset.row=r;cell.dataset.col=c;
+    boardEl.appendChild(cell);
+  }
+}
+function dropPiece(col){
+  if(gameOver||animating)return;
+  if(mode!=='pvp'&&currentPlayer==='yellow')return;
+  let row=getDropRow(col);if(row===-1)return;
+  placePiece(row,col,currentPlayer);
+}
+function getDropRow(col){for(let r=ROWS-1;r>=0;r--)if(!grid[r][col])return r;return-1}
+function placePiece(row,col,player){
+  animating=true;grid[row][col]=player;
+  render();
+  // Animate drop
+  let cell=boardEl.children[row*COLS+col];
+  cell.style.transform='translateY(-'+(row+1)*70+'px)';cell.style.opacity='0';
+  requestAnimationFrame(()=>{cell.style.transition='transform .3s ease-in, opacity .1s';cell.style.transform='translateY(0)';cell.style.opacity='1'});
+  setTimeout(()=>{
+    animating=false;
+    let win=checkWin(row,col,player);
+    if(win){
+      gameOver=true;highlightWin(win);
+      scores[player]++;document.getElementById('s-'+player).textContent=scores[player];
+      setTimeout(()=>showModal(player+' wins!',player==='red'?'Red':'Yellow'),400);
+    } else if(isDraw()){
+      gameOver=true;setTimeout(()=>showModal('Draw!','draw'),300);
+    } else {
+      currentPlayer=currentPlayer==='red'?'yellow':'red';updateTurn();
+      if(mode!=='pvp'&&currentPlayer==='yellow')setTimeout(aiMove,300);
+    }
+  },350);
+}
+function checkWin(r,c,p){
+  const dirs=[[0,1],[1,0],[1,1],[1,-1]];
+  for(let[dr,dc]of dirs){
+    let cells=[[r,c]];
+    for(let d of[-1,1])for(let i=1;i<=3;i++){
+      let nr=r+dr*d*i,nc=c+dc*d*i;
+      if(nr<0||nr>=ROWS||nc<0||nc>=COLS||grid[nr][nc]!==p)break;
+      cells.push([nr,nc]);
+    }
+    if(cells.length>=4)return cells;
+  }
+  return null;
+}
+function highlightWin(cells){cells.forEach(([r,c])=>{boardEl.children[r*COLS+c].classList.add('win')})}
+function isDraw(){return grid[0].every(c=>c!==null)}
+function aiMove(){
+  if(gameOver)return;
+  let col;
+  if(mode==='easy')col=aiEasy();
+  else if(mode==='medium')col=Math.random()<.6?aiHard():aiEasy();
+  else col=aiHard();
+  let row=getDropRow(col);if(row===-1){col=validCols()[0];row=getDropRow(col)}
+  placePiece(row,col,'yellow');
+}
+function validCols(){let v=[];for(let c=0;c<COLS;c++)if(grid[0][c]===null)v.push(c);return v}
+function aiEasy(){let v=validCols();return v[Math.floor(Math.random()*v.length)]}
+function aiHard(){
+  // Check for winning move
+  for(let c of validCols()){let r=getDropRow(c);grid[r][c]='yellow';if(checkWin(r,c,'yellow')){grid[r][c]=null;return c}grid[r][c]=null}
+  // Block opponent
+  for(let c of validCols()){let r=getDropRow(c);grid[r][c]='red';if(checkWin(r,c,'red')){grid[r][c]=null;return c}grid[r][c]=null}
+  // Center preference
+  let v=validCols();let scored=v.map(c=>{
+    let s=0,r=getDropRow(c);
+    s+=10-Math.abs(c-3)*3; // center preference
+    grid[r][c]='yellow';
+    // Check threats after placing
+    for(let nc of validCols()){let nr=getDropRow(nc);if(nr>=0){grid[nr][nc]='yellow';if(checkWin(nr,nc,'yellow'))s+=5;grid[nr][nc]=null}}
+    // Avoid giving opponent win above
+    if(r>0){grid[r-1][c]='red';if(checkWin(r-1,c,'red'))s-=20;grid[r-1][c]=null}
+    grid[r][c]=null;return{c,s};
+  });
+  scored.sort((a,b)=>b.s-a.s);return scored[0].c;
+}
+function showModal(title,type){
+  let h=document.getElementById('modal-title');h.textContent=title;h.className=type==='draw'?'draw':type.includes('Red')?'red':'yellow';
+  document.getElementById('modal-msg').textContent=type==='draw'?'No more moves!':'Congratulations!';
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+resetBoard();
+</script>
+</body>
+</html>

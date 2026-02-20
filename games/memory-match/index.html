@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Memory Match</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:12px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:6px;background:linear-gradient(135deg,#fd79a8,#e84393);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.info{display:flex;gap:20px;margin-bottom:10px;font-size:.85rem;color:#aaa}
+.info b{color:#fd79a8}
+.controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.controls button:hover,.controls button.active{background:#e84393;border-color:#e84393;color:#fff}
+.board{display:grid;gap:8px;max-width:min(95vw,520px);margin:0 auto}
+.card{aspect-ratio:1;border-radius:10px;cursor:pointer;position:relative;transform-style:preserve-3d;transition:transform .4s;perspective:600px}
+.card.flipped{transform:rotateY(180deg)}
+.card.matched{transform:rotateY(180deg)}
+.card.matched .front{box-shadow:0 0 15px #fd79a844}
+.card .front,.card .back{position:absolute;width:100%;height:100%;border-radius:10px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center}
+.card .back{background:linear-gradient(135deg,#2a1a3e,#1e1e3a);border:2px solid #444;font-size:1.5rem;color:#666}
+.card .back::after{content:'?';font-size:clamp(18px,5vw,32px);color:#555}
+.card .front{background:linear-gradient(135deg,#2a1a4e,#1a1a2e);border:2px solid #fd79a844;transform:rotateY(180deg);font-size:clamp(24px,7vw,48px)}
+.card.matched .front{border-color:#fd79a8;background:linear-gradient(135deg,#3a1a4e,#2a1a3e)}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:10}
+.modal.show{display:flex}
+.modal-content{background:#1a1a2e;border:1px solid #e84393;border-radius:16px;padding:32px;text-align:center}
+.modal-content h2{color:#fd79a8;margin-bottom:8px}
+.modal-content p{color:#aaa;margin-bottom:16px}
+.modal-content button{background:#e84393;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:1rem}
+</style>
+</head>
+<body>
+<h1>Memory Match</h1>
+<div class="info">
+  <span>Pairs: <b id="pairs">0</b>/<b id="total">0</b></span>
+  <span>Moves: <b id="moves">0</b></span>
+  <span>Time: <b id="timer">00:00</b></span>
+  <span>Best: <b id="best">--</b></span>
+</div>
+<div class="controls">
+  <button onclick="startGame(4)" id="s4">4×4</button>
+  <button onclick="startGame(6)" id="s6" class="active">6×6</button>
+  <button onclick="startGame(8)" id="s8">8×4</button>
+</div>
+<div class="board" id="board"></div>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2>All Pairs Found!</h2>
+    <p id="modal-msg"></p>
+    <button onclick="closeModal();startGame(currentSize)">Play Again</button>
+  </div>
+</div>
+<script>
+const EMOJIS=['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟'];
+let cards=[],flipped=[],matched=0,totalPairs=0,moves=0,seconds=0,timerInterval,currentSize=6,locked=false;
+
+function startGame(size){
+  currentSize=size;
+  document.querySelectorAll('.controls button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('s'+size).classList.add('active');
+  let cols,rows;
+  if(size===4){cols=4;rows=4}
+  else if(size===6){cols=6;rows=6}
+  else{cols=8;rows=4}
+  totalPairs=(cols*rows)/2;
+  let emojis=shuffle([...EMOJIS]).slice(0,totalPairs);
+  let pairs=[...emojis,...emojis];
+  cards=shuffle(pairs).map((emoji,i)=>({id:i,emoji,flipped:false,matched:false}));
+  flipped=[];matched=0;moves=0;seconds=0;locked=false;
+  document.getElementById('pairs').textContent='0';
+  document.getElementById('total').textContent=totalPairs;
+  document.getElementById('moves').textContent='0';
+  document.getElementById('timer').textContent='00:00';
+  let best=localStorage.getItem('memory-best-'+size);
+  document.getElementById('best').textContent=best||'--';
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{seconds++;let m=String(Math.floor(seconds/60)).padStart(2,'0'),s=String(seconds%60).padStart(2,'0');document.getElementById('timer').textContent=m+':'+s},1000);
+  const board=document.getElementById('board');
+  board.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  board.innerHTML='';
+  cards.forEach((card,i)=>{
+    let d=document.createElement('div');d.className='card';
+    d.innerHTML=`<div class="back"></div><div class="front">${card.emoji}</div>`;
+    d.addEventListener('click',()=>flipCard(i,d));
+    board.appendChild(d);
+  });
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function flipCard(i,el){
+  if(locked||cards[i].flipped||cards[i].matched)return;
+  cards[i].flipped=true;el.classList.add('flipped');
+  flipped.push({index:i,el});
+  if(flipped.length===2){
+    moves++;document.getElementById('moves').textContent=moves;
+    locked=true;
+    let[a,b]=flipped;
+    if(cards[a.index].emoji===cards[b.index].emoji){
+      cards[a.index].matched=true;
+      cards[b.index].matched=true;
+      a.el.classList.add('matched');b.el.classList.add('matched');
+      matched++;document.getElementById('pairs').textContent=matched;
+      flipped=[];locked=false;
+      if(matched===totalPairs){
+        clearInterval(timerInterval);
+        let best=localStorage.getItem('memory-best-'+currentSize);
+        if(!best||moves<+best){localStorage.setItem('memory-best-'+currentSize,moves);document.getElementById('best').textContent=moves}
+        let m=Math.floor(seconds/60),s=seconds%60;
+        document.getElementById('modal-msg').textContent=`Found all ${totalPairs} pairs in ${moves} moves and ${m}m ${s}s!`;
+        document.getElementById('modal').classList.add('show');
+      }
+    } else {
+      setTimeout(()=>{
+        cards[a.index].flipped=false;cards[b.index].flipped=false;
+        a.el.classList.remove('flipped');b.el.classList.remove('flipped');
+        flipped=[];locked=false;
+      },700);
+    }
+  }
+}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+startGame(6);
+</script>
+</body>
+</html>

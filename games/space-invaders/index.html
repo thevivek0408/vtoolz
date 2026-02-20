@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Space Invaders</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:8px;user-select:none;overflow:hidden}
+canvas{display:block;border-radius:4px;image-rendering:pixelated}
+.info{display:flex;gap:20px;margin-bottom:6px;font-size:.85rem;color:#0f0}
+.info b{color:#0f0}
+.controls{display:flex;gap:8px;margin-top:8px}
+.controls button{background:#111;border:1px solid #0f04;color:#0f0;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.controls button:hover{background:#0f03;border-color:#0f0}
+.touch-controls{display:none;gap:12px;margin-top:8px}
+.touch-controls button{background:#111;border:1px solid #0f04;color:#0f0;padding:14px 22px;border-radius:12px;cursor:pointer;font-size:1.2rem}
+.touch-controls button:active{background:#0f03}
+@media(pointer:coarse){.touch-controls{display:flex}}
+</style>
+</head>
+<body>
+<div class="info">
+  <span>SCORE: <b id="score">0</b></span>
+  <span>LIVES: <b id="lives">3</b></span>
+  <span>WAVE: <b id="wave">1</b></span>
+  <span>HI: <b id="high">0</b></span>
+</div>
+<canvas id="c"></canvas>
+<div class="controls">
+  <button onclick="startGame()">New Game</button>
+</div>
+<div class="touch-controls" id="touch">
+  <button id="tl">◀</button>
+  <button id="tf">🔥</button>
+  <button id="tr">▶</button>
+</div>
+<script>
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+let W,H,scale;
+function resize(){
+  W=Math.min(window.innerWidth-16,480);H=Math.min(window.innerHeight-120,600);
+  scale=Math.min(W/480,H/600);
+  W=480;H=600;
+  canvas.width=W;canvas.height=H;
+  canvas.style.width=Math.floor(W*scale)+'px';canvas.style.height=Math.floor(H*scale)+'px';
+}
+resize();window.addEventListener('resize',resize);
+
+let player,aliens,bullets,alienBullets,particles,score,lives,wave,gameRunning,keys={},highScore=+(localStorage.getItem('invaders-high')||0),moveDir,moveDown,moveTimer,shootTimer;
+document.getElementById('high').textContent=highScore;
+
+const ALIEN_TYPES=[
+  {points:30,color:'#ff6b6b',shape:[[0,1,0],[1,1,1],[0,1,0]]},
+  {points:20,color:'#ffd93d',shape:[[1,0,1],[1,1,1],[0,1,0]]},
+  {points:10,color:'#6fcf97',shape:[[0,1,0],[1,1,1],[1,0,1]]}
+];
+
+function drawAlien(x,y,type,s){
+  ctx.fillStyle=type.color;
+  type.shape.forEach((row,r)=>row.forEach((v,c)=>{if(v)ctx.fillRect(x+c*s,y+r*s,s-1,s-1)}));
+}
+
+function initWave(w){
+  wave=w;document.getElementById('wave').textContent=w;
+  aliens=[];
+  let rows=Math.min(3+Math.floor(w/3),5);
+  let cols=Math.min(8+Math.floor(w/2),11);
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    let type=ALIEN_TYPES[Math.min(r,2)];
+    aliens.push({x:60+c*36,y:50+r*32,type,alive:true,w:24,h:24});
+  }
+  moveDir=1;moveDown=false;moveTimer=0;shootTimer=0;
+  alienBullets=[];
+}
+
+function startGame(){
+  score=0;lives=3;
+  document.getElementById('score').textContent='0';
+  document.getElementById('lives').textContent='3';
+  player={x:W/2-16,y:H-40,w:32,h:16};
+  bullets=[];particles=[];
+  initWave(1);
+  gameRunning=true;loop();
+}
+
+function loop(){
+  if(!gameRunning)return;
+  update();draw();
+  requestAnimationFrame(loop);
+}
+
+function update(){
+  // Player movement
+  if(keys.left)player.x-=5;
+  if(keys.right)player.x+=5;
+  player.x=Math.max(0,Math.min(W-player.w,player.x));
+  // Player bullets
+  bullets.forEach(b=>{b.y-=8});
+  bullets=bullets.filter(b=>b.y>-10);
+  // Alien bullets
+  alienBullets.forEach(b=>{b.y+=4+wave*.3});
+  alienBullets=alienBullets.filter(b=>b.y<H+10);
+  // Alien movement
+  moveTimer++;
+  let speed=Math.max(10,30-wave*2-Math.floor((aliens.filter(a=>!a.alive).length/Math.max(aliens.length,1))*20));
+  if(moveTimer>=speed){
+    moveTimer=0;
+    let aliveAliens=aliens.filter(a=>a.alive);
+    if(moveDown){
+      aliveAliens.forEach(a=>a.y+=16);
+      moveDown=false;
+    } else {
+      aliveAliens.forEach(a=>a.x+=8*moveDir);
+      let hitEdge=aliveAliens.some(a=>a.x<10||a.x+a.w>W-10);
+      if(hitEdge){moveDir*=-1;moveDown=true}
+    }
+    // Check if aliens reached bottom
+    if(aliveAliens.some(a=>a.y+a.h>=player.y)){gameRunning=false;endGame();return}
+  }
+  // Alien shooting
+  shootTimer++;
+  if(shootTimer>Math.max(20,60-wave*5)){
+    shootTimer=0;
+    let alive=aliens.filter(a=>a.alive);
+    if(alive.length){
+      let shooter=alive[Math.floor(Math.random()*alive.length)];
+      alienBullets.push({x:shooter.x+shooter.w/2,y:shooter.y+shooter.h,w:3,h:10});
+    }
+  }
+  // Bullet-alien collisions
+  bullets.forEach(b=>{
+    aliens.forEach(a=>{
+      if(a.alive&&b.x>a.x&&b.x<a.x+a.w&&b.y>a.y&&b.y<a.y+a.h){
+        a.alive=false;b.hit=true;score+=a.type.points;
+        document.getElementById('score').textContent=score;
+        for(let i=0;i<6;i++)particles.push({x:a.x+a.w/2,y:a.y+a.h/2,dx:(Math.random()-.5)*4,dy:(Math.random()-.5)*4,life:20,color:a.type.color});
+      }
+    });
+  });
+  bullets=bullets.filter(b=>!b.hit);
+  // Alien bullet-player collisions
+  alienBullets.forEach(b=>{
+    if(b.x>player.x&&b.x<player.x+player.w&&b.y>player.y&&b.y<player.y+player.h){
+      b.hit=true;lives--;document.getElementById('lives').textContent=lives;
+      for(let i=0;i<10;i++)particles.push({x:player.x+player.w/2,y:player.y,dx:(Math.random()-.5)*5,dy:(Math.random()-.5)*5,life:25,color:'#0f0'});
+      if(lives<=0){gameRunning=false;endGame();return}
+    }
+  });
+  alienBullets=alienBullets.filter(b=>!b.hit);
+  // Particles
+  particles.forEach(p=>{p.x+=p.dx;p.y+=p.dy;p.life--});
+  particles=particles.filter(p=>p.life>0);
+  // Wave complete
+  if(aliens.every(a=>!a.alive)){initWave(wave+1)}
+}
+
+function draw(){
+  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+  // Stars
+  ctx.fillStyle='#fff';
+  for(let i=0;i<30;i++){let x=(i*137+wave*7)%W,y=(i*251+Date.now()/50)%H;ctx.globalAlpha=.3+Math.sin(Date.now()/500+i)*.2;ctx.fillRect(x,y,1,1)}
+  ctx.globalAlpha=1;
+  // Aliens
+  aliens.filter(a=>a.alive).forEach(a=>drawAlien(a.x,a.y,a.type,8));
+  // Player
+  ctx.fillStyle='#0f0';
+  ctx.beginPath();
+  ctx.moveTo(player.x+player.w/2,player.y);
+  ctx.lineTo(player.x,player.y+player.h);
+  ctx.lineTo(player.x+player.w,player.y+player.h);
+  ctx.fill();
+  ctx.fillRect(player.x+player.w/2-2,player.y-4,4,4);
+  // Bullets
+  ctx.fillStyle='#0f0';bullets.forEach(b=>{ctx.fillRect(b.x-1,b.y,3,10)});
+  // Alien bullets
+  ctx.fillStyle='#ff6b6b';alienBullets.forEach(b=>{ctx.fillRect(b.x,b.y,b.w,b.h)});
+  // Particles
+  particles.forEach(p=>{ctx.globalAlpha=p.life/25;ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,3,3)});
+  ctx.globalAlpha=1;
+}
+
+function endGame(){
+  if(score>highScore){highScore=score;localStorage.setItem('invaders-high',highScore);document.getElementById('high').textContent=highScore}
+  ctx.fillStyle='rgba(0,0,0,.7)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#0f0';ctx.font='bold 28px Segoe UI';ctx.textAlign='center';
+  ctx.fillText('GAME OVER',W/2,H/2-20);
+  ctx.font='16px Segoe UI';ctx.fillText(`Score: ${score} | Wave: ${wave}`,W/2,H/2+15);
+}
+
+// Input
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'||e.key==='a')keys.left=true;
+  if(e.key==='ArrowRight'||e.key==='d')keys.right=true;
+  if(e.key===' '&&gameRunning){e.preventDefault();if(bullets.length<3)bullets.push({x:player.x+player.w/2,y:player.y})}
+});
+document.addEventListener('keyup',e=>{
+  if(e.key==='ArrowLeft'||e.key==='a')keys.left=false;
+  if(e.key==='ArrowRight'||e.key==='d')keys.right=false;
+});
+// Touch buttons
+['tl','tr','tf'].forEach(id=>{
+  let el=document.getElementById(id);
+  el.addEventListener('touchstart',e=>{
+    e.preventDefault();
+    if(id==='tf'){if(bullets.length<3&&gameRunning)bullets.push({x:player.x+player.w/2,y:player.y})}
+    else keys[id==='tl'?'left':'right']=true;
+  },{passive:false});
+  el.addEventListener('touchend',()=>{if(id!=='tf')keys[id==='tl'?'left':'right']=false});
+});
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  let r=canvas.getBoundingClientRect();
+  player.x=(e.touches[0].clientX-r.left)/scale-player.w/2;
+},{passive:false});
+canvas.addEventListener('touchstart',e=>{
+  if(bullets.length<3&&gameRunning)bullets.push({x:player.x+player.w/2,y:player.y});
+});
+startGame();
+</script>
+</body>
+</html>

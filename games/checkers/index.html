@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Checkers</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:12px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:6px;background:linear-gradient(135deg,#e74c3c,#f39c12);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.info{display:flex;gap:20px;margin-bottom:10px;font-size:.85rem}
+.score{color:#aaa}
+.score b{color:#f39c12}
+.turn{padding:4px 14px;border-radius:20px;font-weight:600;font-size:.85rem}
+.turn.red{background:#e74c3c33;color:#e74c3c}
+.turn.black{background:#33333366;color:#ccc}
+.controls{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;justify-content:center}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.controls button:hover,.controls button.active{background:#e74c3c;border-color:#e74c3c;color:#fff}
+.board{display:grid;grid-template-columns:repeat(8,1fr);border:3px solid #5a3a1a;border-radius:8px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:min(90vw,480px);width:480px}
+.cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.cell.light{background:#d4a76a}
+.cell.dark{background:#8b5e3c}
+.cell.dark:hover{background:#9b6e4c}
+.cell.valid-move::after{content:'';position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(255,215,0,.4)}
+.cell.selected{box-shadow:inset 0 0 0 3px #ffd93d}
+.piece{width:75%;height:75%;border-radius:50%;cursor:pointer;position:relative;transition:transform .1s}
+.piece:hover{transform:scale(1.1)}
+.piece.red{background:radial-gradient(circle at 35% 35%,#ff7675,#e74c3c,#c0392b);border:2px solid #a02020;box-shadow:0 3px 6px rgba(0,0,0,.4)}
+.piece.white{background:radial-gradient(circle at 35% 35%,#f5f5f5,#ddd,#bbb);border:2px solid #999;box-shadow:0 3px 6px rgba(0,0,0,.4)}
+.piece.king::after{content:'♔';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(14px,3vw,24px)}
+.piece.red.king::after{color:#ffd700}
+.piece.white.king::after{color:#333}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:10}
+.modal.show{display:flex}
+.modal-content{background:#1a1a2e;border:1px solid #e74c3c;border-radius:16px;padding:32px;text-align:center}
+.modal-content h2{color:#f39c12;margin-bottom:8px}
+.modal-content p{color:#aaa;margin-bottom:16px}
+.modal-content button{background:#e74c3c;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:1rem;margin:4px}
+</style>
+</head>
+<body>
+<h1>Checkers</h1>
+<div class="info">
+  <span class="score">Red: <b id="s-red">12</b></span>
+  <span class="turn red" id="turn">Red's Turn</span>
+  <span class="score">White: <b id="s-white">12</b></span>
+</div>
+<div class="controls">
+  <button onclick="setMode('pvp')" id="m-pvp">2 Player</button>
+  <button onclick="setMode('easy')" id="m-easy">Easy AI</button>
+  <button onclick="setMode('medium')" id="m-medium" class="active">Med AI</button>
+  <button onclick="setMode('hard')" id="m-hard">Hard AI</button>
+</div>
+<div class="board" id="board"></div>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2 id="modal-title">Game Over</h2>
+    <p id="modal-msg"></p>
+    <button onclick="closeModal();newGame()">Play Again</button>
+  </div>
+</div>
+<script>
+let board=[],currentPlayer='red',selected=null,validMoves=[],mode='medium',gameOver=false;
+// Board: 0=empty, {color:'red'/'white',king:false}
+function newGame(){
+  board=Array.from({length:8},()=>Array(8).fill(0));
+  for(let r=0;r<3;r++)for(let c=0;c<8;c++)if((r+c)%2===1)board[r][c]={color:'white',king:false};
+  for(let r=5;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2===1)board[r][c]={color:'red',king:false};
+  currentPlayer='red';selected=null;validMoves=[];gameOver=false;
+  updateCounts();updateTurn();render();
+}
+function setMode(m){
+  mode=m;document.querySelectorAll('.controls button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('m-'+m).classList.add('active');newGame();
+}
+function updateCounts(){
+  let rc=0,wc=0;
+  board.forEach(r=>r.forEach(c=>{if(c&&c.color==='red')rc++;if(c&&c.color==='white')wc++}));
+  document.getElementById('s-red').textContent=rc;
+  document.getElementById('s-white').textContent=wc;
+}
+function updateTurn(){
+  let t=document.getElementById('turn');
+  t.textContent=currentPlayer==='red'?"Red's Turn":"White's Turn";
+  t.className='turn '+currentPlayer;
+}
+function getMoves(r,c,piece){
+  if(!piece)return[];
+  let moves=[],dirs=[];
+  if(piece.color==='red'||piece.king)dirs.push([-1,-1],[-1,1]);
+  if(piece.color==='white'||piece.king)dirs.push([1,-1],[1,1]);
+  // Jumps
+  let jumps=getJumps(r,c,piece,board);
+  if(jumps.length)return jumps;
+  // Regular moves
+  dirs.forEach(([dr,dc])=>{
+    let nr=r+dr,nc=c+dc;
+    if(nr>=0&&nr<8&&nc>=0&&nc<8&&!board[nr][nc])moves.push({r:nr,c:nc,jumps:[]});
+  });
+  return moves;
+}
+function getJumps(r,c,piece,brd,chain=[]){
+  let dirs=[];
+  if(piece.color==='red'||piece.king)dirs.push([-1,-1],[-1,1]);
+  if(piece.color==='white'||piece.king)dirs.push([1,-1],[1,1]);
+  let jumps=[];
+  dirs.forEach(([dr,dc])=>{
+    let mr=r+dr,mc=c+dc,lr=r+2*dr,lc=c+2*dc;
+    if(lr>=0&&lr<8&&lc>=0&&lc<8&&brd[mr][mc]&&brd[mr][mc].color!==piece.color&&!brd[lr][lc]){
+      let alreadyJumped=chain.some(j=>j.r===mr&&j.c===mc);
+      if(!alreadyJumped){
+        let newChain=[...chain,{r:mr,c:mc}];
+        // Recursively find multi-jumps
+        let newBoard=brd.map(row=>[...row]);
+        newBoard[lr][lc]=piece;newBoard[r][c]=0;newBoard[mr][mc]=0;
+        let further=getJumps(lr,lc,piece,newBoard,newChain);
+        if(further.length)jumps.push(...further);
+        else jumps.push({r:lr,c:lc,jumps:newChain});
+      }
+    }
+  });
+  return jumps;
+}
+function hasJumps(color){
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++)
+    if(board[r][c]&&board[r][c].color===color&&getJumps(r,c,board[r][c],board).length)return true;
+  return false;
+}
+function getAllMoves(color){
+  let allMoves=[];
+  let mustJump=hasJumps(color);
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+    if(board[r][c]&&board[r][c].color===color){
+      let moves=getMoves(r,c,board[r][c]);
+      if(mustJump)moves=moves.filter(m=>m.jumps.length>0);
+      if(moves.length)allMoves.push({r,c,moves});
+    }
+  }
+  return allMoves;
+}
+function render(){
+  const el=document.getElementById('board');el.innerHTML='';
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+    let cell=document.createElement('div');
+    cell.className='cell '+((r+c)%2===0?'light':'dark');
+    if(selected&&validMoves.some(m=>m.r===r&&m.c===c))cell.classList.add('valid-move');
+    if(selected&&selected.r===r&&selected.c===c)cell.classList.add('selected');
+    let piece=board[r][c];
+    if(piece){
+      let p=document.createElement('div');
+      p.className='piece '+piece.color+(piece.king?' king':'');
+      cell.appendChild(p);
+    }
+    cell.addEventListener('click',()=>cellClick(r,c));
+    el.appendChild(cell);
+  }
+}
+function cellClick(r,c){
+  if(gameOver)return;
+  if(mode!=='pvp'&&currentPlayer==='white')return;
+  let piece=board[r][c];
+  if(piece&&piece.color===currentPlayer){
+    let moves=getMoves(r,c,piece);
+    let mustJump=hasJumps(currentPlayer);
+    if(mustJump)moves=moves.filter(m=>m.jumps.length>0);
+    if(moves.length){selected={r,c};validMoves=moves;render()}
+    return;
+  }
+  if(selected){
+    let move=validMoves.find(m=>m.r===r&&m.c===c);
+    if(move){
+      makeMove(selected.r,selected.c,r,c,move);
+      return;
+    }
+  }
+  selected=null;validMoves=[];render();
+}
+function makeMove(fr,fc,tr,tc,move){
+  let piece={...board[fr][fc]};
+  board[fr][fc]=0;
+  // Remove jumped pieces
+  move.jumps.forEach(j=>{board[j.r][j.c]=0});
+  // King promotion
+  if(piece.color==='red'&&tr===0)piece.king=true;
+  if(piece.color==='white'&&tr===7)piece.king=true;
+  board[tr][tc]=piece;
+  selected=null;validMoves=[];
+  updateCounts();
+  // Check win
+  let opponent=currentPlayer==='red'?'white':'red';
+  let opMoves=getAllMoves(opponent);
+  if(opMoves.length===0){
+    gameOver=true;render();
+    showModal(currentPlayer==='red'?'Red Wins!':'White Wins!');return;
+  }
+  currentPlayer=opponent;updateTurn();render();
+  if(mode!=='pvp'&&currentPlayer==='white')setTimeout(aiMove,300);
+}
+function aiMove(){
+  if(gameOver)return;
+  let allMoves=getAllMoves('white');
+  if(!allMoves.length)return;
+  let choice;
+  if(mode==='easy'){
+    let flat=allMoves.flatMap(({r,c,moves})=>moves.map(m=>({fr:r,fc:c,...m})));
+    choice=flat[Math.floor(Math.random()*flat.length)];
+  } else if(mode==='medium'){
+    // Prefer jumps, then center moves
+    let flat=allMoves.flatMap(({r,c,moves})=>moves.map(m=>({fr:r,fc:c,...m})));
+    flat.sort((a,b)=>(b.jumps.length-a.jumps.length)||(Math.abs(3.5-a.c)-Math.abs(3.5-b.c)));
+    choice=Math.random()<.3?flat[Math.floor(Math.random()*flat.length)]:flat[0];
+  } else {
+    // Minimax simplified
+    let best=null,bestScore=-Infinity;
+    allMoves.forEach(({r,c,moves})=>{
+      moves.forEach(m=>{
+        let savedBoard=board.map(row=>row.map(cell=>cell?{...cell}:0));
+        board[r][c]=0;m.jumps.forEach(j=>{board[j.r][j.c]=0});
+        let piece={...savedBoard[r][c]};
+        if(piece.color==='white'&&m.r===7)piece.king=true;
+        board[m.r][m.c]=piece;
+        let sc=evaluateBoard();
+        board=savedBoard;
+        if(sc>bestScore){bestScore=sc;best={fr:r,fc:c,...m}}
+      });
+    });
+    choice=best;
+  }
+  if(choice)makeMove(choice.fr,choice.fc,choice.r,choice.c,choice);
+}
+function evaluateBoard(){
+  let score=0;
+  board.forEach((row,r)=>row.forEach((cell,c)=>{
+    if(!cell)return;
+    let val=cell.king?3:1;
+    val+=cell.color==='white'?(7-r)*.1:r*.1; // Advancement bonus
+    val+=Math.abs(3.5-c)<2?.2:0; // Center bonus
+    score+=cell.color==='white'?val:-val;
+  }));
+  return score+Math.random()*.1;
+}
+function showModal(title){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-msg').textContent='Great game!';
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+newGame();
+</script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sokoban</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:12px;user-select:none}
+h1{font-size:1.6rem;margin-bottom:6px;background:linear-gradient(135deg,#00b894,#55efc4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.info{display:flex;gap:20px;margin-bottom:8px;font-size:.85rem;color:#aaa}
+.info b{color:#55efc4}
+.controls{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;justify-content:center}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;transition:all .2s}
+.controls button:hover{background:#00b894;border-color:#00b894;color:#fff}
+.board{display:grid;gap:1px;background:#0a0a15;border-radius:8px;padding:2px;box-shadow:0 0 30px rgba(0,184,148,.1)}
+.cell{width:clamp(28px,7vw,48px);height:clamp(28px,7vw,48px);display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4.5vw,28px);border-radius:4px;transition:all .1s}
+.wall{background:#2d3436}
+.floor{background:#1a1a2e}
+.target{background:#1a2a2e;box-shadow:inset 0 0 8px #00b89433}
+.target::after{content:'◆';color:#00b89444;font-size:clamp(8px,2vw,12px)}
+.box{background:linear-gradient(145deg,#e17055,#d35400);border-radius:6px;border:2px solid #c0392b}
+.box::after{content:'📦';font-size:clamp(14px,3.5vw,22px)}
+.box-on-target{background:linear-gradient(145deg,#00b894,#00a381);border:2px solid #00a381}
+.box-on-target::after{content:'✅';font-size:clamp(14px,3.5vw,22px)}
+.player{background:#1a1a2e}
+.player::after{content:'🧑';font-size:clamp(16px,4vw,26px)}
+.player-on-target{background:#1a2a2e}
+.player-on-target::after{content:'🧑';font-size:clamp(16px,4vw,26px)}
+.empty{background:#0a0a15}
+.dpad{display:grid;grid-template-columns:repeat(3,50px);grid-template-rows:repeat(3,50px);gap:4px;margin-top:12px}
+.dpad button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;border-radius:8px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.dpad button:hover,.dpad button:active{background:#00b894;color:#fff}
+.dpad .empty-btn{background:transparent;border:none;cursor:default}
+.level-info{font-size:.85rem;color:#888;margin-bottom:4px}
+</style>
+</head>
+<body>
+<h1>Sokoban</h1>
+<div class="level-info">Level <b id="lvl-num">1</b> / <b id="lvl-total">15</b></div>
+<div class="info">
+  <span>Moves: <b id="moves">0</b></span>
+  <span>Pushes: <b id="pushes">0</b></span>
+</div>
+<div class="controls">
+  <button onclick="prevLevel()">◀ Prev</button>
+  <button onclick="resetLevel()">↺ Reset</button>
+  <button onclick="undoMove()">Undo</button>
+  <button onclick="nextLevel()">Next ▶</button>
+</div>
+<div class="board" id="board"></div>
+<div class="dpad">
+  <div class="empty-btn"></div>
+  <button onclick="move(-1,0)">▲</button>
+  <div class="empty-btn"></div>
+  <button onclick="move(0,-1)">◀</button>
+  <button onclick="resetLevel()">↺</button>
+  <button onclick="move(0,1)">▶</button>
+  <div class="empty-btn"></div>
+  <button onclick="move(1,0)">▼</button>
+  <div class="empty-btn"></div>
+</div>
+<script>
+// W=wall, .=floor, @=player, $=box, +=player on target, *=box on target, #=target (using standard format)
+const LEVELS=[
+  // Level 1
+  ["#####","#.@.#","#$.$#","#.#.#","#.*.#","#####"],
+  // Level 2  
+  ["######","#....#","#.$$@#","#..#.#","##.#.#","#..#.#","#....#","######"],
+  // Level 3
+  ["..####","###..#","#.@$.#","#..$.#","#..#.#","######"],
+  // Level 4
+  ["######","#....#","#.#$.#","#.$..#","##.@.#",".#####"],
+  // Level 5
+  [".####","##..#","#.*.#","#.$$#","#.@.#","#####"],
+  // Level 6
+  ["..#####","###...#","#..$..#","#.#.$.#","#.@...#","#######"],
+  // Level 7
+  ["#######","#.....#","#.$.#.#","#.$.@.#","#..#..#","#.....#","#######"],
+  // Level 8
+  ["..####.","###..#.","#.@$.#.","#..$.##","#..#..#","##....#",".######"],
+  // Level 9
+  ["########","#......#","#.$@$..#","#..##..#","#......#","########"],
+  // Level 10
+  ["..#####","..#...#","###.$.#","#..$..#","#.@.#.#","#.....#","#######"],
+  // Level 11
+  [".######","##....#","#.$$..#","#..#$.#","#.@...#","#######"],
+  // Level 12
+  ["########","#......#","#.$.$.@#","#..##..#","#..$...#","#......#","########"],
+  // Level 13
+  ["..####","..#..#","###$.#","#..$.#","#.@..#","######"],
+  // Level 14
+  ["#######","#.....#","#.$.$@#","#.#.#.#","#.$.$.#","#.....#","#######"],
+  // Level 15
+  ["..######","###....#","#..$...#","#.#$#..#","#..@$..#","##.....#",".#######"]
+];
+
+let level=0,grid=[],playerR,playerC,moveCount=0,pushCount=0,history=[],targets=[];
+
+function parseLevel(l){
+  let maxW=Math.max(...l.map(r=>r.length));
+  grid=[];targets=[];
+  for(let r=0;r<l.length;r++){
+    grid[r]=[];
+    for(let c=0;c<maxW;c++){
+      let ch=l[r][c]||' ';
+      if(ch==='#'||ch==='.'||ch==='*'){
+        let isTarget=ch==='#'||ch==='*';
+        // Redefine: use Sokoban standard
+        // Actually let me use a cleaner format
+        grid[r][c]=' ';
+      }
+    }
+  }
+  // Re-parse with standard sokoban symbols: # = wall, space/. = floor, @ = player, + = player on goal, $ = box, * = box on goal
+  // But my levels use # for both wall and target. Let me use a different encoding.
+  // Let me redo this with: W=wall, _=floor, @=player, $=box, .=target, +=player on target, *=box on target
+  return null;
+}
+
+// Redefine levels with clear encoding: W=wall _=floor .=target @=player $=box +=player on target *=box on target
+const LVL=[
+  // 1 - Simple intro
+  {m:["WWWWW","W_@_W","W$_$W","W_W_W","W_*_W","WWWWW"],t:[[2,1],[2,3]]}, // targets not encoded yet
+
+  // Actually, let me just use a proper approach
+];
+
+// Simplified: Store as string grids using characters
+// W = wall, ' ' = empty, . = target, @ = player, $ = box, + = player on target, * = box on target, - = floor
+const MAPS = [
+  // Level 1
+  "WWWWW|W-.-W|W$@$W|W-W-W|W-.-W|WWWWW",
+  // Level 2
+  "WWWWWW|W-..-W|W--$-W|W-.$-W|W--@-W|WWWWWW",
+  // Level 3
+  "--WWWW|WW--.W|W.@$-W|W--$-W|W-.W-W|WWWWWW",
+  // Level 4
+  "WWWWWW|W--.-W|W-W$-W|W-$--W|WW-@-W|-WWWWW",
+  // Level 5
+  "-WWWW-|WW--W-|W-.-W-|W-$$W-|W-.@-W|WWWWW-",
+  // Level 6
+  "--WWWWW|WW---W|W..$--W|W.W-$-W|W--@--W|WWWWWWW",
+  // Level 7
+  "WWWWWWW|W--.--W|W-$-W-W|W.$-@-W|W--W--W|W---.-W|WWWWWWW",
+  // Level 8
+  "--WWWW--|WW--W--|W.@$-W--|W--$-WW|W--W--W|WW-.--W|-WWWWWW",
+  // Level 9
+  "WWWWWWWW|W------W|W.$@$.-W|W--WW--W|W------W|WWWWWWWW",
+  // Level 10
+  "--WWWWW|--W.--W|WW--$-W|W-.$--W|W-@-W-W|W-----W|WWWWWWW",
+  // Level 11
+  "-WWWWWW|WW--.-W|W-$$--W|W--W$-W|W.@.--W|WWWWWWW",
+  // Level 12
+  "WWWWWWWW|W-.----W|W-$-$-@W|W--WW--W|W-.$---W|W------W|WWWWWWWW",
+  // Level 13
+  "--WWWW|--W.-W|WW-$-W|W.-$-W|W-@--W|WWWWWW",
+  // Level 14
+  "WWWWWWW|W.---.W|W-$-$@W|W-W-W-W|W-$-$-W|W.---.W|WWWWWWW",
+  // Level 15
+  "--WWWWWW|WW.----W|W--$---W|W-W$W--W|W--@$--W|WW---.-W|-WWWWWWW"
+];
+
+function loadLevel(n){
+  level=n;moveCount=0;pushCount=0;history=[];
+  document.getElementById('moves').textContent='0';
+  document.getElementById('pushes').textContent='0';
+  document.getElementById('lvl-num').textContent=n+1;
+  document.getElementById('lvl-total').textContent=MAPS.length;
+  let rows=MAPS[n].split('|');
+  let maxW=Math.max(...rows.map(r=>r.length));
+  grid=[];targets=[];
+  for(let r=0;r<rows.length;r++){
+    grid[r]=[];
+    for(let c=0;c<maxW;c++){
+      let ch=rows[r][c]||'-';
+      if(ch==='W')grid[r][c]='wall';
+      else if(ch==='-'||ch===' ')grid[r][c]='floor';
+      else if(ch==='.'){{grid[r][c]='target';targets.push([r,c])}}
+      else if(ch==='@'){{grid[r][c]='floor';playerR=r;playerC=c}}
+      else if(ch==='+'){{grid[r][c]='target';targets.push([r,c]);playerR=r;playerC=c}}
+      else if(ch==='$')grid[r][c]='box';
+      else if(ch==='*'){{grid[r][c]='box-on-target';targets.push([r,c])}}
+      else grid[r][c]='empty';
+    }
+  }
+  render();
+}
+
+function render(){
+  const b=document.getElementById('board');
+  let rows=grid.length,cols=grid[0].length;
+  b.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  b.innerHTML='';
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    let d=document.createElement('div');d.className='cell';
+    let v=grid[r][c];
+    let isTarget=targets.some(([tr,tc])=>tr===r&&tc===c);
+    if(r===playerR&&c===playerC){
+      d.className='cell '+(isTarget?'player-on-target':'player');
+    } else if(v==='box'){
+      d.className='cell '+(isTarget?'box-on-target':'box');
+    } else if(v==='box-on-target'){
+      d.className='cell box-on-target';
+    } else if(v==='wall'){
+      d.className='cell wall';
+    } else if(v==='empty'||c>=grid[r].length){
+      d.className='cell empty';
+    } else if(isTarget){
+      d.className='cell target';
+    } else {
+      d.className='cell floor';
+    }
+    b.appendChild(d);
+  }
+}
+
+function move(dr,dc){
+  let nr=playerR+dr,nc=playerC+dc;
+  if(nr<0||nr>=grid.length||nc<0||nc>=grid[0].length)return;
+  let target=grid[nr][nc];
+  if(target==='wall')return;
+  if(target==='box'||target==='box-on-target'){
+    let br=nr+dr,bc=nc+dc;
+    if(br<0||br>=grid.length||bc<0||bc>=grid[0].length)return;
+    let behind=grid[br][bc];
+    if(behind==='wall'||behind==='box'||behind==='box-on-target')return;
+    history.push({pr:playerR,pc:playerC,boxFrom:[nr,nc],boxTo:[br,bc],fromVal:grid[nr][nc],toVal:grid[br][bc]});
+    grid[br][bc]='box';
+    grid[nr][nc]=targets.some(([tr,tc])=>tr===nr&&tc===nc)?'target':'floor';
+    pushCount++;document.getElementById('pushes').textContent=pushCount;
+  } else {
+    history.push({pr:playerR,pc:playerC,boxFrom:null,boxTo:null});
+  }
+  playerR=nr;playerC=nc;
+  moveCount++;document.getElementById('moves').textContent=moveCount;
+  render();
+  if(checkWin()){
+    setTimeout(()=>{
+      if(level<MAPS.length-1){
+        if(confirm('Level complete! 🎉 Next level?'))loadLevel(level+1);
+      } else alert('🎉 All levels completed! You are a Sokoban master!');
+    },200);
+  }
+}
+
+function checkWin(){
+  return targets.every(([r,c])=>grid[r][c]==='box'||grid[r][c]==='box-on-target'||(r===playerR&&c===playerC&&false));
+}
+
+function undoMove(){
+  if(!history.length)return;
+  let h=history.pop();
+  playerR=h.pr;playerC=h.pc;
+  if(h.boxFrom){
+    let [fr,fc]=h.boxFrom,[tr,tc]=h.boxTo;
+    grid[fr][fc]=grid[fr][fc]==='target'?'box':'box';
+    // Restore: box was at boxFrom, moved to boxTo
+    grid[tr][tc]=targets.some(([r,c])=>r===tr&&c===tc)?'target':'floor';
+    grid[fr][fc]='box';
+    pushCount--;document.getElementById('pushes').textContent=pushCount;
+  }
+  moveCount--;document.getElementById('moves').textContent=moveCount;
+  render();
+}
+function resetLevel(){loadLevel(level)}
+function prevLevel(){if(level>0)loadLevel(level-1)}
+function nextLevel(){if(level<MAPS.length-1)loadLevel(level+1)}
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowUp'||e.key==='w')move(-1,0);
+  else if(e.key==='ArrowDown'||e.key==='s')move(1,0);
+  else if(e.key==='ArrowLeft'||e.key==='a')move(0,-1);
+  else if(e.key==='ArrowRight'||e.key==='d')move(0,1);
+  else if(e.key==='z'&&e.ctrlKey)undoMove();
+  else if(e.key==='r')resetLevel();
+});
+
+// Touch swipe
+let ts=null;
+document.addEventListener('touchstart',e=>{ts={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(!ts)return;let dx=e.changedTouches[0].clientX-ts.x,dy=e.changedTouches[0].clientY-ts.y;
+  if(Math.max(Math.abs(dx),Math.abs(dy))<30)return;
+  if(Math.abs(dx)>Math.abs(dy)){move(0,dx>0?1:-1)}else{move(dy>0?1:-1,0)}
+  ts=null;
+});
+
+loadLevel(0);
+</script>
+</body>
+</html>

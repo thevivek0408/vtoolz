@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Simon</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:10px;background:linear-gradient(135deg,#e74c3c,#f1c40f,#2ecc71,#3498db);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
+.stat{background:#1a1a2e;padding:8px 16px;border-radius:20px;border:1px solid #333}
+.stat b{color:#fdcb6e}
+.simon-board{width:min(320px,80vw);height:min(320px,80vw);border-radius:50%;position:relative;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;padding:8px;background:#1a1a2e;border:4px solid #333;overflow:hidden}
+.simon-btn{border:none;cursor:pointer;transition:filter .1s,transform .05s;position:relative;overflow:hidden}
+.simon-btn:active{transform:scale(.96)}
+.simon-btn.lit{filter:brightness(2.5) saturate(1.2)!important;transform:scale(.97)}
+#btn-0{background:#e74c3c;border-radius:100% 0 0 0}
+#btn-1{background:#3498db;border-radius:0 100% 0 0}
+#btn-2{background:#f1c40f;border-radius:0 0 0 100%}
+#btn-3{background:#2ecc71;border-radius:0 0 100% 0}
+.simon-btn::after{content:'';position:absolute;top:15%;left:15%;width:30%;height:30%;background:rgba(255,255,255,.18);border-radius:50%}
+.center-circle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:35%;height:35%;border-radius:50%;background:#1a1a2e;border:4px solid #333;display:flex;align-items:center;justify-content:center;z-index:10;font-size:clamp(20px,5vw,32px);font-weight:800;color:#fdcb6e}
+.message{margin-top:16px;font-size:1rem;height:2.5rem;text-align:center;line-height:1.2;color:#bbb}
+.controls{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:.9rem;transition:all .2s}
+.controls button:hover{background:#e17055;border-color:#e17055;color:#fff}
+.controls button.primary{background:linear-gradient(135deg,#6c5ce7,#a29bfe);border:none;color:#fff;font-weight:600}
+.difficulty{display:flex;gap:6px;margin-bottom:12px}
+.difficulty button{background:#1e1e3a;border:1px solid #444;color:#888;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:.75rem;transition:all .2s}
+.difficulty button.active{border-color:#fdcb6e;color:#fdcb6e}
+</style>
+</head>
+<body>
+<h1>Simon</h1>
+<div class="difficulty" id="diff-sel">
+  <button class="active" data-speed="800">Easy</button>
+  <button data-speed="550">Medium</button>
+  <button data-speed="350">Hard</button>
+</div>
+<div class="stats">
+  <div class="stat">Round: <b id="round">0</b></div>
+  <div class="stat">Best: <b id="best">0</b></div>
+</div>
+<div style="position:relative;display:inline-block">
+  <div class="simon-board" id="board">
+    <button class="simon-btn" id="btn-0"></button>
+    <button class="simon-btn" id="btn-1"></button>
+    <button class="simon-btn" id="btn-2"></button>
+    <button class="simon-btn" id="btn-3"></button>
+  </div>
+  <div class="center-circle" id="center">0</div>
+</div>
+<div class="message" id="msg">Press Start to play!</div>
+<div class="controls">
+  <button class="primary" id="start-btn">Start Game</button>
+</div>
+<script>
+const AudioCtx=window.AudioContext||window.webkitAudioContext;
+let audioCtx;
+const FREQS=[261.63,329.63,392.00,523.25];
+let sequence=[],playerIdx=0,round=0,best=+localStorage.getItem('simon_best')||0,playing=false,showingSeq=false,speed=800;
+document.getElementById('best').textContent=best;
+
+function playTone(idx,dur){
+  if(!audioCtx)audioCtx=new AudioCtx();
+  const osc=audioCtx.createOscillator();
+  const gain=audioCtx.createGain();
+  osc.connect(gain);gain.connect(audioCtx.destination);
+  osc.type='sine';osc.frequency.value=FREQS[idx];
+  gain.gain.setValueAtTime(.3,audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.01,audioCtx.currentTime+dur/1000);
+  osc.start();osc.stop(audioCtx.currentTime+dur/1000);
+}
+
+function lightBtn(idx,dur=400){
+  const b=document.getElementById('btn-'+idx);
+  b.classList.add('lit');playTone(idx,dur);
+  setTimeout(()=>b.classList.remove('lit'),dur*.8);
+}
+
+function showSequence(){
+  showingSeq=true;playerIdx=0;
+  let i=0;
+  const iv=setInterval(()=>{
+    if(i>=sequence.length){clearInterval(iv);showingSeq=false;setMsg("Your turn!");return}
+    lightBtn(sequence[i],speed*.5);
+    i++;
+  },speed);
+}
+
+function nextRound(){
+  round++;
+  document.getElementById('round').textContent=round;
+  document.getElementById('center').textContent=round;
+  sequence.push(Math.floor(Math.random()*4));
+  setMsg("Watch the pattern...");
+  setTimeout(()=>showSequence(),600);
+}
+
+function handlePress(idx){
+  if(!playing||showingSeq)return;
+  lightBtn(idx,250);
+  if(idx===sequence[playerIdx]){
+    playerIdx++;
+    if(playerIdx>=sequence.length){
+      if(round>best){best=round;localStorage.setItem('simon_best',best);document.getElementById('best').textContent=best}
+      setMsg("Correct! Next round...");
+      setTimeout(()=>nextRound(),1000);
+    }
+  } else {
+    playing=false;
+    setMsg(`Wrong! You reached round ${round}. Press Start to retry.`);
+    document.getElementById('center').textContent='✗';
+    playWrongTone();
+  }
+}
+
+function playWrongTone(){
+  if(!audioCtx)audioCtx=new AudioCtx();
+  const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();
+  osc.connect(gain);gain.connect(audioCtx.destination);
+  osc.type='sawtooth';osc.frequency.value=100;
+  gain.gain.setValueAtTime(.2,audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.01,audioCtx.currentTime+.5);
+  osc.start();osc.stop(audioCtx.currentTime+.5);
+}
+
+function startGame(){
+  if(!audioCtx)audioCtx=new AudioCtx();
+  sequence=[];round=0;playing=true;
+  document.getElementById('round').textContent=0;
+  document.getElementById('center').textContent=0;
+  nextRound();
+}
+
+function setMsg(t){document.getElementById('msg').textContent=t}
+
+[0,1,2,3].forEach(i=>{
+  document.getElementById('btn-'+i).addEventListener('click',()=>handlePress(i));
+  document.getElementById('btn-'+i).addEventListener('touchstart',e=>{e.preventDefault();handlePress(i)},{passive:false});
+});
+document.getElementById('start-btn').addEventListener('click',startGame);
+document.querySelectorAll('.difficulty button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.difficulty button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');speed=+b.dataset.speed;
+  });
+});
+</script>
+</body>
+</html>

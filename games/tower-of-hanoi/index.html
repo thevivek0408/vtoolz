@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Tower of Hanoi</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:10px;background:linear-gradient(135deg,#e84393,#fd79a8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.controls-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+.controls-row label{font-size:.85rem;color:#888}
+.controls-row select,.controls-row button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.85rem}
+.controls-row button:hover{background:#e84393;border-color:#e84393;color:#fff}
+.controls-row button.primary{background:linear-gradient(135deg,#e84393,#fd79a8);border:none;color:#fff;font-weight:600}
+.stats{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
+.stat{background:#1a1a2e;padding:8px 16px;border-radius:20px;border:1px solid #333}
+.stat b{color:#fd79a8}
+canvas{border-radius:12px;background:#13132a;max-width:100%;touch-action:none}
+.msg{margin-top:12px;font-size:1rem;color:#fd79a8;text-align:center;min-height:1.5rem}
+.legend{color:#666;font-size:.75rem;margin-top:8px;text-align:center}
+</style>
+</head>
+<body>
+<h1>Tower of Hanoi</h1>
+<div class="controls-row">
+  <label>Discs:</label>
+  <select id="disc-sel">
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5" selected>5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+  </select>
+  <button class="primary" onclick="startGame()">New Game</button>
+  <button onclick="undo()">Undo</button>
+  <button onclick="autoSolve()">Auto Solve</button>
+</div>
+<div class="stats">
+  <div class="stat">Moves: <b id="moves">0</b></div>
+  <div class="stat">Min: <b id="min-moves">31</b></div>
+  <div class="stat">Best: <b id="best">-</b></div>
+</div>
+<canvas id="canvas" width="600" height="360"></canvas>
+<div class="msg" id="msg">Click/tap a peg to pick up, then click/tap destination peg.</div>
+<div class="legend">Keyboard: 1, 2, 3 to select pegs</div>
+<script>
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+let W,H,pegs=[[],[],[]],numDiscs=5,moves=0,selected=-1,moving=false,history=[];
+let solving=false,solveSteps=[];
+const COLORS=['#e84393','#fd79a8','#6c5ce7','#a29bfe','#00cec9','#55efc4','#fdcb6e','#e17055'];
+
+function resize(){
+  const maxW=Math.min(600,window.innerWidth-32);
+  const maxH=Math.min(360,window.innerHeight-260);
+  canvas.width=maxW;canvas.height=maxH;
+  W=canvas.width;H=canvas.height;
+  draw();
+}
+
+function startGame(){
+  numDiscs=+document.getElementById('disc-sel').value;
+  pegs=[[],[],[]];
+  for(let i=numDiscs;i>=1;i--)pegs[0].push(i);
+  moves=0;selected=-1;history=[];solving=false;solveSteps=[];
+  document.getElementById('moves').textContent=0;
+  document.getElementById('min-moves').textContent=(Math.pow(2,numDiscs)-1);
+  document.getElementById('msg').textContent='Click/tap a peg to pick up, then click/tap destination peg.';
+  draw();
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const pegW=4,baseY=H-30,pegH=H*.55;
+  const pegX=[W/6,W/2,5*W/6];
+  // Base
+  ctx.fillStyle='#2d2d5e';
+  ctx.fillRect(10,baseY,W-20,12);
+  ctx.beginPath();ctx.roundRect?ctx.roundRect(10,baseY,W-20,12,4):ctx.rect(10,baseY,W-20,12);ctx.fill();
+  // Pegs
+  pegX.forEach((x,i)=>{
+    ctx.fillStyle='#3d3d7e';
+    ctx.fillRect(x-pegW/2,baseY-pegH,pegW,pegH);
+    // Peg label
+    ctx.fillStyle=selected===i?'#fd79a8':'#666';
+    ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+    ctx.fillText(i+1,x,baseY+26);
+    // Discs
+    const maxDiscW=W/3.5;
+    pegs[i].forEach((disc,j)=>{
+      const dw=20+disc*(maxDiscW-20)/numDiscs;
+      const dh=Math.min(24,pegH/numDiscs-2);
+      const dx=x-dw/2;
+      const dy=baseY-(j+1)*dh-(j)*2;
+      const col=COLORS[(disc-1)%COLORS.length];
+      ctx.fillStyle=col;
+      if(ctx.roundRect){ctx.beginPath();ctx.roundRect(dx,dy,dw,dh,4);ctx.fill()}
+      else{ctx.fillRect(dx,dy,dw,dh)}
+      // Shine
+      ctx.fillStyle='rgba(255,255,255,.15)';
+      ctx.fillRect(dx+4,dy+2,dw-8,dh/3);
+    });
+    // Highlight selected peg
+    if(selected===i){
+      ctx.strokeStyle='#fd79a8';ctx.lineWidth=2;
+      ctx.strokeRect(x-W/6.5,baseY-pegH-10,W/3.25,pegH+16);
+      ctx.lineWidth=1;
+    }
+  });
+  // Selected disc floating
+  if(selected>=0&&pegs[selected].length>0){
+    const disc=pegs[selected][pegs[selected].length-1];
+    const maxDiscW=W/3.5;
+    const dw=20+disc*(maxDiscW-20)/numDiscs;
+    const dh=Math.min(24,(H*.55)/numDiscs-2);
+    const x=pegX[selected]-dw/2;
+    const y=baseY-H*.55-dh-18;
+    ctx.fillStyle=COLORS[(disc-1)%COLORS.length];
+    if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,dw,dh,4);ctx.fill()}
+    else ctx.fillRect(x,y,dw,dh);
+    ctx.fillStyle='rgba(255,255,255,.2)';ctx.fillRect(x+4,y+2,dw-8,dh/3);
+  }
+}
+
+function clickPeg(p){
+  if(solving||moving)return;
+  if(selected===-1){
+    if(pegs[p].length===0)return;
+    selected=p;draw();
+  } else {
+    if(p===selected){selected=-1;draw();return}
+    if(!canMove(selected,p)){
+      document.getElementById('msg').textContent="Can't place larger disc on smaller one!";
+      return;
+    }
+    doMove(selected,p);
+    selected=-1;draw();
+    if(checkWin()){
+      const best=localStorage.getItem('hanoi_best_'+numDiscs);
+      if(!best||moves<+best){localStorage.setItem('hanoi_best_'+numDiscs,moves)}
+      document.getElementById('best').textContent=localStorage.getItem('hanoi_best_'+numDiscs)||'-';
+      document.getElementById('msg').textContent=`🎉 Solved in ${moves} moves!`;
+    }
+  }
+}
+
+function canMove(from,to){
+  if(pegs[from].length===0)return false;
+  if(pegs[to].length===0)return true;
+  return pegs[from][pegs[from].length-1]<pegs[to][pegs[to].length-1];
+}
+
+function doMove(from,to){
+  const disc=pegs[from].pop();
+  pegs[to].push(disc);
+  moves++;
+  history.push({from,to});
+  document.getElementById('moves').textContent=moves;
+  document.getElementById('msg').textContent='';
+}
+
+function undo(){
+  if(history.length===0||solving)return;
+  const{from,to}=history.pop();
+  const disc=pegs[to].pop();
+  pegs[from].push(disc);
+  moves--;selected=-1;
+  document.getElementById('moves').textContent=moves;
+  draw();
+}
+
+function checkWin(){
+  return pegs[2].length===numDiscs;
+}
+
+function autoSolve(){
+  solving=true;solveSteps=[];selected=-1;
+  startGame();solving=true;
+  generateSolution(numDiscs,0,2,1);
+  let i=0;
+  const iv=setInterval(()=>{
+    if(i>=solveSteps.length){clearInterval(iv);solving=false;
+      document.getElementById('msg').textContent=`Auto-solved in ${moves} moves!`;return}
+    const[f,t]=solveSteps[i];
+    doMove(f,t);draw();i++;
+  },Math.max(80,600/numDiscs));
+}
+
+function generateSolution(n,from,to,aux){
+  if(n===0)return;
+  generateSolution(n-1,from,aux,to);
+  solveSteps.push([from,to]);
+  generateSolution(n-1,aux,to,from);
+}
+
+canvas.addEventListener('click',e=>{
+  const rect=canvas.getBoundingClientRect();
+  const x=(e.clientX-rect.left)*(W/rect.width);
+  const pegIdx=x<W/3?0:x<2*W/3?1:2;
+  clickPeg(pegIdx);
+});
+
+canvas.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  const t=e.touches[0];
+  const rect=canvas.getBoundingClientRect();
+  const x=(t.clientX-rect.left)*(W/rect.width);
+  const pegIdx=x<W/3?0:x<2*W/3?1:2;
+  clickPeg(pegIdx);
+},{passive:false});
+
+document.addEventListener('keydown',e=>{
+  if(['1','2','3'].includes(e.key))clickPeg(+e.key-1);
+  if(e.key==='z'&&e.ctrlKey)undo();
+});
+
+window.addEventListener('resize',resize);
+// Show best
+const b=localStorage.getItem('hanoi_best_'+numDiscs);
+if(b)document.getElementById('best').textContent=b;
+resize();startGame();
+</script>
+</body>
+</html>

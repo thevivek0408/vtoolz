@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sliding Puzzle</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.6rem;margin-bottom:8px;background:linear-gradient(135deg,#e17055,#fdcb6e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.info{display:flex;gap:24px;margin-bottom:12px;font-size:.9rem;color:#aaa}
+.info span b{color:#fdcb6e}
+.controls{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;justify-content:center}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.controls button:hover,.controls button.active{background:#e17055;border-color:#e17055;color:#fff}
+.board{display:grid;gap:4px;border-radius:12px;padding:8px;background:#1a1a2e;box-shadow:0 0 30px rgba(225,112,85,.15)}
+.tile{display:flex;align-items:center;justify-content:center;font-size:clamp(20px,5vw,36px);font-weight:800;border-radius:8px;cursor:pointer;transition:transform .15s,background .2s;background:linear-gradient(145deg,#2a2a4e,#1e1e3a);color:#fdcb6e;border:1px solid #333}
+.tile:hover{transform:scale(1.05)}
+.tile.empty{background:transparent;border:1px dashed #333;cursor:default}
+.tile.empty:hover{transform:none}
+.tile.correct{background:linear-gradient(145deg,#2d4a2d,#1a3a1a);color:#6fcf97;border-color:#3a5a3a}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:10}
+.modal.show{display:flex}
+.modal-content{background:#1a1a2e;border:1px solid #e17055;border-radius:16px;padding:32px;text-align:center}
+.modal-content h2{color:#fdcb6e;margin-bottom:8px}
+.modal-content p{color:#aaa;margin-bottom:16px}
+.modal-content button{background:#e17055;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:1rem}
+</style>
+</head>
+<body>
+<h1>Sliding Puzzle</h1>
+<div class="info">
+  <span>Moves: <b id="moves">0</b></span>
+  <span>Time: <b id="timer">00:00</b></span>
+  <span>Best: <b id="best">--</b></span>
+</div>
+<div class="controls">
+  <button onclick="startGame(3)" id="b3">3×3</button>
+  <button onclick="startGame(4)" id="b4" class="active">4×4</button>
+  <button onclick="startGame(5)" id="b5">5×5</button>
+  <button onclick="shuffleBoard()">Shuffle</button>
+</div>
+<div class="board" id="board"></div>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2>Puzzle Solved!</h2>
+    <p id="modal-msg"></p>
+    <button onclick="closeModal();shuffleBoard()">Play Again</button>
+  </div>
+</div>
+<script>
+let size=4,tiles=[],moves=0,seconds=0,timerInterval,emptyIdx,solved=false;
+const boardEl=document.getElementById('board');
+
+function startGame(s){
+  size=s;
+  document.querySelectorAll('.controls button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('b'+s).classList.add('active');
+  let best=localStorage.getItem('slide-best-'+s);
+  document.getElementById('best').textContent=best||'--';
+  shuffleBoard();
+}
+function shuffleBoard(){
+  solved=false;moves=0;seconds=0;clearInterval(timerInterval);
+  document.getElementById('moves').textContent='0';
+  document.getElementById('timer').textContent='00:00';
+  tiles=Array.from({length:size*size-1},(_,i)=>i+1);
+  tiles.push(0);emptyIdx=tiles.length-1;
+  // Fisher-Yates with solvability check
+  do{
+    for(let i=tiles.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[tiles[i],tiles[j]]=[tiles[j],tiles[i]]}
+    emptyIdx=tiles.indexOf(0);
+  }while(!isSolvable());
+  timerInterval=setInterval(()=>{if(!solved){seconds++;updateTimer()}},1000);
+  render();
+}
+function isSolvable(){
+  let inv=0;let flat=tiles.filter(t=>t!==0);
+  for(let i=0;i<flat.length;i++)for(let j=i+1;j<flat.length;j++)if(flat[i]>flat[j])inv++;
+  if(size%2===1)return inv%2===0;
+  let emptyRow=Math.floor(emptyIdx/size);
+  return(size-emptyRow)%2===0?inv%2===1:inv%2===0;
+}
+function updateTimer(){let m=String(Math.floor(seconds/60)).padStart(2,'0'),s=String(seconds%60).padStart(2,'0');document.getElementById('timer').textContent=m+':'+s}
+function render(){
+  let tileSize=Math.min(Math.floor((Math.min(window.innerWidth*.88,500)-16-(size-1)*4)/size),90);
+  boardEl.style.gridTemplateColumns=`repeat(${size},${tileSize}px)`;
+  boardEl.innerHTML='';
+  tiles.forEach((t,i)=>{
+    let d=document.createElement('div');
+    d.className='tile';
+    d.style.width=tileSize+'px';d.style.height=tileSize+'px';
+    if(t===0){d.classList.add('empty')}
+    else{
+      d.textContent=t;
+      if(t===i+1)d.classList.add('correct');
+      d.addEventListener('click',()=>moveTile(i));
+    }
+    boardEl.appendChild(d);
+  });
+}
+function moveTile(i){
+  if(solved)return;
+  let r=Math.floor(i/size),c=i%size,er=Math.floor(emptyIdx/size),ec=emptyIdx%size;
+  if(Math.abs(r-er)+Math.abs(c-ec)!==1)return;
+  [tiles[i],tiles[emptyIdx]]=[tiles[emptyIdx],tiles[i]];
+  emptyIdx=i;moves++;
+  document.getElementById('moves').textContent=moves;
+  render();
+  if(checkWin()){
+    solved=true;clearInterval(timerInterval);
+    let best=localStorage.getItem('slide-best-'+size);
+    if(!best||moves<+best){localStorage.setItem('slide-best-'+size,moves);document.getElementById('best').textContent=moves}
+    document.getElementById('modal-msg').textContent=`Solved in ${moves} moves and ${Math.floor(seconds/60)}m ${seconds%60}s!`;
+    document.getElementById('modal').classList.add('show');
+  }
+}
+function checkWin(){for(let i=0;i<tiles.length-1;i++)if(tiles[i]!==i+1)return false;return true}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+// Touch support
+let touchStart=null;
+boardEl.addEventListener('touchstart',e=>{touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});
+boardEl.addEventListener('touchend',e=>{
+  if(!touchStart)return;
+  let dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;
+  if(Math.abs(dx)<20&&Math.abs(dy)<20)return;
+  let er=Math.floor(emptyIdx/size),ec=emptyIdx%size,tr,tc;
+  if(Math.abs(dx)>Math.abs(dy)){tr=er;tc=dx>0?ec-1:ec+1}else{tr=dy>0?er-1:er+1;tc=ec}
+  if(tr>=0&&tr<size&&tc>=0&&tc<size)moveTile(tr*size+tc);
+  touchStart=null;
+});
+// Keyboard
+document.addEventListener('keydown',e=>{
+  let er=Math.floor(emptyIdx/size),ec=emptyIdx%size,tr=er,tc=ec;
+  if(e.key==='ArrowUp')tr=er+1;else if(e.key==='ArrowDown')tr=er-1;
+  else if(e.key==='ArrowLeft')tc=ec+1;else if(e.key==='ArrowRight')tc=ec-1;else return;
+  if(tr>=0&&tr<size&&tc>=0&&tc<size)moveTile(tr*size+tc);
+});
+window.addEventListener('resize',()=>{if(!solved)render()});
+startGame(4);
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Breakout</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:8px;user-select:none;overflow:hidden}
+h1{font-size:1.4rem;margin-bottom:4px;background:linear-gradient(135deg,#ff6b6b,#ffd93d,#6c5ce7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.info{display:flex;gap:20px;margin-bottom:6px;font-size:.85rem;color:#aaa}
+.info b{color:#ffd93d}
+canvas{border-radius:8px;display:block;background:#0a0a15;box-shadow:0 0 30px rgba(108,92,231,.2)}
+.controls{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.controls button:hover{background:#6c5ce7;border-color:#6c5ce7;color:#fff}
+.touch-controls{display:none;gap:12px;margin-top:8px}
+.touch-controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:14px 28px;border-radius:12px;cursor:pointer;font-size:1.4rem;transition:all .15s}
+.touch-controls button:active{background:#6c5ce7}
+@media(pointer:coarse){.touch-controls{display:flex}}
+</style>
+</head>
+<body>
+<h1>Breakout</h1>
+<div class="info">
+  <span>Score: <b id="score">0</b></span>
+  <span>Lives: <b id="lives">3</b></span>
+  <span>Level: <b id="level">1</b></span>
+  <span>High: <b id="high">0</b></span>
+</div>
+<canvas id="c"></canvas>
+<div class="controls">
+  <button onclick="startGame()">New Game</button>
+</div>
+<div class="touch-controls" id="touch">
+  <button id="tl">◀</button>
+  <button id="tr">▶</button>
+</div>
+<script>
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+let W,H,dpr;
+function resize(){
+  dpr=Math.min(window.devicePixelRatio||1,2);
+  W=Math.min(window.innerWidth-16,520);
+  H=Math.min(window.innerHeight-140,640);
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+resize();window.addEventListener('resize',resize);
+
+const COLORS=['#ff6b6b','#ff9f43','#ffd93d','#6fcf97','#4ecdc4','#6c5ce7','#a29bfe','#fd79a8'];
+const PADDLE_H=12,BALL_R=6;
+let paddle,ball,bricks,score,lives,level,gameRunning,gameLoop,keys={},highScore=+(localStorage.getItem('breakout-high')||0);
+document.getElementById('high').textContent=highScore;
+
+function initLevel(lv){
+  level=lv;document.getElementById('level').textContent=lv;
+  let rows=Math.min(4+lv,8),cols=Math.min(7+Math.floor(lv/2),12);
+  let bw=(W-20)/cols-4,bh=16;
+  bricks=[];
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    let hp=r<2&&lv>2?2:1;
+    if(lv>4&&r===0)hp=3;
+    bricks.push({x:12+c*(bw+4),y:40+r*(bh+4),w:bw,h:bh,hp,maxHp:hp,color:COLORS[r%COLORS.length]});
+  }
+}
+function resetBall(){
+  ball={x:W/2,y:H-50,dx:(Math.random()>.5?1:-1)*(3+level*.3),dy:-(4+level*.4),r:BALL_R};
+  paddle={x:W/2-40,y:H-25,w:80,h:PADDLE_H,speed:0};
+}
+function startGame(){
+  score=0;lives=3;level=1;
+  document.getElementById('score').textContent='0';
+  document.getElementById('lives').textContent='3';
+  initLevel(1);resetBall();
+  gameRunning=true;
+  if(gameLoop)cancelAnimationFrame(gameLoop);
+  loop();
+}
+function loop(){
+  if(!gameRunning)return;
+  update();draw();
+  gameLoop=requestAnimationFrame(loop);
+}
+function update(){
+  // Paddle movement
+  if(keys.left)paddle.x-=7;
+  if(keys.right)paddle.x+=7;
+  paddle.x=Math.max(0,Math.min(W-paddle.w,paddle.x));
+  // Ball
+  ball.x+=ball.dx;ball.y+=ball.dy;
+  // Wall collisions
+  if(ball.x-ball.r<0){ball.x=ball.r;ball.dx*=-1}
+  if(ball.x+ball.r>W){ball.x=W-ball.r;ball.dx*=-1}
+  if(ball.y-ball.r<0){ball.y=ball.r;ball.dy*=-1}
+  // Paddle collision
+  if(ball.dy>0&&ball.y+ball.r>=paddle.y&&ball.y+ball.r<=paddle.y+paddle.h&&ball.x>=paddle.x&&ball.x<=paddle.x+paddle.w){
+    ball.dy*=-1;ball.y=paddle.y-ball.r;
+    let hit=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2);
+    ball.dx=hit*6;
+    if(Math.abs(ball.dx)<1)ball.dx=ball.dx>0?1:-1;
+  }
+  // Brick collisions
+  for(let i=bricks.length-1;i>=0;i--){
+    let b=bricks[i];
+    if(ball.x+ball.r>b.x&&ball.x-ball.r<b.x+b.w&&ball.y+ball.r>b.y&&ball.y-ball.r<b.y+b.h){
+      b.hp--;
+      if(b.hp<=0){bricks.splice(i,1);score+=10*level;document.getElementById('score').textContent=score}
+      // Determine reflection
+      let overlapX=Math.min(ball.x+ball.r-b.x,b.x+b.w-(ball.x-ball.r));
+      let overlapY=Math.min(ball.y+ball.r-b.y,b.y+b.h-(ball.y-ball.r));
+      if(overlapX<overlapY)ball.dx*=-1;else ball.dy*=-1;
+      break;
+    }
+  }
+  // Ball out
+  if(ball.y>H+20){
+    lives--;document.getElementById('lives').textContent=lives;
+    if(lives<=0){endGame()}else resetBall();
+  }
+  // Level complete
+  if(bricks.length===0){
+    level++;initLevel(level);resetBall();
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // Bricks
+  bricks.forEach(b=>{
+    let alpha=b.hp/b.maxHp;
+    ctx.fillStyle=b.color;ctx.globalAlpha=.4+.6*alpha;
+    ctx.beginPath();ctx.roundRect(b.x,b.y,b.w,b.h,3);ctx.fill();
+    ctx.globalAlpha=1;
+    if(b.hp>1){ctx.fillStyle='rgba(255,255,255,.3)';ctx.fillRect(b.x+2,b.y+2,b.w-4,3)}
+  });
+  ctx.globalAlpha=1;
+  // Paddle
+  let pg=ctx.createLinearGradient(paddle.x,paddle.y,paddle.x+paddle.w,paddle.y);
+  pg.addColorStop(0,'#6c5ce7');pg.addColorStop(1,'#a29bfe');
+  ctx.fillStyle=pg;
+  ctx.beginPath();ctx.roundRect(paddle.x,paddle.y,paddle.w,paddle.h,6);ctx.fill();
+  // Ball
+  let bg=ctx.createRadialGradient(ball.x-2,ball.y-2,1,ball.x,ball.y,ball.r);
+  bg.addColorStop(0,'#fff');bg.addColorStop(1,'#ffd93d');
+  ctx.fillStyle=bg;
+  ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fill();
+  // Ball trail
+  ctx.fillStyle='rgba(255,217,61,.15)';
+  ctx.beginPath();ctx.arc(ball.x-ball.dx*.5,ball.y-ball.dy*.5,ball.r*.7,0,Math.PI*2);ctx.fill();
+}
+function endGame(){
+  gameRunning=false;
+  if(score>highScore){highScore=score;localStorage.setItem('breakout-high',highScore);document.getElementById('high').textContent=highScore}
+  ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#ffd93d';ctx.font='bold 32px Segoe UI';ctx.textAlign='center';
+  ctx.fillText('Game Over',W/2,H/2-20);
+  ctx.fillStyle='#aaa';ctx.font='18px Segoe UI';
+  ctx.fillText(`Score: ${score}`,W/2,H/2+15);
+  ctx.fillText('Click New Game to play again',W/2,H/2+45);
+}
+// Input
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='a')keys.left=true;if(e.key==='ArrowRight'||e.key==='d')keys.right=true});
+document.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='a')keys.left=false;if(e.key==='ArrowRight'||e.key==='d')keys.right=false});
+// Mouse
+canvas.addEventListener('mousemove',e=>{let r=canvas.getBoundingClientRect();paddle.x=e.clientX-r.left-paddle.w/2});
+// Touch on canvas
+canvas.addEventListener('touchmove',e=>{e.preventDefault();let r=canvas.getBoundingClientRect();paddle.x=e.touches[0].clientX-r.left-paddle.w/2},{passive:false});
+// Touch buttons
+['tl','tr'].forEach(id=>{
+  let el=document.getElementById(id);
+  el.addEventListener('touchstart',e=>{e.preventDefault();keys[id==='tl'?'left':'right']=true},{passive:false});
+  el.addEventListener('touchend',e=>{keys[id==='tl'?'left':'right']=false});
+});
+startGame();
+</script>
+</body>
+</html>

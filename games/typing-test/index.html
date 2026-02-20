@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Typing Speed Test</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:12px;background:linear-gradient(135deg,#00cec9,#81ecec);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;justify-content:center}
+.stat{background:#1a1a2e;border:1px solid #333;border-radius:12px;padding:12px 20px;text-align:center;min-width:80px}
+.stat .value{font-size:1.6rem;font-weight:800;color:#00cec9}
+.stat .label{font-size:.7rem;color:#888;text-transform:uppercase;margin-top:2px}
+.text-container{background:#1a1a2e;border:1px solid #333;border-radius:12px;padding:20px;max-width:700px;width:100%;margin-bottom:16px;font-size:clamp(16px,3vw,20px);line-height:1.8;position:relative;min-height:120px}
+.text-container .char{transition:color .1s}
+.text-container .char.correct{color:#00cec9}
+.text-container .char.incorrect{color:#ff6b6b;text-decoration:underline}
+.text-container .char.current{background:#00cec944;border-radius:2px}
+.text-container .char.pending{color:#555}
+.input-area{max-width:700px;width:100%;position:relative}
+.input-area textarea{width:100%;background:#1e1e3a;border:2px solid #333;color:#e0e0e0;padding:14px;border-radius:12px;font-size:clamp(14px,2.5vw,18px);font-family:inherit;resize:none;outline:none;transition:border-color .2s}
+.input-area textarea:focus{border-color:#00cec9}
+.input-area textarea::placeholder{color:#555}
+.controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .2s}
+.controls button:hover,.controls button.active{background:#00cec9;border-color:#00cec9;color:#000}
+.progress{width:100%;max-width:700px;height:4px;background:#1e1e3a;border-radius:2px;margin-bottom:12px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#00cec9,#81ecec);border-radius:2px;transition:width .2s;width:0}
+.results{display:none;background:#1a1a2e;border:1px solid #00cec9;border-radius:16px;padding:24px;text-align:center;max-width:400px}
+.results.show{display:block}
+.results h2{color:#00cec9;margin-bottom:12px}
+.results .big-stat{font-size:3rem;font-weight:800;color:#00cec9;margin-bottom:4px}
+.results .detail{color:#888;margin-bottom:8px;font-size:.9rem}
+</style>
+</head>
+<body>
+<h1>Typing Speed Test</h1>
+<div class="stats">
+  <div class="stat"><div class="value" id="wpm">0</div><div class="label">WPM</div></div>
+  <div class="stat"><div class="value" id="accuracy">100%</div><div class="label">Accuracy</div></div>
+  <div class="stat"><div class="value" id="time">60</div><div class="label">Seconds</div></div>
+  <div class="stat"><div class="value" id="chars">0</div><div class="label">Chars</div></div>
+</div>
+<div class="progress"><div class="progress-bar" id="progress"></div></div>
+<div class="text-container" id="text"></div>
+<div class="input-area">
+  <textarea id="input" rows="3" placeholder="Start typing here to begin..." autofocus></textarea>
+</div>
+<div class="controls">
+  <button onclick="setDuration(30)" id="d30">30s</button>
+  <button onclick="setDuration(60)" id="d60" class="active">60s</button>
+  <button onclick="setDuration(120)" id="d120">120s</button>
+  <button onclick="startTest()">Restart</button>
+</div>
+<div class="results" id="results">
+  <h2>Results</h2>
+  <div class="big-stat" id="final-wpm">0</div>
+  <div class="detail">Words Per Minute</div>
+  <div class="detail" id="final-detail"></div>
+  <button onclick="startTest()" style="background:#00cec9;color:#000;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:1rem;margin-top:12px">Try Again</button>
+</div>
+<script>
+const PASSAGES=[
+  "The quick brown fox jumps over the lazy dog. This sentence contains every letter of the alphabet at least once. Typing is a fundamental skill in the modern digital world that allows us to communicate effectively.",
+  "Technology has transformed the way we live and work. From smartphones to artificial intelligence, innovations continue to reshape our daily experiences. Learning to type quickly is an important skill in this digital age.",
+  "Programming involves writing instructions for computers to follow. Each programming language has its own syntax and rules. Developers spend hours writing, testing, and debugging code to create applications that millions of people use.",
+  "The ocean covers more than seventy percent of the Earth surface. It contains countless species of marine life, from tiny plankton to enormous blue whales. Coral reefs are among the most diverse ecosystems on the planet.",
+  "Music has the power to evoke emotions and bring people together. Whether it is classical, jazz, rock, or electronic, every genre offers a unique listening experience. Many people find that music helps them concentrate and feel motivated.",
+  "Space exploration has always fascinated humanity. From the first moon landing to modern Mars rovers, we continue to push the boundaries of what is possible. Scientists dream of establishing colonies on other planets someday.",
+  "Reading books expands our knowledge and imagination. Fiction transports us to different worlds while non-fiction teaches us about reality. Libraries remain important community resources where anyone can access information for free.",
+  "Exercise is essential for maintaining good health. Regular physical activity strengthens muscles, improves cardiovascular health, and boosts mental well-being. Even a short daily walk can make a significant difference in overall fitness.",
+  "Cooking is both an art and a science. Understanding how flavors combine and how heat transforms ingredients allows chefs to create amazing dishes. Home cooking has become increasingly popular as people seek healthier meal options.",
+  "Climate change is one of the biggest challenges facing our world today. Rising temperatures affect weather patterns, sea levels, and ecosystems globally. Scientists emphasize the importance of reducing carbon emissions to protect our planet."
+];
+
+let duration=60,timer=null,startTime=null,charIndex=0,currentText='',typed='',errors=0,totalTyped=0,finished=false;
+
+function setDuration(d){
+  duration=d;
+  document.querySelectorAll('.controls button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('d'+d).classList.add('active');
+  startTest();
+}
+
+function startTest(){
+  clearInterval(timer);
+  finished=false;charIndex=0;typed='';errors=0;totalTyped=0;
+  startTime=null;
+  document.getElementById('wpm').textContent='0';
+  document.getElementById('accuracy').textContent='100%';
+  document.getElementById('time').textContent=duration;
+  document.getElementById('chars').textContent='0';
+  document.getElementById('progress').style.width='0%';
+  document.getElementById('results').classList.remove('show');
+  // Generate text
+  let shuffled=[...PASSAGES].sort(()=>Math.random()-.5);
+  currentText=shuffled.slice(0,3).join(' ');
+  renderText();
+  let input=document.getElementById('input');
+  input.value='';input.disabled=false;input.focus();
+}
+
+function renderText(){
+  const el=document.getElementById('text');
+  el.innerHTML=[...currentText].map((ch,i)=>{
+    let cls='char ';
+    if(i<charIndex){
+      cls+=typed[i]===ch?'correct':'incorrect';
+    } else if(i===charIndex){
+      cls+='current';
+    } else {
+      cls+='pending';
+    }
+    return `<span class="${cls}">${ch==='\n'?'↵<br>':ch===' '?'&nbsp;':ch}</span>`;
+  }).join('');
+}
+
+document.getElementById('input').addEventListener('input',e=>{
+  if(finished)return;
+  if(!startTime){
+    startTime=Date.now();
+    timer=setInterval(updateTimer,200);
+  }
+  typed=e.target.value;
+  charIndex=typed.length;
+  totalTyped=charIndex;
+  errors=[...typed].filter((c,i)=>i<currentText.length&&c!==currentText[i]).length;
+  document.getElementById('chars').textContent=charIndex;
+  let accuracy=totalTyped>0?Math.round(((totalTyped-errors)/totalTyped)*100):100;
+  document.getElementById('accuracy').textContent=accuracy+'%';
+  let elapsed=(Date.now()-startTime)/1000;
+  let words=typed.split(/\s+/).filter(w=>w.length>0).length;
+  let wpm=elapsed>0?Math.round(words/(elapsed/60)):0;
+  document.getElementById('wpm').textContent=wpm;
+  document.getElementById('progress').style.width=(charIndex/currentText.length*100)+'%';
+  renderText();
+  if(charIndex>=currentText.length)endTest();
+});
+
+function updateTimer(){
+  if(!startTime||finished)return;
+  let elapsed=Math.floor((Date.now()-startTime)/1000);
+  let remaining=Math.max(0,duration-elapsed);
+  document.getElementById('time').textContent=remaining;
+  if(remaining<=0)endTest();
+}
+
+function endTest(){
+  finished=true;clearInterval(timer);
+  document.getElementById('input').disabled=true;
+  let elapsed=Math.min((Date.now()-startTime)/1000,duration);
+  let correctChars=[...typed].filter((c,i)=>i<currentText.length&&c===currentText[i]).length;
+  let wpm=Math.round((correctChars/5)/(elapsed/60));
+  let accuracy=totalTyped>0?Math.round(((totalTyped-errors)/totalTyped)*100):100;
+  document.getElementById('final-wpm').textContent=wpm;
+  document.getElementById('final-detail').textContent=`${accuracy}% accuracy • ${correctChars} correct chars • ${Math.floor(elapsed)}s`;
+  document.getElementById('results').classList.add('show');
+  // Save best
+  let best=localStorage.getItem('typing-best-'+duration);
+  if(!best||wpm>+best)localStorage.setItem('typing-best-'+duration,wpm);
+}
+
+document.getElementById('input').addEventListener('keydown',e=>{
+  if(e.key==='Tab'){e.preventDefault();startTest()}
+});
+startTest();
+</script>
+</body>
+</html>
