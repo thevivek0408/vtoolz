@@ -53,15 +53,14 @@ document.getElementById('convert-btn').addEventListener('click', async () => {
             const ext = format.split('/')[1];
             const newName = file.name.split('.')[0] + '.' + (ext === 'jpeg' ? 'jpg' : ext);
 
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-primary';
-            btn.style.padding = '5px 10px';
-            btn.style.fontSize = '0.8rem';
-            btn.textContent = 'Download';
-            btn.onclick = () => window.Utils.downloadBlob(blob, newName);
+            const link = document.createElement('a');
+            link.className = 'btn btn-primary convert-download';
+            link.textContent = 'Download';
+            link.href = URL.createObjectURL(blob);
+            link.download = newName;
 
             actionArea.innerHTML = '';
-            actionArea.appendChild(btn);
+            actionArea.appendChild(link);
 
         } catch (err) {
             console.error(err);
@@ -69,4 +68,4 @@ document.getElementById('convert-btn').addEventListener('click', async () => {
             status.style.color = 'var(--danger-color)';
         }
     }
-});
+});
