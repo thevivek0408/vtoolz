@@ -27,6 +27,67 @@
             max-width: 100%;
             height: auto;
         }
+
+        .barcode-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .barcode-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .config-title {
+            margin-bottom: 15px;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-label {
+            margin: 0;
+        }
+
+        .preview-center {
+            text-align: center;
+        }
+
+        .action-row {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .error-msg {
+            color: var(--error-color);
+            margin-top: 10px;
+            display: none;
+        }
+
+        .footer-barcode {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+        }
+
+        .footer-version {
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .barcode-layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -44,16 +105,16 @@
 
     <main>
         <div class="tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="barcode-head">
                 <h1>Barcode Generator</h1>
                 <p class="text-muted">Generate commercial and industrial barcodes. Offline.</p>
             </div>
 
-            <div class="layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div class="layout barcode-layout">
                 <!-- Controls -->
                 <div class="controls-area">
                     <div class="tool-card">
-                        <h3 style="margin-bottom: 15px;">Configuration</h3>
+                        <h3 class="config-title">Configuration</h3>
 
                         <div class="form-group">
                             <label>Content</label>
@@ -84,33 +145,32 @@
                             <input type="color" id="bg-color" value="#ffffff">
                         </div>
 
-                        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group toggle-row">
                             <input type="checkbox" id="show-text" checked>
-                            <label for="show-text" style="margin:0;">Show Text Below</label>
+                            <label for="show-text" class="toggle-label">Show Text Below</label>
                         </div>
                     </div>
                 </div>
 
                 <!-- Preview -->
-                <div class="preview-area" style="text-align: center;">
+                <div class="preview-area preview-center">
                     <div class="barcode-preview" id="preview-container">
                         <svg id="barcode"></svg>
                     </div>
 
-                    <div class="actions" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                    <div class="actions action-row">
                         <button class="btn btn-primary" id="download-svg-btn">Download SVG</button>
                     </div>
 
-                    <p id="error-msg" style="color: var(--error-color); margin-top: 10px; display: none;"></p>
+                    <p id="error-msg" class="error-msg"></p>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer
-        style="text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top:50px;">
+    <footer class="footer-barcode">
         <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
-        <p style="font-size: 0.8rem; opacity: 0.5;">v22.0 (Barcode Tools)</p>
+        <p class="footer-version">v22.0 (Barcode Tools)</p>
     </footer>
 
     <script type="module" src="../../js/barcode/barcode-generator.js"></script>

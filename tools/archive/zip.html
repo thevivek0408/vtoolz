@@ -65,6 +65,63 @@
             border-color: var(--primary-color);
             background: rgba(var(--primary-rgb), 0.05);
         }
+
+        .zip-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .zip-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .drop-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .hidden-input,
+        .progress-hidden {
+            display: none;
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .create-row {
+            margin-top: 20px;
+        }
+
+        .progress-wrap {
+            margin-top: 15px;
+        }
+
+        .progress-full {
+            width: 100%;
+        }
+
+        .status-text {
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .zip-layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -82,20 +139,19 @@
 
     <main>
         <div class="tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="zip-head">
                 <h1>Zip Creator</h1>
                 <p class="text-muted">Compress files securely in your browser.</p>
             </div>
 
-            <div class="layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div class="layout zip-layout">
                 <!-- Input Area -->
                 <div class="controls-area">
                     <div id="drop-zone">
-                        <i class="fas fa-cloud-upload-alt"
-                            style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <i class="fas fa-cloud-upload-alt drop-icon"></i>
                         <h3>Drag & Drop Files Here</h3>
                         <p class="text-muted">or click to browse</p>
-                        <input type="file" id="file-input" multiple style="display: none;">
+                        <input type="file" id="file-input" multiple class="hidden-input">
                     </div>
 
                     <div class="tool-card">
@@ -118,24 +174,23 @@
                 <!-- List Area -->
                 <div class="preview-area">
                     <div class="tool-card">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div class="file-header">
                             <h3>Files to Zip (<span id="file-count">0</span>)</h3>
                             <button class="btn btn-sm btn-secondary" id="clear-all-btn">Clear All</button>
                         </div>
 
                         <div id="file-list" class="file-list-area">
-                            <p class="text-muted" style="text-align: center; margin-top: 80px;">No files added yet.</p>
+                            <p class="text-muted empty-state">No files added yet.</p>
                         </div>
 
-                        <div style="margin-top: 20px;">
+                        <div class="create-row">
                             <button class="btn btn-primary btn-block" id="create-zip-btn" disabled>Create & Download
                                 Zip</button>
                         </div>
 
-                        <div id="progress-container" style="display: none; margin-top: 15px;">
-                            <progress id="progress-bar" value="0" max="100" style="width: 100%;"></progress>
-                            <p class="text-muted" style="text-align: center; font-size: 0.8rem;" id="status-text">
+                        <div id="progress-container" class="progress-hidden progress-wrap">
+                            <progress id="progress-bar" value="0" max="100" class="progress-full"></progress>
+                            <p class="text-muted status-text" id="status-text">
                                 Compressing...</p>
                         </div>
                     </div>
