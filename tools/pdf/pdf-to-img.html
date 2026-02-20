@@ -65,17 +65,17 @@
                 <p class="text-muted">Convert PDF pages into high-quality images (JPG) instantly.</p>
             </div>
 
-            <div class="drop-zone" id="dropZone">
+            <div class="drop-zone" id="drop-zone">
                 <span class="drop-zone-icon"><i class="fas fa-cloud-arrow-up"></i></span>
                 <h3>Drop PDF Here</h3>
                 <p class="text-muted">or click to browse</p>
-                <input type="file" id="fileInput" accept="application/pdf" hidden>
+                <input type="file" id="file-input" accept="application/pdf" hidden>
             </div>
 
-            <div class="status-area" id="statusText"></div>
+            <div class="status-area" id="status-text"></div>
 
-            <div class="pdf2img-output" id="outputArea">
-                <div id="imageGrid" class="pdf2img-grid"></div>
+            <div class="pdf2img-output" id="output-area">
+                <div id="image-grid" class="pdf2img-grid"></div>
             </div>
         </div>
     </main>
@@ -86,11 +86,11 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = '../../js/vendor/pdf.worker.min.js';
 
-        var dropZone = document.getElementById('dropZone');
-        var fileInput = document.getElementById('fileInput');
-        var statusText = document.getElementById('statusText');
-        var outputArea = document.getElementById('outputArea');
-        var imageGrid = document.getElementById('imageGrid');
+        var dropZone = document.getElementById('drop-zone');
+        var fileInput = document.getElementById('file-input');
+        var statusText = document.getElementById('status-text');
+        var outputArea = document.getElementById('output-area');
+        var imageGrid = document.getElementById('image-grid');
 
         dropZone.addEventListener('click', function () { fileInput.click(); });
 
@@ -155,6 +155,7 @@
                     var img = document.createElement('img');
                     img.src = dataUrl;
                     img.alt = 'Page ' + i;
+                    img.loading = 'lazy';
 
                     var link = document.createElement('a');
                     link.href = dataUrl;
