@@ -168,6 +168,30 @@
         .toolbar-btn:hover {
             background: rgba(0, 0, 0, 0.1);
         }
+
+        .markdown-tool-container {
+            max-width: 95%;
+        }
+
+        .editor-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .import-label {
+            cursor: pointer;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .word-counter {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 
@@ -184,8 +208,8 @@
     </header>
 
     <main>
-        <div class="tool-container" style="max-width: 95%;"> <!-- Wider container for editor -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div class="tool-container markdown-tool-container"> <!-- Wider container for editor -->
+            <div class="editor-head">
                 <div>
                     <h1>Markdown Editor</h1>
                     <p class="text-muted">Write Markdown with real-time preview.</p>
@@ -194,8 +218,8 @@
                     <button class="btn btn-secondary" id="copy-html-btn">Copy HTML</button>
                     <button class="btn btn-primary" id="download-md-btn">Download .md</button>
                     <button class="btn btn-secondary" id="download-html-btn">Download .html</button>
-                    <label for="import-file" class="btn btn-secondary" style="cursor: pointer;">Import</label>
-                    <input type="file" id="import-file" accept=".md,.txt" style="display: none;">
+                    <label for="import-file" class="btn btn-secondary import-label">Import</label>
+                    <input type="file" id="import-file" accept=".md,.txt" class="hidden-input">
                 </div>
             </div>
 
@@ -226,7 +250,7 @@
                 <div class="preview-panel">
                     <div class="panel-header">
                         <span class="panel-title">Preview</span>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">
+                        <div class="word-counter">
                             Words: <span id="word-count">0</span>
                         </div>
                     </div>

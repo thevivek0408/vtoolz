@@ -69,6 +69,32 @@
         .page-item.selected .check-mark {
             display: flex;
         }
+
+        .duplicate-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .duplicate-controls {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .duplicate-toolbar {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .duplicate-action {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .duplicate-btn {
+            min-width: 200px;
+        }
     </style>
 </head>
 
@@ -92,7 +118,7 @@
                 <span class="step">3. Download</span>
             </div>
 
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="duplicate-hero">
                 <h1>Duplicate Pages</h1>
                 <p class="text-muted">Select pages to duplicate. Copies will be inserted immediately after the original.
                 </p>
@@ -105,16 +131,16 @@
                 <input type="file" id="file-input" accept="application/pdf" hidden>
             </div>
 
-            <div id="controls" style="display:none; margin-top: 20px;">
-                <div class="toolbar" style="margin-bottom: 1rem; display: flex; gap: 10px; justify-content: center;">
+            <div id="controls" class="duplicate-controls">
+                <div class="toolbar duplicate-toolbar">
                     <button id="select-all-btn" class="btn btn-secondary">Select All</button>
                     <button id="deselect-all-btn" class="btn btn-secondary">Deselect All</button>
                 </div>
 
                 <div id="page-grid" class="page-grid"></div>
 
-                <div class="action-bar" style="text-align: center; margin-top: 2rem;">
-                    <button id="duplicate-btn" class="btn btn-primary" style="min-width: 200px;">
+                <div class="action-bar duplicate-action">
+                    <button id="duplicate-btn" class="btn btn-primary duplicate-btn">
                         Duplicate Selected Pages
                     </button>
                 </div>
