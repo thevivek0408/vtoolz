@@ -6,12 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
-    <title>Image Compressor - Vibox</title>
+    <title>Compress Images Online Free — No Upload | Vibox</title>
     <link rel="canonical" href="https://vibox.app/tools/image/compress.html">
     <link rel="icon" href="/favicon.ico" sizes="48x48">
     <link rel="icon" href="/favicon.png" type="image/png" sizes="196x196">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="description" content="Compress images without losing quality. Reduce file size for JPG, PNG, and WebP privately.">
+    <meta name="description" content="Free online image compressor. Reduce JPG, PNG and WebP file size in your browser — no uploads, no quality loss, 100% private.">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vibox">
+    <meta property="og:url" content="https://vibox.app/tools/image/compress.html">
+    <meta property="og:title" content="Compress Images Online Free — No Upload | Vibox">
+    <meta property="og:description" content="Free online image compressor for JPG, PNG and WebP. Runs entirely in your browser — no file uploads, 100% private.">
+    <meta property="og:image" content="https://vibox.app/assets/og-image.png">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://vibox.app/tools/image/compress.html">
+    <meta name="twitter:title" content="Compress Images Online Free — No Upload | Vibox">
+    <meta name="twitter:description" content="Free online image compressor for JPG, PNG and WebP. No uploads. 100% private.">
+    <meta name="twitter:image" content="https://vibox.app/assets/og-image.png">
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Image Compressor",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "url": "https://vibox.app/tools/image/compress.html",
+        "description": "Free online image compressor. Reduce JPG, PNG and WebP file size in your browser — no uploads, no quality loss.",
+        "featureList": ["No file uploads", "Works offline", "JPG PNG WebP support", "Adjustable quality", "Batch compress", "100% private"]
+    }
+    </script>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
         .preview-grid {
@@ -148,6 +175,44 @@
             <div id="results" class="preview-grid"></div>
         </div>
     </main>
+
+    <section style="background:var(--surface,#1e293b);margin-top:40px;">
+      <div style="max-width:860px;margin:0 auto;padding:40px 20px;line-height:1.8;color:var(--text-muted,#94a3b8);font-size:0.95rem;">
+        <h2 style="font-size:1.3rem;color:var(--text,#f1f5f9);margin-bottom:20px;">Image Compressor — Frequently Asked Questions</h2>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">How does the image compressor work?</h3>
+        <p>The Vibox image compressor uses the HTML5 Canvas API to decode your image inside your browser and re-encode it at your selected quality level. No network requests are made during this process. The resulting compressed image is generated in memory and offered as an instant download — all without any server involvement.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Do my images get uploaded to a server?</h3>
+        <p>No. Your images are processed entirely inside your browser. They never leave your device. This makes Vibox the safest choice for compressing personal photos, confidential documents, or any private images. Unlike TinyPNG or similar cloud services, nothing is ever transmitted to a remote server.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">What image formats are supported?</h3>
+        <p>The Vibox image compressor supports <strong>JPG</strong> (JPEG), <strong>PNG</strong>, and <strong>WebP</strong> image formats. You can compress photos, screenshots, graphics, and any common web image. The output is saved in the same format as your input file.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">What compression quality level should I use?</h3>
+        <p>For most photos and web images, a quality setting of <strong>70–80%</strong> delivers the best balance of file size reduction and visual fidelity. At this setting, compression is nearly invisible to the human eye but reduces file size by 50–70%. For logos or images with sharp text, use 85–90% to preserve crisp edges.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Will the compressed image look different?</h3>
+        <p>At quality settings of 70% and above, most people cannot tell the difference between the original and the compressed image on screen. The compression is described as visually lossless at these levels. At lower settings (below 50%), some blurring or JPEG artifacts may become visible, which is why the default is set to 80%.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">How much can images be compressed?</h3>
+        <p>Typical savings depend on content. Photographs usually compress by <strong>50–80%</strong> at default quality. PNG images with large uniform-color areas compress even more efficiently. WebP images may compress less since the format is already optimized. Actual savings are shown in real time after compression completes.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Can I compress multiple images at once?</h3>
+        <p>Yes. Drop multiple images onto the upload area at once and each is processed individually. The original and compressed file sizes are shown for each image so you can compare results before downloading. All images use the same quality level from the slider.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">What is the difference between lossy and lossless compression?</h3>
+        <p>Lossy compression (used for JPG and WebP) achieves smaller files by removing image data that is less perceptible to the eye. Lossless compression preserves every pixel exactly but achieves less size reduction. For web use, lossy compression at 70–80% quality is the standard approach because the visual difference is negligible and file size savings are significant.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Is there a file size limit?</h3>
+        <p>There is no server-imposed limit. The practical limit is your browser's available memory. Most devices handle images up to 50 MB without issues. Very large images may take a few seconds to process.</p>
+
+        <p style="margin-top:28px;font-size:0.9rem;">Need to do more? Try the <a href="resize.html">Image Resizer</a>, <a href="convert.html">Image Converter</a>, <a href="crop.html">Image Cropper</a>, or go back to <a href="../../index.html">all Vibox tools</a>.</p>
+      </div>
+    </section>
+    <footer style="text-align:center;padding:20px;font-size:0.85rem;color:var(--text-muted,#94a3b8);">
+        <p>&copy; 2026 <a href="../../index.html">Vibox</a> — Free Browser Tools. No uploads. 100% Private.</p>
+    </footer>
 
     <script src="compress.inline.js" type="module"></script>
 </body>

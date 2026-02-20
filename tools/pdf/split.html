@@ -6,12 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
-    <title>Split PDF - Privacy-First Tools</title>
+    <title>Split PDF Online Free — No Upload | Vibox</title>
     <link rel="canonical" href="https://vibox.app/tools/pdf/split.html">
     <link rel="icon" href="/favicon.ico" sizes="48x48">
     <link rel="icon" href="/favicon.png" type="image/png" sizes="196x196">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="description" content="Split a PDF by selecting specific pages to extract into a new document. Fast, offline processing in your browser.">
+    <meta name="description" content="Split PDF files online free. Extract any pages from a PDF in your browser — no uploads, instant download, 100% private.">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vibox">
+    <meta property="og:url" content="https://vibox.app/tools/pdf/split.html">
+    <meta property="og:title" content="Split PDF Online Free — No Upload | Vibox">
+    <meta property="og:description" content="Free online PDF splitter. Extract pages from any PDF in your browser. No uploads, 100% private.">
+    <meta property="og:image" content="https://vibox.app/assets/og-image.png">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://vibox.app/tools/pdf/split.html">
+    <meta name="twitter:title" content="Split PDF Online Free — No Upload | Vibox">
+    <meta name="twitter:description" content="Free online PDF splitter. Extract pages in your browser. No uploads. 100% private.">
+    <meta name="twitter:image" content="https://vibox.app/assets/og-image.png">
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Split PDF",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "url": "https://vibox.app/tools/pdf/split.html",
+        "description": "Free online PDF splitter. Extract any pages from a PDF in your browser. No uploads, 100% private.",
+        "featureList": ["No file uploads", "Works offline", "Visual page selection", "Any page combination", "100% private"]
+    }
+    </script>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
         .page-grid {
@@ -151,6 +178,38 @@
         <!-- Load PDF.js for rendering previews -->
         <script src="../../js/vendor/pdf.min.js"></script>
         <script src="split.inline.js" type="module"></script>
+
+    <section style="background:var(--surface,#1e293b);margin-top:40px;">
+      <div style="max-width:860px;margin:0 auto;padding:40px 20px;line-height:1.8;color:var(--text-muted,#94a3b8);font-size:0.95rem;">
+        <h2 style="font-size:1.3rem;color:var(--text,#f1f5f9);margin-bottom:20px;">Split PDF — Frequently Asked Questions</h2>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">How do I split a PDF file?</h3>
+        <p>Upload your PDF by dragging it onto the area or clicking to browse. Vibox displays a visual thumbnail preview of every page. Click the pages you want to extract — they highlight when selected. Then click Extract Selected Pages and your new PDF downloads instantly.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Do my PDFs get uploaded to a server?</h3>
+        <p>No. Vibox processes your PDF entirely in your browser using PDF-lib and PDF.js. Your document is never sent to any server. This is important for documents containing personal data, legal content, or financial information that must stay private.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Can I extract multiple non-consecutive pages?</h3>
+        <p>Yes. You can select any combination of pages — they do not need to be consecutive. Click each thumbnail to select or deselect. All selected pages are extracted into a single new PDF in the order they appear in the original document.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Can I split a PDF into individual single-page files?</h3>
+        <p>Currently the tool extracts your page selection into a single PDF. To create separate single-page PDFs, extract each page individually. You can also use the <a href="delete.html">Delete PDF Pages</a> tool to remove pages you do not need.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Is PDF splitting free?</h3>
+        <p>Yes. Splitting PDFs with Vibox is completely free. No account needed, no watermarks on the output, and no file size limits. Unlike services that restrict splitting to paid subscribers, Vibox provides this feature free forever.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Will the extracted pages keep their original quality?</h3>
+        <p>Yes. Page splitting does not recompress or alter any page content. Pages are copied directly from the original PDF, so text, images, and vector graphics are preserved at full fidelity in the output document.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">How large a PDF can I split?</h3>
+        <p>There is no server-side size limit. The limit depends on your device's available memory. Most devices handle PDFs up to 100 MB comfortably. Very large PDFs with many high-resolution scanned pages may take a few extra seconds to load the page previews.</p>
+
+        <p style="margin-top:28px;font-size:0.9rem;">Need other PDF tools? Try <a href="merge.html">Merge PDF</a>, <a href="compress.html">Compress PDF</a>, <a href="reorder.html">Reorder PDF</a>, <a href="delete.html">Delete PDF Pages</a>, or go back to <a href="../../index.html">all Vibox tools</a>.</p>
+      </div>
+    </section>
+    <footer style="text-align:center;padding:20px;font-size:0.85rem;color:var(--text-muted,#94a3b8);">
+        <p>&copy; 2026 <a href="../../index.html">Vibox</a> — Free Browser Tools. No uploads. 100% Private.</p>
+    </footer>
 </body>
 
 </html>
