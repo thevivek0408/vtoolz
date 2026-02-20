@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
-    <title>Split PDF - Privacy-First Tools</title>
+    <title>Extract PDF Pages - Privacy-First Tools</title>
+    <meta name="description" content="Extract specific pages from a PDF into a new document. Select pages and download instantly, all in your browser.">
     <link rel="stylesheet" href="../../css/style.css">
     <style>
         .page-grid {
@@ -107,7 +108,6 @@
     </header>
 
     <main>
-        <main>
             <div class="tool-container" id="tool-container">
                 <div class="step-indicator">
                     <span class="step active">1. Upload</span>
@@ -120,7 +120,7 @@
                     <p class="text-muted">Select specific pages to extract into a new PDF document.</p>
                 </div>
 
-                <div class="drop-zone" id="drop-zone">
+                <div class="drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Upload PDF file">
                     <span class="drop-zone-icon"><i class="fas fa-cloud-arrow-up"></i></span>
                     <h3>Drop PDF Here</h3>
                     <p class="text-muted">or click to browse</p>
@@ -142,7 +142,7 @@
                     </div>
                 </div>
             </div>
-        </main>
+    </main>
 
         <!-- Load PDF.js for rendering previews -->
         <script src="../../js/vendor/pdf.min.js"></script>

@@ -8,6 +8,7 @@
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
     <title>PDF to Image - Privacy-First Tools</title>
+    <meta name="description" content="Convert PDF pages into high-quality JPG images. Upload a PDF and download each page as an image, all in your browser.">
     <link rel="stylesheet" href="../../css/style.css">
     <style>
         .pdf2img-output {
@@ -65,7 +66,7 @@
                 <p class="text-muted">Convert PDF pages into high-quality images (JPG) instantly.</p>
             </div>
 
-            <div class="drop-zone" id="drop-zone">
+            <div class="drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Upload PDF file">
                 <span class="drop-zone-icon"><i class="fas fa-cloud-arrow-up"></i></span>
                 <h3>Drop PDF Here</h3>
                 <p class="text-muted">or click to browse</p>
@@ -75,12 +76,16 @@
             <div class="status-area" id="status-text"></div>
 
             <div class="pdf2img-output" id="output-area">
+                <div class="action-bar u-action-center">
+                    <button id="download-all-btn" class="btn btn-secondary u-btn-min-200" hidden>Download All as ZIP</button>
+                </div>
                 <div id="image-grid" class="pdf2img-grid"></div>
             </div>
         </div>
     </main>
 
     <script src="../../js/vendor/pdf.min.js"></script>
+    <script src="../../js/vendor/jszip.min.js"></script>
     <script src="../../js/utils/common.js" type="module"></script>
 
     <script>
@@ -91,6 +96,8 @@
         var statusText = document.getElementById('status-text');
         var outputArea = document.getElementById('output-area');
         var imageGrid = document.getElementById('image-grid');
+        var downloadAllBtn = document.getElementById('download-all-btn');
+        var convertedPages = [];
 
         dropZone.addEventListener('click', function () { fileInput.click(); });
 
@@ -126,6 +133,8 @@
 
             outputArea.style.display = 'block';
             imageGrid.innerHTML = '';
+            downloadAllBtn.hidden = true;
+            convertedPages = [];
             statusText.textContent = 'Reading PDF...';
 
             try {
@@ -149,6 +158,8 @@
 
                     var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
 
+                    convertedPages.push({ name: baseName + '-page-' + i + '.jpg', dataUrl: dataUrl });
+
                     var card = document.createElement('div');
                     card.className = 'pdf2img-card';
 
@@ -169,11 +180,41 @@
                 }
 
                 statusText.textContent = 'Done! ' + totalPages + ' page(s) converted. Click to download.';
+                if (totalPages > 1) {
+                    downloadAllBtn.hidden = false;
+                }
 
             } catch (err) {
                 statusText.textContent = 'Error: ' + (err.message || err);
             }
         }
+
+        downloadAllBtn.addEventListener('click', async function () {
+            if (!convertedPages.length) return;
+            downloadAllBtn.disabled = true;
+            downloadAllBtn.textContent = 'Zipping...';
+            try {
+                var zip = new JSZip();
+                for (var i = 0; i < convertedPages.length; i++) {
+                    var base64 = convertedPages[i].dataUrl.split(',')[1];
+                    zip.file(convertedPages[i].name, base64, { base64: true });
+                }
+                var blob = await zip.generateAsync({ type: 'blob' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'pdf-images.zip';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+            } catch (err) {
+                statusText.textContent = 'ZIP failed: ' + (err.message || err);
+            } finally {
+                downloadAllBtn.disabled = false;
+                downloadAllBtn.textContent = 'Download All as ZIP';
+            }
+        });
     </script>
 </body>
 
