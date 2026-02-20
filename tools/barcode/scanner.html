@@ -68,6 +68,84 @@
             border-color: var(--primary-color);
             background: rgba(var(--primary-rgb), 0.05);
         }
+
+        .scanner-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .scanner-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .camera-help {
+            margin-top: 10px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .support-card {
+            margin-top: 20px;
+        }
+
+        .support-text {
+            font-size: 0.9em;
+        }
+
+        .match-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        .scan-value {
+            font-family: monospace;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .result-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .no-result {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .footer-barcode {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+        }
+
+        .footer-version {
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .scanner-layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -85,12 +163,12 @@
 
     <main>
         <div class="tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="scanner-head">
                 <h1>Barcode Scanner</h1>
                 <p class="text-muted">Scan 1D barcodes (EAN, UPC, CODE128) using your camera.</p>
             </div>
 
-            <div class="layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div class="layout scanner-layout">
                 <!-- Scanner Section -->
                 <div class="controls-area">
                     <div class="tab-group">
@@ -100,20 +178,19 @@
 
                     <div id="camera-area">
                         <div id="reader"></div>
-                        <p class="text-muted" style="margin-top: 10px; font-size: 0.9em; text-align: center;">Permission
+                        <p class="text-muted camera-help">Permission
                             will be requested to access your camera.</p>
                     </div>
 
                     <div id="file-input-area">
-                        <input type="file" id="barcode-input-file" accept="image/*" style="display: none;">
-                        <i class="fas fa-barcode"
-                            style="font-size: 2rem; margin-bottom: 10px; color: var(--primary-color);"></i>
+                        <input type="file" id="barcode-input-file" accept="image/*" class="hidden-input">
+                        <i class="fas fa-barcode upload-icon"></i>
                         <p>Click or Drag image here to scan</p>
                     </div>
 
-                    <div class="tool-card" style="margin-top: 20px;">
+                    <div class="tool-card support-card">
                         <h3>Supported Formats</h3>
-                        <p class="text-muted" style="font-size: 0.9em;">UPC_A, UPC_E, EAN_13, EAN_8, CODE_39, CODE_128,
+                        <p class="text-muted support-text">UPC_A, UPC_E, EAN_13, EAN_8, CODE_39, CODE_128,
                             ITF, RSS_14</p>
                     </div>
                 </div>
@@ -123,7 +200,7 @@
                     <div class="tool-card">
                         <h3>Scan Result</h3>
                         <div id="result-container" class="scan-result-area">
-                            <p style="margin-bottom: 10px; font-weight: bold; color: var(--success-color);">Match Found!
+                            <p class="match-title">Match Found!
                             </p>
 
                             <div class="form-group">
@@ -133,16 +210,15 @@
 
                             <div class="form-group">
                                 <label>Value</label>
-                                <input type="text" id="result-text" class="form-control" readonly
-                                    style="font-family: monospace; font-size: 1.2rem; letter-spacing: 1px;">
+                                <input type="text" id="result-text" class="form-control scan-value" readonly>
                             </div>
 
-                            <div class="actions" style="margin-top: 15px; display: flex; gap: 10px;">
+                            <div class="actions result-actions">
                                 <button class="btn btn-secondary" id="copy-btn">Copy Value</button>
                                 <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary" id="search-btn">Search Google</a>
                             </div>
                         </div>
-                        <div id="no-result" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <div id="no-result" class="no-result">
                             <p>Waiting for scan...</p>
                         </div>
                     </div>
@@ -151,10 +227,9 @@
         </div>
     </main>
 
-    <footer
-        style="text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top:50px;">
+    <footer class="footer-barcode">
         <p>&copy; 2026 Vibox. Open Source & Client-Side.</p>
-        <p style="font-size: 0.8rem; opacity: 0.5;">v22.0 (Barcode Tools)</p>
+        <p class="footer-version">v22.0 (Barcode Tools)</p>
     </footer>
 
     <script type="module" src="../../js/barcode/barcode-scanner.js"></script>

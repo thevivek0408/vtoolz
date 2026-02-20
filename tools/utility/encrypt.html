@@ -35,6 +35,52 @@
             border-color: var(--primary-color);
             transform: translateY(-5px);
         }
+
+        .vault-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .privacy-top {
+            margin-top: 10px;
+        }
+
+        .mode-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .mode-icon-lock {
+            color: #ef5350;
+        }
+
+        .mode-icon-unlock {
+            color: #66bb6a;
+        }
+
+        .drop-file {
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .pass-input {
+            margin-bottom: 10px;
+        }
+
+        .status-top {
+            margin-top: 10px;
+        }
+
+        .vault-alert {
+            margin-top: 40px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -53,10 +99,10 @@
 
     <main>
         <div class="container tool-container">
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="vault-head">
                 <h1><i class="fas fa-user-secret"></i> The Vault</h1>
                 <p class="text-muted">Encrypt files with AES-256. Only the password can open them.</p>
-                <div class="privacy-badge" style="margin-top: 10px;">
+                <div class="privacy-badge privacy-top">
                     <i class="fas fa-shield-alt"></i> ZERO Knowledge. We never see your password.
                 </div>
             </div>
@@ -64,48 +110,44 @@
             <div class="vault-split">
                 <!-- Encrypt Mode -->
                 <div class="mode-card">
-                    <i class="fas fa-lock" style="font-size: 3rem; color: #ef5350; margin-bottom: 15px;"></i>
+                    <i class="fas fa-lock mode-icon mode-icon-lock"></i>
                     <h2>Encrypt File</h2>
                     <p class="text-small text-muted">Protect a file with a password.</p>
 
-                    <div id="drop-enc"
-                        style="border: 2px dashed var(--border-color); padding: 20px; margin: 15px 0; cursor: pointer;">
+                    <div id="drop-enc" class="drop-file">
                         Click or Drop File
-                        <input type="file" id="input-enc" style="display: none;">
+                        <input type="file" id="input-enc" class="hidden-input">
                     </div>
 
                     <p id="file-enc-name" class="text-bold"></p>
 
-                    <input type="password" id="pass-enc" class="form-control" placeholder="Set Password"
-                        style="margin-bottom: 10px;">
+                    <input type="password" id="pass-enc" class="form-control pass-input" placeholder="Set Password">
                     <button id="btn-encrypt" class="btn btn-primary btn-block">Encrypt & Download</button>
 
-                    <div id="status-enc" style="margin-top: 10px;"></div>
+                    <div id="status-enc" class="status-top"></div>
                 </div>
 
                 <!-- Decrypt Mode -->
                 <div class="mode-card">
-                    <i class="fas fa-unlock" style="font-size: 3rem; color: #66bb6a; margin-bottom: 15px;"></i>
+                    <i class="fas fa-unlock mode-icon mode-icon-unlock"></i>
                     <h2>Decrypt File</h2>
                     <p class="text-small text-muted">Unlock a <code>.vtoolz</code> file.</p>
 
-                    <div id="drop-dec"
-                        style="border: 2px dashed var(--border-color); padding: 20px; margin: 15px 0; cursor: pointer;">
+                    <div id="drop-dec" class="drop-file">
                         Click or Drop .vtoolz File
-                        <input type="file" id="input-dec" accept=".vtoolz" style="display: none;">
+                        <input type="file" id="input-dec" accept=".vtoolz" class="hidden-input">
                     </div>
 
                     <p id="file-dec-name" class="text-bold"></p>
 
-                    <input type="password" id="pass-dec" class="form-control" placeholder="Enter Password"
-                        style="margin-bottom: 10px;">
+                    <input type="password" id="pass-dec" class="form-control pass-input" placeholder="Enter Password">
                     <button id="btn-decrypt" class="btn btn-success btn-block">Decrypt & Restore</button>
 
-                    <div id="status-dec" style="margin-top: 10px;"></div>
+                    <div id="status-dec" class="status-top"></div>
                 </div>
             </div>
 
-            <div class="alert alert-warning" style="margin-top: 40px; text-align: center;">
+            <div class="alert alert-warning vault-alert">
                 <i class="fas fa-exclamation-triangle"></i> <strong>Important:</strong> If you lose the password, the
                 file is lost forever. We cannot recover it.
             </div>
