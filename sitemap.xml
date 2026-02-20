@@ -70,14 +70,14 @@
 
     <!-- Image Tools -->
     <url><loc>https://vibox.app/tools/image/color-extractor.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/image/compress.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/image/convert.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/image/crop.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+    <url><loc>https://vibox.app/tools/image/compress.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://vibox.app/tools/image/convert.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://vibox.app/tools/image/crop.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
     <url><loc>https://vibox.app/tools/image/editor.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
     <url><loc>https://vibox.app/tools/image/filters.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/image/index.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://vibox.app/tools/image/index.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://vibox.app/tools/image/meme-generator.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/image/resize.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+    <url><loc>https://vibox.app/tools/image/resize.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 
     <!-- Markdown Tools -->
     <url><loc>https://vibox.app/tools/markdown/editor.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
@@ -109,23 +109,23 @@
     <url><loc>https://vibox.app/tools/office/word.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 
     <!-- Pdf Tools -->
-    <url><loc>https://vibox.app/tools/pdf/compress.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/compress.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://vibox.app/tools/pdf/delete.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
     <url><loc>https://vibox.app/tools/pdf/duplicate.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
     <url><loc>https://vibox.app/tools/pdf/excel-to-pdf.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
     <url><loc>https://vibox.app/tools/pdf/extract.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
     <url><loc>https://vibox.app/tools/pdf/flatten.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/pdf/html-to-pdf.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/pdf/img-to-pdf.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/pdf/index.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://vibox.app/tools/pdf/merge.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/pdf/pdf-to-img.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/pdf/pdf-to-word.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/html-to-pdf.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/img-to-pdf.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/index.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/merge.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/pdf-to-img.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/pdf-to-word.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <url><loc>https://vibox.app/tools/pdf/reorder.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
     <url><loc>https://vibox.app/tools/pdf/reverse.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/pdf/rotate.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/pdf/split.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-    <url><loc>https://vibox.app/tools/pdf/watermark.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/rotate.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/split.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://vibox.app/tools/pdf/watermark.html</loc><lastmod>2026-02-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
     <url><loc>https://vibox.app/tools/pdf/word-to-pdf.html</loc><lastmod>2026-02-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 
     <!-- Productivity Tools -->

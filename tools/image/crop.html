@@ -6,12 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
-    <title>Image Cropper - Vibox</title>
+    <title>Crop Image Online Free — No Upload | Vibox</title>
     <link rel="canonical" href="https://vibox.app/tools/image/crop.html">
     <link rel="icon" href="/favicon.ico" sizes="48x48">
     <link rel="icon" href="/favicon.png" type="image/png" sizes="196x196">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="description" content="Crop images to any aspect ratio or custom size. Free online image cropper, works offline.">
+    <meta name="description" content="Crop images to any size or aspect ratio free online. No uploads — runs in your browser. Fast, private image cropping.">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vibox">
+    <meta property="og:url" content="https://vibox.app/tools/image/crop.html">
+    <meta property="og:title" content="Crop Image Online Free — No Upload | Vibox">
+    <meta property="og:description" content="Free online image cropper. Trim images to any size. No uploads, 100% private.">
+    <meta property="og:image" content="https://vibox.app/assets/og-image.png">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://vibox.app/tools/image/crop.html">
+    <meta name="twitter:title" content="Crop Image Online Free — No Upload | Vibox">
+    <meta name="twitter:description" content="Crop images to any size or ratio. No uploads. 100% private.">
+    <meta name="twitter:image" content="https://vibox.app/assets/og-image.png">
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Image Cropper",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "url": "https://vibox.app/tools/image/crop.html",
+        "description": "Crop images to any size or aspect ratio free online. No uploads, 100% private."
+    }
+    </script>
     <link rel="stylesheet" href="../../css/style.css">
     <!-- Using local Cropper.js for offline privacy -->
     <link rel="stylesheet" href="../../js/vendor/cropper.min.css" />
@@ -118,6 +144,32 @@
     <script src="../../js/vendor/cropper.min.js"></script>
     <script src="../../js/utils/data-events.js"></script>
     <script src="crop.inline.js" type="module"></script>
+
+    <section style="background:var(--surface,#1e293b);margin-top:40px;">
+      <div style="max-width:860px;margin:0 auto;padding:40px 20px;line-height:1.8;color:var(--text-muted,#94a3b8);font-size:0.95rem;">
+        <h2 style="font-size:1.3rem;color:var(--text,#f1f5f9);margin-bottom:20px;">Crop Image — Frequently Asked Questions</h2>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">How do I crop an image online?</h3>
+        <p>First, upload your image by dragging it onto the page. Then drag the crop handles to select the area you want to keep. Finally, click "Crop & Download" and the cropped image saves to your device instantly.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Do my images get uploaded?</h3>
+        <p>No. The cropping tool runs entirely in your browser using Cropper.js. As a result, your image never leaves your device. In contrast, online photo editors usually upload files to cloud servers.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Can I rotate images too?</h3>
+        <p>Yes. In addition to cropping, you can rotate the image 90° at a time or flip it horizontally. Furthermore, you can reset all changes and start over at any time.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Can I crop to a specific aspect ratio?</h3>
+        <p>Yes. The crop area is freely resizable. For example, drag it to a square shape for Instagram profile pictures or a 16:9 rectangle for video thumbnails.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Is this tool free?</h3>
+        <p>Yes. Image cropping with Vibox is 100% free with no watermarks, no limits, and no account required.</p>
+
+        <p style="margin-top:28px;font-size:0.9rem;">Need more? Try <a href="compress.html">Image Compressor</a>, <a href="resize.html">Image Resizer</a>, <a href="convert.html">Image Converter</a>, or go back to <a href="../../index.html">all Vibox tools</a>.</p>
+      </div>
+    </section>
+    <footer style="text-align:center;padding:20px;font-size:0.85rem;color:var(--text-muted,#94a3b8);">
+        <p>&copy; 2026 <a href="../../index.html">Vibox</a> — Free Browser Tools. No uploads. 100% Private.</p>
+    </footer>
 </body>
 
 </html>

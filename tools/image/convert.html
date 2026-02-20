@@ -6,12 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https:; worker-src 'self' blob:; media-src 'self' blob: mediastream:;">
-    <title>Image Converter - Vibox</title>
+    <title>Convert Image Online Free — JPG PNG WebP | Vibox</title>
     <link rel="canonical" href="https://vibox.app/tools/image/convert.html">
     <link rel="icon" href="/favicon.ico" sizes="48x48">
     <link rel="icon" href="/favicon.png" type="image/png" sizes="196x196">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="description" content="Convert images between JPG, PNG, WebP, and more. Fast browser-based conversion, no upload.">
+    <meta name="description" content="Convert images between JPG, PNG and WebP free online. No uploads — runs in your browser. Fast, private image conversion.">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vibox">
+    <meta property="og:url" content="https://vibox.app/tools/image/convert.html">
+    <meta property="og:title" content="Convert Image Online Free — JPG PNG WebP | Vibox">
+    <meta property="og:description" content="Free online image converter. Convert between JPG, PNG and WebP. No uploads, 100% private.">
+    <meta property="og:image" content="https://vibox.app/assets/og-image.png">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://vibox.app/tools/image/convert.html">
+    <meta name="twitter:title" content="Convert Image Online Free — JPG PNG WebP | Vibox">
+    <meta name="twitter:description" content="Convert images between JPG, PNG and WebP. No uploads. 100% private.">
+    <meta name="twitter:image" content="https://vibox.app/assets/og-image.png">
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Image Converter",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "url": "https://vibox.app/tools/image/convert.html",
+        "description": "Convert images between JPG, PNG and WebP free online. No uploads, 100% private."
+    }
+    </script>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
         .converter-grid {
@@ -146,6 +172,32 @@
         </style>
 
         <script src="convert.inline.js" type="module"></script>
+
+    <section style="background:var(--surface,#1e293b);margin-top:40px;">
+      <div style="max-width:860px;margin:0 auto;padding:40px 20px;line-height:1.8;color:var(--text-muted,#94a3b8);font-size:0.95rem;">
+        <h2 style="font-size:1.3rem;color:var(--text,#f1f5f9);margin-bottom:20px;">Image Converter — Frequently Asked Questions</h2>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">What image formats can I convert?</h3>
+        <p>The Vibox image converter supports conversion between <strong>JPG</strong>, <strong>PNG</strong>, and <strong>WebP</strong>. For example, you can convert a PNG screenshot to WebP for smaller file sizes, or convert WebP to JPG for universal compatibility.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Do my images get uploaded?</h3>
+        <p>No. Conversion happens entirely in your browser using the Canvas API. As a result, your images never leave your device. In contrast, online converters like CloudConvert or Zamzar upload every file to their servers.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Should I convert to WebP?</h3>
+        <p>WebP typically produces files 25–40% smaller than JPG or PNG with similar quality. However, some older apps and email clients may not support WebP. Therefore, choose JPG if maximum compatibility is important, or WebP if smaller size matters most.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">Can I convert multiple images at once?</h3>
+        <p>Yes. Drop several images at once and they will all be converted to your chosen format. Furthermore, each converted file can be downloaded individually.</p>
+
+        <h3 style="font-size:1.05rem;color:var(--text,#f1f5f9);margin:20px 0 8px;">What is the difference between JPG and PNG?</h3>
+        <p>JPG uses lossy compression, which means smaller files but some quality loss. In contrast, PNG uses lossless compression and supports transparency. As a result, PNG is ideal for logos and graphics with text, while JPG is better for photographs.</p>
+
+        <p style="margin-top:28px;font-size:0.9rem;">Need more? Try <a href="compress.html">Image Compressor</a>, <a href="resize.html">Image Resizer</a>, <a href="crop.html">Image Cropper</a>, or go back to <a href="../../index.html">all Vibox tools</a>.</p>
+      </div>
+    </section>
+    <footer style="text-align:center;padding:20px;font-size:0.85rem;color:var(--text-muted,#94a3b8);">
+        <p>&copy; 2026 <a href="../../index.html">Vibox</a> — Free Browser Tools. No uploads. 100% Private.</p>
+    </footer>
 </body>
 
 </html>
