@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /tools/dev/debug-menu.html
+Disallow: /tools/dev/debug-effects.html
 
 Sitemap: https://vibox.app/sitemap.xml
