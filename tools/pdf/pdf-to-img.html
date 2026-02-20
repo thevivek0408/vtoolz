@@ -51,7 +51,7 @@
 
         .pdf2img-convert-btn {
             min-width: 200px;
-            display: none;
+            display: inline-block;
         }
     </style>
 </head>
@@ -104,7 +104,19 @@
 
     <script src="../../js/vendor/pdf.min.js"></script>
     <script src="../../js/utils/common.js" type="module"></script>
+    <script>
+        window.__pdf2imgReady = false;
+    </script>
     <script src="pdf-to-img.app.js"></script>
+    <script>
+        setTimeout(function () {
+            if (!window.__pdf2imgReady) {
+                const fallback = document.createElement('script');
+                fallback.src = 'pdf-to-img.inline.js';
+                document.body.appendChild(fallback);
+            }
+        }, 900);
+    </script>
 </body>
 
 </html>

@@ -1,4 +1,9 @@
 (function () {
+    if (window.__pdf2imgReady) {
+        return;
+    }
+    window.__pdf2imgReady = true;
+
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const convertBtn = document.getElementById('convert-btn');

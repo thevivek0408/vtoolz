@@ -1,4 +1,9 @@
-﻿const dropZone = document.getElementById('drop-zone');
+﻿if (window.__pdf2imgReady) {
+    // Another bootstrap path already initialized the page.
+} else {
+    window.__pdf2imgReady = true;
+
+const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
 const convertBtn = document.getElementById('convert-btn');
 const outputArea = document.getElementById('output-area');
@@ -144,4 +149,5 @@ function downloadBlob(blob, fileName) {
     anchor.click();
     document.body.removeChild(anchor);
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+}
 }
