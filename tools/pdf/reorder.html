@@ -54,6 +54,29 @@
             font-size: 12px;
             pointer-events: none;
         }
+
+        .reorder-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .reorder-controls {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .reorder-action {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .save-btn {
+            min-width: 200px;
+        }
+
+        .reset-btn {
+            margin-left: 10px;
+        }
     </style>
 </head>
 
@@ -77,7 +100,7 @@
                 <span class="step">3. Save</span>
             </div>
 
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="reorder-hero">
                 <h1>Reorder Pages</h1>
                 <p class="text-muted">Drag and drop pages to rearrange them.</p>
             </div>
@@ -89,16 +112,16 @@
                 <input type="file" id="file-input" accept="application/pdf" hidden>
             </div>
 
-            <div id="controls" style="display:none; margin-top: 20px;">
+            <div id="controls" class="reorder-controls">
                 <p class="text-center text-muted"><small>Drag pages to reorder</small></p>
 
                 <div id="page-grid" class="page-grid"></div>
 
-                <div class="action-bar" style="text-align: center; margin-top: 2rem;">
-                    <button id="save-btn" class="btn btn-primary" style="min-width: 200px;">
+                <div class="action-bar reorder-action">
+                    <button id="save-btn" class="btn btn-primary save-btn">
                         Save Reordered PDF
                     </button>
-                    <button id="reset-btn" class="btn btn-secondary" style="margin-left: 10px;">
+                    <button id="reset-btn" class="btn btn-secondary reset-btn">
                         Reset
                     </button>
                 </div>
