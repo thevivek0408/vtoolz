@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Flood Fill</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:8px;background:linear-gradient(135deg,#6c5ce7,#fd79a8,#fdcb6e);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.info{color:#888;font-size:.8rem;margin-bottom:10px;text-align:center;max-width:360px}
+.stats{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
+.stat{background:#1a1a2e;padding:8px 16px;border-radius:20px;border:1px solid #333}
+.stat b{color:#a29bfe}
+.size-sel{display:flex;gap:6px;margin-bottom:10px}
+.size-sel button{background:#1e1e3a;border:1px solid #444;color:#aaa;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:.8rem}
+.size-sel button.active{border-color:#a29bfe;color:#a29bfe}
+.board{display:inline-grid;gap:2px;border-radius:8px;overflow:hidden}
+.cell{width:clamp(28px,7vw,42px);height:clamp(28px,7vw,42px);transition:background .15s;border-radius:3px}
+.color-picker{display:flex;gap:8px;margin-top:14px}
+.color-btn{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s}
+.color-btn:hover{transform:scale(1.15)}
+.color-btn.active{border-color:#fff;transform:scale(1.2)}
+.win{display:none;font-size:1.2rem;color:#a29bfe;margin-top:12px}
+.win.show{display:block}
+.controls{margin-top:10px}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.controls button:hover{background:#6c5ce7;border-color:#6c5ce7;color:#fff}
+</style>
+</head>
+<body>
+<h1>Flood Fill</h1>
+<div class="info">Fill the entire board with one color! Pick a color to flood from the top-left corner.</div>
+<div class="size-sel" id="sizes"></div>
+<div class="stats">
+  <div class="stat">Moves: <b id="moves">0</b> / <b id="max">25</b></div>
+  <div class="stat">Filled: <b id="filled">0</b>%</div>
+</div>
+<div class="board" id="board"></div>
+<div class="color-picker" id="picker"></div>
+<div class="win" id="win"></div>
+<div class="controls"><button onclick="newGame()">New Game</button></div>
+<script>
+const COLORS=['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#e84393'];
+let gridSize=10,numColors=6,grid=[],moves=0,maxMoves=25,won=false;
+
+function buildSizes(){
+  const el=document.getElementById('sizes');el.innerHTML='';
+  [{s:8,c:5,m:20,l:'8×8 Easy'},{s:10,c:6,m:25,l:'10×10 Medium'},{s:14,c:6,m:30,l:'14×14 Hard'}].forEach(({s,c,m,l})=>{
+    const b=document.createElement('button');b.textContent=l;
+    if(s===gridSize)b.classList.add('active');
+    b.addEventListener('click',()=>{gridSize=s;numColors=c;maxMoves=m;newGame();buildSizes()});
+    el.appendChild(b);
+  });
+}
+
+function newGame(){
+  grid=Array.from({length:gridSize},()=>Array.from({length:gridSize},()=>Math.floor(Math.random()*numColors)));
+  moves=0;won=false;
+  document.getElementById('moves').textContent=0;
+  document.getElementById('max').textContent=maxMoves;
+  document.getElementById('win').classList.remove('show');
+  document.getElementById('win').textContent='';
+  buildPicker();render();updateFilled();
+}
+
+function buildPicker(){
+  const el=document.getElementById('picker');el.innerHTML='';
+  for(let i=0;i<numColors;i++){
+    const b=document.createElement('div');b.className='color-btn';
+    b.style.background=COLORS[i];
+    if(i===grid[0][0])b.classList.add('active');
+    b.addEventListener('click',()=>flood(i));
+    el.appendChild(b);
+  }
+}
+
+function flood(colorIdx){
+  if(won||colorIdx===grid[0][0])return;
+  moves++;
+  document.getElementById('moves').textContent=moves;
+  let oldColor=grid[0][0];
+  // BFS flood from top-left
+  let visited=new Set();
+  let q=[[0,0]];visited.add('0,0');
+  while(q.length){
+    let[r,c]=q.shift();
+    grid[r][c]=colorIdx;
+    [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([nr,nc])=>{
+      let k=nr+','+nc;
+      if(nr>=0&&nr<gridSize&&nc>=0&&nc<gridSize&&!visited.has(k)&&grid[nr][nc]===oldColor){
+        visited.add(k);q.push([nr,nc]);
+      }
+    });
+  }
+  render();updateFilled();
+  // Check win
+  let allSame=grid.every(row=>row.every(c=>c===colorIdx));
+  if(allSame){
+    won=true;
+    document.getElementById('win').textContent='🎉 Board flooded in '+moves+' moves!';
+    document.getElementById('win').classList.add('show');
+  } else if(moves>=maxMoves){
+    won=true;
+    document.getElementById('win').textContent='Out of moves! Try again.';
+    document.getElementById('win').classList.add('show');
+  }
+  // Update picker active
+  document.querySelectorAll('.color-btn').forEach((b,i)=>{
+    b.classList.toggle('active',i===colorIdx);
+  });
+}
+
+function updateFilled(){
+  let target=grid[0][0];
+  let visited=new Set();
+  let q=[[0,0]];visited.add('0,0');
+  while(q.length){
+    let[r,c]=q.shift();
+    [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([nr,nc])=>{
+      let k=nr+','+nc;
+      if(nr>=0&&nr<gridSize&&nc>=0&&nc<gridSize&&!visited.has(k)&&grid[nr][nc]===target){
+        visited.add(k);q.push([nr,nc]);
+      }
+    });
+  }
+  let pct=Math.round(visited.size/(gridSize*gridSize)*100);
+  document.getElementById('filled').textContent=pct;
+}
+
+function render(){
+  const board=document.getElementById('board');board.innerHTML='';
+  board.style.gridTemplateColumns=`repeat(${gridSize},clamp(28px,7vw,42px))`;
+  for(let r=0;r<gridSize;r++){
+    for(let c=0;c<gridSize;c++){
+      const cell=document.createElement('div');cell.className='cell';
+      cell.style.background=COLORS[grid[r][c]];
+      board.appendChild(cell);
+    }
+  }
+}
+
+buildSizes();newGame();
+</script>
+</body>
+</html>

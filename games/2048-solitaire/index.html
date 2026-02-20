@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>2048 Solitaire</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:6px;background:linear-gradient(135deg,#fdcb6e,#e17055);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.info{color:#888;font-size:.8rem;margin-bottom:10px;text-align:center;max-width:360px}
+.stats{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
+.stat{background:#1a1a2e;padding:8px 16px;border-radius:20px;border:1px solid #333}
+.stat b{color:#fdcb6e}
+.game-area{display:flex;flex-direction:column;align-items:center;gap:10px}
+.next-card{background:#1a1a2e;border:2px solid #fdcb6e;border-radius:12px;padding:12px 28px;font-size:1.4rem;font-weight:800;margin-bottom:4px;min-width:80px;text-align:center}
+.columns{display:flex;gap:6px}
+.column{display:flex;flex-direction:column;gap:4px;align-items:center;cursor:pointer;padding:4px;border-radius:8px;transition:background .15s;min-width:clamp(52px,13vw,72px)}
+.column:hover{background:#1a1a2e}
+.column .slot{width:clamp(48px,12vw,68px);height:clamp(36px,8vw,48px);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:clamp(12px,3vw,16px)}
+.column .empty{background:#1a1a2e;border:1px dashed #333}
+.discard{background:#1a1a2e;border:2px dashed #e74c3c;border-radius:10px;padding:10px 24px;cursor:pointer;color:#e74c3c;font-size:.85rem;margin-top:8px;transition:all .15s}
+.discard:hover{background:#e74c3c22}
+.msg{margin-top:10px;font-size:1rem;color:#fdcb6e;text-align:center;min-height:1.5rem}
+.controls{margin-top:8px}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.controls button:hover{background:#e17055;border-color:#e17055;color:#fff}
+</style>
+</head>
+<body>
+<h1>2048 Solitaire</h1>
+<div class="info">Drop numbered cards into columns. Adjacent same numbers merge! Reach 2048 to win.</div>
+<div class="stats">
+  <div class="stat">Score: <b id="score">0</b></div>
+  <div class="stat">Discards: <b id="discards">3</b></div>
+  <div class="stat">Best: <b id="best">0</b></div>
+</div>
+<div class="game-area">
+  <div>Next: <span class="next-card" id="next">2</span></div>
+  <div class="columns" id="cols"></div>
+  <div class="discard" id="discard" onclick="discardCard()">🗑️ Discard</div>
+</div>
+<div class="msg" id="msg"></div>
+<div class="controls"><button onclick="newGame()">New Game</button></div>
+<script>
+const NUM_COLS=5,MAX_HEIGHT=7;
+const TILE_COLORS={2:'#6c5ce7',4:'#a29bfe',8:'#0984e3',16:'#00cec9',32:'#00b894',64:'#fdcb6e',128:'#e17055',256:'#d63031',512:'#e84393',1024:'#fd79a8',2048:'#f1c40f'};
+let columns,score,discards,nextVal,gameOver;
+let best=+localStorage.getItem('2048s_best')||0;
+document.getElementById('best').textContent=best;
+
+function newGame(){
+  columns=Array.from({length:NUM_COLS},()=>[]);
+  score=0;discards=3;gameOver=false;
+  document.getElementById('score').textContent=0;
+  document.getElementById('discards').textContent=3;
+  document.getElementById('msg').textContent='';
+  genNext();render();
+}
+
+function genNext(){
+  const vals=[2,2,2,2,4,4,4,8,8,16];
+  nextVal=vals[Math.floor(Math.random()*vals.length)];
+  document.getElementById('next').textContent=nextVal;
+  document.getElementById('next').style.color=TILE_COLORS[nextVal]||'#fff';
+}
+
+function dropCard(colIdx){
+  if(gameOver)return;
+  if(columns[colIdx].length>=MAX_HEIGHT){
+    document.getElementById('msg').textContent='Column is full!';return;
+  }
+  columns[colIdx].push(nextVal);
+  score+=nextVal;
+  // Merge chain
+  let merged=true;
+  while(merged){
+    merged=false;
+    for(let i=0;i<NUM_COLS;i++){
+      let col=columns[i];
+      if(col.length>=2&&col[col.length-1]===col[col.length-2]){
+        let v=col.pop()+col.pop();
+        col.push(v);score+=v;merged=true;
+        if(v>=2048){
+          document.getElementById('msg').textContent='🎉 You reached 2048!';
+        }
+      }
+    }
+  }
+  document.getElementById('score').textContent=score;
+  if(score>best){best=score;localStorage.setItem('2048s_best',best);document.getElementById('best').textContent=best}
+  genNext();render();
+  checkGameOver();
+}
+
+function discardCard(){
+  if(gameOver||discards<=0)return;
+  discards--;
+  document.getElementById('discards').textContent=discards;
+  genNext();render();
+}
+
+function checkGameOver(){
+  let full=columns.every(c=>c.length>=MAX_HEIGHT);
+  if(full){
+    gameOver=true;
+    document.getElementById('msg').textContent='Game Over! Score: '+score;
+  }
+}
+
+function render(){
+  const el=document.getElementById('cols');el.innerHTML='';
+  for(let i=0;i<NUM_COLS;i++){
+    const col=document.createElement('div');col.className='column';
+    col.addEventListener('click',()=>dropCard(i));
+    // Empty slots
+    let slots=MAX_HEIGHT;
+    for(let j=0;j<MAX_HEIGHT;j++){
+      const slot=document.createElement('div');slot.className='slot';
+      if(j<columns[i].length){
+        let v=columns[i][MAX_HEIGHT-1-j]||0;
+        if(columns[i].length>MAX_HEIGHT-1-j){
+          v=columns[i][columns[i].length-1-j];
+        }
+      }
+      col.appendChild(slot);
+    }
+    col.innerHTML='';
+    // Render from bottom up
+    for(let j=0;j<MAX_HEIGHT;j++){
+      const slot=document.createElement('div');
+      if(j<columns[i].length){
+        let v=columns[i][j];
+        slot.className='slot';
+        slot.style.background=TILE_COLORS[v]||'#e0e0e0';
+        slot.style.color=v>=128?'#fff':'#fff';
+        slot.textContent=v;
+      } else {
+        slot.className='slot empty';
+      }
+      col.prepend(slot); // prepend so bottom cards show at bottom
+    }
+    el.appendChild(col);
+  }
+}
+
+// Keyboard: 1-5 to drop into columns
+document.addEventListener('keydown',e=>{
+  let n=+e.key;
+  if(n>=1&&n<=NUM_COLS)dropCard(n-1);
+  if(e.key==='d'||e.key==='D')discardCard();
+});
+
+newGame();
+</script>
+</body>
+</html>

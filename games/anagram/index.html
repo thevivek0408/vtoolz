@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Anagram</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:16px}
+h1{font-size:1.5rem;margin-bottom:8px;background:linear-gradient(135deg,#e17055,#fdcb6e);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
+.stat{background:#1a1a2e;padding:8px 16px;border-radius:20px;border:1px solid #333}
+.stat b{color:#fdcb6e}
+.hint{color:#e17055;font-size:.85rem;margin-bottom:8px;min-height:1.2em}
+.scrambled{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.scrambled .letter{width:42px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;background:#1e1e3a;border:2px solid #444;border-radius:8px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.scrambled .letter:hover{border-color:#e17055;transform:translateY(-2px)}
+.scrambled .letter.used{opacity:.3;pointer-events:none}
+.answer{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.answer .slot{width:42px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;background:#1a1a2e;border:2px dashed #444;border-radius:8px;cursor:pointer;transition:all .2s;text-transform:uppercase;color:#fdcb6e}
+.answer .slot:hover{border-color:#e17055}
+.answer .slot.correct{border-color:#00b894;background:#00b89422}
+.answer .slot.wrong{border-color:#d63031;background:#d6303122;animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.controls button:hover{background:#e17055;border-color:#e17055;color:#fff}
+.msg{margin-top:12px;font-size:1.1rem;min-height:1.5em;text-align:center}
+.msg.win{color:#55efc4}
+.msg.lose{color:#ff7675}
+.category{color:#888;font-size:.75rem;margin-bottom:12px}
+</style>
+</head>
+<body>
+<h1>Anagram</h1>
+<div class="stats">
+  <div class="stat">Score: <b id="score">0</b></div>
+  <div class="stat">Streak: <b id="streak">0</b></div>
+  <div class="stat">Best: <b id="best">0</b></div>
+</div>
+<div class="category" id="cat"></div>
+<div class="hint" id="hint"></div>
+<div class="scrambled" id="scrambled"></div>
+<div class="answer" id="answer"></div>
+<div class="controls">
+  <button onclick="useHint()">💡 Hint</button>
+  <button onclick="clearAnswer()">🔄 Clear</button>
+  <button onclick="skipWord()">⏭ Skip</button>
+</div>
+<div class="msg" id="msg"></div>
+<script>
+const WORDS=[
+  {word:'GALAXY',hint:'Milky Way is one',cat:'Space'},
+  {word:'PHOENIX',hint:'Mythical fire bird',cat:'Mythology'},
+  {word:'JUNGLE',hint:'Tarzan lives here',cat:'Nature'},
+  {word:'RHYTHM',hint:'Beat of music',cat:'Music'},
+  {word:'PYTHON',hint:'Snake or language',cat:'Coding'},
+  {word:'CASTLE',hint:'Kings live here',cat:'Places'},
+  {word:'ECLIPSE',hint:'Moon blocks the sun',cat:'Space'},
+  {word:'TORNADO',hint:'Spinning wind funnel',cat:'Weather'},
+  {word:'DRAGON',hint:'Fire-breathing creature',cat:'Fantasy'},
+  {word:'WIZARD',hint:'Magical spellcaster',cat:'Fantasy'},
+  {word:'ROCKET',hint:'Goes to space',cat:'Space'},
+  {word:'PIRATE',hint:'Sails the seas',cat:'Adventure'},
+  {word:'PUZZLE',hint:'A brain teaser',cat:'Games'},
+  {word:'FROZEN',hint:'Below zero',cat:'Weather'},
+  {word:'ISLAND',hint:'Land surrounded by water',cat:'Nature'},
+  {word:'KNIGHT',hint:'Medieval warrior',cat:'History'},
+  {word:'QUARTZ',hint:'A mineral crystal',cat:'Science'},
+  {word:'BRIDGE',hint:'Crosses a river',cat:'Places'},
+  {word:'FOSSIL',hint:'Ancient remains',cat:'Science'},
+  {word:'CIPHER',hint:'Secret code',cat:'Coding'},
+  {word:'PLANET',hint:'Orbits a star',cat:'Space'},
+  {word:'SHADOW',hint:'Blocked light',cat:'Nature'},
+  {word:'ANCHOR',hint:'Keeps ships steady',cat:'Adventure'},
+  {word:'MATRIX',hint:'Grid of numbers or a movie',cat:'Coding'},
+  {word:'VOYAGE',hint:'A long journey',cat:'Adventure'},
+  {word:'PRISM',hint:'Splits light into colors',cat:'Science'},
+  {word:'COMET',hint:'Icy space traveler',cat:'Space'},
+  {word:'CRYPT',hint:'Underground vault',cat:'History'},
+  {word:'STORM',hint:'Thunder and lightning',cat:'Weather'},
+  {word:'SWORD',hint:'Knight\'s weapon',cat:'History'}
+];
+
+let currentWord,scrambled,answerLetters,usedIndices,score=0,streak=0,best=0,hintsUsed;
+best=+(localStorage.getItem('anagram-best')||0);
+document.getElementById('best').textContent=best;
+
+function shuffle(arr){
+  let a=[...arr];
+  for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  return a;
+}
+
+function newWord(){
+  currentWord=WORDS[Math.floor(Math.random()*WORDS.length)];
+  let letters=currentWord.word.split('');
+  let attempts=0;
+  do{scrambled=shuffle(letters);attempts++}while(scrambled.join('')===currentWord.word&&attempts<50);
+  answerLetters=[];usedIndices=new Set();hintsUsed=0;
+  document.getElementById('msg').textContent='';document.getElementById('msg').className='msg';
+  document.getElementById('hint').textContent='';
+  document.getElementById('cat').textContent='Category: '+currentWord.cat;
+  renderScrambled();renderAnswer();
+}
+
+function renderScrambled(){
+  const el=document.getElementById('scrambled');el.innerHTML='';
+  scrambled.forEach((ch,i)=>{
+    const d=document.createElement('div');d.className='letter';
+    if(usedIndices.has(i))d.classList.add('used');
+    d.textContent=ch;
+    d.onclick=()=>pickLetter(i);
+    el.appendChild(d);
+  });
+}
+
+function renderAnswer(){
+  const el=document.getElementById('answer');el.innerHTML='';
+  for(let i=0;i<currentWord.word.length;i++){
+    const d=document.createElement('div');d.className='slot';
+    if(answerLetters[i]){d.textContent=answerLetters[i].ch;d.onclick=()=>removeLetter(i)}
+    el.appendChild(d);
+  }
+}
+
+function pickLetter(idx){
+  if(usedIndices.has(idx))return;
+  if(answerLetters.filter(Boolean).length>=currentWord.word.length)return;
+  usedIndices.add(idx);
+  let slot=answerLetters.findIndex((v,i)=>!v);
+  if(slot===-1)slot=answerLetters.length;
+  answerLetters[slot]={ch:scrambled[idx],srcIdx:idx};
+  renderScrambled();renderAnswer();
+  if(answerLetters.filter(Boolean).length===currentWord.word.length)checkAnswer();
+}
+
+function removeLetter(slot){
+  if(!answerLetters[slot])return;
+  usedIndices.delete(answerLetters[slot].srcIdx);
+  answerLetters[slot]=null;
+  // Compact
+  let compacted=answerLetters.filter(Boolean);
+  answerLetters=[];
+  compacted.forEach((v,i)=>answerLetters[i]=v);
+  renderScrambled();renderAnswer();
+  document.getElementById('msg').textContent='';document.getElementById('msg').className='msg';
+}
+
+function checkAnswer(){
+  let guess=answerLetters.map(a=>a?a.ch:'').join('');
+  const slots=document.querySelectorAll('.slot');
+  if(guess===currentWord.word){
+    slots.forEach(s=>s.classList.add('correct'));
+    score+=Math.max(10-hintsUsed*3,1);streak++;
+    if(streak>best){best=streak;localStorage.setItem('anagram-best',best)}
+    document.getElementById('score').textContent=score;
+    document.getElementById('streak').textContent=streak;
+    document.getElementById('best').textContent=best;
+    document.getElementById('msg').textContent='✅ Correct!';
+    document.getElementById('msg').className='msg win';
+    setTimeout(newWord,1200);
+  } else {
+    slots.forEach(s=>s.classList.add('wrong'));
+    streak=0;
+    document.getElementById('streak').textContent=streak;
+    document.getElementById('msg').textContent='❌ Try again!';
+    document.getElementById('msg').className='msg lose';
+    setTimeout(()=>{
+      slots.forEach(s=>s.classList.remove('wrong'));
+    },400);
+  }
+}
+
+function clearAnswer(){
+  answerLetters=[];usedIndices=new Set();
+  document.getElementById('msg').textContent='';document.getElementById('msg').className='msg';
+  renderScrambled();renderAnswer();
+}
+
+function useHint(){
+  if(hintsUsed===0){
+    document.getElementById('hint').textContent='Hint: '+currentWord.hint;
+    hintsUsed++;
+  } else {
+    // Reveal first unrevealed letter
+    for(let i=0;i<currentWord.word.length;i++){
+      let correct=currentWord.word[i];
+      if(!answerLetters[i]||answerLetters[i].ch!==correct){
+        clearAnswer();
+        for(let j=0;j<=i;j++){
+          let srcIdx=scrambled.findIndex((ch,si)=>ch===currentWord.word[j]&&!usedIndices.has(si));
+          if(srcIdx!==-1){usedIndices.add(srcIdx);answerLetters[j]={ch:currentWord.word[j],srcIdx};}
+        }
+        hintsUsed++;
+        renderScrambled();renderAnswer();
+        break;
+      }
+    }
+  }
+}
+
+function skipWord(){
+  streak=0;document.getElementById('streak').textContent=0;
+  document.getElementById('msg').textContent='Skipped: '+currentWord.word;
+  document.getElementById('msg').className='msg lose';
+  setTimeout(newWord,1000);
+}
+
+newWord();
+</script>
+</body>
+</html>

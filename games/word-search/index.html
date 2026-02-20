@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Word Search</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:8px;background:linear-gradient(135deg,#00b894,#55efc4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
+.stat{background:#1a1a2e;padding:8px 16px;border-radius:20px;border:1px solid #333}
+.stat b{color:#55efc4}
+.game-wrap{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+.grid{display:inline-grid;gap:2px;background:#1a1a2e;padding:4px;border-radius:8px;border:2px solid #2a2a4e}
+.cell{width:clamp(28px,6vw,38px);height:clamp(28px,6vw,38px);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:clamp(13px,2.8vw,17px);border-radius:4px;cursor:pointer;transition:all .15s;text-transform:uppercase;background:#1e1e3a}
+.cell.selected{background:#00b894;color:#fff}
+.cell.found{background:#00b89444;color:#55efc4}
+.cell.path{background:#55efc444}
+.words{max-width:180px;width:100%}
+.words h3{color:#55efc4;font-size:.9rem;margin-bottom:6px;border-bottom:1px solid #333;padding-bottom:4px}
+.word-item{padding:4px 8px;font-size:.85rem;border-radius:4px;margin:2px 0;color:#bbb;text-transform:uppercase}
+.word-item.found{color:#555;text-decoration:line-through}
+.controls{margin-top:12px}
+.controls button{background:#1e1e3a;border:1px solid #444;color:#e0e0e0;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:.85rem}
+.controls button:hover{background:#00b894;border-color:#00b894;color:#fff}
+.win{display:none;font-size:1.2rem;color:#55efc4;margin-top:12px}
+.win.show{display:block}
+</style>
+</head>
+<body>
+<h1>Word Search</h1>
+<div class="stats">
+  <div class="stat">Found: <b id="found">0</b>/<b id="total">0</b></div>
+  <div class="stat">Time: <b id="time">0:00</b></div>
+</div>
+<div class="game-wrap">
+  <div class="grid" id="grid"></div>
+  <div class="words" id="words"><h3>Find these words:</h3></div>
+</div>
+<div class="controls"><button onclick="newGame()">New Puzzle</button></div>
+<div class="win" id="win">🎉 All words found!</div>
+<script>
+const WORD_LISTS=[
+  ['CODE','BUG','API','HTML','CSS','JAVA','LOOP','NODE','REACT','GIT'],
+  ['PIXEL','MOUSE','SCREEN','CLOUD','CACHE','STACK','DEBUG','ARRAY','TOKEN','CLASS'],
+  ['EARTH','OCEAN','RIVER','MOUNT','STORM','CLOUD','FLAME','FROST','GRASS','STONE'],
+  ['PIANO','DRUMS','VOCAL','DANCE','TEMPO','CHORD','LYRIC','BEATS','NOTES','OPERA']
+];
+const DIRS=[[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+let SIZE=12,grid=[],words=[],foundWords=new Set(),wordPositions={},selecting=false,selStart=null,selEnd=null,selected=[];
+let timerInterval,startTime;
+
+function newGame(){
+  SIZE=12;
+  let list=WORD_LISTS[Math.floor(Math.random()*WORD_LISTS.length)];
+  words=list.slice(0,8);
+  foundWords=new Set();wordPositions={};
+  grid=Array.from({length:SIZE},()=>Array(SIZE).fill(''));
+  
+  // Place words
+  let placed=[];
+  words.forEach(word=>{
+    let attempts=0,success=false;
+    while(attempts<200&&!success){
+      let dir=DIRS[Math.floor(Math.random()*8)];
+      let r=Math.floor(Math.random()*SIZE);
+      let c=Math.floor(Math.random()*SIZE);
+      let ok=true,cells=[];
+      for(let i=0;i<word.length;i++){
+        let nr=r+dir[0]*i,nc=c+dir[1]*i;
+        if(nr<0||nr>=SIZE||nc<0||nc>=SIZE){ok=false;break}
+        if(grid[nr][nc]!==''&&grid[nr][nc]!==word[i]){ok=false;break}
+        cells.push([nr,nc]);
+      }
+      if(ok){
+        cells.forEach(([cr,cc],i)=>grid[cr][cc]=word[i]);
+        wordPositions[word]=cells;placed.push(word);success=true;
+      }
+      attempts++;
+    }
+  });
+  words=placed;
+  
+  // Fill empty
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+    if(!grid[r][c])grid[r][c]=String.fromCharCode(65+Math.floor(Math.random()*26));
+  }
+  
+  document.getElementById('found').textContent=0;
+  document.getElementById('total').textContent=words.length;
+  document.getElementById('win').classList.remove('show');
+  
+  clearInterval(timerInterval);startTime=Date.now();
+  timerInterval=setInterval(()=>{
+    let s=Math.floor((Date.now()-startTime)/1000);
+    document.getElementById('time').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  },1000);
+  
+  render();renderWords();
+}
+
+function render(){
+  const el=document.getElementById('grid');el.innerHTML='';
+  el.style.gridTemplateColumns=`repeat(${SIZE},clamp(28px,6vw,38px))`;
+  for(let r=0;r<SIZE;r++){
+    for(let c=0;c<SIZE;c++){
+      const cell=document.createElement('div');cell.className='cell';
+      cell.textContent=grid[r][c];cell.dataset.r=r;cell.dataset.c=c;
+      // Check if in a found word
+      for(let w of foundWords){
+        if(wordPositions[w]&&wordPositions[w].some(([wr,wc])=>wr===r&&wc===c)){
+          cell.classList.add('found');
+        }
+      }
+      cell.addEventListener('mousedown',e=>startSelect(r,c));
+      cell.addEventListener('mouseenter',()=>{if(selecting)updateSelect(r,c)});
+      cell.addEventListener('touchstart',e=>{e.preventDefault();startSelect(r,c)},{passive:false});
+      cell.addEventListener('touchmove',e=>{
+        e.preventDefault();
+        let t=e.touches[0];
+        let el=document.elementFromPoint(t.clientX,t.clientY);
+        if(el&&el.dataset.r!==undefined)updateSelect(+el.dataset.r,+el.dataset.c);
+      },{passive:false});
+      el.appendChild(cell);
+    }
+  }
+}
+
+function renderWords(){
+  const el=document.getElementById('words');el.innerHTML='<h3>Find these words:</h3>';
+  words.forEach(w=>{
+    const d=document.createElement('div');d.className='word-item';
+    if(foundWords.has(w))d.classList.add('found');
+    d.textContent=w;el.appendChild(d);
+  });
+}
+
+function startSelect(r,c){
+  selecting=true;selStart={r,c};selEnd={r,c};selected=[[r,c]];
+  highlightSelected();
+}
+
+function updateSelect(r,c){
+  if(!selecting)return;
+  selEnd={r,c};
+  // Compute line from start to end
+  let dr=r-selStart.r,dc=c-selStart.c;
+  let len=Math.max(Math.abs(dr),Math.abs(dc));
+  if(len===0){selected=[[selStart.r,selStart.c]];highlightSelected();return}
+  let sr=dr===0?0:dr/Math.abs(dr);
+  let sc=dc===0?0:dc/Math.abs(dc);
+  // Only allow straight lines (8 directions)
+  if(dr!==0&&dc!==0&&Math.abs(dr)!==Math.abs(dc)){highlightSelected();return}
+  selected=[];
+  for(let i=0;i<=len;i++){
+    selected.push([selStart.r+sr*i,selStart.c+sc*i]);
+  }
+  highlightSelected();
+}
+
+function highlightSelected(){
+  document.querySelectorAll('.cell').forEach(cell=>{
+    cell.classList.remove('selected','path');
+  });
+  selected.forEach(([r,c])=>{
+    let idx=r*SIZE+c;
+    let cells=document.querySelectorAll('.cell');
+    if(cells[idx])cells[idx].classList.add('selected');
+  });
+}
+
+function endSelect(){
+  if(!selecting)return;
+  selecting=false;
+  let word=selected.map(([r,c])=>grid[r][c]).join('');
+  let reversed=word.split('').reverse().join('');
+  let match=words.find(w=>!foundWords.has(w)&&(w===word||w===reversed));
+  if(match){
+    foundWords.add(match);
+    document.getElementById('found').textContent=foundWords.size;
+    if(foundWords.size===words.length){
+      clearInterval(timerInterval);
+      document.getElementById('win').classList.add('show');
+    }
+  }
+  render();renderWords();
+}
+
+document.addEventListener('mouseup',endSelect);
+document.addEventListener('touchend',endSelect);
+
+newGame();
+</script>
+</body>
+</html>

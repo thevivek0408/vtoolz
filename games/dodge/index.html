@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dodge</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:8px;user-select:none;overflow:hidden}
+h1{font-size:1.4rem;margin-bottom:4px;background:linear-gradient(135deg,#ff6b6b,#ffd93d);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:12px;margin-bottom:6px;font-size:.85rem}
+.stat{background:#1a1a2e;padding:6px 14px;border-radius:20px;border:1px solid #333}
+.stat b{color:#ff6b6b}
+canvas{display:block;border-radius:8px;background:#0a0a15;touch-action:none}
+.msg{margin-top:8px;font-size:.85rem;color:#666;text-align:center}
+</style>
+</head>
+<body>
+<h1>Dodge</h1>
+<div class="stats">
+  <div class="stat">Score: <b id="score">0</b></div>
+  <div class="stat">Best: <b id="best">0</b></div>
+</div>
+<canvas id="c"></canvas>
+<div class="msg">Move mouse/touch to dodge falling obstacles</div>
+<script>
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+let W,H,player,obstacles,particles,stars,score,gameOver,speed,spawnRate,frameCount;
+let best=+localStorage.getItem('dodge_best')||0;
+document.getElementById('best').textContent=best;
+
+function resize(){
+  W=Math.min(400,window.innerWidth-16);
+  H=Math.min(600,window.innerHeight-100);
+  canvas.width=W;canvas.height=H;
+}
+resize();window.addEventListener('resize',()=>{resize();if(!gameOver)draw()});
+
+function init(){
+  player={x:W/2,y:H-40,r:12,trail:[]};
+  obstacles=[];particles=[];score=0;gameOver=false;speed=2;spawnRate=60;frameCount=0;
+  stars=Array.from({length:40},()=>({x:Math.random()*W,y:Math.random()*H,s:Math.random()*2+.5,sp:Math.random()+.3}));
+  document.getElementById('score').textContent=0;
+  loop();
+}
+
+function loop(){
+  if(gameOver)return;
+  update();draw();
+  requestAnimationFrame(loop);
+}
+
+function update(){
+  frameCount++;
+  score=Math.floor(frameCount/6);
+  document.getElementById('score').textContent=score;
+  // Difficulty
+  speed=2+frameCount/600;
+  spawnRate=Math.max(12,60-frameCount/50);
+  // Spawn obstacles
+  if(frameCount%Math.floor(spawnRate)===0){
+    let type=Math.random();
+    if(type<0.6){
+      obstacles.push({x:Math.random()*(W-30)+15,y:-20,w:Math.random()*20+15,h:Math.random()*20+15,dy:speed*(0.8+Math.random()*0.6),type:'block',color:'#e74c3c'});
+    } else if(type<0.85){
+      obstacles.push({x:Math.random()*(W-50)+25,y:-20,w:Math.random()*40+30,h:12,dy:speed*0.7,type:'bar',color:'#e67e22'});
+    } else {
+      let side=Math.random()>.5;
+      obstacles.push({x:side?-20:W+20,y:Math.random()*H*0.6+50,w:16,h:16,dx:side?speed*1.2:-speed*1.2,dy:0,type:'side',color:'#9b59b6'});
+    }
+  }
+  // Move obstacles
+  obstacles.forEach(o=>{
+    o.y+=(o.dy||0);
+    o.x+=(o.dx||0);
+  });
+  obstacles=obstacles.filter(o=>o.y<H+40&&o.x>-60&&o.x<W+60);
+  // Stars
+  stars.forEach(s=>{s.y+=s.sp;if(s.y>H){s.y=0;s.x=Math.random()*W}});
+  // Player trail
+  player.trail.push({x:player.x,y:player.y});
+  if(player.trail.length>10)player.trail.shift();
+  // Collision
+  obstacles.forEach(o=>{
+    let ox=o.type==='side'?o.x-o.w/2:o.x-o.w/2;
+    let oy=o.y-o.h/2;
+    let cx=Math.max(ox,Math.min(player.x,ox+o.w));
+    let cy=Math.max(oy,Math.min(player.y,oy+o.h));
+    let dx=player.x-cx,dy=player.y-cy;
+    if(dx*dx+dy*dy<player.r*player.r){
+      die();
+    }
+  });
+}
+
+function die(){
+  gameOver=true;
+  for(let i=0;i<20;i++){
+    particles.push({x:player.x,y:player.y,dx:(Math.random()-.5)*8,dy:(Math.random()-.5)*8,life:25,color:'#ff6b6b'});
+  }
+  if(score>best){best=score;localStorage.setItem('dodge_best',best)}
+  document.getElementById('best').textContent=best;
+  animateDeath();
+}
+
+function animateDeath(){
+  particles.forEach(p=>{p.x+=p.dx;p.y+=p.dy;p.dy+=.2;p.life--});
+  particles=particles.filter(p=>p.life>0);
+  draw();
+  if(particles.length>0)requestAnimationFrame(animateDeath);
+  else drawGameOver();
+}
+
+function draw(){
+  ctx.fillStyle='#0a0a15';ctx.fillRect(0,0,W,H);
+  // Stars
+  stars.forEach(s=>{ctx.fillStyle=`rgba(255,255,255,${s.s/3})`;ctx.fillRect(s.x,s.y,s.s,s.s)});
+  // Obstacles
+  obstacles.forEach(o=>{
+    ctx.fillStyle=o.color;
+    let x=o.x-o.w/2,y=o.y-o.h/2;
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(x,y,o.w,o.h,3);
+    else ctx.rect(x,y,o.w,o.h);
+    ctx.fill();
+    ctx.shadowColor=o.color;ctx.shadowBlur=8;ctx.fill();ctx.shadowBlur=0;
+  });
+  // Player trail
+  if(!gameOver){
+    player.trail.forEach((t,i)=>{
+      let a=i/player.trail.length;
+      ctx.fillStyle=`rgba(255,107,107,${a*0.3})`;
+      ctx.beginPath();ctx.arc(t.x,t.y,player.r*a,0,Math.PI*2);ctx.fill();
+    });
+    // Player
+    let g=ctx.createRadialGradient(player.x-3,player.y-3,2,player.x,player.y,player.r);
+    g.addColorStop(0,'#fff');g.addColorStop(1,'#ff6b6b');
+    ctx.fillStyle=g;
+    ctx.shadowColor='#ff6b6b';ctx.shadowBlur=15;
+    ctx.beginPath();ctx.arc(player.x,player.y,player.r,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;
+  }
+  // Particles
+  particles.forEach(p=>{
+    ctx.globalAlpha=p.life/25;ctx.fillStyle=p.color;
+    ctx.fillRect(p.x-3,p.y-3,6,6);
+  });
+  ctx.globalAlpha=1;
+  // Score
+  ctx.fillStyle='rgba(255,255,255,.08)';ctx.font='bold 80px sans-serif';ctx.textAlign='center';
+  ctx.fillText(score,W/2,H/2+25);
+}
+
+function drawGameOver(){
+  draw();
+  ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#ff6b6b';ctx.font='bold 28px sans-serif';ctx.textAlign='center';
+  ctx.fillText('Game Over!',W/2,H/2-20);
+  ctx.fillStyle='#aaa';ctx.font='16px sans-serif';
+  ctx.fillText('Score: '+score,W/2,H/2+15);
+  ctx.fillText('Tap to restart',W/2,H/2+45);
+}
+
+function movePlayer(x,y){
+  if(gameOver)return;
+  player.x=Math.max(player.r,Math.min(W-player.r,x));
+  player.y=Math.max(player.r,Math.min(H-player.r,y));
+}
+
+canvas.addEventListener('mousemove',e=>{
+  let r=canvas.getBoundingClientRect();
+  movePlayer((e.clientX-r.left)*(W/r.width),(e.clientY-r.top)*(H/r.height));
+});
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  let r=canvas.getBoundingClientRect();let t=e.touches[0];
+  movePlayer((t.clientX-r.left)*(W/r.width),(t.clientY-r.top)*(H/r.height));
+},{passive:false});
+canvas.addEventListener('click',()=>{if(gameOver)init()});
+canvas.addEventListener('touchend',()=>{if(gameOver)init()});
+
+init();
+</script>
+</body>
+</html>

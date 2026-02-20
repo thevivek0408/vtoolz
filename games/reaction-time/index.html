@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Reaction Time</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:16px}
+h1{font-size:1.5rem;margin-bottom:8px;background:linear-gradient(135deg,#00b894,#55efc4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
+.stat{background:#1a1a2e;padding:8px 16px;border-radius:20px;border:1px solid #333}
+.stat b{color:#55efc4}
+.arena{width:min(90vw,500px);height:min(60vh,400px);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;transition:background .15s;margin-bottom:16px;border:2px solid #333;position:relative;overflow:hidden}
+.arena.wait{background:#d63031}
+.arena.ready{background:#00b894}
+.arena.idle{background:#1a1a2e}
+.arena.result{background:#1e1e3a}
+.arena.early{background:#e17055}
+.arena-text{font-size:clamp(1rem,4vw,1.5rem);font-weight:700;text-align:center;padding:20px;z-index:1}
+.arena-sub{font-size:clamp(.75rem,2.5vw,.9rem);color:#ffffffaa;margin-top:4px}
+.time-big{font-size:clamp(2rem,8vw,4rem);font-weight:700;color:#55efc4}
+.time-ms{font-size:1rem;color:#aaa}
+.history{max-width:500px;width:100%}
+.history h3{font-size:.9rem;color:#888;margin-bottom:6px}
+.attempts{display:flex;gap:4px;flex-wrap:wrap}
+.attempt{background:#1a1a2e;padding:4px 10px;border-radius:12px;font-size:.75rem;border:1px solid #333}
+.attempt.best{border-color:#55efc4;color:#55efc4}
+.rating{font-size:.85rem;margin-top:6px;padding:6px 12px;border-radius:8px;display:inline-block}
+.rating.amazing{background:#00b89433;color:#55efc4}
+.rating.great{background:#0984e333;color:#74b9ff}
+.rating.good{background:#fdcb6e33;color:#fdcb6e}
+.rating.avg{background:#e1705533;color:#e17055}
+.rating.slow{background:#d6303133;color:#ff7675}
+</style>
+</head>
+<body>
+<h1>Reaction Time Test</h1>
+<div class="stats">
+  <div class="stat">Best: <b id="best">—</b></div>
+  <div class="stat">Average: <b id="avg">—</b></div>
+  <div class="stat">Round: <b id="round">0</b>/5</div>
+</div>
+<div class="arena idle" id="arena" onclick="handleClick()">
+  <div class="arena-text" id="text">Click to Start</div>
+  <div class="arena-sub" id="sub">Test your reaction speed</div>
+</div>
+<div class="history">
+  <h3>Attempts</h3>
+  <div class="attempts" id="attempts"></div>
+</div>
+<script>
+let state='idle',timeout,startTime,results=[],round=0,maxRounds=5;
+let allTimeBest=+(localStorage.getItem('reaction-best')||Infinity);
+if(allTimeBest!==Infinity)document.getElementById('best').textContent=allTimeBest+'ms';
+
+function handleClick(){
+  if(state==='idle'){
+    startRound();
+  } else if(state==='waiting'){
+    // Too early
+    clearTimeout(timeout);
+    state='early';
+    showEarly();
+  } else if(state==='ready'){
+    let elapsed=Date.now()-startTime;
+    results.push(elapsed);round++;
+    state='result';
+    showResult(elapsed);
+  } else if(state==='result'||state==='early'){
+    if(round>=maxRounds){
+      showFinal();
+      state='final';
+    } else {
+      startRound();
+    }
+  } else if(state==='final'){
+    results=[];round=0;
+    document.getElementById('round').textContent='0';
+    document.getElementById('attempts').innerHTML='';
+    state='idle';
+    const arena=document.getElementById('arena');arena.className='arena idle';
+    document.getElementById('text').textContent='Click to Start';
+    document.getElementById('sub').textContent='Test your reaction speed';
+  }
+}
+
+function startRound(){
+  state='waiting';
+  const arena=document.getElementById('arena');arena.className='arena wait';
+  document.getElementById('text').textContent='Wait for green...';
+  document.getElementById('sub').textContent='';
+  let delay=1500+Math.random()*3500;
+  timeout=setTimeout(()=>{
+    state='ready';startTime=Date.now();
+    arena.className='arena ready';
+    document.getElementById('text').textContent='CLICK NOW!';
+    document.getElementById('sub').textContent='';
+  },delay);
+}
+
+function showEarly(){
+  const arena=document.getElementById('arena');arena.className='arena early';
+  document.getElementById('text').textContent='Too early! ⚡';
+  document.getElementById('sub').textContent='Click to continue';
+}
+
+function showResult(ms){
+  const arena=document.getElementById('arena');arena.className='arena result';
+  document.getElementById('text').innerHTML=`<div class="time-big">${ms}ms</div>`;
+  let rating=getRating(ms);
+  document.getElementById('sub').innerHTML=`<div class="rating ${rating.cls}">${rating.text}</div><br>Click to continue`;
+  document.getElementById('round').textContent=round;
+  
+  // Update best
+  if(ms<allTimeBest){allTimeBest=ms;localStorage.setItem('reaction-best',ms)}
+  document.getElementById('best').textContent=allTimeBest+'ms';
+  
+  // Update average
+  let avg=Math.round(results.reduce((a,b)=>a+b,0)/results.length);
+  document.getElementById('avg').textContent=avg+'ms';
+  
+  // Show attempt
+  const el=document.getElementById('attempts');
+  let best=Math.min(...results);
+  el.innerHTML='';
+  results.forEach((r,i)=>{
+    let d=document.createElement('div');d.className='attempt';
+    if(r===best)d.classList.add('best');
+    d.textContent=`#${i+1}: ${r}ms`;
+    el.appendChild(d);
+  });
+}
+
+function showFinal(){
+  const arena=document.getElementById('arena');arena.className='arena result';
+  let avg=Math.round(results.reduce((a,b)=>a+b,0)/results.length);
+  let best=Math.min(...results);
+  let rating=getRating(avg);
+  document.getElementById('text').innerHTML=`<div class="time-big">${avg}ms</div><div class="time-ms">average</div>`;
+  document.getElementById('sub').innerHTML=`Best: ${best}ms<br><div class="rating ${rating.cls}">${rating.text}</div><br>Click to play again`;
+}
+
+function getRating(ms){
+  if(ms<200)return{text:'⚡ Superhuman!',cls:'amazing'};
+  if(ms<250)return{text:'🔥 Amazing!',cls:'amazing'};
+  if(ms<300)return{text:'💪 Great!',cls:'great'};
+  if(ms<350)return{text:'👍 Good',cls:'good'};
+  if(ms<450)return{text:'🙂 Average',cls:'avg'};
+  return{text:'🐢 Keep practicing',cls:'slow'};
+}
+</script>
+</body>
+</html>

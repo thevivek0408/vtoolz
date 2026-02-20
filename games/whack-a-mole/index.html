@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Whack-a-Mole</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:16px;user-select:none}
+h1{font-size:1.5rem;margin-bottom:8px;background:linear-gradient(135deg,#e17055,#fdcb6e);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stats{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
+.stat{background:#1a1a2e;padding:8px 16px;border-radius:20px;border:1px solid #333}
+.stat b{color:#fdcb6e}
+.difficulty{display:flex;gap:6px;margin-bottom:12px}
+.difficulty button{background:#1e1e3a;border:1px solid #444;color:#aaa;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;transition:all .2s}
+.difficulty button.active{border-color:#fdcb6e;color:#fdcb6e}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:360px;width:100%}
+.hole{aspect-ratio:1;background:#1a1a2e;border-radius:50%;border:3px solid #2a2a4e;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.hole:active{transform:scale(.95)}
+.hole .mole{position:absolute;bottom:-100%;left:50%;transform:translateX(-50%);width:75%;height:75%;transition:bottom .15s ease-out;display:flex;align-items:center;justify-content:center;font-size:clamp(28px,6vw,42px);pointer-events:none}
+.hole.up .mole{bottom:10%}
+.hole.hit{border-color:#27ae60;animation:flash .3s}
+.hole.miss{border-color:#e74c3c;animation:flash .3s}
+@keyframes flash{0%,100%{opacity:1}50%{opacity:.5}}
+.start-btn{background:linear-gradient(135deg,#e17055,#fdcb6e);color:#000;border:none;padding:12px 32px;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:700;margin-top:14px}
+.timer-bar{width:100%;max-width:360px;height:6px;background:#1e1e3a;border-radius:3px;margin-bottom:10px;overflow:hidden}
+.timer-bar .fill{height:100%;background:linear-gradient(90deg,#e17055,#fdcb6e);transition:width .1s linear}
+.combo{position:fixed;pointer-events:none;font-weight:800;font-size:1.2rem;color:#fdcb6e;animation:floatUp .7s forwards;z-index:99}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-60px)}}
+.result{display:none;text-align:center;margin-top:16px}
+.result.show{display:block}
+.result h2{color:#fdcb6e;font-size:1.8rem}
+.result p{color:#888;margin:4px 0}
+.result button{background:#e17055;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.9rem;margin-top:8px}
+</style>
+</head>
+<body>
+<h1>Whack-a-Mole</h1>
+<div class="difficulty" id="diff">
+  <button class="active" data-dur="30" data-speed="900">Easy</button>
+  <button data-dur="30" data-speed="650">Medium</button>
+  <button data-dur="30" data-speed="420">Hard</button>
+</div>
+<div class="stats">
+  <div class="stat">Score: <b id="score">0</b></div>
+  <div class="stat">Combo: <b id="combo">0</b>x</div>
+  <div class="stat">Time: <b id="time">30</b>s</div>
+  <div class="stat">Best: <b id="best">0</b></div>
+</div>
+<div class="timer-bar"><div class="fill" id="bar" style="width:100%"></div></div>
+<div class="board" id="board"></div>
+<button class="start-btn" id="startBtn" onclick="startGame()">Start Game</button>
+<div class="result" id="result">
+  <h2>Time's Up!</h2>
+  <p>Score: <b id="finalScore">0</b></p>
+  <p>Max Combo: <b id="finalCombo">0</b>x</p>
+  <p>Accuracy: <b id="finalAcc">0</b>%</p>
+  <button onclick="startGame()">Play Again</button>
+</div>
+<script>
+const MOLES=['🐹','🐿️','🦔'];
+const GOLDEN='⭐';
+let holes=[],score=0,combo=0,maxCombo=0,hits=0,misses=0,totalClicks=0;
+let gameActive=false,gameDuration=30,moleSpeed=900,timer,moleTimer,elapsed=0;
+let best=+localStorage.getItem('wam_best')||0;
+document.getElementById('best').textContent=best;
+
+function buildBoard(){
+  const b=document.getElementById('board');b.innerHTML='';holes=[];
+  for(let i=0;i<12;i++){
+    const h=document.createElement('div');h.className='hole';
+    h.innerHTML='<div class="mole">🐹</div>';
+    h.addEventListener('click',()=>whack(i));
+    h.addEventListener('touchstart',e=>{e.preventDefault();whack(i)},{passive:false});
+    b.appendChild(h);holes.push(h);
+  }
+}
+
+function startGame(){
+  score=0;combo=0;maxCombo=0;hits=0;misses=0;totalClicks=0;elapsed=0;
+  document.getElementById('score').textContent=0;
+  document.getElementById('combo').textContent='0';
+  document.getElementById('time').textContent=gameDuration;
+  document.getElementById('bar').style.width='100%';
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('startBtn').style.display='none';
+  gameActive=true;buildBoard();
+  timer=setInterval(tick,100);
+  scheduleMole();
+}
+
+function tick(){
+  elapsed+=100;
+  const left=gameDuration*1000-elapsed;
+  document.getElementById('time').textContent=Math.ceil(left/1000);
+  document.getElementById('bar').style.width=(left/(gameDuration*1000)*100)+'%';
+  if(left<=0)endGame();
+}
+
+function scheduleMole(){
+  if(!gameActive)return;
+  const delay=moleSpeed*(0.5+Math.random()*0.7);
+  moleTimer=setTimeout(()=>{
+    if(!gameActive)return;
+    popMole();scheduleMole();
+  },delay);
+}
+
+function popMole(){
+  const available=holes.filter(h=>!h.classList.contains('up'));
+  if(!available.length)return;
+  const h=available[Math.floor(Math.random()*available.length)];
+  const isGolden=Math.random()<0.1;
+  h.querySelector('.mole').textContent=isGolden?GOLDEN:MOLES[Math.floor(Math.random()*MOLES.length)];
+  h.dataset.golden=isGolden?'1':'0';
+  h.classList.add('up');
+  const stayTime=moleSpeed*(0.7+Math.random()*0.5);
+  setTimeout(()=>{
+    if(h.classList.contains('up')&&!h.classList.contains('hit')){
+      h.classList.remove('up');
+    }
+  },stayTime);
+}
+
+function whack(i){
+  if(!gameActive)return;
+  totalClicks++;
+  const h=holes[i];
+  if(h.classList.contains('up')&&!h.classList.contains('hit')){
+    hits++;combo++;
+    if(combo>maxCombo)maxCombo=combo;
+    let pts=10+combo*2;
+    if(h.dataset.golden==='1')pts*=3;
+    score+=pts;
+    document.getElementById('score').textContent=score;
+    document.getElementById('combo').textContent=combo;
+    h.classList.add('hit');h.classList.remove('up');
+    showFloating(h,'+'+pts);
+    setTimeout(()=>h.classList.remove('hit'),300);
+  } else if(!h.classList.contains('up')){
+    misses++;combo=0;
+    document.getElementById('combo').textContent=0;
+    h.classList.add('miss');
+    setTimeout(()=>h.classList.remove('miss'),300);
+  }
+}
+
+function showFloating(el,text){
+  const r=el.getBoundingClientRect();
+  const f=document.createElement('div');f.className='combo';f.textContent=text;
+  f.style.left=r.left+r.width/2-20+'px';f.style.top=r.top-10+'px';
+  document.body.appendChild(f);setTimeout(()=>f.remove(),700);
+}
+
+function endGame(){
+  gameActive=false;clearInterval(timer);clearTimeout(moleTimer);
+  holes.forEach(h=>h.classList.remove('up','hit'));
+  if(score>best){best=score;localStorage.setItem('wam_best',best)}
+  document.getElementById('best').textContent=best;
+  document.getElementById('finalScore').textContent=score;
+  document.getElementById('finalCombo').textContent=maxCombo;
+  document.getElementById('finalAcc').textContent=totalClicks?Math.round(hits/totalClicks*100):0;
+  document.getElementById('result').classList.add('show');
+  document.getElementById('startBtn').style.display='inline-block';
+}
+
+document.querySelectorAll('.difficulty button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.difficulty button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    gameDuration=+b.dataset.dur;moleSpeed=+b.dataset.speed;
+  });
+});
+buildBoard();
+</script>
+</body>
+</html>

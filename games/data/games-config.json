@@ -328,5 +328,170 @@
         "mode": "single",
         "mobileOptimized": true,
         "image": "assets/covers/g30.png"
+    },
+    {
+        "id": 31,
+        "name": "Whack-a-Mole",
+        "description": "Whack moles as they pop up! Hit golden star moles for bonus points. Three difficulty levels.",
+        "engine": "iframe",
+        "url": "whack-a-mole/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g31.png"
+    },
+    {
+        "id": 32,
+        "name": "Bubble Shooter",
+        "description": "Aim and shoot colored bubbles to match 3 or more and pop them. Clear the board to win!",
+        "engine": "iframe",
+        "url": "bubble-shooter/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g32.png"
+    },
+    {
+        "id": 33,
+        "name": "Dodge",
+        "description": "Dodge falling obstacles as they get faster and faster. How long can you survive?",
+        "engine": "iframe",
+        "url": "dodge/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g33.png"
+    },
+    {
+        "id": 34,
+        "name": "Asteroids",
+        "description": "Pilot your ship through an asteroid field. Shoot and dodge to survive in this space classic!",
+        "engine": "iframe",
+        "url": "asteroids/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g34.png"
+    },
+    {
+        "id": 35,
+        "name": "Lights Out",
+        "description": "Toggle lights on and off — clicking one flips its neighbors. Turn all lights off to win!",
+        "engine": "iframe",
+        "url": "lights-out/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g35.png"
+    },
+    {
+        "id": 36,
+        "name": "Pipe Puzzle",
+        "description": "Rotate pipe segments to connect the water source to the drain. Increasingly tricky grids!",
+        "engine": "iframe",
+        "url": "pipe-puzzle/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g36.png"
+    },
+    {
+        "id": 37,
+        "name": "Flood Fill",
+        "description": "Flood the board with one color starting from the top-left corner. Use as few moves as possible!",
+        "engine": "iframe",
+        "url": "flood-fill/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g37.png"
+    },
+    {
+        "id": 38,
+        "name": "2048 Solitaire",
+        "description": "Drop numbered cards into columns and merge matching tiles. A fresh twist on the 2048 formula!",
+        "engine": "iframe",
+        "url": "2048-solitaire/index.html",
+        "category": "puzzle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g38.png"
+    },
+    {
+        "id": 39,
+        "name": "Word Search",
+        "description": "Find hidden words in a grid of letters. Drag to select words in any direction!",
+        "engine": "iframe",
+        "url": "word-search/index.html",
+        "category": "word",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g39.png"
+    },
+    {
+        "id": 40,
+        "name": "Anagram",
+        "description": "Unscramble the letters to form the correct word. Use hints if you get stuck!",
+        "engine": "iframe",
+        "url": "anagram/index.html",
+        "category": "word",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g40.png"
+    },
+    {
+        "id": 41,
+        "name": "Battleship",
+        "description": "Place your fleet and hunt down enemy ships. Classic naval strategy board game vs AI!",
+        "engine": "iframe",
+        "url": "battleship/index.html",
+        "category": "strategy",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g41.png"
+    },
+    {
+        "id": 42,
+        "name": "Reversi",
+        "description": "Flip your opponent's discs by trapping them. Control the most squares to win this Othello classic!",
+        "engine": "iframe",
+        "url": "reversi/index.html",
+        "category": "strategy",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g42.png"
+    },
+    {
+        "id": 43,
+        "name": "Cookie Clicker",
+        "description": "Click cookies, buy upgrades, automate production. How many cookies can you bake?",
+        "engine": "iframe",
+        "url": "cookie-clicker/index.html",
+        "category": "idle",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g43.png"
+    },
+    {
+        "id": 44,
+        "name": "Reaction Time",
+        "description": "Test your reflexes! Wait for the green screen and click as fast as you can.",
+        "engine": "iframe",
+        "url": "reaction-time/index.html",
+        "category": "arcade",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g44.png"
+    },
+    {
+        "id": 45,
+        "name": "Rock Paper Scissors",
+        "description": "The classic hand game with a twist — play Classic or Rock Paper Scissors Lizard Spock!",
+        "engine": "iframe",
+        "url": "rock-paper-scissors/index.html",
+        "category": "casual",
+        "mode": "single",
+        "mobileOptimized": true,
+        "image": "assets/covers/g45.png"
     }
 ]
