@@ -75,6 +75,39 @@
         .page-item.selected .rotate-indicator {
             opacity: 1;
         }
+
+        .rotate-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .rotate-controls {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .rotate-toolbar {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            background: var(--border-color);
+            margin: 0 10px;
+        }
+
+        .rotate-action {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .rotate-save-btn {
+            min-width: 200px;
+        }
     </style>
 </head>
 
@@ -98,7 +131,7 @@
                 <span class="step">3. Download</span>
             </div>
 
-            <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="rotate-hero">
                 <h1>Rotate PDF</h1>
                 <p class="text-muted">Select pages and rotate them 90�, 180�, or 270�.</p>
             </div>
@@ -110,11 +143,10 @@
                 <input type="file" id="file-input" accept="application/pdf" hidden>
             </div>
 
-            <div id="controls" style="display:none; margin-top: 20px;">
-                <div class="toolbar"
-                    style="margin-bottom: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <div id="controls" class="rotate-controls">
+                <div class="toolbar rotate-toolbar">
                     <button id="select-all-btn" class="btn btn-secondary">Select All</button>
-                    <div style="width: 1px; background: var(--border-color); margin: 0 10px;"></div>
+                    <div class="toolbar-separator"></div>
                     <button id="rotate-left-btn" class="btn btn-secondary">? Left 90�</button>
                     <button id="rotate-right-btn" class="btn btn-secondary">? Right 90�</button>
                 </div>
@@ -123,8 +155,8 @@
 
                 <div id="page-grid" class="page-grid"></div>
 
-                <div class="action-bar" style="text-align: center; margin-top: 2rem;">
-                    <button id="save-btn" class="btn btn-primary" style="min-width: 200px;">
+                <div class="action-bar rotate-action">
+                    <button id="save-btn" class="btn btn-primary rotate-save-btn">
                         Save Rotated PDF
                     </button>
                 </div>
