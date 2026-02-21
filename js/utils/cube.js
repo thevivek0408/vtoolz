@@ -22,7 +22,7 @@ export class CubeRotator {
         this.sensitivity = 0.5;
         this.friction = 0.95;
         this.autoRotateSpeed = 0.2;
-        this.autoRotate = false; // Hold on Vibox face for 2s, then rotate
+        this.autoRotate = false;
 
         // Intro hold — show Vibox face for 2s then start spinning
         this.introHold = true;
@@ -58,18 +58,14 @@ export class CubeRotator {
         document.addEventListener('touchmove', this._onMove, { passive: false });
         document.addEventListener('touchend', this._onUp);
 
-        // Handle cube face link clicks directly — bypass loader.js view-transition
-        // because 3D-transformed <a> elements have unreliable event delivery on mobile
+        // Block all default click/drag behavior on cube face links.
+        // Navigation is handled exclusively in onUp() via rotation-angle detection
+        // because click events on 3D CSS-transformed elements are unreliable on mobile.
         const links = this.element.querySelectorAll('a');
         links.forEach(link => {
-            link.addEventListener('click', (e) => {
+            link.addEventListener('click', e => {
                 e.preventDefault();
                 e.stopPropagation();
-                if (!this.wasDragging) {
-                    // Clean tap/click → navigate
-                    window.location.href = link.getAttribute('href');
-                }
-                // If it was a drag, do nothing (intended rotation)
             });
             link.addEventListener('dragstart', e => e.preventDefault());
         });
@@ -99,6 +95,41 @@ export class CubeRotator {
         this.animate();
     }
 
+    /**
+     * Returns the href of the front-facing cube face based on current rotation.
+     * This is the only reliable way to know which face the user intends to click
+     * on mobile, since 3D hit-testing is browser-specific.
+     */
+    getFrontFaceHref() {
+        // Normalize X and Y into 0-360 range
+        const normY = ((this.currentY % 360) + 360) % 360;
+        const normX = ((this.currentX % 360) + 360) % 360;
+
+        // Check if top or bottom face dominates (X tilt > 45 degrees)
+        // Top face: currentX around 90 → normX 60-120
+        if (normX > 60 && normX < 120) {
+            return this.element.querySelector('.cube-face.top')?.getAttribute('href');
+        }
+        // Bottom face: currentX around -90 → normX 240-300
+        if (normX > 240 && normX < 300) {
+            return this.element.querySelector('.cube-face.bottom')?.getAttribute('href');
+        }
+
+        // Determine Y-axis face
+        // When cube rotates +Y (auto-rotate direction):
+        //   normY 0   (315-44):  front  face (PDF)
+        //   normY 90  (45-134):  left   face (DEV)
+        //   normY 180 (135-224): back   face (GAMES)
+        //   normY 270 (225-314): right  face (IMG)
+        let faceSelector;
+        if (normY >= 315 || normY < 45) faceSelector = '.cube-face.front';
+        else if (normY >= 45 && normY < 135) faceSelector = '.cube-face.left';
+        else if (normY >= 135 && normY < 225) faceSelector = '.cube-face.back';
+        else faceSelector = '.cube-face.right';
+
+        return this.element.querySelector(faceSelector)?.getAttribute('href');
+    }
+
     onDown(e) {
         if (!e.target.closest('.hero-scene')) return;
 
@@ -124,8 +155,8 @@ export class CubeRotator {
         this.velocityX = 0;
         this.velocityY = 0;
 
-        this.startX = e.pageX || e.touches[0].pageX;
-        this.startY = e.pageY || e.touches[0].pageY;
+        this.startX = e.pageX ?? e.touches[0].pageX;
+        this.startY = e.pageY ?? e.touches[0].pageY;
 
         this.lastX = this.startX;
         this.lastY = this.startY;
@@ -136,13 +167,13 @@ export class CubeRotator {
     onMove(e) {
         if (!this.isDragging) return;
 
-        const x = e.pageX || e.touches[0].pageX;
-        const y = e.pageY || e.touches[0].pageY;
+        const x = e.pageX ?? e.touches[0].pageX;
+        const y = e.pageY ?? e.touches[0].pageY;
 
         const deltaX = x - this.lastX;
         const deltaY = y - this.lastY;
 
-        // Click vs Drag threshold — 15px to avoid false drag on mobile taps
+        // 15px threshold — generous enough for mobile taps
         if (Math.abs(x - this.startX) > 15 || Math.abs(y - this.startY) > 15) {
             this.wasDragging = true;
         }
@@ -162,17 +193,26 @@ export class CubeRotator {
     }
 
     onUp() {
-        if (this.isDragging) {
-            this.isDragging = false;
-            this.element.style.cursor = 'grab';
+        if (!this.isDragging) return;
 
-            // Resume Auto-Rotation after 2s of inactivity
-            clearTimeout(this.resumeTimeout);
-            this.resumeTimeout = setTimeout(() => {
-                this.autoRotate = true;
-                this.wasDragging = false; // Reset so next tap navigates correctly
-            }, 2000);
+        this.isDragging = false;
+        this.element.style.cursor = 'grab';
+
+        if (!this.wasDragging) {
+            // It was a clean tap/click — navigate to the front-facing face
+            const href = this.getFrontFaceHref();
+            if (href) {
+                window.location.href = href;
+                return; // Don't resume auto-rotate — we're navigating away
+            }
         }
+
+        // It was a drag — resume auto-rotation after 2s
+        clearTimeout(this.resumeTimeout);
+        this.resumeTimeout = setTimeout(() => {
+            this.autoRotate = true;
+            this.wasDragging = false;
+        }, 2000);
     }
 
     animate() {
