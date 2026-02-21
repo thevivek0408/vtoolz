@@ -58,14 +58,18 @@ export class CubeRotator {
         document.addEventListener('touchmove', this._onMove, { passive: false });
         document.addEventListener('touchend', this._onUp);
 
-        // Prevent default drag interactions on links
+        // Handle cube face link clicks directly — bypass loader.js view-transition
+        // because 3D-transformed <a> elements have unreliable event delivery on mobile
         const links = this.element.querySelectorAll('a');
         links.forEach(link => {
             link.addEventListener('click', (e) => {
-                if (this.wasDragging) {
-                    e.preventDefault();
-                    e.stopPropagation();
+                e.preventDefault();
+                e.stopPropagation();
+                if (!this.wasDragging) {
+                    // Clean tap/click → navigate
+                    window.location.href = link.getAttribute('href');
                 }
+                // If it was a drag, do nothing (intended rotation)
             });
             link.addEventListener('dragstart', e => e.preventDefault());
         });
