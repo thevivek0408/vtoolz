@@ -106,13 +106,13 @@ export class CubeRotator {
         const normX = ((this.currentX % 360) + 360) % 360;
 
         // Check if top or bottom face dominates (X tilt > 45 degrees)
-        // Top face: currentX around 90 → normX 60-120
+        // cube currentX = -90 (normX≈270) → top face (Vibox) faces user
+        // cube currentX = +90 (normX≈90)  → bottom face (GOVT) faces user
         if (normX > 60 && normX < 120) {
-            return this.element.querySelector('.cube-face.top')?.getAttribute('href');
-        }
-        // Bottom face: currentX around -90 → normX 240-300
-        if (normX > 240 && normX < 300) {
             return this.element.querySelector('.cube-face.bottom')?.getAttribute('href');
+        }
+        if (normX > 240 && normX < 300) {
+            return this.element.querySelector('.cube-face.top')?.getAttribute('href');
         }
 
         // Determine Y-axis face
