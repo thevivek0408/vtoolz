@@ -138,8 +138,8 @@ export class CubeRotator {
         const deltaX = x - this.lastX;
         const deltaY = y - this.lastY;
 
-        // Click vs Drag threshold
-        if (Math.abs(x - this.startX) > 5 || Math.abs(y - this.startY) > 5) {
+        // Click vs Drag threshold — 15px to avoid false drag on mobile taps
+        if (Math.abs(x - this.startX) > 15 || Math.abs(y - this.startY) > 15) {
             this.wasDragging = true;
         }
 
@@ -166,6 +166,7 @@ export class CubeRotator {
             clearTimeout(this.resumeTimeout);
             this.resumeTimeout = setTimeout(() => {
                 this.autoRotate = true;
+                this.wasDragging = false; // Reset so next tap navigates correctly
             }, 2000);
         }
     }
